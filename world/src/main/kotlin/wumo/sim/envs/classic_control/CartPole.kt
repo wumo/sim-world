@@ -1,16 +1,8 @@
 package wumo.sim.envs.classic_control
 
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Color.BLACK
-import javafx.application.Application
-import javafx.application.Platform
-import javafx.scene.Group
-import javafx.scene.Scene
-import javafx.scene.canvas.Canvas
-import javafx.stage.Stage
 import wumo.sim.graphics.Config
 import wumo.sim.graphics.Geom
-import wumo.sim.graphics.ShapeType
 import wumo.sim.graphics.ShapeType.Lines
 import wumo.sim.graphics.Viewer
 import wumo.sim.core.Env
@@ -19,10 +11,7 @@ import wumo.sim.spaces.Discrete
 import wumo.sim.util.collections.arrayCopy
 import wumo.sim.util.math.Rand
 import wumo.sim.util.math.unaryMinus
-import wumo.sim.util.rangeTo
 import wumo.sim.util.tuples.tuple4
-import java.util.concurrent.CyclicBarrier
-import javax.swing.Spring.height
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
@@ -57,11 +46,11 @@ class CartPole : Env<DoubleArray, Int> {
   override val action_space = Discrete(2)
   override val observation_space = Box(-high, high)
   
-  override fun step(action: Int): tuple4<DoubleArray, Double, Boolean, Map<String, Any>> {
-    assert(action_space.contains(action)) { "invalid action:$action" }
+  override fun step(a: Int): tuple4<DoubleArray, Double, Boolean, Map<String, Any>> {
+    assert(action_space.contains(a)) { "invalid a:$a" }
     var (x, x_dot, theta, theta_dot) = state
     
-    val force = if (action == 1) force_mag else -force_mag
+    val force = if (a == 1) force_mag else -force_mag
     val costheta = cos(theta)
     val sintheta = sin(theta)
     val temp = (force + polemass_length * theta_dot * theta_dot * sintheta) / total_mass

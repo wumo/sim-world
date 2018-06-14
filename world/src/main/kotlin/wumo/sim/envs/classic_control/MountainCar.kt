@@ -2,12 +2,6 @@ package wumo.sim.envs.classic_control
 
 import com.badlogic.gdx.graphics.Color.BLACK
 import com.badlogic.gdx.graphics.Color.YELLOW
-import javafx.application.Application
-import javafx.application.Platform
-import javafx.scene.Group
-import javafx.scene.Scene
-import javafx.scene.canvas.Canvas
-import javafx.stage.Stage
 import wumo.sim.graphics.Config
 import wumo.sim.graphics.Geom
 import wumo.sim.graphics.ShapeType.Line_Strip
@@ -18,8 +12,6 @@ import wumo.sim.spaces.Discrete
 import wumo.sim.util.math.Rand
 import wumo.sim.util.rangeTo
 import wumo.sim.util.tuples.tuple4
-import java.util.concurrent.CyclicBarrier
-import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -38,10 +30,10 @@ class MountainCar : Env<DoubleArray, Int> {
   override val observation_space = Box(low = doubleArrayOf(min_position, -max_speed),
       high = doubleArrayOf(max_position, max_speed))
   
-  override fun step(action: Int): tuple4<DoubleArray, Double, Boolean, Map<String, Any>> {
-    assert(action_space.contains(action)) { "invalid action:$action" }
+  override fun step(a: Int): tuple4<DoubleArray, Double, Boolean, Map<String, Any>> {
+    assert(action_space.contains(a)) { "invalid a:$a" }
     var (position, velocity) = state
-    velocity += (action - 1) * 0.001 + cos(3 * position) * (-0.0025)
+    velocity += (a - 1) * 0.001 + cos(3 * position) * (-0.0025)
     velocity = velocity.coerceIn(-max_speed, max_speed)
     position += velocity
     position = position.coerceIn(min_position, max_position)
