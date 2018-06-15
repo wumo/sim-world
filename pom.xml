@@ -12,6 +12,7 @@
     <modules>
         <module>world</module>
         <module>graphics</module>
+        <module>algorithm</module>
     </modules>
 
     <developers>
