@@ -5,10 +5,14 @@ import org.bytedeco.javacpp.tensorflow
 import org.bytedeco.javacpp.tensorflow.*
 import org.bytedeco.javacpp.tensorflow.Placeholder.Shape
 import org.bytedeco.javacpp.tensorflow.Scope.NewRootScope
+import wumo.sim.algorithm.util.TFHelper
+import wumo.sim.algorithm.util.x
 import wumo.sim.envs.toy_text.FrozenLake
 import wumo.sim.util.math.Rand
 import java.nio.FloatBuffer
 import java.nio.LongBuffer
+import java.nio.file.Files
+import java.nio.file.Paths
 
 fun main(args: Array<String>) {
   // Load all javacpp-preset classes and native libraries
@@ -20,35 +24,41 @@ fun main(args: Array<String>) {
   val env = FrozenLake()
   
   val scope = NewRootScope()
-  val inputs = Placeholder(scope.WithOpName("inputs1"), DT_FLOAT, Shape(TensorShape(1, 16).asPartialTensorShape()))
-  val W = Variable(scope.WithOpName("W"), TensorShape(16, 4).asPartialTensorShape(), DT_FLOAT)
+  val tf = TFHelper(scope)
+  val inputs = tf.placeholder("inputs1", 1 x 16)
+//  val inputs = Placeholder(scope.WithOpName("inputs1"), DT_FLOAT, Shape(TensorShape(1, 16).asPartialTensorShape()))
+  val W = tf.variable("W", 16 x 4)
+//  val W = Variable(scope.WithOpName("W"), TensorShape(16, 4).asPartialTensorShape(), DT_FLOAT)
+//  val assign_W = Assign(scope.WithOpName("assign_W"),
+//      W.asInput(),
+//      Div(scope, RandomUniform(scope,
+//          Input(Tensor.create(longArrayOf(16, 4),
+//              TensorShape(*longArrayOf(2)))), DT_FLOAT).asInput(), Input(Const(scope, 10f))).asInput())
   val assign_W = Assign(scope.WithOpName("assign_W"),
       W.asInput(),
-      Div(scope,
-          RandomUniform(scope,
-              Input(Tensor.create(intArrayOf(16, 4), TensorShape(*longArrayOf(2)))), DT_FLOAT).asInput(),
-          Input(Const(scope, 10f))).asInput())
+      Div(scope, tf.random_uniform(16 x 4).asInput(), Input(tf.const(10f))).asInput())
   
   val Qout = MatMul(scope.WithOpName("Qout"), inputs.asInput(), W.asInput())
-  val predict = ArgMax(scope.WithOpName("predict"), Qout.asInput(), Input(Const(scope, 1)))
+  val predict = ArgMax(scope.WithOpName("predict"), Qout.asInput(), Input(tf.const(1)))
   
-  val nextQ = Placeholder(scope.WithOpName("nextQ"), DT_FLOAT, Shape(TensorShape(1, 4).asPartialTensorShape()))
+  val nextQ = tf.placeholder("nextQ", 1 x 4)
+//  val nextQ = Placeholder(scope.WithOpName("nextQ"), DT_FLOAT, Shape(TensorShape(1, 4).asPartialTensorShape()))
   val loss = Sum(scope.WithOpName("loss"), Square(scope, Subtract(scope, nextQ.asInput(), Qout.asInput()).asInput()).asInput(),
       Input(Tensor.create(intArrayOf(0, 1), TensorShape(*longArrayOf(2)))))
   
-  val node_outpus = OutputVector(loss.asOutput())
+  val node_outputs = OutputVector(loss.asOutput())
   val node_inputs = OutputVector(W.asOutput())
   val node_grad_outputs = OutputVector()
-  TF_CHECK_OK(AddSymbolicGradients(scope, node_outpus, node_inputs, node_grad_outputs))
+  TF_CHECK_OK(AddSymbolicGradients(scope, node_outputs, node_inputs, node_grad_outputs))
   
   val alpha = Input(Const(scope.WithOpName("alpha"), 0.1f))
   val apply_W = ApplyGradientDescent(scope.WithOpName("apply_W"), W.asInput(), alpha, Input(node_grad_outputs[0]))
   
   val def = GraphDef()
   TF_CHECK_OK(scope.ToGraphDef(def))
-  
+  TF_CHECK_OK(tensorflow.WriteTextProto(Env.Default(), "resources/custom.pbtxt", def))
   val session = Session(SessionOptions())
-  SetDefaultDevice("/cpu:0", def)
+  SetDefaultDevice("/gpu:0", def)
   TF_CHECK_OK(session.Create(def))
   val outputs = TensorVector()
   session.Run(StringTensorPairVector(), StringVector("W"), StringVector("assign_W"), outputs)
