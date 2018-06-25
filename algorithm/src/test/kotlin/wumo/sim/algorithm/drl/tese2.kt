@@ -10,7 +10,7 @@ import java.nio.FloatBuffer
 
 fun main(args: Array<String>) {
   
-  // Load all javacpp-preset classes and native libraries
+  // Load all javacpp-preset classes and nativeGraph libraries
   Loader.load(org.bytedeco.javacpp.tensorflow::class.java)
   
   // Platform-specific initialization routine

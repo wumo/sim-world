@@ -18,4 +18,12 @@ class Dimension(val elements: MutableList<Long>) {
   fun rank(): Long {
     return elements.size.toLong()
   }
+  
+  val firstDim = elements[0]
+  
+  val otherDim = LongArray(elements.size - 1) { elements[it + 1] }
+  
+  fun numElements() = elements.reduce { num, e ->
+    num * e
+  }
 }

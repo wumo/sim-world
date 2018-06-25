@@ -9,7 +9,7 @@ import org.junit.Before
 import org.junit.Test
 import java.nio.FloatBuffer
 
-class TFHelperTest {
+class TFJavaHelperTest {
   @Before
   fun setup() {
     Loader.load(org.bytedeco.javacpp.tensorflow::class.java)
@@ -37,6 +37,45 @@ class TFHelperTest {
         println(buf.get())
     }
     session.close()
+    def.close()
+  }
+  
+  @Test
+  fun `test helpers`() {
+    val scope = NewRootScope()
+    val tf = TF_CPP(scope)
+    val W = Variable(scope.WithOpName("W"), TensorShape(16, 4).asPartialTensorShape(), DT_FLOAT)
+    val assign_W = Assign(scope.WithOpName("assign_W"),
+        W.asInput(),
+        Div(scope,
+            RandomUniform(scope,
+                Input(Tensor.create(intArrayOf(16, 4), TensorShape(*longArrayOf(2)))), DT_FLOAT).asInput(),
+            Input(Const(scope, 10f))).asInput())
+    
+    tf.session {
+      val outputs = TensorVector()
+      Run(StringTensorPairVector(), StringVector(), StringVector("assign_W:0"), outputs)
+      Run(StringTensorPairVector(), StringVector("W:0"), StringVector(), outputs)
+      val w = outputs[0].createBuffer<FloatBuffer>()
+      while (w.hasRemaining()) {
+        println(w.get())
+      }
+    }
+    
+  }
+  
+  @Test
+  fun `visit graph node`() {
+    val def = GraphDef()
+//  val loc = ResourceLoader.getResource("def.pb")
+    TF_CHECK_OK(tensorflow.ReadTextProto(Env.Default(), "resources/train.pbtxt", def))
+    val node_count = def.node_size()
+    println("$node_count nodes in graph")
+    for (i in 0 until node_count) {
+      val n = def.node(i)
+      
+      println(n.name().string)
+    }
     def.close()
   }
   

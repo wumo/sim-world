@@ -2,10 +2,9 @@
 
 package wumo.sim.algorithm.util
 
-import org.bytedeco.javacpp.tensorflow
 import org.bytedeco.javacpp.tensorflow.*
 
-class TFHelper(val scope: Scope) {
+class TF_CPP(val scope: Scope) {
   val trainables = mutableListOf<_Variable>()
   val init_ops = mutableListOf<_Assign>()
   
@@ -58,10 +57,10 @@ class TFHelper(val scope: Scope) {
   
   fun square(a: Node, name: String = "") = _Square(Square(scope(name), a.asInput()))
   
-  fun subtract(a: Node, b: Node, name: String = "") = _Sub(Subtract(scope(name), a.asInput(), a.asInput()))
+  fun subtract(a: Node, b: Node, name: String = "") = _Sub(Subtract(scope(name), a.asInput(), b.asInput()))
   
   fun tensor(vararg data: Int) = _Tensor(Tensor.create(data, TensorShape(*longArrayOf(data.size.toLong()))))
-  
+  fun tensor(vararg data: Long) = _Tensor(Tensor.create(data, TensorShape(*longArrayOf(data.size.toLong()))))
   fun tensor(vararg data: Int, shape: Dimension) = _Tensor(Tensor.create(data, TensorShape(*shape.asLongArray())))
   
   fun GradientDescentOptimizer(learningRate: Float, loss: Node, name: String = "") {
@@ -76,9 +75,7 @@ class TFHelper(val scope: Scope) {
   }
   
   fun random_uniform(shape: Dimension): _RandomUniform {
-    return _RandomUniform(RandomUniform(scope,
-        Input(Tensor.create(shape.asLongArray(),
-            TensorShape(*longArrayOf(shape.rank())))), DT_FLOAT))
+    return _RandomUniform(RandomUniform(scope, tensor(*shape.asLongArray()).asInput(), DT_FLOAT))
   }
   
   fun random_uniform(shape: Dimension, min: Float, max: Float): _Add {
@@ -108,12 +105,9 @@ class TFHelper(val scope: Scope) {
     val def = GraphDef()
     TF_CHECK_OK(scope.ToGraphDef(def))
     val session = Session(SessionOptions())
+    TF_CHECK_OK(session.Create(def))
     block(session)
     session.close()
     def.close()
-  }
-  
-  fun global_variables_initializer(): Any {
-    TODO()
   }
 }
