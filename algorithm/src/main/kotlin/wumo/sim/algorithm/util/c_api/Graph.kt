@@ -1,7 +1,9 @@
 package wumo.sim.algorithm.util.c_api
 
-import org.bytedeco.javacpp.tensorflow.TF_DeleteGraph
-import org.bytedeco.javacpp.tensorflow.TF_NewGraph
+import org.bytedeco.javacpp.BytePointer
+import org.bytedeco.javacpp.Pointer
+import org.bytedeco.javacpp.tensorflow.*
+import java.lang.Thread
 
 class Graph : AutoCloseable {
   internal val nativeGraph = TF_NewGraph()
@@ -43,5 +45,30 @@ class Graph : AutoCloseable {
           nativeGraphLock.notifyAll()
       }
     }
+    
+    fun nativeHandle() = if (active) nativeGraph else null
+  }
+  
+  fun operation(name: String): Operation {
+    synchronized(nativeGraphLock) {
+      val op = TF_GraphOperationByName(nativeGraph, name)
+      return Operation(this, op)
+    }
+  }
+  
+  fun toGraphDef(): ByteArray {
+    val buf = TF_NewBuffer()
+    val status = TF_NewStatus()
+    TF_GraphToGraphDef(nativeGraph, buf, status)
+    throwExceptionIfNotOk(status)
+    val bytes = ByteArray(buf.length().toInt())
+    val d = buf.data()
+    val e = BytePointer(d)
+    val data = buf.data().asByteBuffer()
+    data.flip()
+    data.get(bytes)
+    TF_DeleteStatus(status)
+    TF_DeleteBuffer(buf)
+    return bytes
   }
 }
