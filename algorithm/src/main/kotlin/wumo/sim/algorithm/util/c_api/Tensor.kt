@@ -71,7 +71,6 @@ class Tensor(val dtype: DataType, val shape: LongArray) : AutoCloseable {
     val sz = TF_TensorByteSize(nativeTensor)
     val byteBuf = BytePointer(data)
     byteBuf.capacity(sz)
-    byteBuf.limit(sz)
     return byteBuf.asByteBuffer().order(ByteOrder.nativeOrder())
   }
   
@@ -178,7 +177,7 @@ class Tensor(val dtype: DataType, val shape: LongArray) : AutoCloseable {
           if (num_dims == 0)
             writeScalar(data, obj, dtype, sz)
           else
-            writeNDArray(data, 0, obj, dtype, num_dims, byteSize)
+            writeNDArray(data, 0, obj, byteSize, num_dims, dtype)
         }
       //TODO 支持String
       }
@@ -202,8 +201,7 @@ class Tensor(val dtype: DataType, val shape: LongArray) : AutoCloseable {
         read1DArray(src, offset, dst, src_size, dtype)
       else {
         var sz = 0L
-        val len = Array.getLength(dst)
-        for (i in 0 until len) {
+        for (i in 0 until Array.getLength(dst)) {
           val row = Array.get(dst, i)
           sz += readNDArray(src, offset + sz, row, src_size - sz, dims_left - 1, dtype)
         }
@@ -212,51 +210,51 @@ class Tensor(val dtype: DataType, val shape: LongArray) : AutoCloseable {
     }
     
     private fun read1DArray(src: Pointer, offset: Long, dst: Any, src_size: Long, dtype: DataType): Long {
-      val len = Array.getLength(dst)
-      val sz = len * elemByteSize(dtype)
+      val len = Array.getLength(dst).toLong()
+      val size = elemByteSize(dtype)
+      val sz = len * size
       if (sz > src_size)
         throw IllegalStateException("cannot fill a Java array of $sz bytes with a Tensor of $src_size bytes")
-      src.position<Pointer>(offset)
+      src.position<Pointer>(offset / size)//因为下面的各类Pointer的position与src的position单位不同
       when (dtype) {
-        DataType.FLOAT -> FloatPointer(src).capacity(sz).limit(sz).get(dst as FloatArray)
-        DataType.DOUBLE -> DoublePointer(src).capacity(sz).limit(sz).get(dst as DoubleArray)
-        DataType.INT32 -> IntPointer(src).capacity(sz).limit(sz).get(dst as IntArray)
-        DataType.UINT8 -> BytePointer(src).capacity(sz).limit(sz).get(dst as ByteArray)
-        DataType.INT64 -> LongPointer(src).capacity(sz).limit(sz).get(dst as LongArray)
+        DataType.FLOAT -> FloatPointer(src).get(dst as FloatArray)
+        DataType.DOUBLE -> DoublePointer(src).get(dst as DoubleArray)
+        DataType.INT32 -> IntPointer(src).get(dst as IntArray)
+        DataType.UINT8 -> BytePointer(src).get(dst as ByteArray)
+        DataType.INT64 -> LongPointer(src).get(dst as LongArray)
         else ->
           throw IllegalStateException("invalid DataType($dtype)")
       }
       
-      return 0
+      return sz
     }
     
-    private fun writeNDArray(dst: Pointer, offset: Long, obj: Any, dtype: DataType, dims_left: Int, dst_size: Long): Long {
+    private fun writeNDArray(dst: Pointer, offset: Long, obj: Any, dst_size: Long, dims_left: Int, dtype: DataType): Long {
       return if (dims_left == 1)
         write1DArray(dst, offset, obj, dtype)
       else {
-        val len = Array.getLength(obj)
         var sz = 0L
-        for (i in 0 until len) {
+        for (i in 0 until Array.getLength(obj)) {
           val row = Array.get(obj, i)
-          sz += writeNDArray(dst, offset + sz, row, dtype, dims_left - 1, dst_size - sz)
+          sz += writeNDArray(dst, offset + sz, row, dst_size - sz, dims_left - 1, dtype)
         }
         sz
       }
     }
     
     private fun write1DArray(data: Pointer, offset: Long, array: Any, dtype: DataType): Long {
-      val to_copy = (Array.getLength(array) * elemByteSize(dtype))
+      val sz = (Array.getLength(array) * elemByteSize(dtype))
       data.position<Pointer>(offset)
       when (dtype) {
-        DataType.FLOAT -> memcpy(data, FloatPointer(*array as FloatArray), to_copy)
-        DataType.DOUBLE -> memcpy(data, DoublePointer(*array as DoubleArray), to_copy)
-        DataType.INT32 -> memcpy(data, IntPointer(*array as IntArray), to_copy)
-        DataType.UINT8 -> memcpy(data, BytePointer(*array as ByteArray), to_copy)
-        DataType.INT64 -> memcpy(data, LongPointer(*array as LongArray), to_copy)
-        DataType.BOOL -> memcpy(data, BytePointer(*array as ByteArray), to_copy)
+        DataType.FLOAT -> memcpy(data, FloatPointer(*array as FloatArray), sz)
+        DataType.DOUBLE -> memcpy(data, DoublePointer(*array as DoubleArray), sz)
+        DataType.INT32 -> memcpy(data, IntPointer(*array as IntArray), sz)
+        DataType.UINT8 -> memcpy(data, BytePointer(*array as ByteArray), sz)
+        DataType.INT64 -> memcpy(data, LongPointer(*array as LongArray), sz)
+        DataType.BOOL -> memcpy(data, BytePointer(*array as ByteArray), sz)
         else -> throw IllegalStateException("invalid DataType($dtype)")
       }
-      return to_copy
+      return sz
     }
     
     private fun fillShape(o: Any, dim: Int, shape: LongArray) {

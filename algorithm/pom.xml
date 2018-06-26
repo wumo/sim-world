@@ -11,8 +11,30 @@
 
     <artifactId>algorithm</artifactId>
 
+    <properties>
+        <kotlin.version>1.2.50</kotlin.version>
+    </properties>
+
+
+    <repositories>
+        <repository>
+            <id>sonatype</id>
+            <url>https://oss.sonatype.org/content/groups/public/</url>
+        </repository>
+        <repository>
+            <id>kotlinx</id>
+            <url>https://dl.bintray.com/kotlin/kotlinx/</url>
+        </repository>
+    </repositories>
 
     <dependencies>
+        <!-- https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-io-jvm -->
+        <!--<dependency>-->
+        <!--<groupId>org.jetbrains.kotlinx</groupId>-->
+        <!--<artifactId>kotlinx-io-jvm</artifactId>-->
+        <!--<version>0.1.0-alpha-2</version>-->
+        <!--</dependency>-->
+
         <dependency>
             <groupId>org.bytedeco.javacpp-presets</groupId>
             <artifactId>tensorflow-platform</artifactId>
@@ -43,6 +65,8 @@
     </dependencies>
 
     <build>
+        <sourceDirectory>src/main/kotlin</sourceDirectory>
+        <testSourceDirectory>src/test/kotlin</testSourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -51,6 +75,26 @@
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-maven-plugin</artifactId>
+                <version>${kotlin.version}</version>
+                <executions>
+                    <execution>
+                        <id>compile</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>test-compile</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>test-compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <jvmTarget>1.8</jvmTarget>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
