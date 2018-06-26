@@ -4,6 +4,7 @@ import org.bytedeco.javacpp.Loader
 import org.bytedeco.javacpp.tensorflow
 import org.junit.Before
 import org.junit.Test
+import wumo.sim.algorithm.util.java_api.TFJava
 import java.nio.FloatBuffer
 
 class TFJavaTest {
@@ -35,12 +36,12 @@ class TFJavaTest {
   @Test
   fun `global variable initializer`() {
     val tf = TFJava()
-    val v = tf.variable(16 x 4, 9f, "W")
+    val W = tf.variable(16 x 4, 9f, "W")
     val init = tf.global_variable_initializer()
     tf.writeTextProto("resources/variable-test2.pbtxt")
     
     tf.session {
-      runner().addTarget("W/assign").run()
+      runner().addTarget(init).run()
       val outputs = runner().fetch("W").run()
       val buf = FloatBuffer.allocate(outputs[0].numElements())
       outputs[0].writeTo(buf)

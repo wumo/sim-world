@@ -1,8 +1,9 @@
-package wumo.sim.algorithm.util
+package wumo.sim.algorithm.util.java_api
 
 import org.bytedeco.javacpp.BytePointer
 import org.bytedeco.javacpp.tensorflow
 import org.tensorflow.*
+import wumo.sim.algorithm.util.Dimension
 import java.nio.*
 
 class TFJava {
@@ -55,15 +56,6 @@ class TFJava {
         .build()
   }
   
-  fun elemByteSize(dataType: DataType): Int {
-    return when (dataType) {
-      DataType.FLOAT, DataType.INT32 -> 4
-      DataType.DOUBLE, DataType.INT64 -> 8
-      DataType.BOOL, DataType.UINT8 -> 1
-      DataType.STRING -> throw IllegalArgumentException("STRING tensors do not have a fixed element size")
-    }
-  }
-  
   fun writeTextProto(path: String) {
     val def = tensorflow.GraphDef()
     assert(def.ParseFromString(BytePointer(*g.toGraphDef())))
@@ -78,8 +70,9 @@ class TFJava {
   }
   
   fun global_variable_initializer(): Operation {
-    val init = g.opBuilder("NoOp", "init")
-        .build()
-    TODO("not implemented")
+    return g.opBuilder("NoOp", "init").apply {
+      for (init_op in init_ops)
+        addControlInput(init_op)
+    }.build()
   }
 }
