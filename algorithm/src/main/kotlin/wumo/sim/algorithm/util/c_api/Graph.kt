@@ -65,7 +65,6 @@ class Graph : AutoCloseable {
     val bytes = ByteArray(len.toInt())
     val d = buf.data()
     d.capacity<Pointer>(len)
-    d.limit<Pointer>(len)
     val data = d.asByteBuffer()
     data.get(bytes)
     TF_DeleteStatus(status)

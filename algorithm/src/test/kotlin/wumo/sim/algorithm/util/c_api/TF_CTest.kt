@@ -6,13 +6,17 @@ import org.bytedeco.javacpp.tensorflow.TF_Version
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+import org.tensorflow.framework.GraphDef
+import wumo.sim.algorithm.util.x
 import java.nio.FloatBuffer
 
 class TF_CTest {
+  lateinit var tf: TF_C
   @Before
   fun setup() {
     Loader.load(org.bytedeco.javacpp.tensorflow::class.java)
     tensorflow.InitMain("trainer", null as IntArray?, null)
+    tf = TF_C()
   }
   
   @Test
@@ -21,8 +25,70 @@ class TF_CTest {
   }
   
   @Test
+  fun `attrValueProto test`() {
+    val attrValue = tensorflow.AttrValue()
+    attrValue.mutable_tensor().apply {
+      set_dtype(tensorflow.DT_FLOAT)
+      mutable_tensor_shape().apply {
+        add_dim().set_size(16)
+        add_dim().set_size(4)
+      }
+      add_float_val(9f)
+    }
+    attrValue.use {
+      tf.g.opBuilder("Const", "A")
+          .setAttr("dtype", DataType.FLOAT)
+          .setAttr("value", it)
+          .build()
+    }
+    tf.session {
+      val A = fetch("A")
+      val buf = FloatBuffer.allocate(64)
+      A.writeTo(buf)
+      buf.flip()
+      println(buf.remaining())
+      while (buf.hasRemaining())
+        println(buf.get())
+      println(buf.remaining())
+    }
+  }
+  
+  @Test
+  fun `const def test`() {
+    val A = tf.const(16 x 4, 9f, "A")
+    
+    tf.session {
+      A.eval()
+    }
+  }
+  
+  @Test
+  fun `placeholder test`() {
+    val A = tf.placeholder(2 x 2 x 2, "A")
+    val B = tf.variable(2 x 2 x 2, DataType.FLOAT, A, "B")
+    val init = tf.global_variable_initializer()
+    tf.session {
+      feedAndTarget(A, Tensor.create(arrayOf(
+          arrayOf(floatArrayOf(1f, 2f), floatArrayOf(3f, 4f)),
+          arrayOf(floatArrayOf(5f, 6f), floatArrayOf(7f, 8f)))),
+          init)
+      B.eval()
+    }
+  }
+  
+  @Test
+  fun `variable def test`() {
+    val A = tf.variable(16 x 4, 9f, "A")
+    val init = tf.global_variable_initializer()
+    println(tf.debugString())
+    tf.session {
+      target(init)
+      A.eval()
+    }
+  }
+  
+  @Test
   fun `graph def test`() {
-    val tf = TF_C()
     Tensor.create(floatArrayOf(3f, 4f, 5f)).use {
       tf.g.opBuilder("Const", "A")
           .setAttr("dtype", DataType.FLOAT)
@@ -36,13 +102,14 @@ class TF_CTest {
           .build()
     }
     val s = tf.g.toGraphDef()
+    val def = GraphDef.parseFrom(s)
+    println(def)
     println(String(s))
   }
   
   
   @Test
   fun `const test`() {
-    val tf = TF_C()
     Tensor.create(9.3f).use {
       tf.g.opBuilder("Const", "A")
           .setAttr("dtype", DataType.FLOAT)
@@ -57,7 +124,6 @@ class TF_CTest {
   
   @Test
   fun `const array test`() {
-    val tf = TF_C()
     Tensor.create(floatArrayOf(3f, 4f, 5f)).use {
       tf.g.opBuilder("Const", "A")
           .setAttr("dtype", DataType.FLOAT)
@@ -85,7 +151,6 @@ class TF_CTest {
   
   @Test
   fun `write 3d tensor`() {
-    val tf = TF_C()
     var i = 0f
     val tensor = Array(2) {
       Array(2) {
@@ -119,7 +184,6 @@ class TF_CTest {
   
   @Test
   fun `copyTo 3d tensor`() {
-    val tf = TF_C()
     var i = 0f
     val tensor = Array(2) {
       Array(2) {

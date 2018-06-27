@@ -25,13 +25,8 @@ class Tensor(val dtype: DataType, val shape: LongArray) : AutoCloseable {
     }
   }
   
-  fun numDimensions(): Int {
-    return shape.size
-  }
-  
-  fun shape(): LongArray {
-    return shape
-  }
+  val numDimensions = shape.size
+  fun numElements() = if (shape.isEmpty()) 1 else shape.reduce { num, e -> num * e }
   
   fun floatValue() = scalarValue { FloatPointer(it).get() }
   fun doubleValue() = scalarValue { DoublePointer(it).get() }
@@ -91,7 +86,7 @@ class Tensor(val dtype: DataType, val shape: LongArray) : AutoCloseable {
   }
   
   private fun throwExceptionIfTypeIsIncompatible(o: Any) {
-    val rank = numDimensions()
+    val rank = numDimensions
     val oRank = numDimensions(o, dtype)
     if (oRank != rank)
       throw IllegalArgumentException("cannot copy Tensor with $rank dimensions into an object with $oRank")
@@ -101,14 +96,10 @@ class Tensor(val dtype: DataType, val shape: LongArray) : AutoCloseable {
     
     val oShape = LongArray(rank)
     fillShape(o, 0, oShape)
-    for (i in oShape.indices) {
-      if (oShape[i] != shape()[i]) {
+    for (i in oShape.indices)
+      if (oShape[i] != shape[i])
         throw IllegalArgumentException(
-            String.format(
-                "cannot copy Tensor with shape %s into object with shape %s",
-                Arrays.toString(shape()), Arrays.toString(oShape)))
-      }
-    }
+            "cannot copy Tensor with shape ${Arrays.toString(shape)} into object with shape ${Arrays.toString(oShape)}")
   }
   
   companion object {

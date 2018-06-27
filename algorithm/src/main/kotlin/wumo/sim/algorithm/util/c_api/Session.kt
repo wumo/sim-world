@@ -1,8 +1,8 @@
 package wumo.sim.algorithm.util.c_api
 
-import org.bytedeco.javacpp.PointerPointer
 import org.bytedeco.javacpp.tensorflow.*
 import java.lang.Thread
+import java.nio.*
 
 class Session(val g: Graph) : AutoCloseable {
   lateinit var graphRef: Graph.Reference
@@ -50,8 +50,100 @@ class Session(val g: Graph) : AutoCloseable {
     TF_DeleteStatus(status)
   }
   
-  fun fetch(operation: String): Tensor {
-    val output = parseOutput(operation)
+  fun Operation.eval() {
+    val t = fetch(this)
+    print(t)
+  }
+  
+  private fun print(t: Tensor) {
+    val numElements = t.numElements().toInt()
+    when (t.dtype) {
+      DataType.FLOAT -> {
+        val buf = FloatBuffer.allocate(numElements)
+        t.writeTo(buf)
+        buf.flip()
+        while (buf.hasRemaining())
+          println(buf.get())
+      }
+      DataType.DOUBLE -> {
+        val buf = DoubleBuffer.allocate(numElements)
+        t.writeTo(buf)
+        buf.flip()
+        while (buf.hasRemaining())
+          println(buf.get())
+      }
+      DataType.INT32 -> {
+        val buf = IntBuffer.allocate(numElements)
+        t.writeTo(buf)
+        buf.flip()
+        while (buf.hasRemaining())
+          println(buf.get())
+      }
+      DataType.INT64 -> {
+        val buf = LongBuffer.allocate(numElements)
+        t.writeTo(buf)
+        buf.flip()
+        while (buf.hasRemaining())
+          println(buf.get())
+      }
+      else -> throw IllegalStateException("invalid DataType(${t.dtype})")
+    }
+  }
+  
+  fun feedAndTarget(inputOp: Operation, tensor: Tensor, target: Operation) {
+    val input = inputOp[0]
+    val status = TF_NewStatus()
+    val inputs = TF_Output(1)
+    inputs.oper(input.op.nativeOp)
+    inputs.index(input.idx)
+    val inputValues = tensor.nativeTensor
+    
+    TF_SessionRun(nativeSession, null, inputs, inputValues, 1,
+        null, null, 0,
+        target.nativeOp, 1,
+        null, status)
+    throwExceptionIfNotOk(status)
+    TF_DeleteStatus(status)
+  }
+  
+  fun feedAndEval(inputOp: Operation, tensor: Tensor, outputOp: Operation) {
+    val input = inputOp[0]
+    val status = TF_NewStatus()
+    val inputs = TF_Output(1)
+    inputs.oper(input.op.nativeOp)
+    inputs.index(input.idx)
+    val inputValues = tensor.nativeTensor
+    
+    val output = outputOp[0]
+    val outputs = TF_Output(1)
+    outputs.oper(output.op.nativeOp)
+    outputs.index(output.idx)
+    val outputValues = TF_Tensor()
+    TF_SessionRun(nativeSession, null, inputs, inputValues, 1,
+        outputs, outputValues, 1,
+        null, 0,
+        null, status)
+    throwExceptionIfNotOk(status)
+    TF_DeleteStatus(status)
+    val t = Tensor.fromHandle(outputValues)
+    print(t)
+  }
+  
+  fun target(operation: Operation) {
+    val status = TF_NewStatus()
+    TF_SessionRun(nativeSession, null, null, null, 0,
+        null, null, 0,
+        operation.nativeOp, 1,
+        null, status)
+    throwExceptionIfNotOk(status)
+    TF_DeleteStatus(status)
+  }
+  
+  fun fetch(operation: Operation) = fetch(operation[0])
+  
+  fun fetch(operation: String) = fetch(parseOutput(operation))
+  
+  fun fetch(output: Output): Tensor {
     val status = TF_NewStatus()
     val outputs = TF_Output(1)
     outputs.oper(output.op.nativeOp)
