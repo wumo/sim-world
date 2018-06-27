@@ -12,6 +12,8 @@
     <artifactId>algorithm</artifactId>
 
     <properties>
+        <javacpp-resets-tensorflow.version>1.9.0-rc1-1.4.2-SNAPSHOT</javacpp-resets-tensorflow.version>
+        <javacpp-resets-cuda.version>9.2-7.1-1.4.2-SNAPSHOT</javacpp-resets-cuda.version>
         <kotlin.version>1.2.50</kotlin.version>
     </properties>
 
@@ -28,30 +30,27 @@
     </repositories>
 
     <dependencies>
-        <!-- https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-io-jvm -->
-        <!--<dependency>-->
-        <!--<groupId>org.jetbrains.kotlinx</groupId>-->
-        <!--<artifactId>kotlinx-io-jvm</artifactId>-->
-        <!--<version>0.1.0-alpha-2</version>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.tensorflow</groupId>
+            <artifactId>proto</artifactId>
+            <version>1.9.0-rc1</version>
+        </dependency>
 
         <dependency>
             <groupId>org.bytedeco.javacpp-presets</groupId>
             <artifactId>tensorflow-platform</artifactId>
-            <version>1.9.0-rc0-1.4.2-SNAPSHOT</version>
+            <version>${javacpp-resets-tensorflow.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.bytedeco.javacpp-presets</groupId>
             <artifactId>tensorflow</artifactId>
-            <version>1.9.0-rc0-1.4.2-SNAPSHOT</version>
+            <version>${javacpp-resets-tensorflow.version}</version>
             <classifier>windows-x86_64-gpu</classifier>
         </dependency>
-
         <dependency>
             <groupId>org.bytedeco.javacpp-presets</groupId>
             <artifactId>cuda</artifactId>
-            <version>9.2-7.1-1.4.2-SNAPSHOT</version>
+            <version>${javacpp-resets-cuda.version}</version>
             <classifier>windows-x86_64-redist</classifier>
         </dependency>
 
