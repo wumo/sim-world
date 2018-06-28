@@ -1,79 +1,77 @@
 package wumo.sim.algorithm.util.c_api
 
+import org.bytedeco.javacpp.Loader.load
 import org.bytedeco.javacpp.tensorflow
 import org.tensorflow.framework.GraphDef
-import wumo.sim.algorithm.util.Dimension
 
 class TF_C {
-  val g = Graph()
-  val init_ops = mutableListOf<Operation>()
-  
-  fun placeholder(shape: Dimension, name: String): Operation {
-    return g.opBuilder("Placeholder", name)
-        .setAttr("dtype", DataType.FLOAT)
-        .setAttr("shape", shape)
-        .build()
-  }
-  
-  fun const(shape: Dimension, value: Any, name: String): Operation {
-    val dtype = DataType.fromClass(value::class.java)
-    tensorflow.AttrValue().use {
-      it.mutable_tensor().apply {
-        set_dtype(dtype.c())
-        mutable_tensor_shape().apply {
-          for (d in shape.elements)
-            add_dim().set_size(d)
-        }
-        when (dtype) {
-          DataType.FLOAT -> add_float_val(value as Float)
-          DataType.DOUBLE -> add_double_val(value as Double)
-          DataType.INT32 -> add_int_val(value as Int)
-          DataType.UINT8 -> add_int_val((value as Byte).toInt())
-          DataType.STRING -> add_string_val(value as String)
-          DataType.INT64 -> add_int64_val(value as Long)
-          DataType.BOOL -> add_bool_val(value as Boolean)
-        }
-      }
-      return g.opBuilder("Const", name)
-          .setAttr("dtype", dtype)
-          .setAttr("value", it)
-          .build()
+  companion object {
+    init {
+      load(tensorflow::class.java)
+      tensorflow.InitMain("trainer", null as IntArray?, null)
     }
   }
   
-  fun variable(shape: Dimension, initial_value: Any, name: String): Operation {
-    val dtype = DataType.fromClass(initial_value::class.java)
-    return g.opBuilder("VariableV2", name)
-        .setAttr("dtype", dtype)
-        .setAttr("shape", shape)
-        .build().apply {
-          val initializer_const = const(shape, initial_value, "$name/initializer/const")
-          init_ops += g.opBuilder("Assign", "$name/initializer")
-              .addInput(this[0])
-              .addInput(initializer_const[0])
-              .build()
-        }
-  }
+  val g = Graph()
+  val trainables = mutableListOf<Operation>()
+  val init_ops = mutableListOf<Operation>()
   
-  fun variable(shape: Dimension, dtype: DataType, initializer: Operation, name: String): Operation {
-    return g.opBuilder("VariableV2", name)
-        .setAttr("dtype", dtype)
-        .setAttr("shape", shape)
-        .build().apply {
-          init_ops += g.opBuilder("Assign", "$name/initializer")
-              .addInput(this[0])
-              .addInput(initializer[0])
-              .build()
+  val scope = NameScope()
+  
+  inner class NameScope {
+    val namesInUse = HashSet<String>()
+    val scope = mutableListOf<String>()
+    val scopeString = StringBuilder()
+    
+    fun enter(subScope: String) {
+      if (scope.isNotEmpty())
+        scopeString.append("/")
+      scopeString.append(subScope)
+      scope += subScope
+    }
+    
+    fun exit() {
+      val last = scope.removeAt(scope.lastIndex)
+      val slash = if (scope.isEmpty()) 0 else 1
+      scopeString.delete(scopeString.length - last.length - slash, scopeString.length)
+    }
+    
+    val contextPath: String
+      get() = scopeString.toString()
+    
+    val useContextName = ""
+    
+    inline operator fun <R> invoke(name: String, block: NameScope.() -> R): R {
+      val enterSubscope = name.isNotEmpty()
+      if (enterSubscope) {
+        enter(name)
+        var newName = scopeString.toString()
+        var i = 1
+        while (namesInUse.contains(newName)) {
+          exit()
+          enter("${name}_$i")
+          newName = scopeString.toString()
+          i++
         }
+        namesInUse += newName
+      }
+      try {
+        return block(this)
+      } finally {
+        if (enterSubscope) exit()
+      }
+    }
   }
   
   fun global_variable_initializer(): Operation {
-    return g.opBuilder("NoOp", "init")
-        .apply {
-          for (init_op in init_ops) {
-            addControlInput(init_op)
-          }
-        }.build()
+    scope("init") {
+      return g.opBuilder("NoOp", contextPath)
+          .apply {
+            for (init_op in init_ops) {
+              addControlInput(init_op)
+            }
+          }.build()
+    }
   }
   
   fun session(block: Session.() -> Unit) {
@@ -84,6 +82,9 @@ class TF_C {
   }
   
   fun debugString() = GraphDef.parseFrom(g.toGraphDef()).toString()
+  fun close() {
+    g.close()
+  }
 }
 
 internal fun throwExceptionIfNotOk(status: tensorflow.TF_Status) {

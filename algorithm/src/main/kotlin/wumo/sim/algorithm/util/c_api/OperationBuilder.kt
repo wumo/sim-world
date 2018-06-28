@@ -1,9 +1,8 @@
 package wumo.sim.algorithm.util.c_api
 
 import org.bytedeco.javacpp.BytePointer
-import org.bytedeco.javacpp.tensorflow
 import org.bytedeco.javacpp.tensorflow.*
-import org.tensorflow.TensorFlowException
+import org.tensorflow.framework.DataType
 import wumo.sim.algorithm.util.Dimension
 
 class OperationBuilder(val graph: Graph, val type: String, val name: String) {
@@ -25,6 +24,8 @@ class OperationBuilder(val graph: Graph, val type: String, val name: String) {
       return op
     }
   }
+  
+  fun addInput(op: Operation) = addInput(op[0])
   
   fun addInput(input: Output): OperationBuilder {
     graph.ref().use {
@@ -52,9 +53,23 @@ class OperationBuilder(val graph: Graph, val type: String, val name: String) {
     return this
   }
   
+  fun setAttr(name: String, value: Int): OperationBuilder {
+    graph.ref().use {
+      TF_SetAttrInt(nativeOpDesc, name, value.toLong())
+    }
+    return this
+  }
+  
+  fun setAttr(name: String, value: Float): OperationBuilder {
+    graph.ref().use {
+      TF_SetAttrFloat(nativeOpDesc, name, value)
+    }
+    return this
+  }
+  
   fun setAttr(name: String, value: DataType): OperationBuilder {
     graph.ref().use {
-      TF_SetAttrType(nativeOpDesc, name, value.c())
+      TF_SetAttrType(nativeOpDesc, name, value.number)
     }
     return this
   }

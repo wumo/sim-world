@@ -1,5 +1,7 @@
 package wumo.sim.algorithm.util.c_api
 
+import org.bytedeco.javacpp.tensorflow.*
+
 /**
  * Interface implemented by operands of a TensorFlow operation.
  *
@@ -34,5 +36,7 @@ interface Operand {
 }
 
 class Output(val op: Operation, val idx: Int) : Operand {
+  val type = op.outputType(idx)
+  
   override fun asOutput() = this
 }

@@ -21,7 +21,7 @@ fun main(args: Array<String>) {
   val scope = NewRootScope()
   val tf = TF_CPP(scope)
   val inputs = tf.placeholder(1 x 16, name = "inputs1")
-  val W = tf.variable(16 x 4, tf.random_uniform(16 x 4, 0f, 0.1f), name = "W")
+  val W = tf.variable(16 x 4, tf.random_uniform(16 x 4, 0f, 0.01f), name = "W")
   val Qout = tf.matmul(inputs, W, name = "Qout")
   val predict = tf.argmax(Qout, tf.const(1), name = "predict")
   val nextQ = tf.placeholder(1 x 4, name = "nextQ")

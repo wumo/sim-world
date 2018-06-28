@@ -1,8 +1,10 @@
 package wumo.sim.algorithm.util.c_api
 
 import org.bytedeco.javacpp.tensorflow.*
+import org.tensorflow.framework.DataType
 import java.lang.Thread
 import java.nio.*
+import java.util.*
 
 class Session(val g: Graph) : AutoCloseable {
   lateinit var graphRef: Graph.Reference
@@ -51,35 +53,36 @@ class Session(val g: Graph) : AutoCloseable {
   }
   
   fun Operation.eval() {
-    val t = fetch(this)
+    val t = this.fetch()
     print(t)
   }
   
   private fun print(t: Tensor) {
+    println("shape:${Arrays.toString(t.shape)}")
     val numElements = t.numElements().toInt()
     when (t.dtype) {
-      DataType.FLOAT -> {
+      DataType.DT_FLOAT -> {
         val buf = FloatBuffer.allocate(numElements)
         t.writeTo(buf)
         buf.flip()
         while (buf.hasRemaining())
           println(buf.get())
       }
-      DataType.DOUBLE -> {
+      DataType.DT_DOUBLE -> {
         val buf = DoubleBuffer.allocate(numElements)
         t.writeTo(buf)
         buf.flip()
         while (buf.hasRemaining())
           println(buf.get())
       }
-      DataType.INT32 -> {
+      DataType.DT_INT32 -> {
         val buf = IntBuffer.allocate(numElements)
         t.writeTo(buf)
         buf.flip()
         while (buf.hasRemaining())
           println(buf.get())
       }
-      DataType.INT64 -> {
+      DataType.DT_INT64 -> {
         val buf = LongBuffer.allocate(numElements)
         t.writeTo(buf)
         buf.flip()
@@ -139,7 +142,7 @@ class Session(val g: Graph) : AutoCloseable {
     TF_DeleteStatus(status)
   }
   
-  fun fetch(operation: Operation) = fetch(operation[0])
+  fun Operation.fetch() = fetch(this[0])
   
   fun fetch(operation: String) = fetch(parseOutput(operation))
   
