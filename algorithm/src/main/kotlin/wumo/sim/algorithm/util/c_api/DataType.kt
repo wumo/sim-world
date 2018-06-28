@@ -3,8 +3,6 @@ package wumo.sim.algorithm.util.c_api
 import org.tensorflow.framework.DataType
 
 fun DataTypefromClass(c: Class<*>): DataType {
-  val m = typeCodes
-  val a = m[c]
   return typeCodes[c] ?: throw IllegalArgumentException(
       c.name + " objects cannot be used as elements in a TensorFlow Tensor")
 }

@@ -4,7 +4,7 @@ import org.bytedeco.javacpp.Loader
 import org.bytedeco.javacpp.tensorflow
 import org.bytedeco.javacpp.tensorflow.*
 import org.bytedeco.javacpp.tensorflow.Scope.NewRootScope
-import wumo.sim.algorithm.util.TF_CPP
+import wumo.sim.algorithm.util.cpp_api.TF_CPP
 import wumo.sim.algorithm.util.x
 import wumo.sim.envs.toy_text.FrozenLake
 import wumo.sim.util.math.Rand

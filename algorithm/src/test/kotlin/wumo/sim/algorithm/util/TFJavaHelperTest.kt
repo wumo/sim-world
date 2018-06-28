@@ -7,6 +7,7 @@ import org.bytedeco.javacpp.tensorflow.Scope.NewRootScope
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import wumo.sim.algorithm.util.cpp_api.TF_CPP
 import java.nio.FloatBuffer
 
 class TFJavaHelperTest {
@@ -18,6 +19,35 @@ class TFJavaHelperTest {
   
   @Test
   fun `init variable`() {
+    val scope = NewRootScope()
+    val eps = Variable(scope.WithOpName("W"), TensorShape(2, 3).asPartialTensorShape(), DT_FLOAT)
+    val tensorProto = TensorProto()
+    tensorProto.set_dtype(DT_FLOAT)
+    tensorProto.mutable_tensor_shape().apply {
+      add_dim().set_size(2)
+      add_dim().set_size(3)
+    }
+    tensorProto.add_float_val(9f)
+    val const = ConstFromProto(scope.WithOpName("init_value"), tensorProto)
+    val assign = Assign(scope.WithOpName("assign"), eps.asInput(), Input(const))
+    val assign2 = Assign(scope.WithOpName("assign2"), eps.asInput(), Input(const))
+    val init = NoOp(scope.WithOpName("init").WithControlDependencies(assign.asOutput())
+        .WithControlDependencies(assign2.asOutput()))
+    
+    val def = GraphDef()
+    TF_CHECK_OK(scope.ToGraphDef(def))
+    TF_CHECK_OK(tensorflow.WriteTextProto(Env.Default(), "resources/controlInput.pbtxt", def))
+  }
+  
+  @Test
+  fun `variable test`() {
+    val tf = TF_CPP(NewRootScope())
+    val A = tf.variable(2 x 3, 9f, "A")
+    println(tf.debugString())
+  }
+  
+  @Test
+  fun `init variable 2`() {
     val scope = NewRootScope()
     val eps = Variable(scope.WithOpName("W"), TensorShape(2, 3).asPartialTensorShape(), DT_FLOAT)
     val const = Const(scope.WithOpName("init_value"), 9f, TensorShape(2, 3))

@@ -1,4 +1,4 @@
-package wumo.sim.algorithm.util
+package wumo.sim.algorithm.util.cpp_api
 
 import org.bytedeco.javacpp.tensorflow.*
 

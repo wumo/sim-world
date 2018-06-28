@@ -1,12 +1,13 @@
 @file:Suppress("NOTHING_TO_INLINE")
 
-package wumo.sim.algorithm.util
+package wumo.sim.algorithm.util.cpp_api
 
 import org.bytedeco.javacpp.tensorflow.*
+import wumo.sim.algorithm.util.Dimension
 
 class TF_CPP(val scope: Scope) {
   val trainables = mutableListOf<_Variable>()
-  val init_ops = mutableListOf<_Assign>()
+  val init_ops = mutableListOf<Output>()
   
   inline fun scope(name: String) = if (name.isEmpty()) scope else scope.WithOpName(name)
   
@@ -14,38 +15,11 @@ class TF_CPP(val scope: Scope) {
       _Placeholder(Placeholder(scope(name), DT_FLOAT,
           Placeholder.Shape(TensorShape(*shape.asLongArray()).asPartialTensorShape())))
   
-  fun _variable(shape: Dimension, name: String = "", trainable: Boolean = true) =
-      _Variable(Variable(scope.WithOpName(name),
-          TensorShape(*shape.asLongArray()).asPartialTensorShape(), DT_FLOAT), name)
-          .apply {
-            if (trainable)
-              trainables += this
-          }
-  
-  fun variable(shape: Dimension, name: String = "", trainable: Boolean = true) = variable(shape, 0f, name, trainable)
-  
-  fun variable(shape: Dimension, initial_value: Float, name: String = "", trainable: Boolean = true) =
-      _Variable(Variable(scope(name),
-          TensorShape(*shape.asLongArray()).asPartialTensorShape(), DT_FLOAT), name)
-          .apply {
-            val assign = "$name/assign"
-            val assignOp = _Assign(Assign(scope.WithOpName(assign), this.asInput(),
-                Input(Const(scope, initial_value, TensorShape(*shape.asLongArray())))), assign)
-            if (trainable)
-              trainables += this
-            init_ops += assignOp
-          }
-  
-  fun variable(shape: Dimension, initializer: Node, name: String = "", trainable: Boolean = true) =
-      _Variable(Variable(scope(name),
-          TensorShape(*shape.asLongArray()).asPartialTensorShape(), DT_FLOAT), name)
-          .apply {
-            val assign = "$name/assign"
-            val assignOp = _Assign(Assign(scope.WithOpName(assign), this.asInput(), initializer.asInput()), assign)
-            if (trainable)
-              trainables += this
-            init_ops += assignOp
-          }
+  fun debugString(): String {
+    val def = GraphDef()
+    TF_CHECK_OK(scope.ToGraphDef(def))
+    return DebugStringWhole(def).string
+  }
   
   fun assign(a: Node, b: Node, name: String = "") = Assign(scope(name), a.asInput(), b.asInput())
   
