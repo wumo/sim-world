@@ -1,4 +1,6 @@
-package wumo.sim.algorithm.util.cpp_api.core
+@file:Suppress("NOTHING_TO_INLINE")
+
+package wumo.sim.algorithm.util.cpp_api
 
 import org.bytedeco.javacpp.tensorflow.*
 
@@ -20,4 +22,10 @@ private val typeCodes = mapOf(
 
 fun dtypeFromClass(c: Class<*>): Int {
   return typeCodes[c] ?: throw IllegalArgumentException("${c.name} objects cannot be used as elements in a TensorFlow Tensor")
+}
+
+inline fun MakeShape(shape: LongArray): TensorShape {
+  val ts = TensorShape()
+  TensorShapeUtils.MakeShape(shape, ts)
+  return ts
 }

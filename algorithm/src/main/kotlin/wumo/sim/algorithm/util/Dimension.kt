@@ -14,7 +14,7 @@ infix fun Dimension.x(a: Int): Dimension {
 
 inline fun <T : Number> dim(d: T) = Dimension(mutableListOf(d.toLong()))
 
-class Dimension(val elements: MutableList<Long>) : Iterable<Long> {
+class Dimension(val elements: MutableList<Long> = mutableListOf()) : Iterable<Long> {
   fun asLongArray(): LongArray {
     return elements.toLongArray()
   }
@@ -23,9 +23,11 @@ class Dimension(val elements: MutableList<Long>) : Iterable<Long> {
     return elements.size.toLong()
   }
   
-  val firstDim = elements[0]
+  val firstDim
+    get() = elements[0]
   
-  val otherDim = LongArray(elements.size - 1) { elements[it + 1] }
+  val otherDim
+    get() = LongArray(elements.size - 1) { elements[it + 1] }
   
   fun numElements() = elements.reduce { num, e ->
     num * e

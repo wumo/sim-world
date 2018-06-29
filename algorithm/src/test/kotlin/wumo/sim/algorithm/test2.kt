@@ -22,7 +22,7 @@ fun main(args: Array<String>) {
       g.opBuilder("Const", "MyConst").setAttr("dtype", t.dataType()).setAttr("value", t).build()
     }
     
-    // Execute the "MyConst" operation in a Session.
+    // Execute the "MyConst" operation in a SessionHelper.
     Session(g).use { s ->
       s.runner().fetch("MyConst").run()[0].use { output -> println(String(output.bytesValue())) }
     }

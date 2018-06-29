@@ -41,20 +41,22 @@ class TFJavaHelperTest {
   
   @Test
   fun `variable test`() {
-    val tf = TF_CPP(NewRootScope())
-    val A = tf.variable(2 x 3, 9f, "A")
-    println(tf.debugString())
+//    val tf = TF_CPP(NewRootScope())
+//    val A = tf.variable(2 x 3, 9f, "A")
+//    println(tf.debugString())
   }
   
   @Test
   fun `init variable 2`() {
     val scope = NewRootScope()
-    val eps = Variable(scope.WithOpName("W"), TensorShape(2, 3).asPartialTensorShape(), DT_FLOAT)
-    val const = Const(scope.WithOpName("init_value"), 9f, TensorShape(2, 3))
-    val assign = Assign(scope.WithOpName("assign"), eps.asInput(), Input(const))
+    val subscope = scope.WithOpName("W")
+    val eps = Variable(subscope.WithOpName("W"), TensorShape(2, 3).asPartialTensorShape(), DT_FLOAT)
+    val const = Const(subscope.NewSubScope("W"), 9f, TensorShape(2, 3))
+    val assign = Assign(subscope.NewSubScope("W"), eps.asInput(), Input(const))
     val def = GraphDef()
     TF_CHECK_OK(scope.ToGraphDef(def))
-    TF_CHECK_OK(tensorflow.WriteTextProto(Env.Default(), "resources/custom2.pbtxt", def))
+//    TF_CHECK_OK(tensorflow.WriteTextProto(Env.Default(), "resources/custom2.pbtxt", def))
+    println(DebugStringWhole(def).string)
     val session = Session(SessionOptions())
     TF_CHECK_OK(session.Create(def))
     val outputs = TensorVector()
@@ -84,8 +86,8 @@ class TFJavaHelperTest {
     
     tf.session {
       val outputs = TensorVector()
-      Run(StringTensorPairVector(), StringVector(), StringVector("assign_W:0"), outputs)
-      Run(StringTensorPairVector(), StringVector("W:0"), StringVector(), outputs)
+//      Run(StringTensorPairVector(), StringVector(), StringVector("assign_W:0"), outputs)
+//      Run(StringTensorPairVector(), StringVector("W:0"), StringVector(), outputs)
       val w = outputs[0].createBuffer<FloatBuffer>()
       while (w.hasRemaining()) {
         println(w.get())

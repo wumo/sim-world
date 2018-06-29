@@ -129,7 +129,7 @@ class Tensor(val dtype: DataType, val shape: LongArray) : AutoCloseable {
       val nd = numDimensions(obj, dto)
       if (!c.isPrimitive && c != String::class.java && nd != 0)
         throw IllegalArgumentException(
-            "cannot create non-scalar Tensors from arrays of boxed values")
+            "cannot tensor non-scalar Tensors from arrays of boxed values")
       if (dto == dtype)
         return true
       return dto == DataType.DT_STRING && dtype == DataType.DT_UINT8
@@ -152,7 +152,7 @@ class Tensor(val dtype: DataType, val shape: LongArray) : AutoCloseable {
       val ret = DataTypefromClass(c)
       if (ret != DataType.DT_STRING)
         return ret
-      throw IllegalArgumentException("cannot create Tensors of opType " + c.name)
+      throw IllegalArgumentException("cannot tensor Tensors of opType " + c.name)
     }
     
     private fun create(obj: Any, dtype: DataType): Tensor {
@@ -262,7 +262,7 @@ class Tensor(val dtype: DataType, val shape: LongArray) : AutoCloseable {
       if (dim == shape.size) return
       val len = Array.getLength(o)
       when {
-        len == 0 -> throw IllegalArgumentException("cannot create Tensors with a 0 dimension")
+        len == 0 -> throw IllegalArgumentException("cannot tensor Tensors with a 0 dimension")
         shape[dim] == 0L -> shape[dim] = len.toLong()
         shape[dim] != len.toLong() ->
           throw IllegalArgumentException(String.format("mismatched lengths (%d and %d) in dimension %d", shape[dim], len, dim))
