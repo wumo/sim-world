@@ -5,8 +5,8 @@ import org.junit.Test
 
 import org.junit.Before
 import wumo.sim.algorithm.util.cpp_api.ops.*
-import wumo.sim.algorithm.util.dim
 import wumo.sim.algorithm.util.x
+import wumo.sim.envs.toy_text.FrozenLake
 
 class TF_CPPTest {
   lateinit var tf: TF_CPP
@@ -16,26 +16,51 @@ class TF_CPPTest {
   }
   
   @Test
+  fun `tensor helper`() {
+    val E = tf.const(2 x 3, 9f, "E")
+    println(tf.debugString())
+    tf.session {
+      val result = eval<Float>(E)
+      println(result[0, 1])
+    }
+  }
+  
+  @Test
   fun const() {
     val A = tf.const(1f)
-    val B = tf.const(1f, "B")
-    val C = tf.const("hello,world", "C")
+    val B = tf.const(2L, "B")
+    val C = tf.const(2 x 2, arrayOf("hello", "world", "fine", "tensorflow"), "C")
     val D = tf.const(2L, scope = tf.root.WithOpName(""))
     val E = tf.const(2 x 3, 9f, "E")
-    val F = tf.const(2 x 2, 9.0, "F")
+    val F = tf.const(2 x 2, 9.toByte(), "F")
     val G = tf.const(2 x 2, 10L, "G")
-    val H = tf.const(2 x 2, false, "H")
+    val H = tf.const(2 x 2, true, "H")
     val I = tf.const(2 x 2, floatArrayOf(1f, 2f, 3f, 4f), "I")
+    val J = tf.const(2 x 2, arrayOf(1f, 2f, 3f, 4f), "I")
     println(tf.debugString())
     tf.session {
       A.eval()
+      val _a = eval<Float>(A)
+      println(_a.get())
       B.eval()
+      val _b = eval<Long>(B)
+      println(_b.get())
       C.eval()
+      val _c = eval<String>(C)
+      println(_c[0, 0])
+      println(_c[0, 1])
+      println(_c[1, 0])
+      println(_c[1, 1])
       E.eval()
       F.eval()
+      val _f = eval<Byte>(F)
+      println(_f[1, 1])
       G.eval()
       H.eval()
+      val _h = eval<Boolean>(H)
+      println(_h[1, 1])
       I.eval()
+      J.eval()
     }
   }
   
@@ -49,6 +74,12 @@ class TF_CPPTest {
       init.run()
       A.eval()
       B.eval()
+      val (_a, _b) = eval<Float, Float>(A, B)
+      println(_a.get())
+      println(_b[0, 1])
+      val (_c, _d) = eval(*arrayOf(A, B))
+      println(_c.get())
+      println(_d[0, 1])
     }
   }
   
@@ -59,7 +90,8 @@ class TF_CPPTest {
     val init = tf.global_variable_initializer()
     println(tf.debugString())
     tf.session {
-      init.run(A to tensor(2 x 2 x 2, floatArrayOf(1f, 2f, 3f, 4f, 5f, 6f, 7f, 8f)))
+      init.run(A to tf.tensor(2 x 2 x 2, 1f, 2f, 3f, 4f, 5f, 6f, 7f, 8f))
+      init.run(A to tf.tensor(2 x 2 x 2, *floatArrayOf(1f, 2f, 3f, 4f, 5f, 6f, 7f, 8f)))
       B.eval()
     }
   }
@@ -88,12 +120,12 @@ class TF_CPPTest {
   
   @Test
   fun sum() {
-    val A = tf.const(dim(3), floatArrayOf(1f, 2f, 3f), name = "A")
-    val axis = tf.const(dim(1), intArrayOf(0), name = "axis")
+    val A = tf.const1D(1f, 2f, 3f, name = "A")
+    val axis = tf.const(0, name = "axis")
     val sum = tf.sum(A, axis, "sum")
     
     val B = tf.const(1 x 3, floatArrayOf(1f, 2f, 3f), name = "B")
-    val axisB = tf.const(dim(2), intArrayOf(0, 1), name = "axisB")
+    val axisB = tf.const1D(0, 1, name = "axisB")
     val sumB = tf.sum(B, axisB, name = "sumB")
     println(tf.debugString())
     tf.session {
@@ -141,6 +173,58 @@ class TF_CPPTest {
     }
   }
   
-  init {
+  @Test
+  fun `gradienet descent`() {
+    val x = tf.variable(1f, name = "x")
+    val y = tf.variable(1f, name = "y")
+    val z = tf.mul(x, y, "z")
+    val opt = tf.gradientDescentOptimizer(0.1f, z)
+    val init = tf.global_variable_initializer()
+    println(tf.debugString())
+    tf.session {
+      init.run()
+      x.eval()
+      y.eval()
+      z.eval()
+      for (i in 0 until 10) {
+        println(i)
+        opt.run()
+        x.eval()
+        y.eval()
+        z.eval()
+      }
+    }
+  }
+  
+  @Test
+  fun `linear layer`() {
+    val inputs = tf.placeholder(1 x 16, name = "inputs1")
+    val W = tf.variable(16 x 4, tf.random_uniform(16 x 4, 0f, 0.01f), name = "W")
+    val Qout = tf.matmul(inputs, W, name = "Qout")
+    val predict = tf.argmax(Qout, tf.const(1), name = "predict")
+    val nextQ = tf.placeholder(1 x 4, name = "nextQ")
+    
+    val loss = tf.sum(tf.square(tf.sub(nextQ, Qout)), tf.const1D(0, 1))
+    val train = tf.gradientDescentOptimizer(0.1f, loss, "train")
+    val init = tf.global_variable_initializer()
+    println(tf.debugString())
+    tf.session {
+      init.run()
+      val env = FrozenLake()
+      val y = .99
+      var e = 0.1
+      val num_episodes = 2000
+      var sum = 0.0
+      for (i in 0 until num_episodes) {
+        var s = env.reset()
+        var rAll = 0.0
+        var j = 0
+        while (j < 99) {
+          j++
+          
+          eval()
+        }
+      }
+    }
   }
 }

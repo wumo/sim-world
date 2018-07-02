@@ -16,6 +16,7 @@ class TF_CPP(val root: Scope = Scope.NewRootScope()) {
   
   //  val trainables = mutableListOf<_Variable>()
   val init_ops = mutableListOf<Output>()
+  val trainables = mutableListOf<Output>()
   
   //  fun placeholder(shape: Dimension, name: String = "") =
 //      _Placeholder(Placeholder(root(name), DT_FLOAT,
@@ -51,7 +52,7 @@ class TF_CPP(val root: Scope = Scope.NewRootScope()) {
 //  fun tensor(vararg data: Long) = _Tensor(Tensor.tensor(data, TensorShape(*longArrayOf(data.size.toLong()))))
 //  fun tensor(vararg data: Int, shape: Dimension) = _Tensor(Tensor.tensor(data, TensorShape(*shape.asLongArray())))
 //
-//  fun GradientDescentOptimizer(learningRate: Float, loss: Node, name: String = "") {
+//  fun gradientDescentOptimizer(learningRate: Float, loss: Node, name: String = "") {
 //    val node_outputs = OutputVector(loss.asOutput())
 //    val param_outputs = Array(trainables.size) { trainables[it].asOutput() }
 //    val node_inputs = OutputVector(*param_outputs)
@@ -100,10 +101,15 @@ class TF_CPP(val root: Scope = Scope.NewRootScope()) {
   }
   
   fun global_variable_initializer(): Operation {
-    var scope = root.WithOpName("init")
-    for (init_op in init_ops) {
-      scope = scope.WithControlDependencies(init_op)
+    return noOpDep(init_ops, name = "init")
+  }
+  
+  fun noOpDep(ops: Iterable<Output>, name: String = "", scope: Scope = root): Operation {
+    scope.NewSubScope(name).let { s ->
+      var scope = s
+      for (op in ops)
+        scope = scope.WithControlDependencies(op)
+      return NoOp(scope).asOperation()
     }
-    return NoOp(scope).asOperation()
   }
 }

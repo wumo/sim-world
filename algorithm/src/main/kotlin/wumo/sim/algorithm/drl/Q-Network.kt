@@ -28,7 +28,7 @@ fun main(args: Array<String>) {
 //  val nextQ = tf.placeholder(1 x 4, name = "nextQ")
 //
 //  val loss = tf.sum(tf.square(tf.subtract(nextQ, Qout)), tf.tensor(0, 1))
-//  tf.GradientDescentOptimizer(0.1f, loss, "apply")
+//  tf.gradientDescentOptimizer(0.1f, loss, "apply")
 //
 //  tf.session {
 //    val outputs = TensorVector()

@@ -29,3 +29,9 @@ inline fun MakeShape(shape: LongArray): TensorShape {
   TensorShapeUtils.MakeShape(shape, ts)
   return ts
 }
+
+inline fun MakeShape(vararg d: Int): TensorShape {
+  val ts = TensorShape()
+  TensorShapeUtils.MakeShape(d, ts)
+  return ts
+}

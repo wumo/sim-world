@@ -36,8 +36,10 @@ inline fun TF_CPP.variable(shape: Dimension, initializer: (Scope) -> Output,
     val init = initializer(s)
     val dtype = init.type() % (DT_FLOAT_REF - 1)
     return Variable(s, tensorShape.asPartialTensorShape(), dtype).apply {
-      val assign = assign(this.asOutput(), init, scope = s)
+      val output = this.asOutput()
+      val assign = assign(output, init, scope = s)
       init_ops += assign
+      if (trainable) trainables += output
     }.asOutput()
   }
 }
