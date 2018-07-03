@@ -7,6 +7,7 @@ import org.junit.Before
 import wumo.sim.algorithm.util.cpp_api.ops.*
 import wumo.sim.algorithm.util.x
 import wumo.sim.envs.toy_text.FrozenLake
+import wumo.sim.util.math.Rand
 
 class TF_CPPTest {
   lateinit var tf: TF_CPP
@@ -18,10 +19,25 @@ class TF_CPPTest {
   @Test
   fun `tensor helper`() {
     val E = tf.const(2 x 3, 9f, "E")
+    val F = tf.const(2 x 3, "hello", "F")
     println(tf.debugString())
     tf.session {
       val result = eval<Float>(E)
       println(result[0, 1])
+      result[0, 1] = 2f
+      println(result[0, 1])
+      val result2 = TensorHelper.wrap<Float>(result.nativeTensor)
+      println(result2[0, 1])
+      
+      val result3 = eval<String>(F)
+      println(result3[0, 1])
+      println(result3[0, 2])
+      println(result3[0, 1])
+      result3[0, 1] = "hello,world"
+      println(result3[0, 2])
+      println(result3[0, 1])
+      val result4 = TensorHelper.wrap<String>(result3.nativeTensor)
+      println(result4[0, 1])
     }
   }
   
@@ -90,8 +106,11 @@ class TF_CPPTest {
     val init = tf.global_variable_initializer()
     println(tf.debugString())
     tf.session {
-      init.run(A to tf.tensor(2 x 2 x 2, 1f, 2f, 3f, 4f, 5f, 6f, 7f, 8f))
-      init.run(A to tf.tensor(2 x 2 x 2, *floatArrayOf(1f, 2f, 3f, 4f, 5f, 6f, 7f, 8f)))
+      init.run(A to tensor(2 x 2 x 2, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f))
+      B.eval()
+      feed(A to tensor(2 x 2 x 2, 1f, 1f, 1f, 4f, 5f, 6f, 7f, 8f))
+      target(init)
+      run()
       B.eval()
     }
   }
@@ -197,7 +216,7 @@ class TF_CPPTest {
   }
   
   @Test
-  fun `linear layer`() {
+  fun `Q-Learning with Neural Networks test`() {
     val inputs = tf.placeholder(1 x 16, name = "inputs1")
     val W = tf.variable(16 x 4, tf.random_uniform(16 x 4, 0f, 0.01f), name = "W")
     val Qout = tf.matmul(inputs, W, name = "Qout")
@@ -221,10 +240,29 @@ class TF_CPPTest {
         var j = 0
         while (j < 99) {
           j++
+          feed(inputs to tensor(1 x 16, *FloatArray(16) { if (it == s) 1f else 0f }))
+          val (a, allQ) = eval<Int, Float>(predict, Qout)
+          if (Rand().nextDouble() < e)
+            a[0] = env.action_space.sample()
+          val (s1, r, d) = env.step(a[0])
+          feed(inputs to tensor(1 x 16, *FloatArray(16) { if (it == s1) 1f else 0f }))
+          val Q1 = eval<Float>(Qout)
+          val maxQ1 = Q1.max()!!
+          val targetQ = allQ
+          targetQ[0, a[0]] = (r + y * maxQ1).toFloat()
           
-          eval()
+          feed(inputs to tensor(1 x 16, *FloatArray(16) { if (it == s) 1f else 0f }),
+              nextQ to tensor(targetQ))
+          train.run()
+          rAll += r
+          s = s1
+          if (d)
+            e = 1.0 / (i / 50 + 10)
         }
+        println("$rAll-$i")
+        sum += rAll
       }
+      println(sum / num_episodes)
     }
   }
 }

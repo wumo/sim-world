@@ -23,11 +23,12 @@ fun TF_CPP.matmul(a: Output, b: Output, name: String = "", scope: Scope = root) 
 
 fun TF_CPP.argmax(a: Output, dim: Int, name: String = "", scope: Scope = root) =
     scope.NewSubScope(name).let { s ->
-      ArgMax(s.WithOpName(name), Input(a), Input(const(dim, "dimension", s))).asOutput()
+      argmax(a, const(dim, "dimension", s), scope = s)
     }
 
 fun TF_CPP.argmax(a: Output, dim: Output, name: String = "", scope: Scope = root) =
-    ArgMax(scope.WithOpName(name), Input(a), Input(dim)).asOutput()
+    ArgMax(scope.WithOpName(name), Input(a), Input(dim),
+        ArgMax.Attrs().OutputType(DT_INT32)).asOutput()
 
 fun TF_CPP.square(a: Output, name: String = "", scope: Scope = root) =
     Square(scope.WithOpName(name), Input(a)).asOutput()

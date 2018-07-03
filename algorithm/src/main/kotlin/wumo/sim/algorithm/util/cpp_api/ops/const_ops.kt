@@ -9,20 +9,14 @@ import wumo.sim.algorithm.util.cpp_api.dtypeFromClass
 import wumo.sim.algorithm.util.dim
 import java.lang.reflect.Array
 
-fun TF_CPP.const(value: Any, name: String = "", scope: Scope = root): Output {
-  val s = scope.WithOpName(name)
-  return when (value) {
-    is Float -> Const(s, value)
-    is Double -> Const(s, value)
-    is Boolean -> Const(s, value)
-    is Byte -> Const(s, value)
-    is Short -> Const(s, value)
-    is Int -> Const(s, value)
-    is Long -> Const(s, value)
-    is String -> Const(s, value)
-    else -> throw IllegalArgumentException("Not supported: ${value::class}")
-  }
-}
+fun TF_CPP.const(value: Float, name: String = "", scope: Scope = root) = Const(scope.WithOpName(name), value)
+fun TF_CPP.const(value: Double, name: String = "", scope: Scope = root) = Const(scope.WithOpName(name), value)
+fun TF_CPP.const(value: Boolean, name: String = "", scope: Scope = root) = Const(scope.WithOpName(name), value)
+fun TF_CPP.const(value: Byte, name: String = "", scope: Scope = root) = Const(scope.WithOpName(name), value)
+fun TF_CPP.const(value: Short, name: String = "", scope: Scope = root) = Const(scope.WithOpName(name), value)
+fun TF_CPP.const(value: Int, name: String = "", scope: Scope = root) = Const(scope.WithOpName(name), value)
+fun TF_CPP.const(value: Long, name: String = "", scope: Scope = root) = Const(scope.WithOpName(name), value)
+fun TF_CPP.const(value: String, name: String = "", scope: Scope = root) = Const(scope.WithOpName(name), value)
 
 fun TF_CPP.const1D(vararg value: Float, name: String = "", scope: Scope = root) =
     const(dim(value.size), value, name, scope)
