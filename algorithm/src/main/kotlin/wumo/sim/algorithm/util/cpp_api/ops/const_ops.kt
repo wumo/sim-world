@@ -18,25 +18,25 @@ fun TF_CPP.const(value: Int, name: String = "", scope: Scope = root) = Const(sco
 fun TF_CPP.const(value: Long, name: String = "", scope: Scope = root) = Const(scope.WithOpName(name), value)
 fun TF_CPP.const(value: String, name: String = "", scope: Scope = root) = Const(scope.WithOpName(name), value)
 
-fun TF_CPP.const1D(vararg value: Float, name: String = "", scope: Scope = root) =
+fun TF_CPP.const(value: FloatArray, name: String = "", scope: Scope = root) =
     const(dim(value.size), value, name, scope)
 
-fun TF_CPP.const1D(vararg value: Double, name: String = "", scope: Scope = root) =
+fun TF_CPP.const(value: DoubleArray, name: String = "", scope: Scope = root) =
     const(dim(value.size), value, name, scope)
 
-fun TF_CPP.const1D(vararg value: Int, name: String = "", scope: Scope = root) =
+fun TF_CPP.const(value: IntArray, name: String = "", scope: Scope = root) =
     const(dim(value.size), value, name, scope)
 
-fun TF_CPP.const1D(vararg value: Long, name: String = "", scope: Scope = root) =
+fun TF_CPP.const(value: LongArray, name: String = "", scope: Scope = root) =
     const(dim(value.size), value, name, scope)
 
-fun TF_CPP.const1D(vararg value: Byte, name: String = "", scope: Scope = root) =
+fun TF_CPP.const(value: ByteArray, name: String = "", scope: Scope = root) =
     const(dim(value.size), value, name, scope)
 
-fun TF_CPP.const1D(vararg value: Short, name: String = "", scope: Scope = root) =
+fun TF_CPP.const(value: ShortArray, name: String = "", scope: Scope = root) =
     const(dim(value.size), value, name, scope)
 
-fun TF_CPP.const1D(vararg value: String, name: String = "", scope: Scope = root) =
+fun TF_CPP.const(value: kotlin.Array<String>, name: String = "", scope: Scope = root) =
     const(dim(value.size), value, name, scope)
 
 fun TF_CPP.const(shape: Dimension, value: Any, name: String = "", scope: Scope = root): Output {

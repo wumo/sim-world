@@ -28,7 +28,16 @@ fun TF_CPP.argmax(a: Output, dim: Int, name: String = "", scope: Scope = root) =
 
 fun TF_CPP.argmax(a: Output, dim: Output, name: String = "", scope: Scope = root) =
     ArgMax(scope.WithOpName(name), Input(a), Input(dim),
-        ArgMax.Attrs().OutputType(DT_INT32)).asOutput()
+           ArgMax.Attrs().OutputType(DT_INT32)).asOutput()
 
 fun TF_CPP.square(a: Output, name: String = "", scope: Scope = root) =
     Square(scope.WithOpName(name), Input(a)).asOutput()
+
+fun TF_CPP.log(a: Output, name: String = "", scope: Scope = root) =
+    Log(scope.WithOpName(name), Input(a)).asOutput()
+
+fun TF_CPP.neg(a: Output, name: String = "", scope: Scope = root) =
+    Negate(scope.WithOpName(name), Input(a)).asOutput()
+
+fun TF_CPP.addN(vararg a: Output, name: String = "", scope: Scope = root) =
+    AddN(scope.WithOpName(name), InputList(OutputVector(*a))).asOutput()

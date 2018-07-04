@@ -31,10 +31,11 @@ inline fun TF_CPP.variable(shape: Dimension, initializer: (Scope) -> Output,
                            name: String = "", trainable: Boolean = true,
                            scope: Scope = root): Output {
   scope.NewSubScope(name).let { s ->
-    val tensorShape = TensorShape()
-    TF_CHECK_OK(TensorShapeUtils.MakeShape(shape.asLongArray(), tensorShape))
     val init = initializer(s)
     val dtype = init.type() % (DT_FLOAT_REF - 1)
+    
+    val tensorShape = TensorShape()
+    TF_CHECK_OK(TensorShapeUtils.MakeShape(shape.asLongArray(), tensorShape))
     return Variable(s, tensorShape.asPartialTensorShape(), dtype).apply {
       val output = this.asOutput()
       val assign = assign(output, init, scope = s)

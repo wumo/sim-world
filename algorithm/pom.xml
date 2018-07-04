@@ -40,7 +40,6 @@
     <properties>
         <javacpp-resets-tensorflow.version>1.9.0-rc1-1.4.2-SNAPSHOT</javacpp-resets-tensorflow.version>
         <javacpp-resets-cuda.version>9.2-7.1-1.4.2-SNAPSHOT</javacpp-resets-cuda.version>
-        <kotlin.version>1.2.50</kotlin.version>
         <atomicfu.version>0.10.3</atomicfu.version>
     </properties>
 

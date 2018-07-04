@@ -1,21 +1,16 @@
 package wumo.sim.algorithm.util.cpp_api
 
 import org.bytedeco.javacpp.tensorflow.DT_FLOAT
+import org.bytedeco.javacpp.tensorflow.DT_INT32
 import org.junit.Test
 
-import org.junit.Before
 import wumo.sim.algorithm.util.cpp_api.ops.*
+import wumo.sim.algorithm.util.dim
 import wumo.sim.algorithm.util.x
 import wumo.sim.envs.toy_text.FrozenLake
 import wumo.sim.util.math.Rand
 
-class TF_CPPTest {
-  lateinit var tf: TF_CPP
-  @Before
-  fun setup() {
-    tf = TF_CPP()
-  }
-  
+class TF_CPPTest : BaseTest() {
   @Test
   fun `tensor helper`() {
     val E = tf.const(2 x 3, 9f, "E")
@@ -139,12 +134,12 @@ class TF_CPPTest {
   
   @Test
   fun sum() {
-    val A = tf.const1D(1f, 2f, 3f, name = "A")
+    val A = tf.const(floatArrayOf(1f, 2f, 3f), name = "A")
     val axis = tf.const(0, name = "axis")
     val sum = tf.sum(A, axis, "sum")
     
     val B = tf.const(1 x 3, floatArrayOf(1f, 2f, 3f), name = "B")
-    val axisB = tf.const1D(0, 1, name = "axisB")
+    val axisB = tf.const(intArrayOf(0, 1), name = "axisB")
     val sumB = tf.sum(B, axisB, name = "sumB")
     println(tf.debugString())
     tf.session {
@@ -216,53 +211,13 @@ class TF_CPPTest {
   }
   
   @Test
-  fun `Q-Learning with Neural Networks test`() {
-    val inputs = tf.placeholder(1 x 16, name = "inputs1")
-    val W = tf.variable(16 x 4, tf.random_uniform(16 x 4, 0f, 0.01f), name = "W")
-    val Qout = tf.matmul(inputs, W, name = "Qout")
-    val predict = tf.argmax(Qout, tf.const(1), name = "predict")
-    val nextQ = tf.placeholder(1 x 4, name = "nextQ")
+  fun ` Multi-armed bandit`() {
+    //https://medium.com/@awjuliani/super-simple-reinforcement-learning-tutorial-part-1-fd544fab149
+    val weights = tf.variable(dim(4), 1f)
+    val chosen_action = tf.argmax(weights, 0)
     
-    val loss = tf.sum(tf.square(tf.sub(nextQ, Qout)), tf.const1D(0, 1))
-    val train = tf.gradientDescentOptimizer(0.1f, loss, "train")
-    val init = tf.global_variable_initializer()
-    println(tf.debugString())
-    tf.session {
-      init.run()
-      val env = FrozenLake()
-      val y = .99
-      var e = 0.1
-      val num_episodes = 2000
-      var sum = 0.0
-      for (i in 0 until num_episodes) {
-        var s = env.reset()
-        var rAll = 0.0
-        var j = 0
-        while (j < 99) {
-          j++
-          feed(inputs to tensor(1 x 16, *FloatArray(16) { if (it == s) 1f else 0f }))
-          val (a, allQ) = eval<Int, Float>(predict, Qout)
-          if (Rand().nextDouble() < e)
-            a[0] = env.action_space.sample()
-          val (s1, r, d) = env.step(a[0])
-          feed(inputs to tensor(1 x 16, *FloatArray(16) { if (it == s1) 1f else 0f }))
-          val Q1 = eval<Float>(Qout)
-          val maxQ1 = Q1.max()!!
-          val targetQ = allQ
-          targetQ[0, a[0]] = (r + y * maxQ1).toFloat()
-          
-          feed(inputs to tensor(1 x 16, *FloatArray(16) { if (it == s) 1f else 0f }),
-              nextQ to tensor(targetQ))
-          train.run()
-          rAll += r
-          s = s1
-          if (d)
-            e = 1.0 / (i / 50 + 10)
-        }
-        println("$rAll-$i")
-        sum += rAll
-      }
-      println(sum / num_episodes)
-    }
+    val reward_holder = tf.placeholder(dim(1), dtype = DT_FLOAT)
+    val action_holder = tf.placeholder(dim(1), dtype = DT_INT32)
+//    val responsible_weight = t
   }
 }
