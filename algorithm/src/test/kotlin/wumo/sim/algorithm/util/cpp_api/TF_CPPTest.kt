@@ -209,15 +209,4 @@ class TF_CPPTest : BaseTest() {
       }
     }
   }
-  
-  @Test
-  fun ` Multi-armed bandit`() {
-    //https://medium.com/@awjuliani/super-simple-reinforcement-learning-tutorial-part-1-fd544fab149
-    val weights = tf.variable(dim(4), 1f)
-    val chosen_action = tf.argmax(weights, 0)
-    
-    val reward_holder = tf.placeholder(dim(1), dtype = DT_FLOAT)
-    val action_holder = tf.placeholder(dim(1), dtype = DT_INT32)
-//    val responsible_weight = t
-  }
 }
