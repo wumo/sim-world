@@ -138,6 +138,48 @@ abstract class WrappedTensor<T>(internal val nativeTensor: Tensor) : Iterable<T>
     }
     
   }
+  
+  @Suppress("NAME_SHADOWING")
+  private fun printTensor(dim: Int, offset: Int, sb: StringBuilder) {
+    val padding = StringBuilder().let { s ->
+      repeat(dim + 1) { s.append(' ') }
+      s.toString()
+    }
+    var offset = offset
+    val isVector = dim == dims.lastIndex - 1
+    sb.append('[')
+    for (i in 0 until dims[dim]) {
+      if (i != 0) sb.append(padding)
+      if (isVector)
+        printVector(offset, stride[dim], sb)
+      else
+        printTensor(dim + 1, offset, sb)
+      if (i != dims[dim] - 1)
+        sb.append(",\n")
+      offset += stride[dim]
+    }
+    sb.append(']')
+  }
+  
+  private fun printVector(offset: Int, size: Int, sb: StringBuilder) {
+    sb.append('[')
+    for (j in 0 until size) {
+      sb.append(buf_get(offset + j))
+      if (j != size - 1)
+        sb.append(',')
+    }
+    sb.append(']')
+  }
+  
+  override fun toString(): String {
+    val sb = StringBuilder()
+    when (dims.size) {
+      0 -> return get().toString()
+      1 -> printVector(0, dims[0], sb)
+      else -> printTensor(0, 0, sb)
+    }
+    return sb.toString()
+  }
 }
 
 class FloatTensor(nativeTensor: Tensor) : WrappedTensor<Float>(nativeTensor) {

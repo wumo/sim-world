@@ -2,8 +2,10 @@ package wumo.sim.algorithm.util.cpp_api.sample
 
 import org.bytedeco.javacpp.tensorflow
 import org.bytedeco.javacpp.tensorflow.DT_FLOAT
+import org.bytedeco.javacpp.tensorflow.DT_INT32
 import org.junit.Test
 import wumo.sim.algorithm.util.cpp_api.BaseTest
+import wumo.sim.algorithm.util.cpp_api.contrib.one_hot_encoding
 import wumo.sim.algorithm.util.cpp_api.ops.*
 import wumo.sim.algorithm.util.cpp_api.tensor
 import wumo.sim.algorithm.util.dim
@@ -33,14 +35,9 @@ class Contextual_Bandit : BaseTest() {
       return if (Rand().nextGaussian() > bandit) 1f else -1f
     }
     
-    var state_in = tf.placeholder(dim(1), dtype = DT_FLOAT, name = "state_in")
+    val state_in = tf.placeholder(dim(1), dtype = DT_INT32, name = "state_in")
+    val state_in_OH = tf.one_hot_encoding(state_in, num_bandits)
     
-    
-    val weights = tf.variable(dim(4), 1f, name = "weights")
-    val chosen_action = tf.argmax(weights, 0, name = "chosen_action")
-    
-    val reward_holder = tf.placeholder(dim(1), dtype = tensorflow.DT_FLOAT, name = "reward_holder")
-    val action_holder = tf.placeholder(dim(1), dtype = tensorflow.DT_INT32, name = "action_holder")
-    
+    println(tf.debugString())
   }
 }

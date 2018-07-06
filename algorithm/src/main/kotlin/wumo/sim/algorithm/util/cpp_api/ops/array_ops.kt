@@ -11,3 +11,7 @@ fun TF_CPP.onesLike(x: Output, name: String = "", scope: Scope = root) =
 
 fun TF_CPP.slice(input: Output, begin: Output, size: Output, name: String = "", scope: Scope = root) =
     Slice(scope.WithOpName(name), Input(input), Input(begin), Input(size)).asOutput()
+
+fun TF_CPP.oneHot(indices: Output, depth: Output, on_value: Output, off_value: Output,
+                  name: String = "", scope: Scope = root) =
+    OneHot(scope.WithOpName(name), Input(indices), Input(depth), Input(on_value), Input(off_value)).asOutput()

@@ -1,14 +1,10 @@
 package wumo.sim.algorithm.util.cpp_api
 
 import org.bytedeco.javacpp.tensorflow.DT_FLOAT
-import org.bytedeco.javacpp.tensorflow.DT_INT32
 import org.junit.Test
-
 import wumo.sim.algorithm.util.cpp_api.ops.*
-import wumo.sim.algorithm.util.dim
+import wumo.sim.algorithm.util.helpers.println
 import wumo.sim.algorithm.util.x
-import wumo.sim.envs.toy_text.FrozenLake
-import wumo.sim.util.math.Rand
 
 class TF_CPPTest : BaseTest() {
   @Test
@@ -18,6 +14,7 @@ class TF_CPPTest : BaseTest() {
     println(tf.debugString())
     tf.session {
       val result = eval<Float>(E)
+      println(result)
       println(result[0, 1])
       result[0, 1] = 2f
       println(result[0, 1])
@@ -43,11 +40,13 @@ class TF_CPPTest : BaseTest() {
     val C = tf.const(2 x 2, arrayOf("hello", "world", "fine", "tensorflow"), "C")
     val D = tf.const(2L, scope = tf.root.WithOpName(""))
     val E = tf.const(2 x 3, 9f, "E")
+    E.node().DebugString().string.println()
     val F = tf.const(2 x 2, 9.toByte(), "F")
     val G = tf.const(2 x 2, 10L, "G")
     val H = tf.const(2 x 2, true, "H")
     val I = tf.const(2 x 2, floatArrayOf(1f, 2f, 3f, 4f), "I")
     val J = tf.const(2 x 2, arrayOf(1f, 2f, 3f, 4f), "I")
+    J.node().DebugString().string.println()
     println(tf.debugString())
     tf.session {
       A.eval()
@@ -107,6 +106,9 @@ class TF_CPPTest : BaseTest() {
       target(init)
       run()
       B.eval()
+      val _b = eval<Float>(B)
+      _b.nativeTensor.shape().DebugString().string.println()
+      println(_b)
     }
   }
   
@@ -129,6 +131,7 @@ class TF_CPPTest : BaseTest() {
     println(tf.debugString())
     tf.session {
       argmax.eval()
+      println(eval<Int>(argmax))
     }
   }
   

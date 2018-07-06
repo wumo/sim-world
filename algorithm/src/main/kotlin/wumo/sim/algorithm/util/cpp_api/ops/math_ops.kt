@@ -41,3 +41,6 @@ fun TF_CPP.neg(a: Output, name: String = "", scope: Scope = root) =
 
 fun TF_CPP.addN(vararg a: Output, name: String = "", scope: Scope = root) =
     AddN(scope.WithOpName(name), InputList(OutputVector(*a))).asOutput()
+
+fun TF_CPP.cast(x: Output, dstT: Int, name: String = "", scope: Scope = root) =
+    CastOp(scope.WithOpName(name), Input(x), dstT).asOutput()//TODO cast SparseTensor

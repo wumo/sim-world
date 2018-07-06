@@ -1,7 +1,7 @@
 package wumo.sim.algorithm.util.c_api
 
 import org.bytedeco.javacpp.tensorflow
-import org.bytedeco.javacpp.tensorflow.TF_Version
+import org.bytedeco.javacpp.tensorflow.*
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
@@ -13,8 +13,10 @@ import wumo.sim.algorithm.util.c_api.core.placeholder
 import wumo.sim.algorithm.util.c_api.core.variable
 import wumo.sim.algorithm.util.c_api.math_ops.*
 import wumo.sim.algorithm.util.c_api.random_ops.random_uniform
+import wumo.sim.algorithm.util.helpers.println
 import wumo.sim.algorithm.util.x
 import java.nio.FloatBuffer
+import java.util.*
 
 class TF_CTest {
   lateinit var tf: TF_C
@@ -64,7 +66,15 @@ class TF_CTest {
   @Test
   fun `const def test`() {
     val A = tf.const(16 x 4, 9f)
-    
+    val status = TF_NewStatus()
+    val g = tf.g.nativeGraph
+    val output = TF_Output().oper(A.nativeOp).index(0)
+    val num_dims = TF_GraphGetTensorNumDims(g, output, status)
+    throwExceptionIfNotOk(status)
+    val shape = LongArray(num_dims)
+    TF_GraphGetTensorShape(g, output, shape, num_dims, status)
+    throwExceptionIfNotOk(status)
+    Arrays.toString(shape).println()
     tf.session {
       A.eval()
     }
@@ -80,7 +90,7 @@ class TF_CTest {
       feedAndTarget(A, Tensor.create(arrayOf(
           arrayOf(floatArrayOf(1f, 2f), floatArrayOf(3f, 4f)),
           arrayOf(floatArrayOf(5f, 6f), floatArrayOf(7f, 8f)))),
-          init)
+                    init)
       B.eval()
     }
   }
