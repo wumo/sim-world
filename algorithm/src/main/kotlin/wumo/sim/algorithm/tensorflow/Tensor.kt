@@ -1,6 +1,8 @@
 package wumo.sim.algorithm.tensorflow
 
+import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
 import org.bytedeco.javacpp.tensorflow.*
+import wumo.sim.algorithm.util.Dimension
 
 /**
  * Represents one of the outputs of an `Operation`.
@@ -21,6 +23,17 @@ import org.bytedeco.javacpp.tensorflow.*
  * `t.eval()` is a shortcut for calling`tf.get_default_session().run(t)`.
  */
 class Tensor(val op: Operation, val value_index: Int, val dtype: Int) {
+  fun shape() = run {
+    val c_graph = op.graph.c_graph
+    val output = asTF_Output()
+    val status = newStatus()
+    val numDims = TF_GraphGetTensorNumDims(c_graph, output, status)
+    throwExceptionIfNotOk(status)
+    val dims = LongArray(numDims)
+    TF_GraphGetTensorShape(c_graph, output, dims, numDims, status)
+    throwExceptionIfNotOk(status)
+    Dimension(dims)
+  }
   
   fun asTF_Output() = TF_Output().oper(op.c_op).index(value_index)
 }

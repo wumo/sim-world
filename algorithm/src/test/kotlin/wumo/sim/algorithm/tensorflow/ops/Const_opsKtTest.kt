@@ -28,13 +28,20 @@ class Const_opsKtTest {
   @Test
   fun const2() {
     val c = tf.const(2 x 2, 6f, name = "c")
+    val d = tf.const(2 x 2, floatArrayOf(1f, 2f, 3f, 4f), name = "d")
+//    val e = tf.const(2 x 2, arrayOf("hello", "tensorflow", "and", "you"), name = "e")
     tf.session {
       c.eval()
+      d.eval()
+//      e.eval()
     }
   }
   
-  @After
-  fun tearDown() {
-    tf.close()
+  @Test
+  fun `const string`() {
+    val e = tf.const(2 x 2, arrayOf("hello", "tensorflow", "and", "you"), name = "e")
+    tf.session {
+      e.eval()
+    }
   }
 }

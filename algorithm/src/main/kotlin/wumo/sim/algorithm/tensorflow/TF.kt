@@ -5,7 +5,7 @@ import org.bytedeco.javacpp.tensorflow
 import org.bytedeco.javacpp.tensorflow.*
 import org.tensorflow.framework.GraphDef
 
-class TF : AutoCloseable {
+class TF {
   companion object {
     init {
       Loader.load(tensorflow::class.java)
@@ -21,11 +21,7 @@ class TF : AutoCloseable {
   fun debugString() = GraphDef.parseFrom(g.toGraphDef()).toString()
   
   fun session(block: Session.() -> Unit) {
-    Session(g.c_graph).use(block)
-  }
-  
-  override fun close() {
-    g.close()
+    block(Session(g.c_graph))
   }
 }
 

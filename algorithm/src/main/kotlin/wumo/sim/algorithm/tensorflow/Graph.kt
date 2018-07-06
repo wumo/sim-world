@@ -1,6 +1,8 @@
 package wumo.sim.algorithm.tensorflow
 
 import org.bytedeco.javacpp.Pointer
+import org.bytedeco.javacpp.helper.tensorflow
+import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Graph.newGraph
 import org.bytedeco.javacpp.tensorflow.*
 
 /**
@@ -11,12 +13,8 @@ import org.bytedeco.javacpp.tensorflow.*
  * [Tensor] objects, which represent
  * the units of data that flow between operations.
  */
-class Graph : AutoCloseable {
-  val c_graph = TF_NewGraph()!!
-  
-  override fun close() {
-    TF_DeleteGraph(c_graph)
-  }
+class Graph {
+  val c_graph = newGraph()
   
   fun nodeBuilder(opType: String, name: String) = OperationBuilder(this, opType, name)
   fun operation(name: String): Operation {

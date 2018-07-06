@@ -1,6 +1,8 @@
 package wumo.sim.algorithm.tensorflow
 
 import org.bytedeco.javacpp.BytePointer
+import org.bytedeco.javacpp.helper.tensorflow
+import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
 import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.algorithm.util.Dimension
 
@@ -8,11 +10,10 @@ class OperationBuilder(val graph: Graph, val opType: String, val name: String) {
   private var _opDescription: TF_OperationDescription = TF_NewOperation(graph.c_graph, opType, name)
   
   fun build(): Operation {
-    val status = TF_NewStatus()
+    val status = newStatus()
     val nativeOp = TF_FinishOperation(_opDescription, status)
     throwExceptionIfNotOk(status)
     val op = Operation(graph, nativeOp)
-    TF_DeleteStatus(status)
     return op
   }
   
