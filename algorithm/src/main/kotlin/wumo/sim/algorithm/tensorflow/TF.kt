@@ -4,6 +4,7 @@ import org.bytedeco.javacpp.Loader
 import org.bytedeco.javacpp.tensorflow
 import org.bytedeco.javacpp.tensorflow.*
 import org.tensorflow.framework.GraphDef
+import java.util.*
 
 class TF {
   companion object {
@@ -15,13 +16,35 @@ class TF {
   
   val g = Graph()
   val trainables = mutableListOf<Tensor>()
-  val init_ops = mutableListOf<Tensor>()
-  val root = Scope()
+  val init_ops = mutableListOf<Operation>()
+  val scopes = ArrayDeque<Scope>().apply { addLast(Scope()) }
+  inline val ctx
+    get() = scopes.last
+  
+  inline fun <R> subscope(name: String, block: () -> R): R {
+    scopes.addLast(ctx.newSubscope(name))
+    try {
+      return block()
+    } finally {
+      scopes.removeLast()
+    }
+  }
   
   fun debugString() = GraphDef.parseFrom(g.toGraphDef()).toString()
   
   fun session(block: Session.() -> Unit) {
     block(Session(g.c_graph))
+  }
+  
+  fun global_variable_initializer(): Operation {
+    subscope("init") {
+      return g.nodeBuilder("NoOp", ctx.name)
+          .apply {
+            for (init_op in init_ops) {
+              addControlInput(init_op)
+            }
+          }.build()
+    }
   }
 }
 

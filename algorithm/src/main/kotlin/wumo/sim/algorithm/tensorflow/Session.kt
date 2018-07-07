@@ -1,11 +1,9 @@
 package wumo.sim.algorithm.tensorflow
 
-import org.bytedeco.javacpp.helper.tensorflow
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Session.newSession
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_SessionOptions.newSessionOptions
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
 import org.bytedeco.javacpp.tensorflow.*
-import wumo.sim.algorithm.util.helpers.println
 
 class Session(val c_graph: TF_Graph) {
   private val c_session: TF_Session
@@ -26,9 +24,9 @@ class Session(val c_graph: TF_Graph) {
   }
   
   fun Tensor.eval() {
-    val prefix = "${op.name}$shape="
+    val prefix = "${op.name}:${dtype.name()}$shape\n  ="
     val value = eval<Any>()
-    println("$prefix${value.toString(prefix.length)}")
+    println("$prefix${value.toString(3)}\n")
   }
   
   fun <T> Tensor.eval(): TensorValue<T> {

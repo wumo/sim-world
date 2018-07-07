@@ -1,6 +1,7 @@
 package wumo.sim.algorithm.tensorflow
 
 import org.bytedeco.javacpp.tensorflow.*
+import org.tensorflow.DataType
 
 private val typeCodes = mapOf(
     java.lang.Float::class.java to DT_FLOAT,
@@ -20,4 +21,8 @@ private val typeCodes = mapOf(
 
 fun dtypeFromClass(c: Class<*>): Int {
   return typeCodes[c] ?: throw IllegalArgumentException("${c.name} objects cannot be used as elements in a TensorFlow Tensor")
+}
+
+fun Int.name(): String {
+  return org.tensorflow.framework.DataType.forNumber(this).name.toLowerCase().substring(3)
 }

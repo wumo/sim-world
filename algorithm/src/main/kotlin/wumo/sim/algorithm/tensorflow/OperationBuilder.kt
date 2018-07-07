@@ -22,8 +22,8 @@ class OperationBuilder(val graph: Graph, val opType: String, val name: String) {
     return this
   }
   
-  fun addControlInput(control: Tensor): OperationBuilder {
-    TF_AddControlInput(_opDescription, control.op.c_op)
+  fun addControlInput(control: Operation): OperationBuilder {
+    TF_AddControlInput(_opDescription, control.c_op)
     return this
   }
   

@@ -14,6 +14,8 @@ infix fun Dimension.x(a: Int): Dimension {
 
 inline fun <T : Number> dim(d: T) = Dimension(mutableListOf(d.toLong()))
 
+internal val scalarDimension = Dimension()
+
 class Dimension(val elements: MutableList<Long> = mutableListOf()) : Iterable<Long> {
   constructor(elements: LongArray) : this(MutableList(elements.size) { elements[it] })
   

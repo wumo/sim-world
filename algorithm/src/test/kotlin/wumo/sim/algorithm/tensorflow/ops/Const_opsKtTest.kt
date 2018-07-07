@@ -6,15 +6,12 @@ import org.junit.Test
 
 import org.junit.Assert.*
 import wumo.sim.algorithm.tensorflow.TF
+import wumo.sim.algorithm.util.helpers.a
+import wumo.sim.algorithm.util.helpers.f
 import wumo.sim.algorithm.util.helpers.println
 import wumo.sim.algorithm.util.x
 
-class Const_opsKtTest {
-  lateinit var tf: TF
-  @Before
-  fun setUp() {
-    tf = TF()
-  }
+class Const_opsKtTest : BaseTest() {
   
   @Test
   fun const1() {
@@ -22,16 +19,16 @@ class Const_opsKtTest {
     val b = tf.const(2f, name = "b")
     val c = tf.const(2 x 2, 6L, name = "c")
     val d = tf.const(2 x 2, "hello", name = "d")
-    tf.debugString().println()
+    printGraph()
   }
   
   @Test
   fun const2() {
-    val c = tf.const(2 x 2 x 2, 6f, name = "c")
-    val d = tf.const(2 x 2, floatArrayOf(1f, 2f, 3f, 4f), name = "d")
-    val e = tf.const(2 x 2, arrayOf("hello", "tensorflow", "and", "you"), name = "e")
-    val f = tf.const1D("hello", "tensorflow", "and", "you", name = "f")
-    tf.debugString().println()
+    val c = tf.const(2 x 2 x 2, 6f)
+    val d = tf.const(2 x 2, f(1f, 2f, 3f, 4f), name = "d")
+    val e = tf.const(2 x 2, a("hello", "tensorflow", "and", "you"), name = "e")
+    val f = tf.const(a("hello", "tensorflow", "and", "you"), name = "f")
+    printGraph()
     tf.session {
       c.eval()
       d.eval()

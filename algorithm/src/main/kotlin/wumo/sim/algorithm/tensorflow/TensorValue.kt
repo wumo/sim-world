@@ -192,6 +192,7 @@ abstract class TensorValue<T>(c_tensor: TF_Tensor) : Iterable<T> {
   
   fun toString(padding: Int): String {
     val sb = StringBuilder()
+//    repeat(padding) { sb.append(' ') }
     when (dims.size) {
       0 -> return get().toString()
       1 -> printVector(0, dims[0].toInt(), sb)
