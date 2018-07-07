@@ -4,6 +4,7 @@ import org.bytedeco.javacpp.Loader
 import org.bytedeco.javacpp.tensorflow
 import org.bytedeco.javacpp.tensorflow.*
 import org.tensorflow.framework.GraphDef
+import wumo.sim.algorithm.tensorflow.ops.noOpDep
 import java.util.*
 
 class TF {
@@ -37,14 +38,7 @@ class TF {
   }
   
   fun global_variable_initializer(): Operation {
-    subscope("init") {
-      return g.nodeBuilder("NoOp", ctx.name)
-          .apply {
-            for (init_op in init_ops) {
-              addControlInput(init_op)
-            }
-          }.build()
-    }
+    return noOpDep(init_ops, name = "init")
   }
 }
 

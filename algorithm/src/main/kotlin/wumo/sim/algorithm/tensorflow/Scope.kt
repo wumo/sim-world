@@ -14,9 +14,9 @@ typealias NameMap = HashMap<String, Int>
  */
 class Scope(val name_map: NameMap = NameMap(),
             val name: String = "") {
+  var useName = false
   
   fun getUniqueName(prefix: String): String {
-    assert(prefix.isNotBlank())
     var unique_name = prefix
     name_map.compute(prefix) { _, n ->
       if (n == null)
@@ -27,7 +27,13 @@ class Scope(val name_map: NameMap = NameMap(),
     return unique_name
   }
   
+  fun useContextName(): String {
+    useName = true
+    return ""
+  }
+  
   fun getUniqueFullName(default_name: String): String {
+    if (useName) return name
     val unique_name = getUniqueName(default_name)
     val sep = if (name.isEmpty() || unique_name.isEmpty()) "" else "/"
     return "$name$sep$unique_name"

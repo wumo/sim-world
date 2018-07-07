@@ -7,6 +7,7 @@ import wumo.sim.algorithm.tensorflow.TensorValue
 import wumo.sim.algorithm.tensorflow.TensorValue.Companion.create
 import wumo.sim.algorithm.util.Dimension
 import wumo.sim.algorithm.util.dim
+import wumo.sim.algorithm.util.helpers.toByte
 import wumo.sim.algorithm.util.scalarDimension
 
 fun TF.const(value: Float, name: String = "Const") = const(scalarDimension, value, name)
@@ -20,7 +21,7 @@ fun TF.const(value: String, name: String = "Const") = const(scalarDimension, val
 
 fun TF.const(value: FloatArray, name: String = "Const") = const(create(dim(value.size), value), name)
 fun TF.const(value: DoubleArray, name: String = "Const") = const(create(dim(value.size), value), name)
-fun TF.const(value: BooleanArray, name: String = "Const") = const(create(dim(value.size), ByteArray(value.size) { if (value[it]) 1 else 0 }), name)
+fun TF.const(value: BooleanArray, name: String = "Const") = const(create(dim(value.size), ByteArray(value.size) { value[it].toByte() }), name)
 fun TF.const(value: ByteArray, name: String = "Const") = const(create(dim(value.size), value), name)
 fun TF.const(value: ShortArray, name: String = "Const") = const(create(dim(value.size), value), name)
 fun TF.const(value: IntArray, name: String = "Const") = const(create(dim(value.size), value), name)
@@ -38,7 +39,7 @@ fun TF.const(shape: Dimension, value: String, name: String = "Const") = const(sh
 
 fun TF.const(shape: Dimension, value: FloatArray, name: String = "Const") = const(create(shape, value), name)
 fun TF.const(shape: Dimension, value: DoubleArray, name: String = "Const") = const(create(shape, value), name)
-fun TF.const(shape: Dimension, value: BooleanArray, name: String = "Const") = const(create(shape, ByteArray(value.size) { if (value[it]) 1 else 0 }), name)
+fun TF.const(shape: Dimension, value: BooleanArray, name: String = "Const") = const(create(shape, ByteArray(value.size) { value[it].toByte() }), name)
 fun TF.const(shape: Dimension, value: ByteArray, name: String = "Const") = const(create(shape, value), name)
 fun TF.const(shape: Dimension, value: ShortArray, name: String = "Const") = const(create(shape, value), name)
 fun TF.const(shape: Dimension, value: IntArray, name: String = "Const") = const(create(shape, value), name)
