@@ -6,6 +6,8 @@ import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Tensor.newTensor
 import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.algorithm.util.Dimension
+import wumo.sim.algorithm.util.helpers.*
+import wumo.sim.algorithm.util.scalarDimension
 import wumo.sim.algorithm.util.tuples.tuple2
 import java.nio.*
 
@@ -27,36 +29,30 @@ abstract class TensorValue<T>(c_tensor: TF_Tensor) : Iterable<T> {
       } as TensorValue<T>
     }
     
-    fun create(shape: Dimension, value: FloatArray) =
-        FloatTensorValue(create(shape, FloatPointer(*value), DT_FLOAT))
+    fun create(value: Float) = create(scalarDimension, f(value))
+    fun create(value: Double) = create(scalarDimension, d(value))
+    fun create(value: Boolean) = create(scalarDimension, B(value))
+    fun create(value: Byte) = create(scalarDimension, b(value))
+    fun create(value: Short) = create(scalarDimension, s(value))
+    fun create(value: Int) = create(scalarDimension, i(value))
+    fun create(value: Long) = create(scalarDimension, l(value))
+    fun create(value: String) = create(scalarDimension, a(value))
     
-    fun create(shape: Dimension, value: DoubleArray) =
-        DoubleTensorValue(create(shape, DoublePointer(*value), DT_DOUBLE))
-    
-    fun create(shape: Dimension, value: BooleanArray) =
-        BooleanTensorValue(create(shape, BytePointer(*ByteArray(value.size) { if (value[it]) 1 else 0 }), DT_BOOL))
-    
-    fun create(shape: Dimension, value: ByteArray) =
-        ByteTensorValue(create(shape, BytePointer(*value), DT_INT8))
-    
-    fun create(shape: Dimension, value: ShortArray) =
-        ShortTensorValue(create(shape, ShortPointer(*value), DT_INT16))
-    
-    fun create(shape: Dimension, value: IntArray) =
-        IntTensorValue(create(shape, IntPointer(*value), DT_INT32))
-    
-    fun create(shape: Dimension, value: LongArray) =
-        LongTensorValue(create(shape, LongPointer(*value), DT_INT64))
+    fun create(shape: Dimension, value: FloatArray) = FloatTensorValue(create(shape, FloatPointer(*value), DT_FLOAT))
+    fun create(shape: Dimension, value: DoubleArray) = DoubleTensorValue(create(shape, DoublePointer(*value), DT_DOUBLE))
+    fun create(shape: Dimension, value: BooleanArray) = BooleanTensorValue(create(shape, BytePointer(*ByteArray(value.size) { if (value[it]) 1 else 0 }), DT_BOOL))
+    fun create(shape: Dimension, value: ByteArray) = ByteTensorValue(create(shape, BytePointer(*value), DT_INT8))
+    fun create(shape: Dimension, value: ShortArray) = ShortTensorValue(create(shape, ShortPointer(*value), DT_INT16))
+    fun create(shape: Dimension, value: IntArray) = IntTensorValue(create(shape, IntPointer(*value), DT_INT32))
+    fun create(shape: Dimension, value: LongArray) = LongTensorValue(create(shape, LongPointer(*value), DT_INT64))
     
     fun create(shape: Dimension, array: Array<String>): StringTensorValue {
-      assert(shape.numElements() == array.size.toLong())
       val data = TFStringArray.encode(array)
       val t = newTensor(DT_STRING, shape.asLongArray(), data)
       return StringTensorValue(t, array)
     }
     
     private fun create(shape: Dimension, array: Pointer, dtype: Int): TF_Tensor {
-      assert(shape.numElements() == array.limit())
       val total = array.sizeof() * array.limit()
       val byteSize = sizeof(dtype) * array.limit()
       return newTensor(dtype, shape.asLongArray(), BytePointer(array).capacity(byteSize))

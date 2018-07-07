@@ -58,13 +58,14 @@ private inline fun TF.variable(initializer: (String) -> Tensor, name: String, tr
   }
 }
 
-fun TF.variable(initial_value: Tensor, name: String = "Variable"): Tensor {
+fun TF.variable(initial_value: Tensor, name: String = "Variable", trainable: Boolean = true): Tensor {
   subscope(name) {
     val v = g.nodeBuilder("VariableV2", ctx.name)
         .setAttrType("dtype", initial_value.dtype)
         .setAttr("shape", initial_value.shape)
         .build()
     val t = Tensor(v, 0, initial_value.dtype)
+    if (trainable) trainables += t
     init_ops += assign(t, initial_value)
     return t
   }

@@ -7,6 +7,8 @@ import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
 import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.algorithm.util.tuples.tuple2
 import wumo.sim.algorithm.util.tuples.tuple3
+import wumo.sim.algorithm.util.tuples.tuple4
+import wumo.sim.algorithm.util.tuples.tuple5
 
 class Session(val c_graph: TF_Graph) {
   private val c_session: TF_Session
@@ -23,7 +25,7 @@ class Session(val c_graph: TF_Graph) {
   fun Operation.run(vararg feeds: Pair<Tensor, TensorValue<*>>) {
     feed_dict += feeds
     run_list += this
-    eval()
+    _eval()
   }
   
   fun clear() {
@@ -32,12 +34,43 @@ class Session(val c_graph: TF_Graph) {
   }
   
   fun Array<Tensor>.eval() {
-    val ts = eval(*this)
+    val ts = _eval(*this)
     for (i in 0 until size)
       this[i].print(ts[i])
   }
   
-  fun eval(vararg fetch: Tensor): Array<TensorValue<Any>> {
+  fun <T> eval(t: Tensor): TensorValue<T> {
+    val (t) = _eval(t)
+    return t as TensorValue<T>
+  }
+  
+  fun <T1, T2> eval(t1: Tensor, t2: Tensor): tuple2<TensorValue<T1>, TensorValue<T2>> {
+    val (r1, r2) = _eval(t1, t2)
+    return tuple2(r1 as TensorValue<T1>, r2 as TensorValue<T2>)
+  }
+  
+  fun <T1, T2, T3> eval(t1: Tensor, t2: Tensor, t3: Tensor): tuple3<TensorValue<T1>, TensorValue<T2>, TensorValue<T3>> {
+    val (r1, r2, r3) = _eval(t1, t2, t3)
+    return tuple3(r1 as TensorValue<T1>, r2 as TensorValue<T2>,
+                  r3 as TensorValue<T3>)
+  }
+  
+  fun <T1, T2, T3, T4> eval(t1: Tensor, t2: Tensor, t3: Tensor, t4: Tensor):
+      tuple4<TensorValue<T1>, TensorValue<T2>, TensorValue<T3>, TensorValue<T4>> {
+    val (r1, r2, r3, r4) = _eval(t1, t2, t3, t4)
+    return tuple4(r1 as TensorValue<T1>, r2 as TensorValue<T2>,
+                  r3 as TensorValue<T3>, r4 as TensorValue<T4>)
+  }
+  
+  fun <T1, T2, T3, T4, T5> eval(t1: Tensor, t2: Tensor, t3: Tensor, t4: Tensor, t5: Tensor):
+      tuple5<TensorValue<T1>, TensorValue<T2>, TensorValue<T3>, TensorValue<T4>, TensorValue<T5>> {
+    val (r1, r2, r3, r4, r5) = _eval(t1, t2, t3, t4, t5)
+    return tuple5(r1 as TensorValue<T1>, r2 as TensorValue<T2>,
+                  r3 as TensorValue<T3>, r4 as TensorValue<T4>,
+                  r5 as TensorValue<T5>)
+  }
+  
+  fun _eval(vararg fetch: Tensor): Array<TensorValue<Any>> {
     val status = newStatus()
     val (inputs, input_values, ninputs) = accumulateFeedDict()
     val (target_opers, ntargets) = accumulateRuns()
@@ -81,16 +114,16 @@ class Session(val c_graph: TF_Graph) {
   }
   
   fun Tensor.eval() {
-    print(eval<Any>())
+    print(eval<Any>(this))
   }
   
-  fun <T> Tensor.eval(): TensorValue<T> {
-    val t = eval(this)[0]
-    return t as TensorValue<T>
-  }
   
   private fun Tensor.print(v: TensorValue<*>) {
     val prefix = "${op.name}:${dtype.name()}$shape\n  ="
     println("$prefix${v.toString(3)}\n")
+  }
+  
+  fun feed(vararg feeds: Pair<Tensor, TensorValue<*>>) {
+    feed_dict += feeds
   }
 }
