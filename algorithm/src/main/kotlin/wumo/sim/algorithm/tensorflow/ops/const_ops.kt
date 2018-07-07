@@ -4,7 +4,6 @@ import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.algorithm.tensorflow.TF
 import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.TensorValue
-import wumo.sim.algorithm.tensorflow.TensorValue.Companion.create
 import wumo.sim.algorithm.util.Dimension
 import wumo.sim.algorithm.util.dim
 import wumo.sim.algorithm.util.helpers.toByte
@@ -19,14 +18,14 @@ fun TF.const(value: Int, name: String = "Const") = const(scalarDimension, value,
 fun TF.const(value: Long, name: String = "Const") = const(scalarDimension, value, name)
 fun TF.const(value: String, name: String = "Const") = const(scalarDimension, value, name)
 
-fun TF.const(value: FloatArray, name: String = "Const") = const(create(dim(value.size), value), name)
-fun TF.const(value: DoubleArray, name: String = "Const") = const(create(dim(value.size), value), name)
-fun TF.const(value: BooleanArray, name: String = "Const") = const(create(dim(value.size), ByteArray(value.size) { value[it].toByte() }), name)
-fun TF.const(value: ByteArray, name: String = "Const") = const(create(dim(value.size), value), name)
-fun TF.const(value: ShortArray, name: String = "Const") = const(create(dim(value.size), value), name)
-fun TF.const(value: IntArray, name: String = "Const") = const(create(dim(value.size), value), name)
-fun TF.const(value: LongArray, name: String = "Const") = const(create(dim(value.size), value), name)
-fun TF.const(value: Array<String>, name: String = "Const") = const(create(dim(value.size), value), name)
+fun TF.const(value: FloatArray, name: String = "Const") = const(TensorValue(dim(value.size), value), name)
+fun TF.const(value: DoubleArray, name: String = "Const") = const(TensorValue(dim(value.size), value), name)
+fun TF.const(value: BooleanArray, name: String = "Const") = const(TensorValue(dim(value.size), ByteArray(value.size) { value[it].toByte() }), name)
+fun TF.const(value: ByteArray, name: String = "Const") = const(TensorValue(dim(value.size), value), name)
+fun TF.const(value: ShortArray, name: String = "Const") = const(TensorValue(dim(value.size), value), name)
+fun TF.const(value: IntArray, name: String = "Const") = const(TensorValue(dim(value.size), value), name)
+fun TF.const(value: LongArray, name: String = "Const") = const(TensorValue(dim(value.size), value), name)
+fun TF.const(value: Array<String>, name: String = "Const") = const(TensorValue(dim(value.size), value), name)
 
 fun TF.const(shape: Dimension, value: Float, name: String = "Const") = const(shape, DT_FLOAT, name) { add_float_val(value) }
 fun TF.const(shape: Dimension, value: Double, name: String = "Const") = const(shape, DT_DOUBLE, name) { add_double_val(value) }
@@ -37,14 +36,14 @@ fun TF.const(shape: Dimension, value: Int, name: String = "Const") = const(shape
 fun TF.const(shape: Dimension, value: Long, name: String = "Const") = const(shape, DT_INT64, name) { add_int64_val(value) }
 fun TF.const(shape: Dimension, value: String, name: String = "Const") = const(shape, DT_STRING, name) { add_string_val(value) }
 
-fun TF.const(shape: Dimension, value: FloatArray, name: String = "Const") = const(create(shape, value), name)
-fun TF.const(shape: Dimension, value: DoubleArray, name: String = "Const") = const(create(shape, value), name)
-fun TF.const(shape: Dimension, value: BooleanArray, name: String = "Const") = const(create(shape, ByteArray(value.size) { value[it].toByte() }), name)
-fun TF.const(shape: Dimension, value: ByteArray, name: String = "Const") = const(create(shape, value), name)
-fun TF.const(shape: Dimension, value: ShortArray, name: String = "Const") = const(create(shape, value), name)
-fun TF.const(shape: Dimension, value: IntArray, name: String = "Const") = const(create(shape, value), name)
-fun TF.const(shape: Dimension, value: LongArray, name: String = "Const") = const(create(shape, value), name)
-fun TF.const(shape: Dimension, value: Array<String>, name: String = "Const") = const(create(shape, value), name)
+fun TF.const(shape: Dimension, value: FloatArray, name: String = "Const") = const(TensorValue(shape, value), name)
+fun TF.const(shape: Dimension, value: DoubleArray, name: String = "Const") = const(TensorValue(shape, value), name)
+fun TF.const(shape: Dimension, value: BooleanArray, name: String = "Const") = const(TensorValue(shape, ByteArray(value.size) { value[it].toByte() }), name)
+fun TF.const(shape: Dimension, value: ByteArray, name: String = "Const") = const(TensorValue(shape, value), name)
+fun TF.const(shape: Dimension, value: ShortArray, name: String = "Const") = const(TensorValue(shape, value), name)
+fun TF.const(shape: Dimension, value: IntArray, name: String = "Const") = const(TensorValue(shape, value), name)
+fun TF.const(shape: Dimension, value: LongArray, name: String = "Const") = const(TensorValue(shape, value), name)
+fun TF.const(shape: Dimension, value: Array<String>, name: String = "Const") = const(TensorValue(shape, value), name)
 
 private fun TF.const(shape: Dimension, dtype: Int, name: String = "Const", set_value: TensorProto.() -> Unit): Tensor {
   val tensor_proto = AttrValue()

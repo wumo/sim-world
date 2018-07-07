@@ -20,7 +20,7 @@ class Array_opsKtTest : BaseTest() {
     val init = tf.global_variable_initializer()
     printGraph()
     tf.session {
-      init.run(p to TensorValue.create(2 x 2, f(1f, 2f, 3f, 4f)))
+      init.run(p to TensorValue(2 x 2, f(1f, 2f, 3f, 4f)))
       a.eval()
     }
   }

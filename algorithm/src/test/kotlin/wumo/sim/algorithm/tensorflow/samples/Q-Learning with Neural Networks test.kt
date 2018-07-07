@@ -35,18 +35,18 @@ class `Q-Learning with Neural Networks test` : BaseTest() {
         var j = 0
         while (j < 99) {
           j++
-          feed(inputs to TensorValue.create(1 x 16, FloatArray(16) { if (it == s) 1f else 0f }))
+          feed(inputs to TensorValue(1 x 16, FloatArray(16) { if (it == s) 1f else 0f }))
           val (a, allQ) = eval<Int, Float>(predict, Qout)
           if (Rand().nextDouble() < e)
             a[0] = env.action_space.sample()
           val (s1, r, d) = env.step(a[0])
-          feed(inputs to TensorValue.create(1 x 16, FloatArray(16) { if (it == s1) 1f else 0f }))
+          feed(inputs to TensorValue(1 x 16, FloatArray(16) { if (it == s1) 1f else 0f }))
           val Q1 = eval<Float>(Qout)
           val maxQ1 = Q1.max()!!
           val targetQ = allQ
           targetQ[0, a[0]] = (r + y * maxQ1).toFloat()
           
-          feed(inputs to TensorValue.create(1 x 16, FloatArray(16) { if (it == s) 1f else 0f }),
+          feed(inputs to TensorValue(1 x 16, FloatArray(16) { if (it == s) 1f else 0f }),
                nextQ to targetQ)
           train.run()
           rAll += r

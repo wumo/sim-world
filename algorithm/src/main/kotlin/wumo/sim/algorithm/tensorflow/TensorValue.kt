@@ -12,9 +12,9 @@ import wumo.sim.algorithm.util.tuples.tuple2
 import java.nio.*
 
 
-abstract class TensorValue<T>(c_tensor: TF_Tensor) : Iterable<T> {
+abstract class TensorValue<T> protected constructor(c_tensor: TF_Tensor) : Iterable<T> {
   companion object {
-    fun <T> wrap(c_tensor: TF_Tensor): TensorValue<T> {
+    operator fun <T> invoke(c_tensor: TF_Tensor): TensorValue<T> {
       val dtype = TF_TensorType(c_tensor)
       return when (dtype) {
         DT_COMPLEX64, DT_FLOAT -> FloatTensorValue(c_tensor)
@@ -29,24 +29,23 @@ abstract class TensorValue<T>(c_tensor: TF_Tensor) : Iterable<T> {
       } as TensorValue<T>
     }
     
-    fun create(value: Float) = create(scalarDimension, f(value))
-    fun create(value: Double) = create(scalarDimension, d(value))
-    fun create(value: Boolean) = create(scalarDimension, B(value))
-    fun create(value: Byte) = create(scalarDimension, b(value))
-    fun create(value: Short) = create(scalarDimension, s(value))
-    fun create(value: Int) = create(scalarDimension, i(value))
-    fun create(value: Long) = create(scalarDimension, l(value))
-    fun create(value: String) = create(scalarDimension, a(value))
+    operator fun invoke(value: Float) = invoke(scalarDimension, f(value))
+    operator fun invoke(value: Double) = invoke(scalarDimension, d(value))
+    operator fun invoke(value: Boolean) = invoke(scalarDimension, B(value))
+    operator fun invoke(value: Byte) = invoke(scalarDimension, b(value))
+    operator fun invoke(value: Short) = invoke(scalarDimension, s(value))
+    operator fun invoke(value: Int) = invoke(scalarDimension, i(value))
+    operator fun invoke(value: Long) = invoke(scalarDimension, l(value))
+    operator fun invoke(value: String) = invoke(scalarDimension, a(value))
     
-    fun create(shape: Dimension, value: FloatArray) = FloatTensorValue(create(shape, FloatPointer(*value), DT_FLOAT))
-    fun create(shape: Dimension, value: DoubleArray) = DoubleTensorValue(create(shape, DoublePointer(*value), DT_DOUBLE))
-    fun create(shape: Dimension, value: BooleanArray) = BooleanTensorValue(create(shape, BytePointer(*ByteArray(value.size) { if (value[it]) 1 else 0 }), DT_BOOL))
-    fun create(shape: Dimension, value: ByteArray) = ByteTensorValue(create(shape, BytePointer(*value), DT_INT8))
-    fun create(shape: Dimension, value: ShortArray) = ShortTensorValue(create(shape, ShortPointer(*value), DT_INT16))
-    fun create(shape: Dimension, value: IntArray) = IntTensorValue(create(shape, IntPointer(*value), DT_INT32))
-    fun create(shape: Dimension, value: LongArray) = LongTensorValue(create(shape, LongPointer(*value), DT_INT64))
-    
-    fun create(shape: Dimension, array: Array<String>): StringTensorValue {
+    operator fun invoke(shape: Dimension, value: FloatArray) = FloatTensorValue(create(shape, FloatPointer(*value), DT_FLOAT))
+    operator fun invoke(shape: Dimension, value: DoubleArray) = DoubleTensorValue(create(shape, DoublePointer(*value), DT_DOUBLE))
+    operator fun invoke(shape: Dimension, value: BooleanArray) = BooleanTensorValue(create(shape, BytePointer(*ByteArray(value.size) { if (value[it]) 1 else 0 }), DT_BOOL))
+    operator fun invoke(shape: Dimension, value: ByteArray) = ByteTensorValue(create(shape, BytePointer(*value), DT_INT8))
+    operator fun invoke(shape: Dimension, value: ShortArray) = ShortTensorValue(create(shape, ShortPointer(*value), DT_INT16))
+    operator fun invoke(shape: Dimension, value: IntArray) = IntTensorValue(create(shape, IntPointer(*value), DT_INT32))
+    operator fun invoke(shape: Dimension, value: LongArray) = LongTensorValue(create(shape, LongPointer(*value), DT_INT64))
+    operator fun invoke(shape: Dimension, array: Array<String>): StringTensorValue {
       val data = TFStringArray.encode(array)
       val t = newTensor(DT_STRING, shape.asLongArray(), data)
       return StringTensorValue(t, array)

@@ -45,8 +45,8 @@ class `Multi-armed bandit` : BaseTest() {
         else
           eval<Int>(chosen_action).get()
         val reward = pullBandit(bandit_arms[action])//Get our reward from picking one of the bandits.
-        feed(reward_holder to TensorValue.create(reward),
-             action_holder to TensorValue.create(action))
+        feed(reward_holder to TensorValue(reward),
+             action_holder to TensorValue(action))
         train.run()
         total_reward[action] += reward
         if (i % 50 == 0)

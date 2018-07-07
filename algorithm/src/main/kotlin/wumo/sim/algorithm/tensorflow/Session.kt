@@ -86,7 +86,7 @@ class Session(val c_graph: TF_Graph) {
                   null, status)
     clear()
     return Array(noutputs) {
-      TensorValue.wrap<Any>(output_values.get(TF_Tensor::class.java, it.toLong()))
+      TensorValue<Any>(output_values.get(TF_Tensor::class.java, it.toLong()))
     }
   }
   
