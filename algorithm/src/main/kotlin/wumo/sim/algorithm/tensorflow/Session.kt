@@ -25,7 +25,12 @@ class Session(val c_graph: TF_Graph) {
     throwExceptionIfNotOk(status)
   }
   
-  fun Tensor.eval() = op.name.println(":\n${eval<Any>()}")
+  fun Tensor.eval() {
+    val prefix = "${op.name}$shape="
+    val value = eval<Any>()
+    println("$prefix${value.toString(prefix.length)}")
+  }
+  
   fun <T> Tensor.eval(): TensorValue<T> {
     val status = newStatus()
     val outputs = TF_Output(1)

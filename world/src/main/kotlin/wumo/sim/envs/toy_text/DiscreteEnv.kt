@@ -8,15 +8,14 @@ import wumo.sim.util.tuples.tuple4
 
 typealias Transition = Array<Array<MutableList<tuple4<Double, Int, Double, Boolean>>>>
 
-abstract class DiscreteEnv : Env<Int, Int> {
+abstract class DiscreteEnv(val nS: Int,
+                           val nA: Int,
+                           val P: Transition,
+                           val isd: DoubleArray) : Env<Int, Int> {
   var lastAction = -1
-  abstract val nS: Int
-  abstract val nA: Int
-  abstract val P: Transition
-  abstract val isd: DoubleArray
-  override val action_space by lazy { Discrete(nA) }
-  override val observation_space by lazy { Discrete(nS) }
   var s = -1
+  override val action_space = Discrete(nA)
+  override val observation_space = Discrete(nS)
   
   override fun step(a: Int): tuple4<Int, Double, Boolean, Map<String, Any>> {
     val transitions = P[s][a]

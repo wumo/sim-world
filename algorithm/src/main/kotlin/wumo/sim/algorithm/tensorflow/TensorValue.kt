@@ -33,6 +33,9 @@ abstract class TensorValue<T>(c_tensor: TF_Tensor) : Iterable<T> {
     fun create(shape: Dimension, value: DoubleArray) =
         DoubleTensorValue(create(shape, DoublePointer(*value), DT_DOUBLE))
     
+    fun create(shape: Dimension, value: BooleanArray) =
+        BooleanTensorValue(create(shape, BytePointer(*ByteArray(value.size) { if (value[it]) 1 else 0 }), DT_BOOL))
+    
     fun create(shape: Dimension, value: ByteArray) =
         ByteTensorValue(create(shape, BytePointer(*value), DT_INT8))
     
@@ -54,11 +57,8 @@ abstract class TensorValue<T>(c_tensor: TF_Tensor) : Iterable<T> {
     
     private fun create(shape: Dimension, array: Pointer, dtype: Int): TF_Tensor {
       assert(shape.numElements() == array.limit())
+      val total = array.sizeof() * array.limit()
       val byteSize = sizeof(dtype) * array.limit()
-//      val c_tensor = allocateTensor(dtype, shape.asLongArray(), byteSize)
-//      val data = TF_TensorData(c_tensor)
-//      memcpy(data, array, byteSize)
-//      return c_tensor
       return newTensor(dtype, shape.asLongArray(), BytePointer(array).capacity(byteSize))
     }
     
@@ -159,9 +159,9 @@ abstract class TensorValue<T>(c_tensor: TF_Tensor) : Iterable<T> {
   }
   
   @Suppress("NAME_SHADOWING")
-  private fun printTensor(dim: Int, offset: Int, sb: StringBuilder) {
+  private fun printTensor(extraPadding: Int, dim: Int, offset: Int, sb: StringBuilder) {
     val padding = StringBuilder().let { s ->
-      repeat(dim + 1) { s.append(' ') }
+      repeat(dim + 1 + extraPadding) { s.append(' ') }
       s.toString()
     }
     var offset = offset
@@ -172,7 +172,7 @@ abstract class TensorValue<T>(c_tensor: TF_Tensor) : Iterable<T> {
       if (isVector)
         printVector(offset, stride[dim].toInt(), sb)
       else
-        printTensor(dim + 1, offset, sb)
+        printTensor(extraPadding, dim + 1, offset, sb)
       if (i != dims[dim] - 1)
         sb.append(",\n")
       offset += stride[dim].toInt()
@@ -190,12 +190,22 @@ abstract class TensorValue<T>(c_tensor: TF_Tensor) : Iterable<T> {
     sb.append(']')
   }
   
+  fun toString(padding: Int): String {
+    val sb = StringBuilder()
+    when (dims.size) {
+      0 -> return get().toString()
+      1 -> printVector(0, dims[0].toInt(), sb)
+      else -> printTensor(padding, 0, 0, sb)
+    }
+    return sb.toString()
+  }
+  
   override fun toString(): String {
     val sb = StringBuilder()
     when (dims.size) {
       0 -> return get().toString()
       1 -> printVector(0, dims[0].toInt(), sb)
-      else -> printTensor(0, 0, sb)
+      else -> printTensor(0, 0, 0, sb)
     }
     return sb.toString()
   }
@@ -328,7 +338,6 @@ object TFStringArray {
     val limit = src_size
     val status = newStatus()
     return Array(numElements.toInt()) {
-      
       val offset = offsetBuf.get(it.toLong())
       if (offset >= limit - data_start)
         throw  IllegalArgumentException("Malformed TF_STRING tensor; element $it out of range")

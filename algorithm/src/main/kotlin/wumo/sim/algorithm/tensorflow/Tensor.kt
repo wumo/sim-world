@@ -23,7 +23,7 @@ import wumo.sim.algorithm.util.Dimension
  * `t.eval()` is a shortcut for calling`tf.get_default_session().run(t)`.
  */
 class Tensor(val op: Operation, val value_index: Int, val dtype: Int) {
-  fun shape() = run {
+  val shape: Dimension by lazy {
     val c_graph = op.graph.c_graph
     val output = asTF_Output()
     val status = newStatus()

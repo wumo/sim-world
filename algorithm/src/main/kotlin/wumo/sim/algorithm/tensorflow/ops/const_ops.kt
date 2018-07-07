@@ -5,7 +5,9 @@ import wumo.sim.algorithm.tensorflow.Scope
 import wumo.sim.algorithm.tensorflow.TF
 import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.TensorValue
+import wumo.sim.algorithm.tensorflow.TensorValue.Companion.create
 import wumo.sim.algorithm.util.Dimension
+import wumo.sim.algorithm.util.dim
 
 private val scalarDimension = Dimension()
 fun TF.const(value: Float, name: String = "", scope: Scope = root) = const(scalarDimension, value, name, scope)
@@ -45,14 +47,23 @@ fun TF.const(shape: Dimension, dtype: Int, name: String = "", scope: Scope = roo
   return Tensor(op, 0, dtype)
 }
 
-fun TF.const(shape: Dimension, value: FloatArray, name: String = "", scope: Scope = root) = const(TensorValue.create(shape, value), name, scope)
-fun TF.const(shape: Dimension, value: DoubleArray, name: String = "", scope: Scope = root) = const(TensorValue.create(shape, value), name, scope)
-fun TF.const(shape: Dimension, value: BooleanArray, name: String = "", scope: Scope = root) = const(TensorValue.create(shape, ByteArray(value.size) { if (value[it]) 1 else 0 }), name, scope)
-fun TF.const(shape: Dimension, value: ByteArray, name: String = "", scope: Scope = root) = const(TensorValue.create(shape, value), name, scope)
-fun TF.const(shape: Dimension, value: ShortArray, name: String = "", scope: Scope = root) = const(TensorValue.create(shape, value), name, scope)
-fun TF.const(shape: Dimension, value: IntArray, name: String = "", scope: Scope = root) = const(TensorValue.create(shape, value), name, scope)
-fun TF.const(shape: Dimension, value: LongArray, name: String = "", scope: Scope = root) = const(TensorValue.create(shape, value), name, scope)
-fun TF.const(shape: Dimension, value: Array<String>, name: String = "", scope: Scope = root) = const(TensorValue.create(shape, value), name, scope)
+fun TF.const1D(vararg value: Float, name: String = "", scope: Scope = root) = const(create(dim(value.size), value), name, scope)
+fun TF.const1D(vararg value: Double, name: String = "", scope: Scope = root) = const(create(dim(value.size), value), name, scope)
+fun TF.const1D(vararg value: Boolean, name: String = "", scope: Scope = root) = const(create(dim(value.size), ByteArray(value.size) { if (value[it]) 1 else 0 }), name, scope)
+fun TF.const1D(vararg value: Byte, name: String = "", scope: Scope = root) = const(create(dim(value.size), value), name, scope)
+fun TF.const1D(vararg value: Short, name: String = "", scope: Scope = root) = const(create(dim(value.size), value), name, scope)
+fun TF.const1D(vararg value: Int, name: String = "", scope: Scope = root) = const(create(dim(value.size), value), name, scope)
+fun TF.const1D(vararg value: Long, name: String = "", scope: Scope = root) = const(create(dim(value.size), value), name, scope)
+fun TF.const1D(vararg value: String, name: String = "", scope: Scope = root) = const(create(dim(value.size), value as Array<String>), name, scope)
+
+fun TF.const(shape: Dimension, value: FloatArray, name: String = "", scope: Scope = root) = const(create(shape, value), name, scope)
+fun TF.const(shape: Dimension, value: DoubleArray, name: String = "", scope: Scope = root) = const(create(shape, value), name, scope)
+fun TF.const(shape: Dimension, value: BooleanArray, name: String = "", scope: Scope = root) = const(create(shape, ByteArray(value.size) { if (value[it]) 1 else 0 }), name, scope)
+fun TF.const(shape: Dimension, value: ByteArray, name: String = "", scope: Scope = root) = const(create(shape, value), name, scope)
+fun TF.const(shape: Dimension, value: ShortArray, name: String = "", scope: Scope = root) = const(create(shape, value), name, scope)
+fun TF.const(shape: Dimension, value: IntArray, name: String = "", scope: Scope = root) = const(create(shape, value), name, scope)
+fun TF.const(shape: Dimension, value: LongArray, name: String = "", scope: Scope = root) = const(create(shape, value), name, scope)
+fun TF.const(shape: Dimension, value: Array<String>, name: String = "", scope: Scope = root) = const(create(shape, value), name, scope)
 
 fun <T> TF.const(value: TensorValue<T>, name: String = "", scope: Scope = root): Tensor {
   val unique_name = scope.getUniqueNameForOp(name)

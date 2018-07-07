@@ -36,4 +36,6 @@ class Dimension(val elements: MutableList<Long> = mutableListOf()) : Iterable<Lo
   }
   
   override fun iterator() = elements.iterator()
+  
+  override fun toString() = elements.toString()
 }
