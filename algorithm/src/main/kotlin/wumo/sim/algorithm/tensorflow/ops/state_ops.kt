@@ -58,7 +58,7 @@ private inline fun TF.variable(initializer: (String) -> Tensor, name: String, tr
   }
 }
 
-fun TF.variable(initial_value: Tensor, name: String = ""): Tensor {
+fun TF.variable(initial_value: Tensor, name: String = "Variable"): Tensor {
   subscope(name) {
     val v = g.nodeBuilder("VariableV2", ctx.name)
         .setAttrType("dtype", initial_value.dtype)
