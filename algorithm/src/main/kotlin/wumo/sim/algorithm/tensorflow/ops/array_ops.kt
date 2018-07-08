@@ -25,24 +25,28 @@ fun TF.onesLike(x: Tensor, name: String = "OnesLike") =
     unaryOp("OnesLike", x, name)
 
 fun TF.zeros(shape: Dimension, dtype: Int = DT_FLOAT, name: String = "Ones"): Tensor {
-  val zero = when (dtype) {
-    DT_STRING -> ""
-    else -> 0
-  }
-  return if (shape.numElements() < 1000)
-    const(shape, dtype, zero, name)
-  else {
-    val shape = reshape(const(shape.asLongArray()), const(-1))
-    fill(shape, const(dtype, zero))
+  subscope(name) {
+    val zero = when (dtype) {
+      DT_STRING -> ""
+      else -> 0
+    }
+    return if (shape.numElements() < 1000)
+      const(shape, dtype, zero, ctx.useContextName())
+    else {
+      val shape = reshape(const(shape.asLongArray()), const(-1))
+      fill(shape, const(dtype, zero), ctx.useContextName())
+    }
   }
 }
 
 fun TF.ones(shape: Dimension, dtype: Int = DT_FLOAT, name: String = "Ones"): Tensor {
-  return if (shape.numElements() < 1000)
-    const(shape, dtype, 1, name)
-  else {
-    val shape = reshape(const(shape.asLongArray()), const(-1))
-    fill(shape, const(dtype, 1))
+  subscope(name) {
+    return if (shape.numElements() < 1000)
+      const(shape, dtype, 1, ctx.useContextName())
+    else {
+      val shape = reshape(const(shape.asLongArray()), const(-1))
+      fill(shape, const(dtype, 1), ctx.useContextName())
+    }
   }
 }
 

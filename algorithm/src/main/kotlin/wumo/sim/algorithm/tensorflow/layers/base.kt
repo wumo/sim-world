@@ -24,17 +24,19 @@ open class Layer(val tf: TF, val trainable: Boolean = true,
   open fun call(input: Tensor) = input
   
   open operator fun invoke(inputs: Tensor): Tensor {
-    if (!built) {
-      if (dtype == DT_INVALID)
-        dtype = inputs.dtype
-      val input_shape = inputs.shape
-      build(input_shape)
+    tf.subscope(name) {
+      if (!built) {
+        if (dtype == DT_INVALID)
+          dtype = inputs.dtype
+        val input_shape = inputs.shape
+        build(input_shape)
+      }
+      //if not in_deferred_mode:
+      val outputs = call(inputs)
+      if (activity_reqularizer != null) {
+      }
+      return outputs
     }
-    //if not in_deferred_mode:
-    val outputs = call(inputs)
-    if (activity_reqularizer != null) {
-    }
-    return outputs
   }
   
   protected fun add_variable(shape: Dimension, dtype: Int,

@@ -28,7 +28,7 @@ fun TF.argmax(a: Tensor, b: Tensor, name: String = "ArgMax") =
 
 fun TF.argmax(a: Tensor, dim: Int, name: String = "ArgMax") =
     subscope(name) {
-      val op = g.nodeBuilder("ArgMax", ctx.getUniqueFullName(name))
+      val op = g.nodeBuilder("ArgMax", ctx.name)
           .addInput(a)
           .addInput(const(dim, "dimension"))
           .build()

@@ -39,6 +39,8 @@ class Session(val c_graph: TF_Graph) {
       this[i].print(ts[i])
   }
   
+  fun eval() = _eval()
+  
   fun <T> eval(t: Tensor): TensorValue<T> {
     val (t) = _eval(t)
     return t as TensorValue<T>
@@ -84,6 +86,7 @@ class Session(val c_graph: TF_Graph) {
                   outputs, output_values, noutputs,
                   target_opers, ntargets,
                   null, status)
+    throwExceptionIfNotOk(status)
     clear()
     return Array(noutputs) {
       TensorValue<Any>(output_values.get(TF_Tensor::class.java, it.toLong()))
@@ -125,5 +128,9 @@ class Session(val c_graph: TF_Graph) {
   
   fun feed(vararg feeds: Pair<Tensor, TensorValue<*>>) {
     feed_dict += feeds
+  }
+  
+  fun target(vararg target: Operation) {
+    run_list += target
   }
 }

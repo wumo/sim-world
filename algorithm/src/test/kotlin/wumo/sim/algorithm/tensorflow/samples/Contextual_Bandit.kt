@@ -3,13 +3,16 @@ package wumo.sim.algorithm.tensorflow.samples
 import org.bytedeco.javacpp.tensorflow
 import org.bytedeco.javacpp.tensorflow.DT_INT32
 import org.junit.Test
+import wumo.sim.algorithm.tensorflow.TensorValue
 import wumo.sim.algorithm.tensorflow.contrib.fully_connected
 import wumo.sim.algorithm.tensorflow.contrib.one_hot_encoding
 import wumo.sim.algorithm.tensorflow.ops.*
 import wumo.sim.algorithm.util.dim
+import wumo.sim.algorithm.util.helpers.NDArray
 import wumo.sim.algorithm.util.helpers.a
 import wumo.sim.algorithm.util.helpers.f
 import wumo.sim.algorithm.util.helpers.i
+import wumo.sim.algorithm.util.x
 import wumo.sim.util.math.Rand
 
 class Contextual_Bandit : BaseTest() {
@@ -49,6 +52,42 @@ class Contextual_Bandit : BaseTest() {
     val loss = tf.neg(tf.mul(tf.log(responsible_output), reward_holder))
     val train = tf.gradientDescentOptimizer(0.001f, loss)
     val init = tf.global_variable_initializer()
-    println(tf.debugString())
+    printGraph()
+    
+    val total_episodes = 10000
+    val total_reward = NDArray.zeros(dim(num_bandits))
+    val e = 0.1
+    tf.session {
+      init.run()
+      var i = 0
+      while (i < total_episodes) {
+        val s = getbandit()
+        val action = if (Rand().nextDouble() < e)
+          Rand().nextInt(num_actions)
+        else {
+          feed(state_in to TensorValue(dim(1), i(s)))
+          eval<Int>(chosen_action).get()
+        }
+        val reward = pullArm(action)
+        
+        feed(reward_holder to TensorValue(dim(1), f(reward)),
+             action_holder to TensorValue(dim(1), i(action)),
+             state_in to TensorValue(dim(1), i(s)))
+        target(train)
+        eval()
+        
+        total_reward[s] += reward
+        if (i % 500 == 0) {
+          print("Mean reward for each of the $num_bandits bandits: [")
+          for (i in 0 until num_bandits) {
+            print("${total_reward[i] / num_actions},")
+          }
+          println("]")
+        }
+        i++
+      }
+    }
   }
+  
+  
 }
