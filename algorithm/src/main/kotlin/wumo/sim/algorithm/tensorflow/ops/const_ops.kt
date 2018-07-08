@@ -45,6 +45,23 @@ fun TF.const(shape: Dimension, value: IntArray, name: String = "Const") = const(
 fun TF.const(shape: Dimension, value: LongArray, name: String = "Const") = const(TensorValue(shape, value), name)
 fun TF.const(shape: Dimension, value: Array<String>, name: String = "Const") = const(TensorValue(shape, value), name)
 
+fun TF.const(dtype: Int, value: Any, name: String = "Const") =
+    const(scalarDimension, dtype, value, name)
+
+fun TF.const(shape: Dimension, dtype: Int, value: Any, name: String = "Const"): Tensor {
+  return when (dtype) {
+    DT_FLOAT -> const(shape, (value as Number).toFloat(), name)
+    DT_DOUBLE -> const(shape, (value as Number).toDouble(), name)
+    DT_BOOL -> const(shape, (value as Number) != 0, name)
+    DT_INT8, DT_UINT8 -> const(shape, (value as Number).toByte(), name)
+    DT_INT16, DT_UINT16 -> const(shape, (value as Number).toShort(), name)
+    DT_INT32, DT_UINT32 -> const(shape, (value as Number).toInt(), name)
+    DT_INT64, DT_UINT64 -> const(shape, (value as Number).toLong(), name)
+    DT_STRING -> const(shape, value.toString(), name)
+    else -> throw IllegalArgumentException("unsupported type $dtype")
+  }
+}
+
 private fun TF.const(shape: Dimension, dtype: Int, name: String = "Const", set_value: TensorProto.() -> Unit): Tensor {
   val tensor_proto = AttrValue()
   tensor_proto.mutable_tensor().apply {

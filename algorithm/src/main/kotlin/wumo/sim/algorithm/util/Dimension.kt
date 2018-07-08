@@ -23,8 +23,8 @@ class Dimension(val elements: MutableList<Int> = mutableListOf()) : Iterable<Int
     return LongArray(elements.size) { elements[it].toLong() }
   }
   
-  fun rank(): Long {
-    return elements.size.toLong()
+  fun rank(): Int {
+    return elements.size
   }
   
   val firstDim

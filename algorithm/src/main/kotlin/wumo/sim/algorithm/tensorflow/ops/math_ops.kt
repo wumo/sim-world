@@ -2,21 +2,8 @@ package wumo.sim.algorithm.tensorflow.ops
 
 import wumo.sim.algorithm.tensorflow.TF
 import wumo.sim.algorithm.tensorflow.Tensor
-
-fun TF.unaryOp(op: String, a: Tensor, name: String): Tensor {
-  val op = g.nodeBuilder(op, ctx.getUniqueFullName(name))
-      .addInput(a)
-      .build()
-  return Tensor(op, 0, a.dtype)
-}
-
-fun TF.binaryOp(op: String, a: Tensor, b: Tensor, name: String): Tensor {
-  val op = g.nodeBuilder(op, ctx.getUniqueFullName(name))
-      .addInput(a)
-      .addInput(b)
-      .build()
-  return Tensor(op, 0, a.dtype)
-}
+import wumo.sim.algorithm.tensorflow.binaryOp
+import wumo.sim.algorithm.tensorflow.unaryOp
 
 fun TF.add(a: Tensor, b: Tensor, name: String = "Add") =
     binaryOp("Add", a, b, name)
@@ -48,6 +35,9 @@ fun TF.argmax(a: Tensor, dim: Int, name: String = "ArgMax") =
       Tensor(op, 0, a.dtype)
     }
 
+fun TF.sigmoid(x: Tensor, name: String = "Sigmoid") =
+    unaryOp("Sigmoid", x, name)
+
 fun TF.square(a: Tensor, name: String = "Square") =
     unaryOp("Square", a, name)
 
@@ -71,4 +61,8 @@ fun TF.cast(x: Tensor, dstT: Int, name: String = "Cast"): Tensor {
       .setAttrType("DstT", dstT)
       .build()
   return Tensor(op, 0, dstT)
+}
+
+fun TF.tensordot(input: Tensor, kernel: Tensor, const: Tensor): Tensor {
+  TODO()
 }

@@ -6,6 +6,21 @@ import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.algorithm.util.Dimension
 import wumo.sim.algorithm.util.helpers.toByte
 
+fun TF.unaryOp(op: String, a: Tensor, name: String, dtype: Int = a.dtype): Tensor {
+  val op = g.nodeBuilder(op, ctx.getUniqueFullName(name))
+      .addInput(a)
+      .build()
+  return Tensor(op, 0, a.dtype)
+}
+
+fun TF.binaryOp(op: String, a: Tensor, b: Tensor, name: String, dtype: Int = a.dtype): Tensor {
+  val op = g.nodeBuilder(op, ctx.getUniqueFullName(name))
+      .addInput(a)
+      .addInput(b)
+      .build()
+  return Tensor(op, 0, a.dtype)
+}
+
 class OperationBuilder(val graph: Graph, val opType: String, val name: String) {
   private var c_opDesc: TF_OperationDescription = TF_NewOperation(graph.c_graph, opType, name)
   

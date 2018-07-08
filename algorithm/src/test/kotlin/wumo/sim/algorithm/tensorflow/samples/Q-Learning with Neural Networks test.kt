@@ -3,7 +3,6 @@ package wumo.sim.algorithm.tensorflow.samples
 import org.junit.Test
 import wumo.sim.algorithm.tensorflow.TensorValue
 import wumo.sim.algorithm.tensorflow.ops.*
-import wumo.sim.algorithm.util.cpp_api.tensor
 import wumo.sim.algorithm.util.x
 import wumo.sim.envs.toy_text.FrozenLake
 import wumo.sim.util.math.Rand

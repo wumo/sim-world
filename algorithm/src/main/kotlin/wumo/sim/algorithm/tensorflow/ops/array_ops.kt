@@ -3,14 +3,12 @@ package wumo.sim.algorithm.tensorflow.ops
 import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.algorithm.tensorflow.TF
 import wumo.sim.algorithm.tensorflow.Tensor
+import wumo.sim.algorithm.tensorflow.binaryOp
+import wumo.sim.algorithm.tensorflow.unaryOp
 import wumo.sim.algorithm.util.Dimension
 
-fun TF.identity(input: Tensor, name: String = "Identity"): Tensor {
-  val v = g.nodeBuilder("VariableV2", ctx.getUniqueFullName(name))
-      .addInput(input)
-      .build()
-  return Tensor(v, 0, input.dtype)
-}
+fun TF.identity(input: Tensor, name: String = "Identity") =
+    unaryOp("Identity", input, name)
 
 fun TF.placeholder(shape: Dimension, dtype: Int = DT_FLOAT, name: String = "Placeholder"): Tensor {
   val p = g.nodeBuilder("Placeholder", ctx.getUniqueFullName(name))
@@ -20,19 +18,39 @@ fun TF.placeholder(shape: Dimension, dtype: Int = DT_FLOAT, name: String = "Plac
   return Tensor(p, 0, dtype)
 }
 
-fun TF.zerosLike(x: Tensor, name: String = "ZerosLike"): Tensor {
-  val v = g.nodeBuilder("ZerosLike", ctx.getUniqueFullName(name))
-      .addInput(x)
-      .build()
-  return Tensor(v, 0, x.dtype)
+fun TF.zerosLike(x: Tensor, name: String = "ZerosLike") =
+    unaryOp("ZerosLike", x, name)
+
+fun TF.onesLike(x: Tensor, name: String = "OnesLike") =
+    unaryOp("OnesLike", x, name)
+
+fun TF.zeros(shape: Dimension, dtype: Int = DT_FLOAT, name: String = "Ones"): Tensor {
+  val zero = when (dtype) {
+    DT_STRING -> ""
+    else -> 0
+  }
+  return if (shape.numElements() < 1000)
+    const(shape, dtype, zero, name)
+  else {
+    val shape = reshape(const(shape.asLongArray()), const(-1))
+    fill(shape, const(dtype, zero))
+  }
 }
 
-fun TF.onesLike(x: Tensor, name: String = "OnesLike"): Tensor {
-  val v = g.nodeBuilder("OnesLike", ctx.getUniqueFullName(name))
-      .addInput(x)
-      .build()
-  return Tensor(v, 0, x.dtype)
+fun TF.ones(shape: Dimension, dtype: Int = DT_FLOAT, name: String = "Ones"): Tensor {
+  return if (shape.numElements() < 1000)
+    const(shape, dtype, 1, name)
+  else {
+    val shape = reshape(const(shape.asLongArray()), const(-1))
+    fill(shape, const(dtype, 1))
+  }
 }
+
+fun TF.fill(dims: Tensor, value: Tensor, name: String = "Fill") =
+    binaryOp("Fill", dims, value, name, value.dtype)
+
+fun TF.reshape(tensor: Tensor, shape: Tensor, name: String = "Reshape") =
+    binaryOp("Reshape", tensor, shape, name)
 
 fun TF.slice(input: Tensor, begin: Tensor, size: Tensor, name: String = "Slice")
     : Tensor {

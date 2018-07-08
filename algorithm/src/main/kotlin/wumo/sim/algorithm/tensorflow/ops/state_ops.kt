@@ -44,9 +44,23 @@ fun TF.variable(shape: Dimension, initial_value: Int, name: String = "Variable",
 fun TF.variable(shape: Dimension, initial_value: Long, name: String = "Variable", trainable: Boolean = true) = variable({ const(shape, initial_value, it) }, name, trainable)
 fun TF.variable(shape: Dimension, initial_value: String, name: String = "Variable", trainable: Boolean = true) = variable({ const(shape, initial_value, it) }, name, trainable)
 
-private inline fun TF.variable(initializer: (String) -> Tensor, name: String, trainable: Boolean): Tensor {
+private fun TF.variable(initializer: (String) -> Tensor, name: String, trainable: Boolean = true): Tensor {
   subscope(name) {
     val initial_value = initializer("initial_value")
+    val v = g.nodeBuilder("VariableV2", ctx.name)
+        .setAttrType("dtype", initial_value.dtype)
+        .setAttr("shape", initial_value.shape)
+        .build()
+    val t = Tensor(v, 0, initial_value.dtype)
+    if (trainable) trainables += t
+    init_ops += assign(t, initial_value)
+    return t
+  }
+}
+
+fun TF.variable(shape: Dimension, dtype: Int, initializer: Initializer, name: String, trainable: Boolean = true): Tensor {
+  subscope(name) {
+    val initial_value = initializer(shape, dtype, "initial_value")
     val v = g.nodeBuilder("VariableV2", ctx.name)
         .setAttrType("dtype", initial_value.dtype)
         .setAttr("shape", initial_value.shape)

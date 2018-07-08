@@ -4,7 +4,6 @@ import org.bytedeco.javacpp.tensorflow.*
 import org.junit.Test
 import wumo.sim.algorithm.tensorflow.TensorValue
 import wumo.sim.algorithm.tensorflow.ops.*
-import wumo.sim.algorithm.util.cpp_api.tensor
 import wumo.sim.algorithm.util.dim
 import wumo.sim.algorithm.util.helpers.f
 import wumo.sim.util.math.Rand

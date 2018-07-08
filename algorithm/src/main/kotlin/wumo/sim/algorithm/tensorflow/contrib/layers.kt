@@ -4,7 +4,8 @@ import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.algorithm.tensorflow.TF
 import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.layers.Dense
-import wumo.sim.algorithm.tensorflow.layers.Layer
+import wumo.sim.algorithm.tensorflow.layers.TensorFunction
+import wumo.sim.algorithm.tensorflow.ops.Initializer
 import wumo.sim.algorithm.tensorflow.ops.cast
 import wumo.sim.algorithm.tensorflow.ops.const
 import wumo.sim.algorithm.tensorflow.ops.oneHot
@@ -24,24 +25,24 @@ fun TF.one_hot_encoding(labels: Tensor,
 
 fun TF.fully_connected(inputs: Tensor,
                        num_outputs: Int,
-                       activation_fn: ((Tensor) -> Tensor)? = null,
+                       activation_fn: TensorFunction? = null,
                        normalizer_fn: ((Tensor, Any?) -> Tensor)? = null,
                        normalizer_params: Any? = null,
-                       weights_initializer: Any? = null,
-                       weights_regularizer: Any? = null,
-                       biases_initializer: Any? = null,
-                       biases_regularizer: Any? = null,
+                       weights_initializer: Initializer,
+                       weights_tensorFunction: TensorFunction? = null,
+                       biases_initializer: Initializer? = null,
+                       biases_tensorFunction: TensorFunction? = null,
                        reuse: Any? = null,
                        variables_collections: Any? = null,
                        outputs_collections: Any? = null,
                        trainable: Boolean = true): Tensor {
-  val layer = Dense(units = num_outputs,
+  val layer = Dense(this, units = num_outputs,
                     activation = null,
                     use_bias = normalizer_fn == null && biases_initializer != null,
                     kernel_initializer = weights_initializer,
                     bias_initializer = biases_initializer,
-                    bias_regularizer = biases_regularizer,
-                    kernel_regularizer = weights_regularizer,
+                    bias_tensorFunction = biases_tensorFunction,
+                    kernel_tensorFunction = weights_tensorFunction,
                     activity_regularizer = null,
                     trainable = trainable,
                     name = "fully_connected",
