@@ -51,7 +51,7 @@ private fun TF.const(shape: Dimension, dtype: Int, name: String = "Const", set_v
     set_dtype(dtype)
     mutable_tensor_shape().apply {
       for (d in shape)
-        add_dim().set_size(d)
+        add_dim().set_size(d.toLong())
     }
     set_value(this)
   }

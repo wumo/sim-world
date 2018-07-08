@@ -26,7 +26,7 @@ fun TF_C.const(shape: Dimension, value: Any, name: String = "const"): Operation 
       set_dtype(dtype.number)
       mutable_tensor_shape().apply {
         for (d in shape.elements)
-          add_dim().set_size(d)
+          add_dim().set_size(d.toLong())
       }
       when (dtype) {
         DataType.DT_FLOAT -> add_float_val(value as Float)

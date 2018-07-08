@@ -13,7 +13,7 @@ class TFJava {
   fun placeholder(shape: Dimension, name: String): Operation {
     return g.opBuilder("Placeholder", name)
         .setAttr("dtype", DataType.FLOAT)
-        .setAttr("shape", Shape.make(shape.firstDim, *shape.otherDim))
+        .setAttr("shape", Shape.make(shape.firstDim.toLong(), *shape.otherDim))
         .build()
   }
   
@@ -38,7 +38,7 @@ class TFJava {
     val dtype = DataType.fromClass(T::class.java)
     val v = g.opBuilder("VariableV2", name)
         .setAttr("dtype", dtype)
-        .setAttr("shape", Shape.make(shape.firstDim, *shape.otherDim))
+        .setAttr("shape", Shape.make(shape.firstDim.toLong(), *shape.otherDim))
         .build()
     val assign = g.opBuilder("Assign", "$name/assign")
         .addInput(v.output<T>(0))

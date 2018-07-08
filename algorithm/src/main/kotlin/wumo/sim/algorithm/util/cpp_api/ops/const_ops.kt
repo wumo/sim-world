@@ -42,7 +42,7 @@ fun TF_CPP.const(value: kotlin.Array<String>, name: String = "", scope: Scope = 
 fun TF_CPP.const(shape: Dimension, value: Any, name: String = "", scope: Scope = root): Output {
   val tensorShapeProto = TensorShapeProto()
   for (d in shape)
-    tensorShapeProto.add_dim().set_size(d)
+    tensorShapeProto.add_dim().set_size(d.toLong())
   var c = value::class.java
   if (c.isArray) {
     val s = TensorShape(tensorShapeProto)
