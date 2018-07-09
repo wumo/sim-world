@@ -5,10 +5,8 @@ import wumo.sim.algorithm.tensorflow.TF
 import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.layers.Dense
 import wumo.sim.algorithm.tensorflow.layers.TensorFunction
-import wumo.sim.algorithm.tensorflow.ops.Initializer
-import wumo.sim.algorithm.tensorflow.ops.cast
-import wumo.sim.algorithm.tensorflow.ops.const
-import wumo.sim.algorithm.tensorflow.ops.oneHot
+import wumo.sim.algorithm.tensorflow.layers.xavier_initializer
+import wumo.sim.algorithm.tensorflow.ops.*
 
 @Suppress("NAME_SHADOWING")
 fun TF.one_hot_encoding(labels: Tensor,
@@ -28,9 +26,9 @@ fun TF.fully_connected(inputs: Tensor,
                        activation_fn: TensorFunction? = null,
                        normalizer_fn: ((Tensor, Any?) -> Tensor)? = null,
                        normalizer_params: Any? = null,
-                       weights_initializer: Initializer,
+                       weights_initializer: Initializer = xavier_initializer(),
                        weights_tensorFunction: TensorFunction? = null,
-                       biases_initializer: Initializer? = null,
+                       biases_initializer: Initializer? = zeros_initializer(),
                        biases_tensorFunction: TensorFunction? = null,
                        reuse: Any? = null,
                        variables_collections: Any? = null,

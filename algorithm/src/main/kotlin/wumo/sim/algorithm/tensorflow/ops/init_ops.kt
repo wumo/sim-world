@@ -25,7 +25,8 @@ fun TF.random_uniform(shape: Dimension,
     val rand = random_uniform(shape, tensorflow.DT_FLOAT)
     val min = const(min, "min")
     val max = const(max, "max")
-    return add(mul(rand, sub(max, min)), min, ctx.useContextName())
+//    return rand * (max - min) + min
+    return add(rand * (max - min), min, ctx.useContextName())
   }
 }
 
@@ -54,3 +55,4 @@ fun TF.random_normal_initializer() {
 fun TF.identity_initializer() {
 
 }
+

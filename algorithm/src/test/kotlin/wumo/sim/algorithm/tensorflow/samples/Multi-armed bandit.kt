@@ -6,6 +6,7 @@ import wumo.sim.algorithm.tensorflow.TensorValue
 import wumo.sim.algorithm.tensorflow.ops.*
 import wumo.sim.algorithm.util.dim
 import wumo.sim.algorithm.util.helpers.f
+import wumo.sim.algorithm.util.helpers.i
 import wumo.sim.util.math.Rand
 import java.util.*
 
@@ -26,8 +27,9 @@ class `Multi-armed bandit` : BaseTest() {
     val reward_holder = tf.placeholder(dim(1), dtype = DT_FLOAT, name = "reward_holder")
     val action_holder = tf.placeholder(dim(1), dtype = DT_INT32, name = "action_holder")
     
-    val responsible_output = tf.slice(weights, action_holder, tf.const(intArrayOf(1)), name = "responsible_weight")
-    val loss = tf.neg(tf.mul(tf.log(responsible_output), reward_holder))
+    val responsible_weight = tf.slice(weights, action_holder, tf.const(i(1)), name = "responsible_weight")
+    val loss = -(tf.log(responsible_weight) * reward_holder)
+//    val loss = tf.neg(tf.mul(tf.log(responsible_output), reward_holder))
     val train = tf.gradientDescentOptimizer(0.001f, loss)
     val init = tf.global_variable_initializer()
     println(tf.debugString())
@@ -44,8 +46,8 @@ class `Multi-armed bandit` : BaseTest() {
         else
           eval<Int>(chosen_action).get()
         val reward = pullBandit(bandit_arms[action])//Get our reward from picking one of the bandits.
-        feed(reward_holder to TensorValue(reward),
-             action_holder to TensorValue(action))
+        feed(reward_holder to TensorValue(dim(1), f(reward)),
+             action_holder to TensorValue(dim(1), i(action)))
         train.run()
         total_reward[action] += reward
         if (i % 50 == 0)

@@ -13,7 +13,7 @@ import org.bytedeco.javacpp.tensorflow.*
  * [Tensor] objects, which represent
  * the units of data that flow between operations.
  */
-class Graph {
+class Graph(val tf: TF) {
   val c_graph = newGraph()
   
   fun nodeBuilder(opType: String, name: String) = OperationBuilder(this, opType, name)

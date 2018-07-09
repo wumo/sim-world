@@ -15,7 +15,7 @@ class TF {
     }
   }
   
-  val g = Graph()
+  val g = Graph(this)
   val trainables = mutableListOf<Tensor>()
   val init_ops = mutableListOf<Operation>()
   val scopes = ArrayDeque<Scope>().apply { addLast(Scope()) }

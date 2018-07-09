@@ -34,6 +34,6 @@ class Tensor(val op: Operation, val value_index: Int, val dtype: Int) {
     throwExceptionIfNotOk(status)
     Dimension(dims)
   }
-  
+  val tf = op.graph.tf
   fun asTF_Output() = TF_Output().oper(op.c_op).index(value_index)
 }

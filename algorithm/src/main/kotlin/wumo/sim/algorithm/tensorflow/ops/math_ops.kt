@@ -5,15 +5,19 @@ import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.binaryOp
 import wumo.sim.algorithm.tensorflow.unaryOp
 
+operator fun Tensor.plus(b: Tensor) = tf.add(this, b)
 fun TF.add(a: Tensor, b: Tensor, name: String = "Add") =
     binaryOp("Add", a, b, name)
 
+operator fun Tensor.minus(b: Tensor) = tf.sub(this, b)
 fun TF.sub(a: Tensor, b: Tensor, name: String = "Sub") =
     binaryOp("Sub", a, b, name)
 
+operator fun Tensor.times(b: Tensor) = tf.mul(this, b)
 fun TF.mul(a: Tensor, b: Tensor, name: String = "Mul") =
     binaryOp("Mul", a, b, name)
 
+operator fun Tensor.div(b: Tensor) = tf.div(this, b)
 fun TF.div(a: Tensor, b: Tensor, name: String = "Div") =
     binaryOp("Div", a, b, name)
 
@@ -44,6 +48,7 @@ fun TF.square(a: Tensor, name: String = "Square") =
 fun TF.log(a: Tensor, name: String = "Log") =
     unaryOp("Log", a, name)
 
+operator fun Tensor.unaryMinus() = tf.neg(this)
 fun TF.neg(a: Tensor, name: String = "Neg") =
     unaryOp("Neg", a, name)
 
