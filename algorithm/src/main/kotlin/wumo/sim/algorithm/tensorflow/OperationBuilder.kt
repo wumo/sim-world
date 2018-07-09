@@ -107,10 +107,9 @@ class OperationBuilder(val graph: Graph, val opType: String, val name: String) {
   }
   
   fun <T> setAttr(name: String, value: TensorValue<T>): OperationBuilder {
-    val status = TF_NewStatus()
+    val status = newStatus()
     TF_SetAttrTensor(c_opDesc, name, value.c_tensor, status)
     throwExceptionIfNotOk(status)
-    TF_DeleteStatus(status)
     return this
   }
   
@@ -120,11 +119,23 @@ class OperationBuilder(val graph: Graph, val opType: String, val name: String) {
   }
   
   fun setAttr(name: String, attrValue: AttrValue): OperationBuilder {
-    val status = TF_NewStatus()
+    val status = newStatus()
     val buf = attrValue.SerializeAsString()
     TF_SetAttrValueProto(c_opDesc, name, buf, buf.limit(), status)
     throwExceptionIfNotOk(status)
-    TF_DeleteStatus(status)
+    return this
+  }
+  
+  fun setAttr(name: String, tensor_shape_proto: TensorShapeProto): OperationBuilder {
+    val status = newStatus()
+    val buf = tensor_shape_proto.SerializeAsString()
+    TF_SetAttrTensorShapeProto(c_opDesc, name, buf, buf.limit(), status)
+    throwExceptionIfNotOk(status)
+    return this
+  }
+  
+  fun setDevice(device: String): OperationBuilder {
+    TF_SetDevice(c_opDesc, device)
     return this
   }
 }

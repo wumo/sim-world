@@ -7,6 +7,8 @@ import wumo.sim.algorithm.tensorflow.TensorValue
 import wumo.sim.algorithm.tensorflow.contrib.fully_connected
 import wumo.sim.algorithm.tensorflow.contrib.one_hot_encoding
 import wumo.sim.algorithm.tensorflow.ops.*
+import wumo.sim.algorithm.tensorflow.tf
+import wumo.sim.algorithm.tensorflow.training.GradientDescentOptimizer
 import wumo.sim.algorithm.util.dim
 import wumo.sim.algorithm.util.helpers.NDArray
 import wumo.sim.algorithm.util.helpers.a
@@ -14,6 +16,8 @@ import wumo.sim.algorithm.util.helpers.f
 import wumo.sim.algorithm.util.helpers.i
 import wumo.sim.algorithm.util.x
 import wumo.sim.util.math.Rand
+import wumo.sim.util.math.argmax
+import wumo.sim.util.math.argmin
 
 class Contextual_Bandit : BaseTest() {
   @Test
@@ -49,17 +53,21 @@ class Contextual_Bandit : BaseTest() {
     val action_holder = tf.placeholder(dim(1), dtype = DT_INT32, name = "action_holder")
     
     val responsible_output = tf.slice(output, action_holder, tf.const(i(1)), name = "responsible_weight")
-    val loss = tf.neg(tf.mul(tf.log(responsible_output), reward_holder))
-    val train = tf.gradientDescentOptimizer(0.001f, loss)
+    val loss = -(tf.log(responsible_output) * reward_holder)
+//    val loss = tf.neg(tf.mul(tf.log(responsible_output), reward_holder))
+    val optimizer = GradientDescentOptimizer(learningRate = 0.001f)
+    val train = optimizer.minimize(loss, name = "train")
+//    val train = tf.gradientDescentOptimizer(0.001f, loss)
     val init = tf.global_variable_initializer()
     printGraph()
-    
+    val weights = tf.trainables[0]
     val total_episodes = 10000
     val total_reward = NDArray.zeros(dim(num_bandits))
     val e = 0.1
     tf.session {
       init.run()
       var i = 0
+      var ww: TensorValue<Float>? = null
       while (i < total_episodes) {
         val s = getbandit()
         val action = if (Rand().nextDouble() < e)
@@ -74,7 +82,7 @@ class Contextual_Bandit : BaseTest() {
              action_holder to TensorValue(dim(1), i(action)),
              state_in to TensorValue(dim(1), i(s)))
         target(train)
-        eval()
+        ww = eval(weights)
         
         total_reward[s] += reward
         if (i % 500 == 0) {
@@ -85,6 +93,13 @@ class Contextual_Bandit : BaseTest() {
           println("]")
         }
         i++
+      }
+      ww!!
+      for (i in 0 until num_bandits) {
+        val best_a = argmax(0 until num_actions) { ww[i, it].toDouble() }
+        val actua_a = argmin(0..bandits[i].lastIndex) { bandits[i][it].toDouble() }
+        println("The agent thinks action $best_a for bandit $i is the most promising..." +
+                "and it was ${if (best_a == actua_a) "right" else "wrong"}")
       }
     }
   }

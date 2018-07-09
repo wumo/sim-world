@@ -3,15 +3,18 @@ package wumo.sim.algorithm.tensorflow.ops
 import org.junit.Test
 
 import org.junit.Assert.*
+import wumo.sim.algorithm.tensorflow.tf
+import wumo.sim.algorithm.tensorflow.training.GradientDescentOptimizer
 
 class GradientsKtTest : BaseTest() {
-
+  
   @Test
   fun gradientDescentOptimizer() {
     val x = tf.variable(1f, name = "x")
     val y = tf.variable(1f, name = "y")
     val z = tf.mul(x, y, "z")
-    val opt = tf.gradientDescentOptimizer(0.1f, z)
+    val optimizer = GradientDescentOptimizer(learningRate = 0.1f)
+    val opt = optimizer.minimize(z)
     val init = tf.global_variable_initializer()
     println(tf.debugString())
     tf.session {

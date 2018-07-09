@@ -4,6 +4,8 @@ import org.bytedeco.javacpp.tensorflow.*
 import org.junit.Test
 import wumo.sim.algorithm.tensorflow.TensorValue
 import wumo.sim.algorithm.tensorflow.ops.*
+import wumo.sim.algorithm.tensorflow.tf
+import wumo.sim.algorithm.tensorflow.training.GradientDescentOptimizer
 import wumo.sim.algorithm.util.dim
 import wumo.sim.algorithm.util.helpers.f
 import wumo.sim.algorithm.util.helpers.i
@@ -30,7 +32,8 @@ class `Multi-armed bandit` : BaseTest() {
     val responsible_weight = tf.slice(weights, action_holder, tf.const(i(1)), name = "responsible_weight")
     val loss = -(tf.log(responsible_weight) * reward_holder)
 //    val loss = tf.neg(tf.mul(tf.log(responsible_output), reward_holder))
-    val train = tf.gradientDescentOptimizer(0.001f, loss)
+    val optimizer = GradientDescentOptimizer(learningRate = 0.001f)
+    val train = optimizer.minimize(loss, name = "train")
     val init = tf.global_variable_initializer()
     println(tf.debugString())
     

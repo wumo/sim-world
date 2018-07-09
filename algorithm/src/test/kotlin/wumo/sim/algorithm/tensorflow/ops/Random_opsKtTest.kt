@@ -3,6 +3,7 @@ package wumo.sim.algorithm.tensorflow.ops
 import org.junit.Test
 
 import org.junit.Assert.*
+import wumo.sim.algorithm.tensorflow.tf
 import wumo.sim.algorithm.util.x
 
 class Random_opsKtTest : BaseTest() {

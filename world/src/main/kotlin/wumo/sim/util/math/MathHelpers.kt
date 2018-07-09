@@ -43,3 +43,22 @@ fun <T> argmax(set: Iterable<T>, evaluate: (T) -> Double): T {
   }
   return max_a[Rand().nextInt(max_a.size)]
 }
+
+fun <T> argmin(set: Iterable<T>, evaluate: (T) -> Double): T {
+  val iterator = set.iterator()
+  val min_a = mutableListOf(iterator.next())
+  var min = evaluate(min_a[0])
+  while (iterator.hasNext()) {
+    val tmp = iterator.next()
+    val p = evaluate(tmp)
+    if (p < min) {
+      min = p
+      min_a.apply {
+        clear()
+        add(tmp)
+      }
+    } else if (p == min)
+      min_a.add(tmp)
+  }
+  return min_a[Rand().nextInt(min_a.size)]
+}

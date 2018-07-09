@@ -4,6 +4,7 @@ import org.bytedeco.javacpp.tensorflow.DT_INT32
 import org.junit.Test
 
 import org.junit.Assert.*
+import wumo.sim.algorithm.tensorflow.tf
 import wumo.sim.algorithm.util.helpers.f
 import wumo.sim.algorithm.util.x
 

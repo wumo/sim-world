@@ -10,3 +10,6 @@ inline fun s(vararg elements: Short) = elements
 inline fun i(vararg elements: Int) = elements
 inline fun l(vararg elements: Long) = elements
 inline fun <reified T> a(vararg elements: T) = elements as Array<T>
+
+fun arange(stop: Int) = IntArray(stop) { it }
+

@@ -4,15 +4,14 @@ import org.bytedeco.javacpp.tensorflow
 import wumo.sim.algorithm.tensorflow.TF
 import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.util.Dimension
-import wumo.sim.algorithm.util.helpers.d
 
 fun TF.random_uniform(shape: Dimension,
                       dtype: Int = tensorflow.DT_FLOAT,
                       name: String = "RandomUniform"): Tensor {
   subscope(name) {
-    val p = g.nodeBuilder("RandomUniform", ctx.name)
+    val p = g.nodeBuilder("RandomUniform", parentName)
         .setAttrType("dtype", dtype)
-        .addInput(const(shape.asLongArray(), "shape"))
+        .addInput(const(shape.asIntArray(), "shape"))
         .build()
     return Tensor(p, 0, dtype)
   }
@@ -26,7 +25,7 @@ fun TF.random_uniform(shape: Dimension,
     val min = const(min, "min")
     val max = const(max, "max")
 //    return rand * (max - min) + min
-    return add(rand * (max - min), min, ctx.useContextName())
+    return add(rand * (max - min), min, borrowParentName())
   }
 }
 

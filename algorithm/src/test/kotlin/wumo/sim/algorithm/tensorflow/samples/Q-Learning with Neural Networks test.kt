@@ -3,6 +3,8 @@ package wumo.sim.algorithm.tensorflow.samples
 import org.junit.Test
 import wumo.sim.algorithm.tensorflow.TensorValue
 import wumo.sim.algorithm.tensorflow.ops.*
+import wumo.sim.algorithm.tensorflow.tf
+import wumo.sim.algorithm.tensorflow.training.GradientDescentOptimizer
 import wumo.sim.algorithm.util.x
 import wumo.sim.envs.toy_text.FrozenLake
 import wumo.sim.util.math.Rand
@@ -17,8 +19,10 @@ class `Q-Learning with Neural Networks test` : BaseTest() {
     val predict = tf.argmax(Qout, 1, name = "predict")
     val nextQ = tf.placeholder(1 x 4, name = "nextQ")
     
-    val loss = tf.sum(tf.square(tf.sub(nextQ, Qout)), tf.const(intArrayOf(0, 1)))
-    val train = tf.gradientDescentOptimizer(0.1f, loss, "train")
+    val loss = tf.sum(tf.square(nextQ - Qout), tf.const(intArrayOf(0, 1)))
+    val optimizer = GradientDescentOptimizer(learningRate = 0.1f, name = "train")
+    val train = optimizer.minimize(loss)
+//    val train = tf.gradientDescentOptimizer(0.1f, loss, "train")
     val init = tf.global_variable_initializer()
     printGraph()
     tf.session {

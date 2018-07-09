@@ -47,7 +47,7 @@ fun TF.variable(shape: Dimension, initial_value: String, name: String = "Variabl
 private fun TF.variable(initializer: (String) -> Tensor, name: String, trainable: Boolean = true): Tensor {
   subscope(name) {
     val initial_value = initializer("initial_value")
-    val v = g.nodeBuilder("VariableV2", ctx.name)
+    val v = g.nodeBuilder("VariableV2", parentName)
         .setAttrType("dtype", initial_value.dtype)
         .setAttr("shape", initial_value.shape)
         .build()
@@ -61,7 +61,7 @@ private fun TF.variable(initializer: (String) -> Tensor, name: String, trainable
 fun TF.variable(shape: Dimension, dtype: Int, initializer: Initializer, name: String, trainable: Boolean = true): Tensor {
   subscope(name) {
     val initial_value = initializer(shape, dtype, "initial_value")
-    val v = g.nodeBuilder("VariableV2", ctx.name)
+    val v = g.nodeBuilder("VariableV2", parentName)
         .setAttrType("dtype", initial_value.dtype)
         .setAttr("shape", initial_value.shape)
         .build()
@@ -74,7 +74,7 @@ fun TF.variable(shape: Dimension, dtype: Int, initializer: Initializer, name: St
 
 fun TF.variable(initial_value: Tensor, name: String = "Variable", trainable: Boolean = true): Tensor {
   subscope(name) {
-    val v = g.nodeBuilder("VariableV2", ctx.name)
+    val v = g.nodeBuilder("VariableV2", parentName)
         .setAttrType("dtype", initial_value.dtype)
         .setAttr("shape", initial_value.shape)
         .build()

@@ -2,9 +2,11 @@ package wumo.sim.algorithm.tensorflow.samples
 
 import org.bytedeco.javacpp.tensorflow.*
 import org.junit.Test
+import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.contrib.fully_connected
 import wumo.sim.algorithm.tensorflow.contrib.one_hot_encoding
 import wumo.sim.algorithm.tensorflow.ops.*
+import wumo.sim.algorithm.tensorflow.tf
 import wumo.sim.algorithm.util.dim
 import wumo.sim.algorithm.util.helpers.i
 import wumo.sim.algorithm.util.x
@@ -34,10 +36,16 @@ class VanillaPolicyTest : BaseTest() {
     val reward_holder = tf.placeholder(dim(-1), dtype = DT_FLOAT, name = "reward_holder")
     val action_holder = tf.placeholder(dim(-1), dtype = DT_INT32, name = "action_holder")
     
+    val indexes = tf.range(tf.const(0), tf.shape(output)[0]) * tf.shape(output)[1] + action_holder
+    val responsible_output = tf.gather(tf.reshape(output, tf.const(i(-1))), indexes, name = "responsible_weight")
     
-    val responsible_output = tf.slice(output, action_holder, tf.const(i(1)), name = "responsible_weight")
-    val loss = tf.neg(tf.mul(tf.log(responsible_output), reward_holder))
-    val train = tf.gradientDescentOptimizer(0.001f, loss)
+    val loss = -tf.mean(tf.log(responsible_output) * reward_holder)
+    
+    val gradient_holders = mutableListOf<Tensor>()
+    for ((idx, v) in tf.trainables.withIndex())
+      gradient_holders += tf.placeholder(name = "${idx}_holder")
+    
+    val gradients = tf.gradients(loss, tf.trainables)
     val init = tf.global_variable_initializer()
     printGraph()
   }

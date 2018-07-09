@@ -19,9 +19,11 @@ internal val scalarDimension = Dimension()
 class Dimension(val elements: MutableList<Int> = mutableListOf()) : Iterable<Int> {
   constructor(elements: LongArray) : this(MutableList(elements.size) { elements[it].toInt() })
   
-  fun asLongArray(): LongArray {
-    return LongArray(elements.size) { elements[it].toLong() }
-  }
+  fun asLongArray() =
+      LongArray(elements.size) { elements[it].toLong() }
+  
+  fun asIntArray() =
+      IntArray(elements.size) { elements[it] }
   
   fun rank(): Int {
     return elements.size
@@ -32,6 +34,12 @@ class Dimension(val elements: MutableList<Int> = mutableListOf()) : Iterable<Int
   
   val otherDim
     get() = LongArray(elements.size - 1) { elements[it + 1].toLong() }
+  val is_fully_defined: Boolean
+    get() {
+      for (element in elements)
+        if (element < 0) return false
+      return true
+    }
   
   fun numElements() = elements.reduce { num, e ->
     num * e

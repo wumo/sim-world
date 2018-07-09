@@ -67,6 +67,7 @@ private fun TF.const(shape: Dimension, dtype: Int, name: String = "Const", set_v
   tensor_proto.mutable_tensor().apply {
     set_dtype(dtype)
     mutable_tensor_shape().apply {
+      this.set_unknown_rank(true)
       for (d in shape)
         add_dim().set_size(d.toLong())
     }

@@ -1,9 +1,10 @@
 package wumo.sim.algorithm.tensorflow.ops
 
-import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.algorithm.tensorflow.TF
+import wumo.sim.algorithm.tensorflow.Tensor
 
-fun TF.applyGradientDescent(v: TF_Output, alpha: TF_Output, delta: TF_Output,
+
+fun TF.applyGradientDescent(v: Tensor, alpha: Tensor, delta: Tensor,
                             name: String = "ApplyGradientDescent") =
     g.nodeBuilder("ApplyGradientDescent", ctx.getUniqueFullName(name))
         .addInput(v)

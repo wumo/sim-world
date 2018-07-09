@@ -4,8 +4,12 @@ import org.bytedeco.javacpp.Loader
 import org.bytedeco.javacpp.tensorflow
 import org.bytedeco.javacpp.tensorflow.*
 import org.tensorflow.framework.GraphDef
+import sun.audio.AudioDevice.device
+import wumo.sim.algorithm.tensorflow.ops.group
 import wumo.sim.algorithm.tensorflow.ops.noOpDep
 import java.util.*
+
+var tf = TF()
 
 class TF {
   companion object {
@@ -18,14 +22,15 @@ class TF {
   val g = Graph(this)
   val trainables = mutableListOf<Tensor>()
   val init_ops = mutableListOf<Operation>()
+  val train_ops = mutableListOf<Operation>()
   val scopes = ArrayDeque<Scope>().apply { addLast(Scope()) }
   inline val ctx
     get() = scopes.last
   
-  inline fun <R> subscope(name: String, block: () -> R): R {
-    scopes.addLast(ctx.newSubscope(name))
+  inline fun <R> subscope(name: String, device: String = "", block: Scope.() -> R): R {
+    scopes.addLast(ctx.newSubscope(name, device))
     try {
-      return block()
+      return block(ctx)
     } finally {
       scopes.removeLast()
     }
@@ -38,7 +43,7 @@ class TF {
   }
   
   fun global_variable_initializer(): Operation {
-    return noOpDep(init_ops, name = "init")
+    return group(init_ops, name = "init")
   }
 }
 

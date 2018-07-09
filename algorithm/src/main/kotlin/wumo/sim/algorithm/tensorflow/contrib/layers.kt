@@ -17,7 +17,7 @@ fun TF.one_hot_encoding(labels: Tensor,
     val labels = if (labels.dtype == DT_INT32) cast(labels, DT_INT64) else labels
     return oneHot(labels, const(num_class, name = "depth"),
                   const(on_value, name = "on_value"),
-                  const(off_value, name = "off_value"), ctx.useContextName())
+                  const(off_value, name = "off_value"), borrowParentName())
   }
 }
 
