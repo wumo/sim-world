@@ -26,3 +26,13 @@ fun dtypeFromClass(c: Class<*>): Int {
 fun Int.name(): String {
   return org.tensorflow.framework.DataType.forNumber(this).name.toLowerCase().substring(3)
 }
+
+/**Returns a reference `DType` based on this `DType`.*/
+val Int.as_ref
+  get() = if (is_ref_dytpe) this else this + 100
+/**Returns `True` if this `DType` represents a reference type.*/
+val Int.is_ref_dytpe
+  get() = this > 100
+/**Returns a non-reference `DType` based on this `DType`.*/
+val Int.base_dtype
+  get() = if (is_ref_dytpe) this - 100 else this

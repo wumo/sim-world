@@ -10,7 +10,7 @@ fun TF.biasAdd(value: Tensor, bias: Tensor, name: String = "BiasAdd"): Tensor {
       .addInput(bias)
       .setAttr("data_format", "NHWC")
       .build()
-  return Tensor(op, 0, value.dtype)
+  return Tensor(op, 0)
 }
 
 fun TF.relu(features: Tensor, name: String = "Relu") =

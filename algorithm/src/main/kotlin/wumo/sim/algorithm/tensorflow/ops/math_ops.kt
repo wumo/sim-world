@@ -43,7 +43,7 @@ fun TF.mean(input: Tensor, axis: Tensor? = null, keep_dims: Boolean = false, nam
       .addInput(reductionDims(input, axis))
       .setAttr("keep_dims", keep_dims)
       .build()
-  return Tensor(op, 0, input.dtype)
+  return Tensor(op, 0)
 }
 
 fun TF.matmul(a: Tensor, b: Tensor, name: String = "MatMul") =
@@ -58,7 +58,7 @@ fun TF.argmax(a: Tensor, dim: Int, name: String = "ArgMax") =
           .addInput(a)
           .addInput(const(dim, "dimension"))
           .build()
-      Tensor(op, 0, a.dtype)
+      Tensor(op, 0)
     }
 
 fun TF.sigmoid(x: Tensor, name: String = "Sigmoid") =
@@ -79,7 +79,7 @@ fun TF.addN(vararg a: Tensor, name: String = "AddN") =
       val op = g.nodeBuilder("AddN", parentName)
           .addInputList(a as Array<Tensor>)
           .build()
-      Tensor(op, 0, a[0].dtype)
+      Tensor(op, 0)
     }
 
 fun TF.cast(x: Tensor, dstT: Int, name: String = "Cast"): Tensor {
@@ -89,7 +89,7 @@ fun TF.cast(x: Tensor, dstT: Int, name: String = "Cast"): Tensor {
         .addInput(x)
         .setAttrType("DstT", dstT)
         .build()
-    Tensor(op, 0, dstT)
+    Tensor(op, 0)
   }
 }
 
@@ -113,7 +113,7 @@ fun TF.range(start: Tensor, limit: Tensor, delta: Tensor = const(1), name: Strin
       .addInput(limit)
       .addInput(delta)
       .build()
-  return Tensor(op, 0, inferred_dtype)
+  return Tensor(op, 0)
 }
 
 fun TF.range(start: Tensor, limit: Tensor, delta: Tensor, dtype: Int, name: String = "Range"): Tensor {
@@ -122,5 +122,5 @@ fun TF.range(start: Tensor, limit: Tensor, delta: Tensor, dtype: Int, name: Stri
       .addInput(limit)
       .addInput(delta)
       .build()
-  return Tensor(op, 0, dtype)
+  return Tensor(op, 0)
 }

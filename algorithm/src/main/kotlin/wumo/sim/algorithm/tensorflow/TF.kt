@@ -4,9 +4,7 @@ import org.bytedeco.javacpp.Loader
 import org.bytedeco.javacpp.tensorflow
 import org.bytedeco.javacpp.tensorflow.*
 import org.tensorflow.framework.GraphDef
-import sun.audio.AudioDevice.device
 import wumo.sim.algorithm.tensorflow.ops.group
-import wumo.sim.algorithm.tensorflow.ops.noOpDep
 import java.util.*
 
 var tf = TF()
@@ -20,8 +18,8 @@ class TF {
   }
   
   val g = Graph(this)
-  val trainables = mutableListOf<Tensor>()
-  val init_ops = mutableListOf<Operation>()
+  val trainables = mutableListOf<Variable>()
+  val global_variables = mutableListOf<Variable>()
   val train_ops = mutableListOf<Operation>()
   val scopes = ArrayDeque<Scope>().apply { addLast(Scope()) }
   inline val ctx
@@ -43,7 +41,7 @@ class TF {
   }
   
   fun global_variable_initializer(): Operation {
-    return group(init_ops, name = "init")
+    return group(global_variables, name = "init")
   }
 }
 

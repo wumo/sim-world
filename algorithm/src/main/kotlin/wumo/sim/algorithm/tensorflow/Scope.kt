@@ -1,5 +1,7 @@
 package wumo.sim.algorithm.tensorflow
 
+import java.util.*
+
 typealias NameMap = HashMap<String, Int>
 
 /**
@@ -16,6 +18,8 @@ class Scope(val name_map: NameMap = NameMap(),
             val parentName: String = "", var device: String = "") {
   private var useParentScopeName = false
   private var usedOnce = false
+  var colocate_with: Operation? = null
+  val control_ops = ArrayDeque<Operation>()
   
   fun getUniqueName(prefix: String): String {
     var unique_name = prefix
@@ -51,10 +55,38 @@ class Scope(val name_map: NameMap = NameMap(),
       else
         Scope(parentName = getUniqueFullName(name), device = device)
   
-  inline fun with_device(dev: String, block: () -> Unit) {
+  inline fun <R> with_device(dev: String, block: () -> R): R {
     val tmp = device
     device = dev
-    block()
-    device = tmp
+    try {
+      return block()
+    } finally {
+      device = tmp
+    }
+  }
+  
+  inline fun <R> colocate_with(colocate_with: Tensor, block: () -> R) =
+      colocate_with(colocate_with.op, block)
+  
+  inline fun <R> colocate_with(colocate_with: Operation, block: () -> R): R {
+    val tmp = this.colocate_with
+    this.colocate_with = colocate_with
+    try {
+      return block()
+    } finally {
+      this.colocate_with = tmp
+    }
+  }
+  
+  inline fun <R> control_dependencies(control_inputs: List<Operation>, block: () -> R): R {
+    val size = control_inputs.size
+    control_ops += control_inputs
+    try {
+      return block()
+    } finally {
+      repeat(size) {
+        control_ops.removeLast()
+      }
+    }
   }
 }

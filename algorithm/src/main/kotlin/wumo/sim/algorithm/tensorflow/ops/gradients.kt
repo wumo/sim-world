@@ -22,7 +22,7 @@ fun TF.gradients(y: Tensor, xs: List<Tensor>): List<Tensor> {
   return MutableList(trainables.size) {
     val output = dy.position(it.toLong())
     val out_type = TF_OperationOutputType(output)
-    Tensor(Operation(g, output.oper()), output.index(), out_type)
+    Tensor(Operation(g, output.oper()), output.index())
   }
 }
 
@@ -43,7 +43,7 @@ fun TF.gradients(ys: List<Tensor>, xs: List<Tensor>): List<Tensor> {
   throwExceptionIfNotOk(status)
   return MutableList(trainables.size) {
     val output = dy.position(it.toLong())
-    Tensor(Operation(g, output.oper()), output.index(), trainables[it].dtype)
+    Tensor(Operation(g, output.oper()), output.index())
   }
 }
 

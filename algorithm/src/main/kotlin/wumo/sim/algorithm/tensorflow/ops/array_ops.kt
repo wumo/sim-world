@@ -17,7 +17,7 @@ fun TF.placeholder(dtype: Int = DT_FLOAT, name: String = "Placeholder"): Tensor 
       .setAttrType("dtype", dtype)
       .setAttr("shape", tensor_shape_proto)
       .build()
-  return Tensor(p, 0, dtype)
+  return Tensor(p, 0)
 }
 
 fun TF.placeholder(shape: Dimension, dtype: Int = DT_FLOAT, name: String = "Placeholder"): Tensor {
@@ -25,7 +25,7 @@ fun TF.placeholder(shape: Dimension, dtype: Int = DT_FLOAT, name: String = "Plac
       .setAttrType("dtype", dtype)
       .setAttr("shape", shape)
       .build()
-  return Tensor(p, 0, dtype)
+  return Tensor(p, 0)
 }
 
 fun TF.zerosLike(x: Tensor, name: String = "ZerosLike") =
@@ -33,6 +33,10 @@ fun TF.zerosLike(x: Tensor, name: String = "ZerosLike") =
 
 fun TF.onesLike(x: Tensor, name: String = "OnesLike") =
     unaryOp("OnesLike", x, name)
+
+fun TF.zeros(shape: Tensor, dtype: Int = DT_FLOAT, name: String = "Ones"): Tensor {
+  TODO()
+}
 
 fun TF.zeros(shape: Dimension, dtype: Int = DT_FLOAT, name: String = "Ones"): Tensor {
   subscope(name) {
@@ -61,7 +65,7 @@ fun TF.ones(shape: Dimension, dtype: Int = DT_FLOAT, name: String = "Ones"): Ten
 }
 
 fun TF.fill(dims: Tensor, value: Tensor, name: String = "Fill") =
-    binaryOp("Fill", dims, value, name, value.dtype)
+    binaryOp("Fill", dims, value, name)
 
 fun TF.reshape(tensor: Tensor, shape: Tensor, name: String = "Reshape") =
     binaryOp("Reshape", tensor, shape, name)
@@ -73,7 +77,7 @@ fun TF.slice(input: Tensor, begin: Tensor, size: Tensor, name: String = "Slice")
       .addInput(begin)
       .addInput(size)
       .build()
-  return Tensor(v, 0, input.dtype)
+  return Tensor(v, 0)
 }
 
 fun TF.oneHot(indices: Tensor, depth: Tensor, on_value: Tensor, off_value: Tensor,
@@ -85,7 +89,7 @@ fun TF.oneHot(indices: Tensor, depth: Tensor, on_value: Tensor, off_value: Tenso
       .addInput(on_value)
       .addInput(off_value)
       .build()
-  return Tensor(v, 0, on_value.dtype)
+  return Tensor(v, 0)
 }
 
 fun TF.shape(input: Tensor, name: String = "Shape", optimize: Boolean = true): Tensor {
@@ -98,7 +102,7 @@ fun TF.shape(input: Tensor, name: String = "Shape", optimize: Boolean = true): T
       .addInput(input)
       .setAttrType("out_type", out_type)
       .build()
-  return Tensor(op, 0, out_type)
+  return Tensor(op, 0)
 }
 
 operator fun Tensor.get(vararg idx: Int): Tensor {
@@ -127,7 +131,7 @@ fun TF.strideSlice(input: Tensor, begin: Tensor, end: Tensor, strides: Tensor,
       .setAttr("new_axis_mask", attrs.new_axis_mask_)
       .setAttr("shrink_axis_mask", attrs.shrink_axis_mask_)
       .build()
-  return Tensor(op, 0, input.dtype)
+  return Tensor(op, 0)
 }
 
 fun TF.gather(params: Tensor, indices: Tensor, axis: Int = 0, name: String = "GatherV2"): Tensor {
@@ -140,7 +144,7 @@ fun TF.gather(params: Tensor, indices: Tensor, axis: Int = 0, name: String = "Ga
       .addInput(indices)
       .addInput(const(axis))
       .build()
-  return Tensor(op, 0, params.dtype)
+  return Tensor(op, 0)
 }
 
 fun TF.rank(input: Tensor, name: String = "Rank", optimize: Boolean = true): Tensor {
@@ -148,5 +152,5 @@ fun TF.rank(input: Tensor, name: String = "Rank", optimize: Boolean = true): Ten
   val input_shape = input.shape
   if (optimize && input_shape.is_fully_defined)
     return const(input_shape.rank(), name)
-  return unaryOp("Rank", input, name, DT_INT32)
+  return unaryOp("Rank", input, name)
 }

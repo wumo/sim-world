@@ -1,10 +1,53 @@
 package wumo.sim.algorithm.tensorflow
 
+import org.bytedeco.javacpp.PointerPointer
 import org.bytedeco.javacpp.tensorflow.*
 
 class Operation(val graph: Graph, val c_op: TF_Operation) {
   val name = TF_OperationName(c_op).string
   val device = TF_OperationDevice(c_op).string
   val opType = TF_OperationOpType(c_op).string
-  
+  val inputs: List<Tensor>
+    get() {
+      val numInputs = TF_OperationNumInputs(c_op)
+      
+      return List(numInputs) {
+        Tensor(
+            Operation(graph, c_op),
+            it,
+            TF_OperationInputType(TF_Input().oper(c_op).index(it)))
+      }
+    }
+  val outputs: List<Tensor>
+    get() {
+      val numOutputs = TF_OperationNumOutputs(c_op)
+      
+      return List(numOutputs) {
+        Tensor(
+            Operation(graph, c_op),
+            it,
+            TF_OperationOutputType(TF_Output().oper(c_op).index(it)))
+      }
+    }
+  val control_inputs: List<Operation>
+    get() {
+      val numControlOps = TF_OperationNumControlInputs(c_op)
+      val control_ops = PointerPointer<TF_Operation>(numControlOps.toLong())
+      TF_OperationGetControlInputs(c_op, control_ops, numControlOps)
+      return List(numControlOps) {
+        Operation(graph, control_ops.get(TF_Operation::class.java, it.toLong()))
+      }
+    }
+  val output_types: List<Int>
+    get() {
+      val numOutputs = TF_OperationNumOutputs(c_op)
+      
+      return List(numOutputs) {
+        TF_OperationOutputType(TF_Output().oper(c_op).index(it))
+      }
+    }
+  val attr: Map<String, Any>
+    get() {
+      TODO()
+    }
 }

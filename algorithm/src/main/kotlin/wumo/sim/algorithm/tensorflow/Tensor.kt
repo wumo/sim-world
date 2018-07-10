@@ -4,6 +4,8 @@ import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
 import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.algorithm.util.Dimension
 
+interface TensorLike
+
 /**
  * Represents one of the outputs of an `Operation`.
  *
@@ -22,7 +24,8 @@ import wumo.sim.algorithm.util.Dimension
  * `Tensor` can be computed by passing it to@{tf.Session.run}.
  * `t.eval()` is a shortcut for calling`tf.get_default_session().run(t)`.
  */
-class Tensor(val op: Operation, val value_index: Int, val dtype: Int) {
+open class Tensor(val op: Operation, val value_index: Int) : TensorLike {
+  val dtype: Int = op.output_types[value_index]
   val shape: Dimension by lazy {
     val c_graph = op.graph.c_graph
     val output = asTF_Output()
@@ -37,4 +40,23 @@ class Tensor(val op: Operation, val value_index: Int, val dtype: Int) {
   val tf = op.graph.tf
   fun asTF_Output() = TF_Output().oper(op.c_op).index(value_index)
   
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (javaClass != other?.javaClass) return false
+    
+    other as Tensor
+    
+    if (op != other.op) return false
+    if (value_index != other.value_index) return false
+    if (dtype != other.dtype) return false
+    
+    return true
+  }
+  
+  override fun hashCode(): Int {
+    var result = op.hashCode()
+    result = 31 * result + value_index
+    result = 31 * result + dtype
+    return result
+  }
 }

@@ -1,6 +1,7 @@
 package wumo.sim.algorithm.tensorflow.training
 
 import wumo.sim.algorithm.tensorflow.Tensor
+import wumo.sim.algorithm.tensorflow.Variable
 import wumo.sim.algorithm.tensorflow.ops.applyGradientDescent
 import wumo.sim.algorithm.tensorflow.ops.cast
 import wumo.sim.algorithm.tensorflow.ops.const
@@ -14,7 +15,7 @@ class GradientDescentOptimizer(val learningRate: Float,
     lr_t = tf.const(learningRate, name = "learning_rate")
   }
   
-  override fun apply_dense(grad: Tensor, v: Tensor) =
+  override fun apply_dense(grad: Tensor, v: Variable) =
       tf.applyGradientDescent(v, tf.cast(lr_t, v.dtype), grad)
   
 }

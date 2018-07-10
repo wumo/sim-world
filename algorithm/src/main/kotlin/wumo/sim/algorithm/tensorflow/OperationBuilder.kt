@@ -10,26 +10,33 @@ fun TF.unaryOp(op: String, a: Tensor, name: String, dtype: Int = a.dtype): Tenso
   val op = g.nodeBuilder(op, ctx.getUniqueFullName(name))
       .addInput(a)
       .build()
-  return Tensor(op, 0, a.dtype)
+  return Tensor(op, 0)
 }
 
-fun TF.binaryOp(op: String, a: Tensor, b: Tensor, name: String, dtype: Int = a.dtype): Tensor {
+fun TF.binaryOp(op: String, a: Tensor, b: Tensor, name: String): Tensor {
   val op = g.nodeBuilder(op, ctx.getUniqueFullName(name))
       .addInput(a)
       .addInput(b)
       .build()
-  return Tensor(op, 0, a.dtype)
+  return Tensor(op, 0)
 }
 
 class OperationBuilder(val graph: Graph, val opType: String, val name: String) {
   private var c_opDesc: TF_OperationDescription = TF_NewOperation(graph.c_graph, opType, name)
   
   fun build(): Operation {
+    addContextControlInput()
     val status = newStatus()
     val nativeOp = TF_FinishOperation(c_opDesc, status)
     throwExceptionIfNotOk(status)
     val op = Operation(graph, nativeOp)
     return op
+  }
+  
+  private fun addContextControlInput(): OperationBuilder {
+    for (control_op in tf.ctx.control_ops)
+      addControlInput(control_op)
+    return this
   }
   
   fun addInput(input: TF_Output): OperationBuilder {

@@ -4,6 +4,7 @@ import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.algorithm.tensorflow.TF
 import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.TensorValue
+import wumo.sim.algorithm.tensorflow.base_dtype
 import wumo.sim.algorithm.util.Dimension
 import wumo.sim.algorithm.util.dim
 import wumo.sim.algorithm.util.helpers.toByte
@@ -78,13 +79,13 @@ private fun TF.const(shape: Dimension, dtype: Int, name: String = "Const", set_v
       .setAttr("value", tensor_proto)
       .setAttrType("dtype", dtype)
       .build()
-  return Tensor(op, 0, dtype)
+  return Tensor(op, 0)
 }
 
 fun <T> TF.const(value: TensorValue<T>, name: String = "Const"): Tensor {
   val op = g.nodeBuilder("Const", ctx.getUniqueFullName(name))
       .setAttr("value", value)
-      .setAttrType("dtype", value.dtype)
+      .setAttrType("dtype", value.dtype.base_dtype)
       .build()
-  return Tensor(op, 0, value.dtype)
+  return Tensor(op, 0)
 }
