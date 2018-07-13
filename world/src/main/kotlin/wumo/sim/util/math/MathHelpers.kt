@@ -25,7 +25,8 @@ fun <T> max(set: Iterable<T>, default: Double = Double.NaN, evaluate: T.(T) -> D
   return max
 }
 
-fun <T> argmax(set: Iterable<T>, evaluate: (T) -> Double): T {
+fun <T, N> argmax(set: Iterable<T>, evaluate: (T) -> N): T
+    where N : Number, N : Comparable<N> {
   val iterator = set.iterator()
   val max_a = mutableListOf(iterator.next())
   var max = evaluate(max_a[0])
@@ -44,7 +45,8 @@ fun <T> argmax(set: Iterable<T>, evaluate: (T) -> Double): T {
   return max_a[Rand().nextInt(max_a.size)]
 }
 
-fun <T> argmin(set: Iterable<T>, evaluate: (T) -> Double): T {
+fun <T, N> argmin(set: Iterable<T>, evaluate: (T) -> N): T
+    where N : Number, N : Comparable<N> {
   val iterator = set.iterator()
   val min_a = mutableListOf(iterator.next())
   var min = evaluate(min_a[0])

@@ -1,8 +1,14 @@
 package wumo.sim.algorithm.tensorflow
 
+import wumo.sim.algorithm.tensorflow.ops.CondContext
+import wumo.sim.algorithm.util.tuples.tuple3
 import java.util.*
 
 typealias NameMap = HashMap<String, Int>
+
+interface ControlFlowContext {
+  fun addOp(op: Operation)
+}
 
 /**
  * @param name_map A NameMap is used to keep track of suffixes for names used in a scope. A
@@ -20,6 +26,7 @@ class Scope(val name_map: NameMap = NameMap(),
   private var usedOnce = false
   var colocate_with: Operation? = null
   val control_ops = ArrayDeque<Operation>()
+  var control_flow_ctx: ControlFlowContext? = null
   
   fun getUniqueName(prefix: String): String {
     var unique_name = prefix
@@ -87,6 +94,22 @@ class Scope(val name_map: NameMap = NameMap(),
       repeat(size) {
         control_ops.removeLast()
       }
+    }
+  }
+  
+  /**
+   * Creates a `CondContext`.
+   *
+   * @param pred  The `boolean` tensor for the conditional predicate.
+   * @param pivot The predicate tensor in this branch.
+   * @param branch 0 or 1 representing this branch.
+   */
+  inline fun <R> condCtx(pred: Tensor, pivot: Tensor, branch: Int, block: () -> R): R {
+    control_flow_ctx = CondContext(pred, pivot, branch)
+    try {
+      return block()
+    } finally {
+      control_flow_ctx = null
     }
   }
 }

@@ -25,6 +25,24 @@ class TF {
   inline val ctx
     get() = scopes.last
   
+  inline fun <R> init_subsope(name: String, device: String = "", block: Scope.() -> R): R {
+    scopes.addLast(scopes.first)//添加初始scope
+    try {
+      return subscope(name, device, block)
+    } finally {
+      scopes.removeLast()
+    }
+  }
+  
+  inline fun <R> init_scope(block: Scope.() -> R): R {
+    scopes.addLast(scopes.first)//添加初始scope
+    try {
+      return block(ctx)
+    } finally {
+      scopes.removeLast()
+    }
+  }
+  
   inline fun <R> subscope(name: String, device: String = "", block: Scope.() -> R): R {
     scopes.addLast(ctx.newSubscope(name, device))
     try {
@@ -33,6 +51,24 @@ class TF {
       scopes.removeLast()
     }
   }
+  
+  inline fun <R> with_device(dev: String, block: Scope.() -> R): R =
+      ctx.with_device(dev) { block(ctx) }
+  
+  inline fun <R> colocate_with(colocate_with: Tensor, block: Scope.() -> R) =
+      colocate_with(colocate_with.op) { block(ctx) }
+  
+  inline fun <R> colocate_with(colocate_with: Operation, block: Scope.() -> R) =
+      ctx.colocate_with(colocate_with) { block(ctx) }
+  
+  inline fun <R> control_dependencies(control_inputs: List<Operation>, block: Scope.() -> R) =
+      ctx.control_dependencies(control_inputs) { block(ctx) }
+  
+  /**
+   * @see [Scope.condCtx]
+   */
+  inline fun <R> condCtx(pred: Tensor, pivot: Tensor, branch: Int, block: Scope.() -> R) =
+      ctx.condCtx(pred, pivot, branch) { block(ctx) }
   
   fun debugString() = GraphDef.parseFrom(g.toGraphDef()).toString()
   

@@ -24,8 +24,8 @@ interface TensorLike
  * `Tensor` can be computed by passing it to@{tf.Session.run}.
  * `t.eval()` is a shortcut for calling`tf.get_default_session().run(t)`.
  */
-open class Tensor(val op: Operation, val value_index: Int) : TensorLike {
-  val dtype: Int = op.output_types[value_index]
+open class Tensor(val op: Operation, val value_index: Int, isInput: Boolean = false) : TensorLike {
+  val dtype: Int = if (isInput) op.input_types[value_index] else op.output_types[value_index]
   val shape: Dimension by lazy {
     val c_graph = op.graph.c_graph
     val output = asTF_Output()
@@ -59,4 +59,11 @@ open class Tensor(val op: Operation, val value_index: Int) : TensorLike {
     result = 31 * result + dtype
     return result
   }
+  
+  /**
+   * 主要用于[Variable]输出的tensor并不是自己，而是[Variable.snapshot]
+   */
+  open fun value() = this
+  
+  open fun asRef(): Tensor = throw UnsupportedOperationException("This tensor is not mutable!")
 }

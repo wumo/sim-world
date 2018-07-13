@@ -96,8 +96,8 @@ class Contextual_Bandit : BaseTest() {
       }
       ww!!
       for (i in 0 until num_bandits) {
-        val best_a = argmax(0 until num_actions) { ww[i, it].toDouble() }
-        val actua_a = argmin(0..bandits[i].lastIndex) { bandits[i][it].toDouble() }
+        val best_a = argmax(0 until num_actions) { ww[i, it] }
+        val actua_a = argmin(0..bandits[i].lastIndex) { bandits[i][it] }
         println("The agent thinks action $best_a for bandit $i is the most promising..." +
                 "and it was ${if (best_a == actua_a) "right" else "wrong"}")
       }

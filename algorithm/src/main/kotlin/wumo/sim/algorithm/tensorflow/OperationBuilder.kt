@@ -30,7 +30,14 @@ class OperationBuilder(val graph: Graph, val opType: String, val name: String) {
     val nativeOp = TF_FinishOperation(c_opDesc, status)
     throwExceptionIfNotOk(status)
     val op = Operation(graph, nativeOp)
+    control_flow_post_processing(op)
     return op
+  }
+  
+  private fun control_flow_post_processing(op: Operation) {
+    tf.ctx.control_flow_ctx?.apply {
+      this.addOp(op)
+    }
   }
   
   private fun addContextControlInput(): OperationBuilder {
@@ -45,14 +52,6 @@ class OperationBuilder(val graph: Graph, val opType: String, val name: String) {
   }
   
   fun addInput(input: Tensor) = addInput(input.asTF_Output())
-  
-  fun addInputList(input: Array<TF_Output>): OperationBuilder {
-    val inputs = TF_Output(input.size.toLong())
-    for ((i, input) in input.withIndex())
-      inputs.position(i.toLong()).oper(input.oper()).index(input.index())
-    TF_AddInputList(c_opDesc, inputs.position(0L), input.size)
-    return this
-  }
   
   fun addInputList(input: Array<Tensor>): OperationBuilder {
     val inputs = TF_Output(input.size.toLong())

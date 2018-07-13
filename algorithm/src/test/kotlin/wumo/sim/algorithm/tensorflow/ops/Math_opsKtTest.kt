@@ -1,11 +1,13 @@
 package wumo.sim.algorithm.tensorflow.ops
 
+import org.bytedeco.javacpp.tensorflow
 import org.bytedeco.javacpp.tensorflow.DT_INT32
 import org.junit.Test
 
 import org.junit.Assert.*
 import wumo.sim.algorithm.tensorflow.tf
 import wumo.sim.algorithm.util.helpers.f
+import wumo.sim.algorithm.util.helpers.println
 import wumo.sim.algorithm.util.x
 
 class Math_opsKtTest : BaseTest() {
@@ -15,10 +17,13 @@ class Math_opsKtTest : BaseTest() {
     val A = tf.const(1 x 4, f(1f, 2f, 3f, 4f))
     val B = tf.const(4 x 1, f(1f, 2f, 3f, 4f))
     val C = tf.matmul(A, B)
-    printGraph()
-    tf.session {
-      C.eval()
-    }
+    val node = tensorflow.Node(C.op.c_op)
+    node.DebugString().string.println()
+    
+//    printGraph()
+//    tf.session {
+//      C.eval()
+//    }
   }
   
   @Test

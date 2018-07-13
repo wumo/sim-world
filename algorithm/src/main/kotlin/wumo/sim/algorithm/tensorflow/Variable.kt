@@ -20,7 +20,9 @@ class Variable(op: Operation, value_index: Int) : Tensor(op, value_index) {
    * @return A `Tensor` holding the value of this variable after its initializer has run.
    */
   fun initialized_value() =
-      tf.cond(is_variable_initialized(), ::read_value, { initial_value })
+      tf.init_scope {
+        tf.cond(is_variable_initialized(), ::read_value, { initial_value })
+      }
   
   /**
    * Tests if a variable has been initialized.
@@ -58,6 +60,7 @@ class Variable(op: Operation, value_index: Int) : Tensor(op, value_index) {
    * @return A [Tensor] suitable to initialize a variable.
    */
   fun try_guard_against_uninitialized_dependencies(initial_value: Tensor): Tensor {
+    /**Detect cycles in the dependencies of [initial_value].*/
     fun has_cycle(op: Operation, path: MutableSet<String>): Boolean {
       if (op.name in path) return true
       path += op.name
@@ -148,4 +151,8 @@ class Variable(op: Operation, value_index: Int) : Tensor(op, value_index) {
         return v.initialized_value()
     return null
   }
+  
+  override fun value() = snapshot
+  
+  override fun asRef() = this
 }

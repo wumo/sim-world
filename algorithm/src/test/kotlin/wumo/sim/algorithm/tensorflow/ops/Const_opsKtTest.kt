@@ -1,5 +1,6 @@
 package wumo.sim.algorithm.tensorflow.ops
 
+import org.bytedeco.javacpp.tensorflow
 import org.junit.After
 import org.junit.Before
 import org.junit.Test

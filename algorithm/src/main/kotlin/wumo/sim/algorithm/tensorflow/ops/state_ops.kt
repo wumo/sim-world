@@ -1,6 +1,5 @@
 package wumo.sim.algorithm.tensorflow.ops
 
-import org.bytedeco.javacpp.tensorflow.DT_BOOL
 import wumo.sim.algorithm.tensorflow.*
 import wumo.sim.algorithm.util.Dimension
 import wumo.sim.algorithm.util.dim
@@ -67,8 +66,8 @@ fun TF.variable(shape: Dimension, initial_value: Long, name: String = "Variable"
 fun TF.variable(shape: Dimension, initial_value: String, name: String = "Variable", trainable: Boolean = true) = variable({ const(shape, initial_value, it) }, name, trainable)
 
 private inline fun TF.variable(initializer: (String) -> Tensor, name: String, trainable: Boolean = true): Variable {
-  subscope(name) {
-    val initial_value = initializer("initial_value")
+  init_subsope(name) {
+    val initial_value = initializer("initial_value").value()
     val v = g.nodeBuilder("VariableV2", parentName)
         .setAttrType("dtype", initial_value.dtype.base_dtype)
         .setAttr("shape", initial_value.shape)
@@ -77,7 +76,10 @@ private inline fun TF.variable(initializer: (String) -> Tensor, name: String, tr
     val t = Variable(v, 0)
     t.initial_value = initial_value
     t.initializer_op = assign(t, t.try_guard_against_uninitialized_dependencies(initial_value))
-    ctx.colocate_with(t.op) {
+    //TODO: Change this class to not take caching_device, b
+    //ut to take the op to colocate the snapshot with, so we can use
+    //colocation rather than devices.
+    colocate_with(t.op) {
       t.snapshot = identity(t, name = "read")
     }
     if (trainable) trainables += t
@@ -94,7 +96,7 @@ fun TF.variable(initial_value: Tensor, name: String = "Variable", trainable: Boo
 
 fun TF.assign(ref: Tensor, value: Tensor, name: String = "Assign"): Operation {
   return g.nodeBuilder("Assign", ctx.getUniqueFullName(name))
-      .addInput(ref)
+      .addInput(ref.asRef())
       .addInput(value)
       .build()
 }

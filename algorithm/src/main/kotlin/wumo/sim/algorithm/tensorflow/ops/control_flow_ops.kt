@@ -9,6 +9,30 @@ import wumo.sim.algorithm.util.helpers.a
 import wumo.sim.algorithm.util.tuples.tuple2
 
 
+class CondContext(val pred: Tensor,
+                  val pivot: Tensor,
+                  val branch: Int) : ControlFlowContext {
+  override fun addOp(op: Operation) {
+    if (op.inputs.isEmpty()) {
+      //TODO Remove any external control dependency on this op
+      TODO()//add control input
+    } else {
+      for (i in 0 until op.inputs.size) {
+        val x = op.inputs[i]
+        val real_x = addValue(x)
+        if(real_x!=x)
+          op.update_input(i,real_x)
+      }
+    }
+    TODO("not implemented")
+  }
+  
+  /**Add `val` to the current context and its outer context recursively.*/
+  private fun addValue(x: Tensor): Tensor {
+    TODO("not implemented")
+  }
+}
+
 fun TF.group(inputs: List<Any>, name: String = "group_deps"): Operation {
   val ops_on_device = mutableMapOf<String, MutableList<Operation>>()
   for (input in inputs) {
@@ -55,7 +79,10 @@ fun TF.group(inputs: List<Any>, name: String = "group_deps"): Operation {
  * @return  Tensors returned by the call to either `true_fn` or `false_fn`. If the
  * callables return a singleton list, the element is extracted from the list.
  */
-fun TF.cond(pred: Tensor, true_fn: () -> Tensor, false_fn: () -> Tensor, name: String) {
+fun TF.cond(pred: Tensor,
+            true_fn: () -> Tensor,
+            false_fn: () -> Tensor,
+            name: String = "cond"): Tensor {
   val (p_2, p_1) = switch(pred, pred)
   val pivot_1 = identity(p_1, name = "switch_t")
   val pivot_2 = identity(p_2, name = "switch_f")
@@ -65,32 +92,19 @@ fun TF.cond(pred: Tensor, true_fn: () -> Tensor, false_fn: () -> Tensor, name: S
     g.prevent_fetching(tensor.op)
   
   //Build the graph for the true branch in a new context.
-  
+  val res_t = condCtx(pred, pivot_1, branch = 1) {
+    buildCondBranch(true_fn)
+  }
+  val res_f = condCtx(pred, pivot_2, branch = 0) {
+    buildCondBranch(false_fn)
+  }
+  return merge(res_t, res_f)[0]
 }
 
-/**
- * Forwards [data] to an output determined by [pred].
- *
- * If `pred` is false, the `data` input is forwarded to the first output.
- * Otherwise, the data goes to the second output.
- 
- * This op handles `Tensor`s and `IndexedSlices`.
- * @param data The tensor to be forwarded to the appropriate output.
- * @param pred A scalar that specifies which output port will receive data.
- * @param dtype Optional element type for the returned tensor. If missing,
- * the type is inferred from the type of `value`.
- * @param name A name for this operation (optional).
- * @return `(output_false, output_true)`: If `pred` is true, data will be forwarded
- * to `output_true`, otherwise it goes to `output_false`.
- */
-fun TF.switch(data: Tensor, pred: Tensor, name: String = "Switch"): Array<Tensor> {
-  val op = g.nodeBuilder("Switch", ctx.getUniqueFullName(name))
-      .addInput(data)
-      .addInput(pred)
-      .build()
-  val output_false = Tensor(op, 0)
-  val output_true = Tensor(op, 1)
-  return a(output_false, output_true)
+fun TF.buildCondBranch(fn: () -> Tensor): Tensor {
+  val t = fn()
+  
+  TODO()
 }
 
 /**
@@ -152,4 +166,54 @@ private fun TF.ref_merge(inputs: Array<Tensor>, name: String): Array<Tensor> {
   val output = Tensor(op, 0)
   val value_index = Tensor(op, 1)
   return a(output, value_index)
+}
+
+/**
+ * @see [switch]
+ */
+private fun TF.switchRefOrTensor(data: Tensor,
+                                 pred: Tensor,
+                                 name: String = "Switch"): Array<Tensor> {
+  tf.colocate_with(data) {
+    if (data.dtype.is_ref_dytpe)
+      return ref_switch(data, pred, name)
+    return switch(data, pred, name)
+  }
+}
+
+/**
+ * Forwards [data] to an output determined by [pred].
+ *
+ * If `pred` is false, the `data` input is forwarded to the first output.
+ * Otherwise, the data goes to the second output.
+ 
+ * This op handles `Tensor`s and `IndexedSlices`.
+ * @param data The tensor to be forwarded to the appropriate output.
+ * @param pred A scalar that specifies which output port will receive data.
+ * @param dtype Optional element type for the returned tensor. If missing,
+ * the type is inferred from the type of `value`.
+ * @param name A name for this operation (optional).
+ * @return `(output_false, output_true)`: If `pred` is true, data will be forwarded
+ * to `output_true`, otherwise it goes to `output_false`.
+ */
+fun TF.switch(data: Tensor, pred: Tensor, name: String = "Switch"): Array<Tensor> {
+  val op = g.nodeBuilder("Switch", ctx.getUniqueFullName(name))
+      .addInput(data)
+      .addInput(pred)
+      .build()
+  //TODO handle IndexedSlices and SparseTensor
+  val output_false = Tensor(op, 0)
+  val output_true = Tensor(op, 1)
+  return a(output_false, output_true)
+}
+
+fun TF.ref_switch(data: Tensor, pred: Tensor, name: String): Array<Tensor> {
+  val op = g.nodeBuilder("RefSwitch", ctx.getUniqueFullName(name))
+      .addInput(data)
+      .addInput(pred)
+      .build()
+  //TODO handle IndexedSlices and SparseTensor
+  val output_false = Tensor(op, 0)
+  val output_true = Tensor(op, 1)
+  return a(output_false, output_true)
 }
