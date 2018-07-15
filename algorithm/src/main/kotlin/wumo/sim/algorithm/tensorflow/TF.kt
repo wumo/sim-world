@@ -5,6 +5,7 @@ import org.bytedeco.javacpp.tensorflow
 import org.bytedeco.javacpp.tensorflow.*
 import org.tensorflow.framework.GraphDef
 import wumo.sim.algorithm.tensorflow.ops.group
+import wumo.sim.algorithm.util.helpers.println
 import java.util.*
 
 var tf = TF()
@@ -71,6 +72,9 @@ class TF {
       ctx.condCtx(pred, pivot, branch) { block(ctx) }
   
   fun debugString() = GraphDef.parseFrom(g.toGraphDef()).toString()
+  fun printGraph() {
+    tf.debugString().println()
+  }
   
   fun session(block: Session.() -> Unit) {
     block(Session(g.c_graph))
