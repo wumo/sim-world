@@ -24,4 +24,17 @@ class State_opsKtTest : BaseTest() {
       c.eval()
     }
   }
+  
+  @Test
+  fun `variable depend on variable`() {
+    val a = tf.variable(2 x 2, 1f, "a")
+    val b = tf.variable(a, name = "b")
+//    val init = tf.global_variable_initializer()
+    printGraph()
+    tf.session {
+      b.initializer_op.run()
+      a.initializer_op.run()
+      b.eval()
+    }
+  }
 }

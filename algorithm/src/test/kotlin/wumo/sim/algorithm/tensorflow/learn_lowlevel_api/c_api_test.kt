@@ -19,6 +19,5 @@ class c_api_test {
     node.DebugString().string.println()
     tf.printGraph()
     
-    tf.g.c_graph.
   }
 }

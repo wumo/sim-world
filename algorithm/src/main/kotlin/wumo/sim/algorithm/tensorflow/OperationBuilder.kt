@@ -30,7 +30,7 @@ class OperationBuilder(val graph: Graph, val opType: String, val name: String) {
     val nativeOp = TF_FinishOperation(c_opDesc, status)
     throwExceptionIfNotOk(status)
     val op = Operation(graph, nativeOp)
-    control_flow_post_processing(op)
+//    control_flow_post_processing(op)
     return op
   }
   

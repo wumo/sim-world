@@ -21,7 +21,7 @@ class Variable(op: Operation, value_index: Int) : Tensor(op, value_index) {
    */
   fun initialized_value() =
       tf.init_scope {
-        tf.cond(is_variable_initialized(), ::read_value, { initial_value })
+        tf.cond(is_variable_initialized(), { asRef() }, { initial_value })
       }
   
   /**

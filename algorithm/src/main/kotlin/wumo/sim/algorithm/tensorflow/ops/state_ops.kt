@@ -67,7 +67,7 @@ fun TF.variable(shape: Dimension, initial_value: String, name: String = "Variabl
 
 private inline fun TF.variable(initializer: (String) -> Tensor, name: String, trainable: Boolean = true): Variable {
   init_subsope(name) {
-    val initial_value = initializer("initial_value").value()
+    val initial_value = initializer("initial_value")
     val v = g.nodeBuilder("VariableV2", parentName)
         .setAttrType("dtype", initial_value.dtype.base_dtype)
         .setAttr("shape", initial_value.shape)

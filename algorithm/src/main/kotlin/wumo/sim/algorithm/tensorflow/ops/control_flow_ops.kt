@@ -20,8 +20,8 @@ class CondContext(val pred: Tensor,
       for (i in 0 until op.inputs.size) {
         val x = op.inputs[i]
         val real_x = addValue(x)
-        if(real_x!=x)
-          op.update_input(i,real_x)
+        if (real_x != x)
+          op.update_input(i, real_x)
       }
     }
     TODO("not implemented")
@@ -103,8 +103,8 @@ fun TF.cond(pred: Tensor,
 
 fun TF.buildCondBranch(fn: () -> Tensor): Tensor {
   val t = fn()
-  
-  TODO()
+  val cf: CondContext = ctx.control_flow_ctx as CondContext
+  return switchRefOrTensor(t, cf.pred)[cf.branch]
 }
 
 /**
