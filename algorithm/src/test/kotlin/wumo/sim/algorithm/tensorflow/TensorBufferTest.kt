@@ -1,23 +1,23 @@
 package wumo.sim.algorithm.tensorflow
 
-import wumo.sim.algorithm.tensorflow.ops.BaseTest
-
 import org.junit.Test
 import wumo.sim.algorithm.tensorflow.ops.const
 import wumo.sim.util.f
+import wumo.sim.util.ndarray.NDArray
 import wumo.sim.util.x
 
-class TensorValueTest {
+class TensorBufferTest {
   @Test
   fun `get set`() {
     tf
-    val t = TensorValue(2 x 2, f(1f, 2f, 3f, 4f))
+    val _t = TensorBuffer(2 x 2, f(1f, 2f, 3f, 4f))
+    val t = NDArray(2 x 2, _t)
     println(t)
     t[0, 0] = 3f
     println(t)
-    val t2 = TensorValue<Float>(t.c_tensor)
+    val t2 = TensorBuffer<Float>(_t.c_tensor)
     println(t2)
-    val t3 = TensorValue(1)
+    val t3 = TensorBuffer(1)
     println(t3)
     val a = tf.const(t3)
     tf.printGraph()

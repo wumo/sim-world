@@ -1,3 +1,5 @@
+@file:Suppress("UNCHECKED_CAST")
+
 package wumo.sim.algorithm.tensorflow
 
 import org.bytedeco.javacpp.PointerPointer
@@ -5,6 +7,7 @@ import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Session.newSession
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_SessionOptions.newSessionOptions
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
 import org.bytedeco.javacpp.tensorflow.*
+import wumo.sim.util.ndarray.NDArray
 import wumo.sim.util.tuple2
 import wumo.sim.util.tuple3
 import wumo.sim.util.tuple4
@@ -19,10 +22,10 @@ class Session(val c_graph: TF_Graph) {
     throwExceptionIfNotOk(status)
   }
   
-  val feed_dict = mutableListOf<Pair<Tensor, TensorValue<*>>>()
+  val feed_dict = mutableListOf<Pair<Tensor, NDArray<*>>>()
   val run_list = mutableListOf<Operation>()
   
-  fun Operation.run(vararg feeds: Pair<Tensor, TensorValue<*>>) {
+  fun Operation.run(vararg feeds: Pair<Tensor, NDArray<*>>) {
     feed_dict += feeds
     run_list += this
     _eval()
@@ -41,38 +44,38 @@ class Session(val c_graph: TF_Graph) {
   
   fun eval() = _eval()
   
-  fun <T> eval(t: Tensor): TensorValue<T> {
+  fun <T> eval(t: Tensor): NDArray<T> {
     val (t) = _eval(t)
-    return t as TensorValue<T>
+    return t as NDArray<T>
   }
   
-  fun <T1, T2> eval(t1: Tensor, t2: Tensor): tuple2<TensorValue<T1>, TensorValue<T2>> {
+  fun <T1, T2> eval(t1: Tensor, t2: Tensor): tuple2<NDArray<T1>, NDArray<T2>> {
     val (r1, r2) = _eval(t1, t2)
-    return tuple2(r1 as TensorValue<T1>, r2 as TensorValue<T2>)
+    return tuple2(r1 as NDArray<T1>, r2 as NDArray<T2>)
   }
   
-  fun <T1, T2, T3> eval(t1: Tensor, t2: Tensor, t3: Tensor): tuple3<TensorValue<T1>, TensorValue<T2>, TensorValue<T3>> {
+  fun <T1, T2, T3> eval(t1: Tensor, t2: Tensor, t3: Tensor): tuple3<NDArray<T1>, NDArray<T2>, NDArray<T3>> {
     val (r1, r2, r3) = _eval(t1, t2, t3)
-    return tuple3(r1 as TensorValue<T1>, r2 as TensorValue<T2>,
-                  r3 as TensorValue<T3>)
+    return tuple3(r1 as NDArray<T1>, r2 as NDArray<T2>,
+                  r3 as NDArray<T3>)
   }
   
   fun <T1, T2, T3, T4> eval(t1: Tensor, t2: Tensor, t3: Tensor, t4: Tensor):
-      tuple4<TensorValue<T1>, TensorValue<T2>, TensorValue<T3>, TensorValue<T4>> {
+      tuple4<NDArray<T1>, NDArray<T2>, NDArray<T3>, NDArray<T4>> {
     val (r1, r2, r3, r4) = _eval(t1, t2, t3, t4)
-    return tuple4(r1 as TensorValue<T1>, r2 as TensorValue<T2>,
-                  r3 as TensorValue<T3>, r4 as TensorValue<T4>)
+    return tuple4(r1 as NDArray<T1>, r2 as NDArray<T2>,
+                  r3 as NDArray<T3>, r4 as NDArray<T4>)
   }
   
   fun <T1, T2, T3, T4, T5> eval(t1: Tensor, t2: Tensor, t3: Tensor, t4: Tensor, t5: Tensor):
-      tuple5<TensorValue<T1>, TensorValue<T2>, TensorValue<T3>, TensorValue<T4>, TensorValue<T5>> {
+      tuple5<NDArray<T1>, NDArray<T2>, NDArray<T3>, NDArray<T4>, NDArray<T5>> {
     val (r1, r2, r3, r4, r5) = _eval(t1, t2, t3, t4, t5)
-    return tuple5(r1 as TensorValue<T1>, r2 as TensorValue<T2>,
-                  r3 as TensorValue<T3>, r4 as TensorValue<T4>,
-                  r5 as TensorValue<T5>)
+    return tuple5(r1 as NDArray<T1>, r2 as NDArray<T2>,
+                  r3 as NDArray<T3>, r4 as NDArray<T4>,
+                  r5 as NDArray<T5>)
   }
   
-  fun eval(fetch: List<Tensor>): Array<TensorValue<Any>> {
+  fun eval(fetch: List<Tensor>): Array<NDArray<Any>> {
     val status = newStatus()
     val (inputs, input_values, ninputs) = accumulateFeedDict()
     val (target_opers, ntargets) = accumulateRuns()
@@ -89,11 +92,11 @@ class Session(val c_graph: TF_Graph) {
     throwExceptionIfNotOk(status)
     clear()
     return Array(noutputs) {
-      TensorValue<Any>(output_values.get(TF_Tensor::class.java, it.toLong()))
+      TensorBuffer.toNDArray<Any>(output_values.get(TF_Tensor::class.java, it.toLong()))
     }
   }
   
-  fun _eval(vararg fetch: Tensor): Array<TensorValue<Any>> {
+  fun _eval(vararg fetch: Tensor): Array<NDArray<Any>> {
     val status = newStatus()
     val (inputs, input_values, ninputs) = accumulateFeedDict()
     val (target_opers, ntargets) = accumulateRuns()
@@ -110,7 +113,7 @@ class Session(val c_graph: TF_Graph) {
     throwExceptionIfNotOk(status)
     clear()
     return Array(noutputs) {
-      TensorValue<Any>(output_values.get(TF_Tensor::class.java, it.toLong()))
+      TensorBuffer.toNDArray<Any>(output_values.get(TF_Tensor::class.java, it.toLong()))
     }
   }
   
@@ -121,7 +124,7 @@ class Session(val c_graph: TF_Graph) {
     for ((i, pair) in feed_dict.withIndex()) {
       val (input, input_value) = pair
       inputs.position(i.toLong()).oper(input.op.c_op).index(input.value_index)
-      input_values.position(i.toLong()).put(input_value.c_tensor)
+      input_values.position(i.toLong()).put((input_value.raw as TensorBuffer).c_tensor)
     }
     inputs.position(0L)
     input_values.position(0L)
@@ -142,12 +145,12 @@ class Session(val c_graph: TF_Graph) {
   }
   
   
-  private fun Tensor.print(v: TensorValue<*>) {
+  private fun Tensor.print(v: NDArray<*>) {
     val prefix = "${op.name}:${dtype.name()}$shape\n  ="
     println("$prefix${v.toString(3)}\n")
   }
   
-  fun feed(vararg feeds: Pair<Tensor, TensorValue<*>>) {
+  fun feed(vararg feeds: Pair<Tensor, NDArray<*>>) {
     feed_dict += feeds
   }
   

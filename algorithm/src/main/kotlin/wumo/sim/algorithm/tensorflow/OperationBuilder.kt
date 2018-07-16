@@ -112,7 +112,7 @@ class OperationBuilder(val graph: Graph, val opType: String, val name: String) {
     return this
   }
   
-  fun <T> setAttr(name: String, value: TensorValue<T>): OperationBuilder {
+  fun <T> setAttr(name: String, value: TensorBuffer<T>): OperationBuilder {
     val status = newStatus()
     TF_SetAttrTensor(c_opDesc, name, value.c_tensor, status)
     throwExceptionIfNotOk(status)

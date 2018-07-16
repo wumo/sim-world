@@ -7,24 +7,31 @@ import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Tensor.newTensor
 import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.util.Dimension
 import wumo.sim.util.*
+import wumo.sim.util.ndarray.Buf
+import wumo.sim.util.ndarray.NDArray
 import java.nio.*
 
-
-abstract class TensorValue<T> protected constructor(c_tensor: TF_Tensor) : Iterable<T> {
+abstract class TensorBuffer<T> protected constructor(c_tensor: TF_Tensor) : Buf<T> {
   companion object {
-    operator fun <T> invoke(c_tensor: TF_Tensor): TensorValue<T> {
+    fun <T> toNDArray(tb: TensorBuffer<T>) = NDArray(Dimension(tb.dims), tb)
+    fun <T> toNDArray(c_tensor: TF_Tensor) = toNDArray(invoke<T>(c_tensor))
+    fun <T> fromNDArray(ndarray: NDArray<T>): TensorBuffer<T> {
+      TODO()
+    }
+    
+    operator fun <T> invoke(c_tensor: TF_Tensor): TensorBuffer<T> {
       val dtype = TF_TensorType(c_tensor)
       return when (dtype) {
-        DT_COMPLEX64, DT_FLOAT -> FloatTensorValue(c_tensor)
-        DT_DOUBLE -> DoubleTensorValue(c_tensor)
-        DT_QINT32, DT_INT32 -> IntTensorValue(c_tensor)
-        DT_BOOL -> BooleanTensorValue(c_tensor)
-        DT_QUINT8, DT_UINT8, DT_QINT8, DT_INT8 -> ByteTensorValue(c_tensor)
-        DT_BFLOAT16, DT_INT16 -> ShortTensorValue(c_tensor)
-        DT_INT64 -> LongTensorValue(c_tensor)
-        DT_STRING -> StringTensorValue(c_tensor)
+        DT_COMPLEX64, DT_FLOAT -> FloatTensorBuffer(c_tensor)
+        DT_DOUBLE -> DoubleTensorBuffer(c_tensor)
+        DT_QINT32, DT_INT32 -> IntTensorBuffer(c_tensor)
+        DT_BOOL -> BooleanTensorBuffer(c_tensor)
+        DT_QUINT8, DT_UINT8, DT_QINT8, DT_INT8 -> ByteTensorBuffer(c_tensor)
+        DT_BFLOAT16, DT_INT16 -> ShortTensorBuffer(c_tensor)
+        DT_INT64 -> LongTensorBuffer(c_tensor)
+        DT_STRING -> StringTensorBuffer(c_tensor)
         else -> throw IllegalStateException("invalid DataType($dtype)")
-      } as TensorValue<T>
+      } as TensorBuffer<T>
     }
     
     operator fun invoke(value: Float) = invoke(scalarDimension, f(value))
@@ -36,17 +43,17 @@ abstract class TensorValue<T> protected constructor(c_tensor: TF_Tensor) : Itera
     operator fun invoke(value: Long) = invoke(scalarDimension, l(value))
     operator fun invoke(value: String) = invoke(scalarDimension, a(value))
     
-    operator fun invoke(shape: Dimension, value: FloatArray) = FloatTensorValue(create(shape, FloatPointer(*value), DT_FLOAT))
-    operator fun invoke(shape: Dimension, value: DoubleArray) = DoubleTensorValue(create(shape, DoublePointer(*value), DT_DOUBLE))
-    operator fun invoke(shape: Dimension, value: BooleanArray) = BooleanTensorValue(create(shape, BytePointer(*ByteArray(value.size) { if (value[it]) 1 else 0 }), DT_BOOL))
-    operator fun invoke(shape: Dimension, value: ByteArray) = ByteTensorValue(create(shape, BytePointer(*value), DT_INT8))
-    operator fun invoke(shape: Dimension, value: ShortArray) = ShortTensorValue(create(shape, ShortPointer(*value), DT_INT16))
-    operator fun invoke(shape: Dimension, value: IntArray) = IntTensorValue(create(shape, IntPointer(*value), DT_INT32))
-    operator fun invoke(shape: Dimension, value: LongArray) = LongTensorValue(create(shape, LongPointer(*value), DT_INT64))
-    operator fun invoke(shape: Dimension, array: Array<String>): StringTensorValue {
+    operator fun invoke(shape: Dimension, value: FloatArray) = FloatTensorBuffer(create(shape, FloatPointer(*value), DT_FLOAT))
+    operator fun invoke(shape: Dimension, value: DoubleArray) = DoubleTensorBuffer(create(shape, DoublePointer(*value), DT_DOUBLE))
+    operator fun invoke(shape: Dimension, value: BooleanArray) = BooleanTensorBuffer(create(shape, BytePointer(*ByteArray(value.size) { if (value[it]) 1 else 0 }), DT_BOOL))
+    operator fun invoke(shape: Dimension, value: ByteArray) = ByteTensorBuffer(create(shape, BytePointer(*value), DT_INT8))
+    operator fun invoke(shape: Dimension, value: ShortArray) = ShortTensorBuffer(create(shape, ShortPointer(*value), DT_INT16))
+    operator fun invoke(shape: Dimension, value: IntArray) = IntTensorBuffer(create(shape, IntPointer(*value), DT_INT32))
+    operator fun invoke(shape: Dimension, value: LongArray) = LongTensorBuffer(create(shape, LongPointer(*value), DT_INT64))
+    operator fun invoke(shape: Dimension, array: Array<String>): StringTensorBuffer {
       val data = TFStringArray.encode(array)
       val t = newTensor(DT_STRING, shape.asLongArray(), data)
-      return StringTensorValue(t, array)
+      return StringTensorBuffer(t, array)
     }
     
     private fun create(shape: Dimension, array: Pointer, dtype: Int): TF_Tensor {
@@ -100,175 +107,73 @@ abstract class TensorValue<T> protected constructor(c_tensor: TF_Tensor) : Itera
       DT_INT64 -> LongPointer(ptr).position(0L).capacity((size / 8)).asBuffer()
       else -> throw IllegalStateException("invalid DataType($dtype)")
     } as B
-//    byteBuf.capacity(sz)
-//    return byteBuf.asByteBuffer().order(ByteOrder.nativeOrder())
-  }
-  
-  abstract fun buf_get(offset: Int): T
-  abstract fun buf_set(offset: Int, data: T)
-  
-  private inline fun <U> get_set(vararg idx: Int, op: (Int) -> U): U {
-    require(idx.size == dims.size)
-    var offset = 0L
-    for ((i, value) in idx.withIndex()) {
-      require(value in 0 until dims[i]) { "dim($i)=$value is out of range[0,${dims[i]})" }
-      offset += value * stride[i]
-    }
-    return op(offset.toInt())
-  }
-  
-  operator fun get(vararg idx: Int) = get_set(*idx) { buf_get(it) }
-  
-  operator fun set(vararg idx: Int, data: T) = get_set(*idx) { buf_set(it, data) }
-  
-  override fun iterator() = object : Iterator<T> {
-    var a = 0
-    override fun hasNext() = a < numElements
-    
-    override fun next() = buf_get(a++)
-  }
-  
-  fun withIndex() = object : Iterator<tuple2<IntArray, T>> {
-    val idx = IntArray(dims.size).apply { this[this.lastIndex] = -1 }
-    var a = 0
-    lateinit var element: tuple2<IntArray, T>
-    override fun hasNext() = a < numElements
-    
-    override fun next(): tuple2<IntArray, T> {
-      for (_idx in dims.lastIndex downTo 0) {
-        idx[_idx]++
-        if (idx[_idx] < dims[_idx])
-          break
-        idx[_idx] = 0
-      }
-      val value = buf_get(a++)
-      if (this::element.isInitialized)
-        element._2 = value
-      else
-        element = tuple2(idx, value)
-      return element
-    }
-    
-  }
-  
-  @Suppress("NAME_SHADOWING")
-  private fun printTensor(extraPadding: Int, dim: Int, offset: Int, sb: StringBuilder) {
-    val padding = StringBuilder().let { s ->
-      repeat(dim + 1 + extraPadding) { s.append(' ') }
-      s.toString()
-    }
-    var offset = offset
-    val isVector = dim == dims.lastIndex - 1
-    sb.append('[')
-    for (i in 0 until dims[dim]) {
-      if (i != 0L) sb.append(padding)
-      if (isVector)
-        printVector(offset, stride[dim].toInt(), sb)
-      else
-        printTensor(extraPadding, dim + 1, offset, sb)
-      if (i != dims[dim] - 1)
-        sb.append(",\n")
-      offset += stride[dim].toInt()
-    }
-    sb.append(']')
-  }
-  
-  private fun printVector(offset: Int, size: Int, sb: StringBuilder) {
-    sb.append('[')
-    for (j in 0 until size) {
-      sb.append(buf_get(offset + j))
-      if (j != size - 1)
-        sb.append(',')
-    }
-    sb.append(']')
-  }
-  
-  fun toString(padding: Int): String {
-    val sb = StringBuilder()
-//    repeat(padding) { sb.append(' ') }
-    when (dims.size) {
-      0 -> return get().toString()
-      1 -> printVector(0, dims[0].toInt(), sb)
-      else -> printTensor(padding, 0, 0, sb)
-    }
-    return sb.toString()
-  }
-  
-  override fun toString(): String {
-    val sb = StringBuilder()
-    when (dims.size) {
-      0 -> return get().toString()
-      1 -> printVector(0, dims[0].toInt(), sb)
-      else -> printTensor(0, 0, 0, sb)
-    }
-    return sb.toString()
   }
 }
 
-class FloatTensorValue(c_tensor: TF_Tensor) : TensorValue<Float>(c_tensor) {
+class FloatTensorBuffer(c_tensor: TF_Tensor) : TensorBuffer<Float>(c_tensor) {
   private val buf = createBuffer<FloatBuffer>()
-  override fun buf_get(offset: Int) = buf[offset]
+  override fun get(offset: Int) = buf[offset]
   
-  override fun buf_set(offset: Int, data: Float) {
+  override fun set(offset: Int, data: Float) {
     buf.put(offset, data)
   }
 }
 
-class DoubleTensorValue(c_tensor: TF_Tensor) : TensorValue<Double>(c_tensor) {
+class DoubleTensorBuffer(c_tensor: TF_Tensor) : TensorBuffer<Double>(c_tensor) {
   private val buf = createBuffer<DoubleBuffer>()
-  override fun buf_get(offset: Int) = buf[offset]
+  override fun get(offset: Int) = buf[offset]
   
-  override fun buf_set(offset: Int, data: Double) {
+  override fun set(offset: Int, data: Double) {
     buf.put(offset, data)
   }
 }
 
-class ByteTensorValue(c_tensor: TF_Tensor) : TensorValue<Byte>(c_tensor) {
+class ByteTensorBuffer(c_tensor: TF_Tensor) : TensorBuffer<Byte>(c_tensor) {
   private val buf = createBuffer<ByteBuffer>()
-  override fun buf_get(offset: Int) = buf[offset]
+  override fun get(offset: Int) = buf[offset]
   
-  override fun buf_set(offset: Int, data: Byte) {
+  override fun set(offset: Int, data: Byte) {
     buf.put(offset, data)
   }
 }
 
-class ShortTensorValue(c_tensor: TF_Tensor) : TensorValue<Short>(c_tensor) {
+class ShortTensorBuffer(c_tensor: TF_Tensor) : TensorBuffer<Short>(c_tensor) {
   private val buf = createBuffer<ShortBuffer>()
-  override fun buf_get(offset: Int) = buf[offset]
+  override fun get(offset: Int) = buf[offset]
   
-  override fun buf_set(offset: Int, data: Short) {
+  override fun set(offset: Int, data: Short) {
     buf.put(offset, data)
   }
 }
 
-class IntTensorValue(c_tensor: TF_Tensor) : TensorValue<Int>(c_tensor) {
+class IntTensorBuffer(c_tensor: TF_Tensor) : TensorBuffer<Int>(c_tensor) {
   private val buf = createBuffer<IntBuffer>()
-  override fun buf_get(offset: Int) = buf[offset]
+  override fun get(offset: Int) = buf[offset]
   
-  override fun buf_set(offset: Int, data: Int) {
+  override fun set(offset: Int, data: Int) {
     buf.put(offset, data)
   }
 }
 
-class LongTensorValue(c_tensor: TF_Tensor) : TensorValue<Long>(c_tensor) {
+class LongTensorBuffer(c_tensor: TF_Tensor) : TensorBuffer<Long>(c_tensor) {
   private val buf = createBuffer<LongBuffer>()
-  override fun buf_get(offset: Int) = buf[offset]
+  override fun get(offset: Int) = buf[offset]
   
-  override fun buf_set(offset: Int, data: Long) {
+  override fun set(offset: Int, data: Long) {
     buf.put(offset, data)
   }
 }
 
-class BooleanTensorValue(c_tensor: TF_Tensor) : TensorValue<Boolean>(c_tensor) {
+class BooleanTensorBuffer(c_tensor: TF_Tensor) : TensorBuffer<Boolean>(c_tensor) {
   private val buf = createBuffer<ByteBuffer>()
-  override fun buf_get(offset: Int) = buf[offset].toInt() != 0
+  override fun get(offset: Int) = buf[offset].toInt() != 0
   
-  override fun buf_set(offset: Int, data: Boolean) {
+  override fun set(offset: Int, data: Boolean) {
     buf.put(offset, if (data) 1 else 0)
   }
 }
 
-class StringTensorValue(private var _c_tensor: TF_Tensor, val array: Array<String>? = null) : TensorValue<String>(_c_tensor) {
+class StringTensorBuffer(private var _c_tensor: TF_Tensor, val array: Array<String>? = null) : TensorBuffer<String>(_c_tensor) {
   private val buf = array ?: TFStringArray.decode(_c_tensor, numElements)
   var modified = false
   override val c_tensor
@@ -281,16 +186,16 @@ class StringTensorValue(private var _c_tensor: TF_Tensor, val array: Array<Strin
         _c_tensor
       }
   
-  override fun buf_get(offset: Int) = buf[offset]
+  override fun get(offset: Int) = buf[offset]
   
-  override fun buf_set(offset: Int, data: String) {
+  override fun set(offset: Int, data: String) {
     buf[offset] = data
     modified = true
   }
 }
 
 object TFStringArray {
-  val sizeofUInt64 = TensorValue.sizeof(DT_UINT64).toLong()
+  val sizeofUInt64 = TensorBuffer.sizeof(DT_UINT64).toLong()
   
   fun encode(array: Array<String>): BytePointer {
     // Compute bytes needed for encoding.

@@ -3,13 +3,14 @@ package wumo.sim.algorithm.tensorflow.samples
 import org.bytedeco.javacpp.tensorflow
 import org.bytedeco.javacpp.tensorflow.DT_INT32
 import org.junit.Test
-import wumo.sim.algorithm.tensorflow.TensorValue
+import wumo.sim.algorithm.tensorflow.TensorBuffer
 import wumo.sim.algorithm.tensorflow.contrib.fully_connected
 import wumo.sim.algorithm.tensorflow.contrib.one_hot_encoding
 import wumo.sim.algorithm.tensorflow.ops.*
 import wumo.sim.algorithm.tensorflow.tf
 import wumo.sim.algorithm.tensorflow.training.GradientDescentOptimizer
 import wumo.sim.util.*
+import wumo.sim.util.ndarray.NDArray
 
 class Contextual_Bandit : BaseTest() {
   @Test
@@ -17,8 +18,8 @@ class Contextual_Bandit : BaseTest() {
     //https://medium.com/emergent-future/simple-reinforcement-learning-with-tensorflow-part-1-5-contextual-bandits-bff01d1aad9c
     var state = 0
     val bandits = a(f(0.2f, 0f, -0.2f, -5f),
-                                  f(0.1f, -5f, 1f, 0.25f),
-                                  f(-5f, 5f, 5f, 5f))
+                    f(0.1f, -5f, 1f, 0.25f),
+                    f(-5f, 5f, 5f, 5f))
     val num_bandits = bandits.size
     val num_actions = bandits[0].size
     
@@ -59,20 +60,20 @@ class Contextual_Bandit : BaseTest() {
     tf.session {
       init.run()
       var i = 0
-      var ww: TensorValue<Float>? = null
+      var ww: NDArray<Float>? = null
       while (i < total_episodes) {
         val s = getbandit()
         val action = if (Rand().nextDouble() < e)
           Rand().nextInt(num_actions)
         else {
-          feed(state_in to TensorValue(dim(1), i(s)))
+          feed(state_in to NDArray(dim(1), i(s)))
           eval<Int>(chosen_action).get()
         }
         val reward = pullArm(action)
         
-        feed(reward_holder to TensorValue(dim(1), f(reward)),
-             action_holder to TensorValue(dim(1), i(action)),
-             state_in to TensorValue(dim(1), i(s)))
+        feed(reward_holder to NDArray(dim(1), f(reward)),
+             action_holder to NDArray(dim(1), i(action)),
+             state_in to NDArray(dim(1), i(s)))
         target(train)
         ww = eval(weights)
         
