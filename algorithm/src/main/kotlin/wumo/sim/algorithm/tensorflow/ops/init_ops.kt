@@ -3,7 +3,13 @@ package wumo.sim.algorithm.tensorflow.ops
 import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.algorithm.tensorflow.TF
 import wumo.sim.algorithm.tensorflow.Tensor
-import wumo.sim.algorithm.util.Dimension
+import wumo.sim.util.Dimension
+
+fun TF.random_uniform(shape: Tensor,dtype:Int= DT_FLOAT,
+                      min: Number, max: Number,
+                      name: String = "RandomUniform"): Tensor {
+  TODO()
+}
 
 fun TF.random_uniform(shape: Dimension,
                       dtype: Int = DT_FLOAT,
@@ -44,8 +50,8 @@ fun TF.ones_initializer(dtype: Int = DT_FLOAT) = Initializer(dtype, "oness_initi
   ones(shape, dtype, name)
 }
 
-fun TF.constant_initializer() {
-
+fun TF.constant_initializer(value: Any, dtype: Int = DT_FLOAT) = Initializer(dtype, "const_initializer") { shape, dtype, name ->
+  const(shape, dtype, value, name)
 }
 
 fun TF.random_uniform_initializer() {

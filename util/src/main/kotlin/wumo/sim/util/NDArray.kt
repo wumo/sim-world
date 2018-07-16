@@ -1,6 +1,4 @@
-package wumo.sim.algorithm.util.helpers
-
-import wumo.sim.algorithm.util.Dimension
+package wumo.sim.util
 
 class NDArray<T>(shape: Dimension, val raw: Array<T>) {
   companion object {

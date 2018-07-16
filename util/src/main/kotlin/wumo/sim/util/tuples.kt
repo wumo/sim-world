@@ -1,4 +1,4 @@
-package wumo.sim.algorithm.util.tuples
+package wumo.sim.util
 
 data class tuple2<A, B>(var _1: A, var _2: B) {
   override fun toString(): String = "($_1,$_2)"

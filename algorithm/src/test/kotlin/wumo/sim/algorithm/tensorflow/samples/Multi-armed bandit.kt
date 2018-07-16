@@ -6,10 +6,10 @@ import wumo.sim.algorithm.tensorflow.TensorValue
 import wumo.sim.algorithm.tensorflow.ops.*
 import wumo.sim.algorithm.tensorflow.tf
 import wumo.sim.algorithm.tensorflow.training.GradientDescentOptimizer
-import wumo.sim.algorithm.util.dim
-import wumo.sim.algorithm.util.helpers.f
-import wumo.sim.algorithm.util.helpers.i
-import wumo.sim.util.math.Rand
+import wumo.sim.util.f
+import wumo.sim.util.i
+import wumo.sim.util.Rand
+import wumo.sim.util.dim
 import java.util.*
 
 class `Multi-armed bandit` : BaseTest() {

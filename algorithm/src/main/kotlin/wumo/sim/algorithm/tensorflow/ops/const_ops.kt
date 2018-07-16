@@ -5,10 +5,10 @@ import wumo.sim.algorithm.tensorflow.TF
 import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.TensorValue
 import wumo.sim.algorithm.tensorflow.base_dtype
-import wumo.sim.algorithm.util.Dimension
-import wumo.sim.algorithm.util.dim
-import wumo.sim.algorithm.util.helpers.toByte
-import wumo.sim.algorithm.util.scalarDimension
+import wumo.sim.util.Dimension
+import wumo.sim.util.toByte
+import wumo.sim.util.dim
+import wumo.sim.util.scalarDimension
 
 fun TF.const(value: Float, name: String = "Const") = const(scalarDimension, value, name)
 fun TF.const(value: Double, name: String = "Const") = const(scalarDimension, value, name)

@@ -1,10 +1,9 @@
 package wumo.sim.envs.toy_text
 
 import wumo.sim.core.Env
-import wumo.sim.core.Space
 import wumo.sim.spaces.Discrete
-import wumo.sim.util.math.argmax
-import wumo.sim.util.tuples.tuple4
+import wumo.sim.util.argmax
+import wumo.sim.util.tuple4
 
 typealias Transition = Array<Array<MutableList<tuple4<Double, Int, Double, Boolean>>>>
 

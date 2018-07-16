@@ -1,7 +1,7 @@
 package wumo.sim.spaces
 
 import wumo.sim.core.Space
-import wumo.sim.util.math.Rand
+import wumo.sim.util.Rand
 
 class Discrete(val n: Int) : Space<Int> {
   override fun sample() = Rand().nextInt(n)

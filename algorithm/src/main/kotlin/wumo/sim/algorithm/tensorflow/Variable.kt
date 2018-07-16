@@ -4,7 +4,7 @@ import wumo.sim.algorithm.tensorflow.ops.assign
 import wumo.sim.algorithm.tensorflow.ops.cond
 import wumo.sim.algorithm.tensorflow.ops.identity
 import wumo.sim.algorithm.tensorflow.ops.is_variable_initialized
-import wumo.sim.algorithm.util.helpers.a
+import wumo.sim.util.a
 
 class Variable(op: Operation, value_index: Int) : Tensor(op, value_index) {
   lateinit var initial_value: Tensor
@@ -35,7 +35,7 @@ class Variable(op: Operation, value_index: Int) : Tensor(op, value_index) {
   
   fun read_value() = tf.identity(this, name = "read")
   
-  fun assign(value: Tensor, use_locking: Boolean): Operation {
+  fun assign(value: Tensor, use_locking: Boolean = false): Operation {
     return tf.assign(this, value)
   }
   

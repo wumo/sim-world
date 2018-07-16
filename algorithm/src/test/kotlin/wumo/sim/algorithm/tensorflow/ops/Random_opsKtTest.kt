@@ -4,7 +4,7 @@ import org.junit.Test
 
 import org.junit.Assert.*
 import wumo.sim.algorithm.tensorflow.tf
-import wumo.sim.algorithm.util.x
+import wumo.sim.util.x
 
 class Random_opsKtTest : BaseTest() {
   

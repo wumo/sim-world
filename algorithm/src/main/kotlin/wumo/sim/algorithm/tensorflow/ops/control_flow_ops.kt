@@ -1,13 +1,10 @@
 package wumo.sim.algorithm.tensorflow.ops
 
-import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.algorithm.tensorflow.*
 import wumo.sim.algorithm.tensorflow.Operation
 import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.Variable
-import wumo.sim.algorithm.util.helpers.a
-import wumo.sim.algorithm.util.tuples.tuple2
-
+import wumo.sim.util.a
 
 class CondContext(val pred: Tensor,
                   val pivot: Tensor,

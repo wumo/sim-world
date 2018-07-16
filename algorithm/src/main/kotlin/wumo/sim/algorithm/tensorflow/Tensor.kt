@@ -2,7 +2,7 @@ package wumo.sim.algorithm.tensorflow
 
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
 import org.bytedeco.javacpp.tensorflow.*
-import wumo.sim.algorithm.util.Dimension
+import wumo.sim.util.Dimension
 
 interface TensorLike
 

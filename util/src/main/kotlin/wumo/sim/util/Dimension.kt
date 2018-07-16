@@ -1,7 +1,6 @@
 @file:Suppress("NOTHING_TO_INLINE")
 
-package wumo.sim.algorithm.util
-
+package wumo.sim.util
 infix fun Int.x(a: Int): Dimension {
   require(this >= 0 && a >= 0)
   return Dimension(mutableListOf(this, a))
@@ -14,7 +13,7 @@ infix fun Dimension.x(a: Int): Dimension {
 
 inline fun <T : Number> dim(d: T) = Dimension(mutableListOf(d.toInt()))
 
-internal val scalarDimension = Dimension()
+val scalarDimension = Dimension()
 
 class Dimension(val elements: MutableList<Int> = mutableListOf()) : Iterable<Int> {
   constructor(elements: LongArray) : this(MutableList(elements.size) { elements[it].toInt() })

@@ -5,7 +5,7 @@ import wumo.sim.algorithm.tensorflow.TF
 import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.ops.Initializer
 import wumo.sim.algorithm.tensorflow.ops.variable
-import wumo.sim.algorithm.util.Dimension
+import wumo.sim.util.Dimension
 
 typealias TensorFunction = (Tensor) -> Tensor
 

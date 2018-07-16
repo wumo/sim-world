@@ -3,7 +3,7 @@
 package wumo.sim.world.examples.algorithm
 
 import wumo.sim.core.Env
-import wumo.sim.util.math.Rand
+import wumo.sim.util.Rand
 
 fun argmax_tie_random(set: IntRange, evaluate: (Int) -> Double): Int {
   val iterator = set.iterator()

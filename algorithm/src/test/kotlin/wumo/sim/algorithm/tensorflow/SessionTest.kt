@@ -1,14 +1,12 @@
 package wumo.sim.algorithm.tensorflow
 
-import org.bytedeco.javacpp.tensorflow.*
 import org.junit.Test
 import wumo.sim.algorithm.tensorflow.ops.BaseTest
 
-import org.junit.Assert.*
 import wumo.sim.algorithm.tensorflow.ops.const
-import wumo.sim.algorithm.util.helpers.a
-import wumo.sim.algorithm.util.helpers.f
-import wumo.sim.algorithm.util.x
+import wumo.sim.util.a
+import wumo.sim.util.f
+import wumo.sim.util.x
 
 class SessionTest : BaseTest() {
   

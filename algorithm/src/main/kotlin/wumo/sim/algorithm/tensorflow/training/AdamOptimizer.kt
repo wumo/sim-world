@@ -5,7 +5,7 @@ import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.Variable
 import wumo.sim.algorithm.tensorflow.ops.*
 import wumo.sim.algorithm.tensorflow.tf
-import wumo.sim.algorithm.util.tuples.tuple2
+import wumo.sim.util.tuple2
 
 class AdamOptimizer(val learningRate: Float = 0.001f,
                     val beta1: Float = 0.9f,

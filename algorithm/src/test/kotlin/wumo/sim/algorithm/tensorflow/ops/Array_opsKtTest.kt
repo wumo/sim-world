@@ -2,13 +2,12 @@ package wumo.sim.algorithm.tensorflow.ops
 
 import org.junit.Test
 
-import org.junit.Assert.*
 import wumo.sim.algorithm.tensorflow.TensorValue
 import wumo.sim.algorithm.tensorflow.contrib.one_hot_encoding
 import wumo.sim.algorithm.tensorflow.tf
-import wumo.sim.algorithm.util.helpers.f
-import wumo.sim.algorithm.util.helpers.i
-import wumo.sim.algorithm.util.x
+import wumo.sim.util.f
+import wumo.sim.util.i
+import wumo.sim.util.x
 
 class Array_opsKtTest : BaseTest() {
   

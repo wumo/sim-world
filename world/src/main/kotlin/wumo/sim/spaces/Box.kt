@@ -1,7 +1,7 @@
 package wumo.sim.spaces
 
 import wumo.sim.core.Space
-import wumo.sim.util.math.Rand
+import wumo.sim.util.Rand
 
 class Box(val low: DoubleArray, val high: DoubleArray) : Space<DoubleArray> {
   

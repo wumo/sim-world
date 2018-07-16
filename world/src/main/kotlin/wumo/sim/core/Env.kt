@@ -1,7 +1,7 @@
 package wumo.sim.core
 
-import wumo.sim.util.tuples.tuple2
-import wumo.sim.util.tuples.tuple4
+import wumo.sim.util.tuple2
+import wumo.sim.util.tuple4
 
 interface Env<O, A> {
   val reward_range: tuple2<Double, Double>

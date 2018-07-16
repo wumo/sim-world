@@ -5,9 +5,9 @@ import wumo.sim.algorithm.tensorflow.TensorValue
 import wumo.sim.algorithm.tensorflow.ops.*
 import wumo.sim.algorithm.tensorflow.tf
 import wumo.sim.algorithm.tensorflow.training.GradientDescentOptimizer
-import wumo.sim.algorithm.util.x
 import wumo.sim.envs.toy_text.FrozenLake
-import wumo.sim.util.math.Rand
+import wumo.sim.util.Rand
+import wumo.sim.util.x
 
 class `Q-Learning with Neural Networks test` : BaseTest() {
   @Test

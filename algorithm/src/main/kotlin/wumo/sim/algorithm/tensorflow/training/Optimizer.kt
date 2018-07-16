@@ -29,7 +29,7 @@ abstract class Optimizer(val use_locking: Boolean, val name: String) {
     return grads.zip(var_list)
   }
   
-  fun apply_gradients(grads_and_vars: List<Pair<Tensor, Variable>>, name: String): Operation {
+  fun apply_gradients(grads_and_vars: List<Pair<Tensor, Variable>>, name: String = ""): Operation {
     val name = if (name.isEmpty()) this.name else name
     val var_list = grads_and_vars.map { (g, v) -> v }
     create_slots(var_list)

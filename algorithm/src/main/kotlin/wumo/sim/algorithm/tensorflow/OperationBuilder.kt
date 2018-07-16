@@ -3,8 +3,8 @@ package wumo.sim.algorithm.tensorflow
 import org.bytedeco.javacpp.BytePointer
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
 import org.bytedeco.javacpp.tensorflow.*
-import wumo.sim.algorithm.util.Dimension
-import wumo.sim.algorithm.util.helpers.toByte
+import wumo.sim.util.Dimension
+import wumo.sim.util.toByte
 
 fun TF.unaryOp(op: String, a: Tensor, name: String, dtype: Int = a.dtype): Tensor {
   val op = g.nodeBuilder(op, ctx.getUniqueFullName(name))

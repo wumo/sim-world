@@ -5,7 +5,7 @@ import org.bytedeco.javacpp.tensorflow
 import org.bytedeco.javacpp.tensorflow.*
 import org.tensorflow.framework.GraphDef
 import wumo.sim.algorithm.tensorflow.ops.group
-import wumo.sim.algorithm.util.helpers.println
+import wumo.sim.util.println
 import java.util.*
 
 var tf = TF()

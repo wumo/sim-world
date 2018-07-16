@@ -1,7 +1,6 @@
 package wumo.sim.algorithm.tensorflow
 
 import wumo.sim.algorithm.tensorflow.ops.CondContext
-import wumo.sim.algorithm.util.tuples.tuple3
 import java.util.*
 
 typealias NameMap = HashMap<String, Int>

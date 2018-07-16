@@ -5,10 +5,10 @@ import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Session.newSession
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_SessionOptions.newSessionOptions
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
 import org.bytedeco.javacpp.tensorflow.*
-import wumo.sim.algorithm.util.tuples.tuple2
-import wumo.sim.algorithm.util.tuples.tuple3
-import wumo.sim.algorithm.util.tuples.tuple4
-import wumo.sim.algorithm.util.tuples.tuple5
+import wumo.sim.util.tuple2
+import wumo.sim.util.tuple3
+import wumo.sim.util.tuple4
+import wumo.sim.util.tuple5
 
 class Session(val c_graph: TF_Graph) {
   private val c_session: TF_Session
@@ -70,6 +70,27 @@ class Session(val c_graph: TF_Graph) {
     return tuple5(r1 as TensorValue<T1>, r2 as TensorValue<T2>,
                   r3 as TensorValue<T3>, r4 as TensorValue<T4>,
                   r5 as TensorValue<T5>)
+  }
+  
+  fun eval(fetch: List<Tensor>): Array<TensorValue<Any>> {
+    val status = newStatus()
+    val (inputs, input_values, ninputs) = accumulateFeedDict()
+    val (target_opers, ntargets) = accumulateRuns()
+    val noutputs = fetch.size
+    val outputs = TF_Output(noutputs.toLong())
+    val output_values = PointerPointer<TF_Tensor>(noutputs.toLong())
+    for ((i, f) in fetch.withIndex())
+      outputs.position(i.toLong()).oper(f.op.c_op).index(f.value_index)
+    outputs.position(0L)
+    TF_SessionRun(c_session, null, inputs, input_values, ninputs,
+                  outputs, output_values, noutputs,
+                  target_opers, ntargets,
+                  null, status)
+    throwExceptionIfNotOk(status)
+    clear()
+    return Array(noutputs) {
+      TensorValue<Any>(output_values.get(TF_Tensor::class.java, it.toLong()))
+    }
   }
   
   fun _eval(vararg fetch: Tensor): Array<TensorValue<Any>> {

@@ -4,7 +4,7 @@ import org.junit.Test
 import wumo.sim.envs.classic_control.CartPole
 import wumo.sim.envs.classic_control.MountainCar
 import wumo.sim.world.examples.algorithm.*
-import wumo.sim.util.math.Rand
+import wumo.sim.util.Rand
 
 class Test {
   @Test

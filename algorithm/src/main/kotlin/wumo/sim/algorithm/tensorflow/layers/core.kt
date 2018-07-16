@@ -3,10 +3,10 @@ package wumo.sim.algorithm.tensorflow.layers
 import wumo.sim.algorithm.tensorflow.TF
 import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.ops.*
-import wumo.sim.algorithm.util.Dimension
-import wumo.sim.algorithm.util.dim
-import wumo.sim.algorithm.util.helpers.i
-import wumo.sim.algorithm.util.x
+import wumo.sim.util.Dimension
+import wumo.sim.util.i
+import wumo.sim.util.dim
+import wumo.sim.util.x
 
 class Dense(tf: TF, val units: Int,
             val activation: TensorFunction? = null,
@@ -47,7 +47,6 @@ class Dense(tf: TF, val units: Int,
                           trainable = true)
     built = true
   }
-  
   
   override fun call(input: Tensor): Tensor {
     val shape = input.shape

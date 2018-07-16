@@ -4,11 +4,10 @@ import org.bytedeco.javacpp.tensorflow
 import org.bytedeco.javacpp.tensorflow.DT_INT32
 import org.junit.Test
 
-import org.junit.Assert.*
 import wumo.sim.algorithm.tensorflow.tf
-import wumo.sim.algorithm.util.helpers.f
-import wumo.sim.algorithm.util.helpers.println
-import wumo.sim.algorithm.util.x
+import wumo.sim.util.f
+import wumo.sim.util.println
+import wumo.sim.util.x
 
 class Math_opsKtTest : BaseTest() {
   

@@ -8,10 +8,10 @@ import wumo.sim.graphics.Viewer
 import wumo.sim.core.Env
 import wumo.sim.spaces.Box
 import wumo.sim.spaces.Discrete
-import wumo.sim.util.collections.arrayCopy
-import wumo.sim.util.math.Rand
-import wumo.sim.util.math.unaryMinus
-import wumo.sim.util.tuples.tuple4
+import wumo.sim.util.Rand
+import wumo.sim.util.arrayCopy
+import wumo.sim.util.tuple4
+import wumo.sim.util.unaryMinus
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin

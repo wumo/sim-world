@@ -1,6 +1,6 @@
 @file:Suppress("NOTHING_TO_INLINE")
 
-package wumo.sim.util.math
+package wumo.sim.util
 
 import java.util.concurrent.ThreadLocalRandom
 

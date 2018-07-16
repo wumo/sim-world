@@ -1,11 +1,9 @@
 package wumo.sim.envs.toy_text
 
-import wumo.sim.util.ANSI_BLACK
 import wumo.sim.util.ANSI_RED_BACKGROUND
 import wumo.sim.util.ANSI_RESET
-import wumo.sim.util.ANSI_WHITE
-import wumo.sim.util.tuples.tuple2
-import wumo.sim.util.tuples.tuple4
+import wumo.sim.util.tuple2
+import wumo.sim.util.tuple4
 
 val LEFT = 0
 val DOWN = 1

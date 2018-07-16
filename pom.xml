@@ -13,6 +13,7 @@
         <module>world</module>
         <module>graphics</module>
         <module>algorithm</module>
+        <module>util</module>
     </modules>
 
     <developers>

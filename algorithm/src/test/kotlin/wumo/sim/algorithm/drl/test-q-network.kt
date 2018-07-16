@@ -4,7 +4,7 @@ import org.bytedeco.javacpp.Loader
 import org.bytedeco.javacpp.tensorflow
 import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.envs.toy_text.FrozenLake
-import wumo.sim.util.math.Rand
+import wumo.sim.util.Rand
 import java.nio.FloatBuffer
 import java.nio.LongBuffer
 

@@ -2,15 +2,15 @@ package wumo.sim.algorithm.tensorflow
 
 import wumo.sim.algorithm.tensorflow.ops.BaseTest
 
-import org.junit.Assert.*
 import org.junit.Test
 import wumo.sim.algorithm.tensorflow.ops.const
-import wumo.sim.algorithm.util.helpers.f
-import wumo.sim.algorithm.util.x
+import wumo.sim.util.f
+import wumo.sim.util.x
 
-class TensorValueTest : BaseTest() {
+class TensorValueTest {
   @Test
   fun `get set`() {
+    tf
     val t = TensorValue(2 x 2, f(1f, 2f, 3f, 4f))
     println(t)
     t[0, 0] = 3f
@@ -20,7 +20,7 @@ class TensorValueTest : BaseTest() {
     val t3 = TensorValue(1)
     println(t3)
     val a = tf.const(t3)
-    printGraph()
+    tf.printGraph()
     tf.session {
       a.eval()
     }

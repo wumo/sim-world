@@ -5,9 +5,9 @@ import org.junit.Test
 import wumo.sim.algorithm.tensorflow.ops.const
 import wumo.sim.algorithm.tensorflow.ops.matmul
 import wumo.sim.algorithm.tensorflow.tf
-import wumo.sim.algorithm.util.helpers.f
-import wumo.sim.algorithm.util.helpers.println
-import wumo.sim.algorithm.util.x
+import wumo.sim.util.f
+import wumo.sim.util.println
+import wumo.sim.util.x
 
 class c_api_test {
   @Test

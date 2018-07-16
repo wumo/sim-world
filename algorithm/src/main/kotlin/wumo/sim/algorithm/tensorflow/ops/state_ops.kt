@@ -1,9 +1,9 @@
 package wumo.sim.algorithm.tensorflow.ops
 
 import wumo.sim.algorithm.tensorflow.*
-import wumo.sim.algorithm.util.Dimension
-import wumo.sim.algorithm.util.dim
-import wumo.sim.algorithm.util.scalarDimension
+import wumo.sim.util.Dimension
+import wumo.sim.util.dim
+import wumo.sim.util.scalarDimension
 
 fun TF.variable(initial_value: Any, name: String = "Variable", trainable: Boolean = true) =
     when (initial_value) {
@@ -87,6 +87,9 @@ private inline fun TF.variable(initializer: (String) -> Tensor, name: String, tr
     return t
   }
 }
+
+fun TF.variable(shape: Dimension, initializer: Initializer, name: String, trainable: Boolean = true, validate_shape: Boolean = true) =
+    variable({ initializer(shape, name = "initial_value") }, name, trainable)
 
 fun TF.variable(shape: Dimension, dtype: Int, initializer: Initializer, name: String, trainable: Boolean = true, validate_shape: Boolean = true) =
     variable({ initializer(shape, dtype, "initial_value") }, name, trainable)

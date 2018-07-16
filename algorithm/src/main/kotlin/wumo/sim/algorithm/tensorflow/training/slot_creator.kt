@@ -5,7 +5,7 @@ import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.Variable
 import wumo.sim.algorithm.tensorflow.ops.*
 import wumo.sim.algorithm.tensorflow.tf
-import wumo.sim.algorithm.util.Dimension
+import wumo.sim.util.Dimension
 
 fun create_slot_var(primary: Tensor,
                     initializer: Initializer,

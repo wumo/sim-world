@@ -9,15 +9,7 @@ import wumo.sim.algorithm.tensorflow.contrib.one_hot_encoding
 import wumo.sim.algorithm.tensorflow.ops.*
 import wumo.sim.algorithm.tensorflow.tf
 import wumo.sim.algorithm.tensorflow.training.GradientDescentOptimizer
-import wumo.sim.algorithm.util.dim
-import wumo.sim.algorithm.util.helpers.NDArray
-import wumo.sim.algorithm.util.helpers.a
-import wumo.sim.algorithm.util.helpers.f
-import wumo.sim.algorithm.util.helpers.i
-import wumo.sim.algorithm.util.x
-import wumo.sim.util.math.Rand
-import wumo.sim.util.math.argmax
-import wumo.sim.util.math.argmin
+import wumo.sim.util.*
 
 class Contextual_Bandit : BaseTest() {
   @Test
@@ -25,8 +17,8 @@ class Contextual_Bandit : BaseTest() {
     //https://medium.com/emergent-future/simple-reinforcement-learning-with-tensorflow-part-1-5-contextual-bandits-bff01d1aad9c
     var state = 0
     val bandits = a(f(0.2f, 0f, -0.2f, -5f),
-                    f(0.1f, -5f, 1f, 0.25f),
-                    f(-5f, 5f, 5f, 5f))
+                                  f(0.1f, -5f, 1f, 0.25f),
+                                  f(-5f, 5f, 5f, 5f))
     val num_bandits = bandits.size
     val num_actions = bandits[0].size
     

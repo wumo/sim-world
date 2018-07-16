@@ -9,9 +9,9 @@ import wumo.sim.graphics.Viewer
 import wumo.sim.core.Env
 import wumo.sim.spaces.Box
 import wumo.sim.spaces.Discrete
-import wumo.sim.util.math.Rand
+import wumo.sim.util.Rand
 import wumo.sim.util.rangeTo
-import wumo.sim.util.tuples.tuple4
+import wumo.sim.util.tuple4
 import kotlin.math.cos
 import kotlin.math.sin
 

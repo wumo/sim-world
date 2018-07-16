@@ -5,10 +5,8 @@ import org.bytedeco.javacpp.ShortPointer
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Tensor.newTensor
 import org.bytedeco.javacpp.tensorflow.*
-import wumo.sim.algorithm.util.Dimension
-import wumo.sim.algorithm.util.helpers.*
-import wumo.sim.algorithm.util.scalarDimension
-import wumo.sim.algorithm.util.tuples.tuple2
+import wumo.sim.util.Dimension
+import wumo.sim.util.*
 import java.nio.*
 
 
