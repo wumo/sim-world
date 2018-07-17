@@ -11,6 +11,7 @@ import wumo.sim.util.i
 import wumo.sim.envs.classic_control.CartPole
 import wumo.sim.util.dim
 import wumo.sim.util.x
+import wumo.sim.util.zip
 
 class VanillaPolicyTest : BaseTest() {
   @Test

@@ -6,3 +6,15 @@ operator fun NDArray<Double>.unaryMinus(): NDArray<Double> {
     c[i] = -c[i]
   return c
 }
+
+operator fun <T> NDArray<T>.plus(b: NDArray<T>): NDArray<T> {
+  TODO()
+}
+
+operator fun <T> NDArray<T>.plus(b: Number): NDArray<T> {
+  TODO()
+}
+
+fun <T> abs(a: NDArray<T>): NDArray<T> {
+  TODO()
+}

@@ -2,7 +2,13 @@ package wumo.sim.algorithm.drl.deepq
 
 import wumo.sim.algorithm.tensorflow.TF
 import wumo.sim.algorithm.tensorflow.Tensor
+import wumo.sim.algorithm.tensorflow.ops.const
+import wumo.sim.algorithm.tensorflow.ops.placeholder
+import wumo.sim.algorithm.tensorflow.tf
+import wumo.sim.algorithm.tensorflow.training.AdamOptimizer
 import wumo.sim.core.Env
+import wumo.sim.util.ndarray.abs
+import wumo.sim.util.ndarray.plus
 
 /**
  * Train a deepq model.
@@ -33,23 +39,136 @@ import wumo.sim.core.Env
  */
 fun <O, A> TF.learn(env: Env<O, A>,
                     q_func: Q_func,
-                    lr: Double = 5e-4,
+                    lr: Float = 5e-4f,
                     max_timesteps: Int = 100000,
                     buffer_size: Int = 50000,
-                    exploration_fraction: Double = 0.1,
-                    exploration_final_eps: Double = 0.02,
+                    exploration_fraction: Float = 0.1f,
+                    exploration_final_eps: Float = 0.02f,
                     train_freq: Int = 1,
                     batch_size: Int = 32,
                     print_freq: Int = 100,
                     learning_starts: Int = 1000,
-                    gamma: Double = 1.0,
+                    gamma: Float = 1.0f,
                     target_network_update_freq: Int = 500,
                     prioritized_replay: Boolean = false,
-                    prioritized_replay_alpha: Double = 0.6,
-                    prioritized_replay_beta0: Double = 0.4,
-                    prioritized_replay_beta_iters: Any? = null,
-                    prioritized_replay_eps: Double = 1e-6,
+                    prioritized_replay_alpha: Float = 0.6f,
+                    prioritized_replay_beta0: Float = 0.4f,
+                    prioritized_replay_beta_iters: Int? = null,
+                    prioritized_replay_eps: Float = 1e-6f,
                     param_noise: Boolean = false) {
+  fun make_obs_ph(name: String) = ObservationInput(env.observation_space, name = name)
   
+  val (act, train, update_target, debug) = build_train(
+      make_obs_ph = ::make_obs_ph,
+      q_func = q_func,
+      num_actions = 0,
+      optimizer = AdamOptimizer(learningRate = lr),
+      gamma = gamma,
+      grad_norm_clipping = tf.const(10),
+      param_noise = param_noise)
   
+  //Create the replay buffer
+  val replay_buffer: ReplayBuffer<O, A>
+  val beta_schedule: Schedule
+  if (prioritized_replay) {
+    replay_buffer = PrioritizedReplayBuffer(buffer_size, alpha = prioritized_replay_alpha)
+    val prioritized_replay_beta_iters = prioritized_replay_beta_iters ?: max_timesteps
+    beta_schedule = LinearSchedule(schedule_timesteps = prioritized_replay_beta_iters,
+                                   initial_p = prioritized_replay_beta0,
+                                   final_p = 1f)
+  } else {
+    replay_buffer = ReplayBuffer(buffer_size)
+    beta_schedule = NoneSchedule()
+  }
+  
+  //Create the schedule for exploration starting from 1.
+  val exploration = LinearSchedule(schedule_timesteps = (exploration_fraction * max_timesteps).toInt(),
+                                   initial_p = 1f,
+                                   final_p = exploration_final_eps)
+  
+  //Initialize the parameters and copy them to the target network.
+  tf.session {
+    val init = tf.global_variable_initializer()
+    init.run()
+    update_target()
+    
+    val episode_rewards = mutableListOf(0f)
+    var saved_mean_reward = 0f
+    var obs = env.reset()
+    var reset = true
+    
+    for (t in 0 until max_timesteps) {
+      //Take action and update exploration to the newest value
+      var update_eps: Float
+      var update_param_noise_threshold: Float
+      if (!param_noise) {
+        update_eps = exploration.value(t)
+        update_param_noise_threshold = 0f
+      } else {
+        update_eps = 0f
+        // Compute the threshold such that the KL divergence between perturbed and non-perturbed
+        // policy is comparable to eps-greedy exploration with eps = exploration.value(t).
+        // See Appendix C.1 in Parameter Space Noise for Exploration, Plappert et al., 2017
+        // for detailed explanation.
+        update_param_noise_threshold = (-Math.log((1 - exploration.value(t) + exploration.value(t) / env.action_space.n).toDouble())).toFloat()
+      }
+//      val action=act(NDArray(obs),update_eps,)
+      val action = 1 as A
+      val env_action = action
+      reset = false
+      val (new_obs, rew, done, _) = env.step(env_action as A)
+      //Store transition in the replay buffer.
+      replay_buffer.add(obs, action, rew, new_obs, done)
+      obs = new_obs
+      
+      episode_rewards[episode_rewards.lastIndex] += rew.toFloat()
+      if (done) {
+        obs = env.reset()
+        episode_rewards += 0f
+        reset = true
+      }
+      
+      if (t > learning_starts && t % train_freq == 0) {
+        //Minimize the error in Bellman's equation on a batch sampled from replay buffer.
+        val obses_t: Tensor = tf.const(1)
+        val actions: Tensor = tf.const(1)
+        val rewards: Tensor = tf.const(1)
+        val obses_tp1: Tensor = tf.const(1)
+        val dones: Tensor = tf.const(1)
+        var weights: Tensor = tf.const(1)
+        var batch_idxes: Tensor = tf.const(1)
+        if (prioritized_replay) {
+          val (obses_t, actions, rewards, obses_tp1, dones, weights, batch_idxes) = replay_buffer.sample(batch_size, beta = beta_schedule.value(t))
+        } else {
+          val (obses_t, actions, rewards, obses_tp1, dones) = replay_buffer.sample(batch_size)
+          weights = tf.const(1)
+          batch_idxes = tf.const(1)
+        }
+        val td_errors = train(obses_t, actions, rewards, obses_tp1, dones, weights)
+        if (prioritized_replay) {
+          val new_priorities = abs(td_errors) + prioritized_replay_eps
+          replay_buffer.update_priorities(batch_idxes, new_priorities)
+        }
+        
+      }
+      
+      if (t > learning_starts && t % target_network_update_freq == 0)
+        update_target()
+      
+      val mean_100ep_reward = episode_rewards.mean()
+      val num_episodes = episode_rewards.size
+      if (done && episode_rewards.size % print_freq == 0) {
+        println("steps:t\n" +
+                "episodes: $num_episodes\n" +
+                "mean 100 episode reward: $mean_100ep_reward\n" +
+                "${100 * exploration.value(t)} time spent exploring")
+      }
+      
+      
+    }
+  }
+}
+
+private fun <E> MutableList<E>.mean(): Double {
+  TODO()
 }

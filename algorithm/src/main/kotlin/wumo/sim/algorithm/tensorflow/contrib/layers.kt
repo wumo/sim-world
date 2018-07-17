@@ -7,6 +7,7 @@ import wumo.sim.algorithm.tensorflow.layers.Dense
 import wumo.sim.algorithm.tensorflow.layers.TensorFunction
 import wumo.sim.algorithm.tensorflow.layers.xavier_initializer
 import wumo.sim.algorithm.tensorflow.ops.*
+import wumo.sim.algorithm.tensorflow.tf
 
 @Suppress("NAME_SHADOWING")
 fun TF.one_hot_encoding(labels: Tensor,
@@ -23,7 +24,7 @@ fun TF.one_hot_encoding(labels: Tensor,
 
 fun TF.fully_connected(inputs: Tensor,
                        num_outputs: Int,
-                       activation_fn: TensorFunction? = null,
+                       activation_fn: TensorFunction? = { tf.relu(it) },
                        normalizer_fn: ((Tensor, Any?) -> Tensor)? = null,
                        normalizer_params: Any? = null,
                        weights_initializer: Initializer = xavier_initializer(),

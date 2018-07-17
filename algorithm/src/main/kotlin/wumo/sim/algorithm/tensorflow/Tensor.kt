@@ -39,6 +39,7 @@ open class Tensor(val op: Operation, val value_index: Int, isInput: Boolean = fa
   }
   val tf = op.graph.tf
   fun asTF_Output() = TF_Output().oper(op.c_op).index(value_index)
+  val name = op.name
   
   override fun equals(other: Any?): Boolean {
     if (this === other) return true

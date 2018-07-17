@@ -35,7 +35,7 @@ fun TF.group(inputs: List<Any>, name: String = "group_deps"): Operation {
   for (input in inputs) {
     val op = when (input) {
       is Operation -> input
-      is Variable -> input.initializer_op
+      is Variable -> input.initializer_op.op
       else -> throw IllegalArgumentException("unsupported ${input::class.java}")
     }
     val dev = op.device

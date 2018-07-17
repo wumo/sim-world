@@ -13,11 +13,11 @@ class train_cartpole {
     val model = tf.mlp(64)
     val act = tf.learn(env,
                        q_func = model,
-                       lr = 1e-3,
+                       lr = 1e-3f,
                        max_timesteps = 100000,
                        buffer_size = 50000,
-                       exploration_fraction = 0.1,
-                       exploration_final_eps = 0.02,
+                       exploration_fraction = 0.1f,
+                       exploration_final_eps = 0.02f,
                        print_freq = 10)
     
   }

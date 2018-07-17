@@ -97,11 +97,12 @@ fun TF.variable(shape: Dimension, dtype: Int, initializer: Initializer, name: St
 fun TF.variable(initial_value: Tensor, name: String = "Variable", trainable: Boolean = true) =
     variable({ initial_value }, name, trainable)
 
-fun TF.assign(ref: Tensor, value: Tensor, name: String = "Assign"): Operation {
-  return g.nodeBuilder("Assign", ctx.getUniqueFullName(name))
+fun TF.assign(ref: Tensor, value: Tensor, name: String = "Assign"): Tensor {
+  val op = g.nodeBuilder("Assign", ctx.getUniqueFullName(name))
       .addInput(ref.asRef())
       .addInput(value)
       .build()
+  return Tensor(op, 0)
 }
 
 fun TF.is_variable_initialized(ref: Tensor, name: String = "IsVariableInitialized"): Tensor {

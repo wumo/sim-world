@@ -8,7 +8,7 @@ import wumo.sim.util.a
 
 class Variable(op: Operation, value_index: Int) : Tensor(op, value_index) {
   lateinit var initial_value: Tensor
-  lateinit var initializer_op: Operation
+  lateinit var initializer_op: Tensor
   lateinit var snapshot: Tensor
   
   /**
@@ -35,7 +35,7 @@ class Variable(op: Operation, value_index: Int) : Tensor(op, value_index) {
   
   fun read_value() = tf.identity(this, name = "read")
   
-  fun assign(value: Tensor, use_locking: Boolean = false): Operation {
+  fun assign(value: Tensor, use_locking: Boolean = false): Tensor {
     return tf.assign(this, value)
   }
   

@@ -78,7 +78,9 @@ fun TF.slice(input: Tensor, begin: Tensor, size: Tensor, name: String = "Slice")
   return Tensor(v, 0)
 }
 
-fun TF.oneHot(indices: Tensor, depth: Tensor, on_value: Tensor, off_value: Tensor,
+fun TF.oneHot(indices: Tensor, depth: Tensor,
+              on_value: Tensor = tf.const(1f),
+              off_value: Tensor = tf.const(0f),
               name: String = "OneHot")
     : Tensor {
   val v = g.nodeBuilder("OneHot", ctx.getUniqueFullName(name))
@@ -314,3 +316,5 @@ fun TF.pack(value: Array<Tensor>, axis: Int = 0, name: String = "Pack"): Tensor 
       .build()
   return Tensor(op, 0)
 }
+
+fun TF.stop_gradient(input: Tensor, name: String = "StopGradient") = unaryOp("StopGradient", input, name)

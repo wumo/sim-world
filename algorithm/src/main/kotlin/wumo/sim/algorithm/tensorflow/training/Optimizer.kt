@@ -7,6 +7,8 @@ import wumo.sim.algorithm.tensorflow.ops.gradients
 import wumo.sim.algorithm.tensorflow.ops.group
 import wumo.sim.algorithm.tensorflow.ops.variable
 import wumo.sim.algorithm.tensorflow.tf
+import wumo.sim.util.tuple2
+import wumo.sim.util.zip
 
 /**
  * This class defines the API to add Ops to train a model.  You never use this
@@ -23,13 +25,13 @@ abstract class Optimizer(val use_locking: Boolean, val name: String) {
     return apply_gradients(grads_and_vars, name = name)
   }
   
-  fun compute_gradients(loss: Tensor, var_list: List<Variable>?): List<Pair<Tensor, Variable>> {
+  fun compute_gradients(loss: Tensor, var_list: List<Variable>?): List<tuple2<Tensor, Variable>> {
     val var_list = var_list ?: tf.trainables
     val grads = tf.gradients(loss, var_list)
     return grads.zip(var_list)
   }
   
-  fun apply_gradients(grads_and_vars: List<Pair<Tensor, Variable>>, name: String = ""): Operation {
+  fun apply_gradients(grads_and_vars: List<tuple2<Tensor, Variable>>, name: String = ""): Operation {
     val name = if (name.isEmpty()) this.name else name
     val var_list = grads_and_vars.map { (g, v) -> v }
     create_slots(var_list)

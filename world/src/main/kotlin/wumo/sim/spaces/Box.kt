@@ -1,11 +1,16 @@
 package wumo.sim.spaces
 
 import wumo.sim.core.Space
+import wumo.sim.util.Dimension
 import wumo.sim.util.Rand
 import wumo.sim.util.d
 import wumo.sim.util.ndarray.NDArray
 
 class Box(val low: NDArray<Double>, val high: NDArray<Double>) : Space<NDArray<Double>> {
+  override val n: Int
+    get() = TODO("not implemented")
+  val shape: Dimension = low.shape//TODO
+  val dtype: Int = 1
   
   init {
     require(low.size == high.size)

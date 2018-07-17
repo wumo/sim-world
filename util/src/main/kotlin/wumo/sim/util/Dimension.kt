@@ -1,6 +1,7 @@
 @file:Suppress("NOTHING_TO_INLINE")
 
 package wumo.sim.util
+
 infix fun Int.x(a: Int): Dimension {
   require(this >= 0 && a >= 0)
   return Dimension(mutableListOf(this, a))
@@ -9,6 +10,10 @@ infix fun Int.x(a: Int): Dimension {
 infix fun Dimension.x(a: Int): Dimension {
   elements += a
   return this
+}
+
+infix fun Int.x(shape: Dimension) = Dimension().apply {
+  this.elements.addAll(shape.elements)
 }
 
 inline fun <T : Number> dim(d: T) = Dimension(mutableListOf(d.toInt()))
