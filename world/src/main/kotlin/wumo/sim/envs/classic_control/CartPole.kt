@@ -8,15 +8,14 @@ import wumo.sim.graphics.Viewer
 import wumo.sim.core.Env
 import wumo.sim.spaces.Box
 import wumo.sim.spaces.Discrete
-import wumo.sim.util.Rand
-import wumo.sim.util.arrayCopy
-import wumo.sim.util.tuple4
-import wumo.sim.util.unaryMinus
+import wumo.sim.util.*
+import wumo.sim.util.ndarray.NDArray
+import wumo.sim.util.ndarray.unaryMinus
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
-class CartPole : Env<DoubleArray, Int> {
+class CartPole : Env<NDArray<Double>, Int> {
   companion object {
     val gravity = 9.8
     val masscart = 1.0
@@ -33,20 +32,20 @@ class CartPole : Env<DoubleArray, Int> {
   }
   
   // Angle limit set to 2 * theta_threshold_radians so failing observation is still within bounds
-  val high = doubleArrayOf(
+  val high = NDArray(d(
       x_threshold * 2,
       Double.MAX_VALUE,
       theta_threshold_radians * 2,
-      Double.MAX_VALUE)
+      Double.MAX_VALUE))
   
-  val state = DoubleArray(4)
+  val state = NDArray.zeros(4)
   
   var steps_beyond_done = Double.NaN
   
   override val action_space = Discrete(2)
   override val observation_space = Box(-high, high)
   
-  override fun step(a: Int): tuple4<DoubleArray, Double, Boolean, Map<String, Any>> {
+  override fun step(a: Int): tuple4<NDArray<Double>, Double, Boolean, Map<String, Any>> {
     assert(action_space.contains(a)) { "invalid a:$a" }
     var (x, x_dot, theta, theta_dot) = state
     
@@ -81,12 +80,13 @@ class CartPole : Env<DoubleArray, Int> {
         0.0
       }
     }
-    return tuple4(state, reward, done, emptyMap())
+    return tuple4(state.copy(), reward, done, emptyMap())
   }
   
-  override fun reset(): DoubleArray {
+  override fun reset(): NDArray<Double> {
     val s = Rand(-0.05, 0.05, 4)
-    arrayCopy(s, state, state.size)
+    state.setFrom(s)
+//    arrayCopy(s, state, state.size)
     steps_beyond_done = Double.NaN
     return s
   }

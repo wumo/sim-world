@@ -1,5 +1,6 @@
 package wumo.sim.world.examples.algorithm
 
+import wumo.sim.util.ndarray.NDArray
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.floor
@@ -7,17 +8,17 @@ import kotlin.math.floor
 private const val MAXIMUM_CAPACITY = 1 shl 30
 
 class SuttonTileCoding(numTilesPerTiling: Int, _numTilings: Int, val allowCollisions: Boolean = false,
-                       val _tiles: (DoubleArray, Int, (DoubleArray, IntArray) -> IntArray) -> IntArray) {
+                       val _tiles: (NDArray<Double>, Int, (NDArray<Double>, IntArray) -> IntArray) -> IntArray) {
   val numTilings = tableSizeFor(_numTilings)
   val numOfComponents = numTilings * (numTilesPerTiling + 1)
-  operator fun invoke(s: DoubleArray, a: Int): IntArray {
+  operator fun invoke(s: NDArray<Double>, a: Int): IntArray {
     return _tiles(s, a, ::tiles)
   }
   
   val data = HashMap<ArrayList<Double>, Int>(ceil(numOfComponents / 0.75).toInt())
   
-  fun tiles(floats: DoubleArray, ints: IntArray): IntArray {
-    for ((i, v) in floats.withIndex())
+  fun tiles(floats: NDArray<Double>, ints: IntArray): IntArray {
+    for ((i, v) in floats.flatten())
       floats[i] = floor(v * numTilings)
     
     val result = IntArray(numTilings)

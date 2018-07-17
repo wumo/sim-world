@@ -10,4 +10,8 @@ class DoubleArrayBuf(val raw: DoubleArray) : Buf<Double> {
   override fun set(offset: Int, data: Double) {
     raw[offset] = data
   }
+  
+  override fun copy() = DoubleArrayBuf(raw.clone())
+  
+  override val size = raw.size
 }

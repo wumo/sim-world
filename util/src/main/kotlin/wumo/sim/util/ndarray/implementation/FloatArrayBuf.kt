@@ -10,4 +10,8 @@ class FloatArrayBuf(val raw: FloatArray) : Buf<Float> {
   override fun set(offset: Int, data: Float) {
     raw[offset] = data
   }
+  
+  override fun copy() = FloatArrayBuf(raw.clone())
+  
+  override val size = raw.size
 }

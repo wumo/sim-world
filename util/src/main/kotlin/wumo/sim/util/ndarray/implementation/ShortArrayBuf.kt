@@ -10,4 +10,8 @@ class ShortArrayBuf(val raw: ShortArray) : Buf<Short> {
   override fun set(offset: Int, data: Short) {
     raw[offset] = data
   }
+  
+  override fun copy() = ShortArrayBuf(raw.clone())
+  
+  override val size = raw.size
 }

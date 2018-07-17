@@ -10,4 +10,8 @@ class LongArrayBuf(val raw: LongArray) : Buf<Long> {
   override fun set(offset: Int, data: Long) {
     raw[offset] = data
   }
+  
+  override fun copy() = LongArrayBuf(raw.clone())
+  
+  override val size = raw.size
 }

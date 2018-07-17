@@ -4,6 +4,7 @@ package wumo.sim.world.examples.algorithm
 
 import wumo.sim.core.Env
 import wumo.sim.util.Rand
+import wumo.sim.util.ndarray.NDArray
 
 fun argmax_tie_random(set: IntRange, evaluate: (Int) -> Double): Int {
   val iterator = set.iterator()
@@ -63,9 +64,9 @@ inline fun DoubleArray.scaleAdd(s: Double, x: IntArray) {
     this[i] += s
 }
 
-inline fun Env<DoubleArray, Int>.`True Online Sarsa(λ)`(
+inline fun Env<NDArray<Double>, Int>.`True Online Sarsa(λ)`(
     Qfunc: LinearTileCodingFunc,
-    π: (DoubleArray) -> Int,
+    π: (NDArray<Double>) -> Int,
     λ: Double,
     α: Double,
     episodes: Int,
@@ -116,8 +117,8 @@ inline fun Env<DoubleArray, Int>.`True Online Sarsa(λ)`(
   }
 }
 
-inline fun Env<DoubleArray, Int>.Play(
-    π: (DoubleArray) -> Int,
+inline fun Env<NDArray<Double>, Int>.Play(
+    π: (NDArray<Double>) -> Int,
     episodes: Int,
     maxStep: Int = Int.MAX_VALUE) {
   val γ = 1.0

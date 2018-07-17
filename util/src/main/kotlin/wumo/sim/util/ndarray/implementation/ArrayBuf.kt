@@ -7,4 +7,8 @@ class ArrayBuf<T>(val raw: Array<T>) : Buf<T> {
   override fun set(offset: Int, data: T) {
     raw[offset] = data
   }
+  
+  override fun copy() = ArrayBuf(raw.clone())
+  
+  override val size = raw.size
 }

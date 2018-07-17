@@ -10,13 +10,15 @@ import wumo.sim.core.Env
 import wumo.sim.spaces.Box
 import wumo.sim.spaces.Discrete
 import wumo.sim.util.Rand
+import wumo.sim.util.d
+import wumo.sim.util.ndarray.NDArray
 import wumo.sim.util.rangeTo
 import wumo.sim.util.tuple4
 import kotlin.math.cos
 import kotlin.math.sin
 
 
-class MountainCar : Env<DoubleArray, Int> {
+class MountainCar : Env<NDArray<Double>, Int> {
   companion object {
     val min_position = -1.2
     val max_position = 0.6
@@ -24,13 +26,13 @@ class MountainCar : Env<DoubleArray, Int> {
     val goal_position = 0.5
   }
   
-  val state = DoubleArray(2)
+  val state = NDArray.zeros(2)
   
   override val action_space = Discrete(3)
-  override val observation_space = Box(low = doubleArrayOf(min_position, -max_speed),
-      high = doubleArrayOf(max_position, max_speed))
+  override val observation_space = Box(low = NDArray(d(min_position, -max_speed)),
+                                       high = NDArray(d(max_position, max_speed)))
   
-  override fun step(a: Int): tuple4<DoubleArray, Double, Boolean, Map<String, Any>> {
+  override fun step(a: Int): tuple4<NDArray<Double>, Double, Boolean, Map<String, Any>> {
     assert(action_space.contains(a)) { "invalid a:$a" }
     var (position, velocity) = state
     velocity += (a - 1) * 0.001 + cos(3 * position) * (-0.0025)
@@ -42,13 +44,13 @@ class MountainCar : Env<DoubleArray, Int> {
     val reward = -1.0
     state[0] = position
     state[1] = velocity
-    return tuple4(state.clone(), reward, done, emptyMap())
+    return tuple4(state.copy(), reward, done, emptyMap())
   }
   
-  override fun reset(): DoubleArray {
+  override fun reset(): NDArray<Double> {
     state[0] = Rand().nextDouble(-0.6, -0.4)
     state[1] = 0.0
-    return state.clone()
+    return state.copy()
   }
   
   lateinit var viewer: Viewer

@@ -6,12 +6,23 @@ import wumo.sim.util.ndarray.implementation.*
 interface Buf<T> {
   operator fun get(offset: Int): T
   operator fun set(offset: Int, data: T)
+  fun copy(): Buf<T>
+  fun setFrom(other: Buf<T>) {
+    for (i in 0 until size)
+      this[i] = other[i]
+  }
+  
+  val size: Int
 }
 
-open class NDArray<T>(shape: Dimension, val raw: Buf<T>) : Iterable<T> {
+open class NDArray<T>(val shape: Dimension, val raw: Buf<T>) : Iterable<T> {
   companion object {
+    fun zeros(shape: Int): NDArray<Double> {
+      return NDArray(dim(shape), DoubleArray(shape))
+    }
+    
     fun zeros(shape: Dimension): NDArray<Float> {
-      return NDArray(shape, FloatArrayBuf(FloatArray(shape.numElements())))
+      return NDArray(shape, FloatArray(shape.numElements()))
     }
     
     operator fun invoke(value: Float) = invoke(scalarDimension, f(value))
@@ -22,6 +33,15 @@ open class NDArray<T>(shape: Dimension, val raw: Buf<T>) : Iterable<T> {
     operator fun invoke(value: Int) = invoke(scalarDimension, i(value))
     operator fun invoke(value: Long) = invoke(scalarDimension, l(value))
     operator fun invoke(value: String) = invoke(scalarDimension, a(value))
+    
+    operator fun invoke(value: FloatArray) = NDArray(dim(value.size), FloatArrayBuf(value))
+    operator fun invoke(value: DoubleArray) = NDArray(dim(value.size), DoubleArrayBuf(value))
+    operator fun invoke(value: BooleanArray) = NDArray(dim(value.size), BooleanArrayBuf(value))
+    operator fun invoke(value: ByteArray) = NDArray(dim(value.size), ByteArrayBuf(value))
+    operator fun invoke(value: ShortArray) = NDArray(dim(value.size), ShortArrayBuf(value))
+    operator fun invoke(value: IntArray) = NDArray(dim(value.size), IntArrayBuf(value))
+    operator fun invoke(value: LongArray) = NDArray(dim(value.size), LongArrayBuf(value))
+    operator fun invoke(value: Array<String>) = NDArray(dim(value.size), ArrayBuf(value))
     
     operator fun invoke(shape: Dimension, value: FloatArray) = NDArray(shape, FloatArrayBuf(value))
     operator fun invoke(shape: Dimension, value: DoubleArray) = NDArray(shape, DoubleArrayBuf(value))
@@ -35,12 +55,12 @@ open class NDArray<T>(shape: Dimension, val raw: Buf<T>) : Iterable<T> {
   
   private val stride: IntArray
   private val dims: IntArray
-  private val numElements: Int
+  val size: Int
   val numDims = shape.rank()
   
   init {
     stride = IntArray(numDims)
-    dims = IntArray(numDims) { shape[it] }
+    dims = shape.asIntArray()
     var n = 0
     if (dims.isNotEmpty()) {
       stride[stride.lastIndex] = 1
@@ -48,7 +68,7 @@ open class NDArray<T>(shape: Dimension, val raw: Buf<T>) : Iterable<T> {
         stride[a] = dims[a + 1] * stride[a + 1]
       n = dims[0] * stride[0]
     }
-    numElements = n
+    size = n
   }
   
   private inline fun <U> get_set(vararg idx: Int, op: (Int) -> U): U {
@@ -69,16 +89,32 @@ open class NDArray<T>(shape: Dimension, val raw: Buf<T>) : Iterable<T> {
   
   override fun iterator() = object : Iterator<T> {
     var a = 0
-    override fun hasNext() = a < numElements
+    override fun hasNext() = a < size
     
     override fun next() = raw[a++]
+  }
+  
+  fun flatten() = object : Iterator<tuple2<Int, T>> {
+    var a = 0
+    lateinit var element: tuple2<Int, T>
+    override fun hasNext() = a < size
+    
+    override fun next(): tuple2<Int, T> {
+      val value = raw[a]
+      if (this::element.isInitialized)
+        element._2 = value
+      else
+        element = tuple2(a, value)
+      a++
+      return element
+    }
   }
   
   fun withIndex() = object : Iterator<tuple2<IntArray, T>> {
     val idx = IntArray(dims.size).apply { this[this.lastIndex] = -1 }
     var a = 0
     lateinit var element: tuple2<IntArray, T>
-    override fun hasNext() = a < numElements
+    override fun hasNext() = a < size
     
     override fun next(): tuple2<IntArray, T> {
       for (_idx in dims.lastIndex downTo 0) {
@@ -147,4 +183,17 @@ open class NDArray<T>(shape: Dimension, val raw: Buf<T>) : Iterable<T> {
     }
     return sb.toString()
   }
+  
+  fun copy() = NDArray(shape, raw.copy())
+  fun setFrom(other: NDArray<T>) {
+    raw.setFrom(other.raw)
+  }
+  
+  operator fun component1() = raw[0]
+  operator fun component2() = raw[1]
+  operator fun component3() = raw[2]
+  operator fun component4() = raw[3]
+  operator fun component5() = raw[4]
+  operator fun component6() = raw[5]
+  
 }

@@ -15,6 +15,10 @@ class TensorBufferTest {
     println(t)
     t[0, 0] = 3f
     println(t)
+    val t_c = t.copy()
+    t_c[0, 0] = 6f
+    println(t)
+    println(t_c)
     val t2 = TensorBuffer<Float>(_t.c_tensor)
     println(t2)
     val t3 = TensorBuffer(1)

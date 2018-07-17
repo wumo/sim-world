@@ -10,4 +10,8 @@ class ByteArrayBuf(val raw: ByteArray) : Buf<Byte> {
   override fun set(offset: Int, data: Byte) {
     raw[offset] = data
   }
+  
+  override fun copy() = ByteArrayBuf(raw.clone())
+  
+  override val size = raw.size
 }

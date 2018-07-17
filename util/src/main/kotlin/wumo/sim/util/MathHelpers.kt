@@ -2,14 +2,11 @@
 
 package wumo.sim.util
 
+import wumo.sim.util.ndarray.NDArray
 import java.util.concurrent.ThreadLocalRandom
 
 inline fun Rand() = ThreadLocalRandom.current()!!
-fun Rand(low: Double, high: Double, n: Int) = DoubleArray(n) { Rand().nextDouble(low, high) }
-operator fun DoubleArray.unaryMinus() =
-    DoubleArray(this.size) {
-      -this[it]
-    }
+fun Rand(low: Double, high: Double, n: Int) = NDArray(d(n) { Rand().nextDouble(low, high) })
 
 fun <T> max(set: Iterable<T>, default: Double = Double.NaN, evaluate: T.(T) -> Double): Double {
   val iterator = set.iterator()

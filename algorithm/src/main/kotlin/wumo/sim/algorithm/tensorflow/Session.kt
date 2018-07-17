@@ -124,7 +124,7 @@ class Session(val c_graph: TF_Graph) {
     for ((i, pair) in feed_dict.withIndex()) {
       val (input, input_value) = pair
       inputs.position(i.toLong()).oper(input.op.c_op).index(input.value_index)
-      input_values.position(i.toLong()).put((input_value.raw as TensorBuffer).c_tensor)
+      input_values.position(i.toLong()).put(TensorBuffer.fromNDArray(input_value).c_tensor)
     }
     inputs.position(0L)
     input_values.position(0L)
