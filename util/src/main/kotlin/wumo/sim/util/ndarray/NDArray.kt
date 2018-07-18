@@ -1,3 +1,5 @@
+@file:Suppress("UNCHECKED_CAST")
+
 package wumo.sim.util.ndarray
 
 import wumo.sim.util.*
@@ -24,6 +26,31 @@ open class NDArray<T>(val shape: Dimension, val raw: Buf<T>) : Iterable<T> {
     fun zeros(shape: Dimension): NDArray<Float> {
       return NDArray(shape, FloatArray(shape.numElements()))
     }
+    
+    private val toNDArraySwitch = SwitchType<NDArray<*>>().apply {
+      case<Float> { NDArray(it) }
+      case<Double> { NDArray(it) }
+      case<Boolean> { NDArray(it) }
+      case<Byte> { NDArray(it) }
+      case<Short> { NDArray(it) }
+      case<Int> { NDArray(it) }
+      case<Long> { NDArray(it) }
+      case<String> { NDArray(it) }
+      case<FloatArray> { NDArray(it) }
+      case<DoubleArray> { NDArray(it) }
+      case<BooleanArray> { NDArray(it) }
+      case<ByteArray> { NDArray(it) }
+      case<ShortArray> { NDArray(it) }
+      case<IntArray> { NDArray(it) }
+      case<LongArray> { NDArray(it) }
+      case<Array<*>> {
+        if (this::class.java == String::class.java)
+          NDArray.invoke(it as Array<String>)
+        else throw NotImplementedError()
+      }
+    }
+    
+    fun toNDArray(value: Any) = toNDArraySwitch(value)
     
     operator fun invoke(value: Float) = invoke(scalarDimension, f(value))
     operator fun invoke(value: Double) = invoke(scalarDimension, d(value))
@@ -55,6 +82,7 @@ open class NDArray<T>(val shape: Dimension, val raw: Buf<T>) : Iterable<T> {
   
   private val stride: IntArray
   private val dims: IntArray
+  /**number of elements*/
   val size: Int
   val numDims = shape.rank()
   

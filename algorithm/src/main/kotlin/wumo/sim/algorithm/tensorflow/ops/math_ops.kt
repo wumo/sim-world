@@ -118,13 +118,21 @@ fun TF.matmul(a: Tensor, b: Tensor, name: String = "MatMul") =
     binaryOp("MatMul", a, b, name)
 
 fun TF.argmax(a: Tensor, axis: Tensor, name: String = "ArgMax") =
-    binaryOp("ArgMax", a, axis, name)
+    subscope(name) {
+      val op = g.nodeBuilder("ArgMax", parentName)
+          .addInput(a)
+          .addInput(axis)
+          .setAttrType("output_type", DT_INT32)
+          .build()
+      Tensor(op, 0)
+    }
 
-fun TF.argmax(a: Tensor, axis: Int, name: String = "ArgMax") =
+fun TF.argmax(a: Tensor, axis: Int, output_type: Int = DT_INT32, name: String = "ArgMax") =
     subscope(name) {
       val op = g.nodeBuilder("ArgMax", parentName)
           .addInput(a)
           .addInput(const(axis, "dimension"))
+          .setAttrType("output_type", output_type)
           .build()
       Tensor(op, 0)
     }

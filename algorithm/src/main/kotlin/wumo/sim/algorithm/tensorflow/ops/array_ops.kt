@@ -299,7 +299,7 @@ fun TF.stack(values: List<Int>, axis: Int = 0, name: String = "stack"): Tensor {
  * has the same shape as `x` and `y`, then it chooses which element to copy from
  * `x` and `y`.
  */
-fun TF.where(condition: Tensor, x: Tensor, y: Tensor) = binaryOp("Select", x, y, "Select")
+fun TF.where(condition: Tensor, x: Tensor, y: Tensor) = ternaryOp("Select",condition, x, y, "Select")
 
 fun TF.where(condition: Tensor, name: String = "Where") = unaryOp("Where", condition, name)
 

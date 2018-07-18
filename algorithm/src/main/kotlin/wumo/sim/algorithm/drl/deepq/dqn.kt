@@ -37,31 +37,31 @@ import wumo.sim.util.ndarray.plus
  * @param prioritized_replay_eps: epsilon to add to the TD errors when updating priorities.
  * @return act: Wrapper over act function. Adds ability to save it and load it.
  */
-fun <O, A> TF.learn(env: Env<O, A>,
-                    q_func: Q_func,
-                    lr: Float = 5e-4f,
-                    max_timesteps: Int = 100000,
-                    buffer_size: Int = 50000,
-                    exploration_fraction: Float = 0.1f,
-                    exploration_final_eps: Float = 0.02f,
-                    train_freq: Int = 1,
-                    batch_size: Int = 32,
-                    print_freq: Int = 100,
-                    learning_starts: Int = 1000,
-                    gamma: Float = 1.0f,
-                    target_network_update_freq: Int = 500,
-                    prioritized_replay: Boolean = false,
-                    prioritized_replay_alpha: Float = 0.6f,
-                    prioritized_replay_beta0: Float = 0.4f,
-                    prioritized_replay_beta_iters: Int? = null,
-                    prioritized_replay_eps: Float = 1e-6f,
-                    param_noise: Boolean = false) {
+fun <O, A> learn(env: Env<O, A>,
+                 q_func: Q_func,
+                 lr: Float = 5e-4f,
+                 max_timesteps: Int = 100000,
+                 buffer_size: Int = 50000,
+                 exploration_fraction: Float = 0.1f,
+                 exploration_final_eps: Float = 0.02f,
+                 train_freq: Int = 1,
+                 batch_size: Int = 32,
+                 print_freq: Int = 100,
+                 learning_starts: Int = 1000,
+                 gamma: Float = 1.0f,
+                 target_network_update_freq: Int = 500,
+                 prioritized_replay: Boolean = false,
+                 prioritized_replay_alpha: Float = 0.6f,
+                 prioritized_replay_beta0: Float = 0.4f,
+                 prioritized_replay_beta_iters: Int? = null,
+                 prioritized_replay_eps: Float = 1e-6f,
+                 param_noise: Boolean = false) {
   fun make_obs_ph(name: String) = ObservationInput(env.observation_space, name = name)
   
   val (act, train, update_target, debug) = build_train(
       make_obs_ph = ::make_obs_ph,
       q_func = q_func,
-      num_actions = 0,
+      num_actions = env.action_space.n,
       optimizer = AdamOptimizer(learningRate = lr),
       gamma = gamma,
       grad_norm_clipping = tf.const(10),
@@ -130,21 +130,21 @@ fun <O, A> TF.learn(env: Env<O, A>,
       
       if (t > learning_starts && t % train_freq == 0) {
         //Minimize the error in Bellman's equation on a batch sampled from replay buffer.
-        val obses_t: Tensor = tf.const(1)
-        val actions: Tensor = tf.const(1)
-        val rewards: Tensor = tf.const(1)
-        val obses_tp1: Tensor = tf.const(1)
-        val dones: Tensor = tf.const(1)
-        var weights: Tensor = tf.const(1)
-        var batch_idxes: Tensor = tf.const(1)
+        val obses_t = 1
+        val actions = 1
+        val rewards = 1
+        val obses_tp1 = 1
+        val dones = 1
+        var weights = 1
+        var batch_idxes = 1
         if (prioritized_replay) {
           val (obses_t, actions, rewards, obses_tp1, dones, weights, batch_idxes) = replay_buffer.sample(batch_size, beta = beta_schedule.value(t))
         } else {
           val (obses_t, actions, rewards, obses_tp1, dones) = replay_buffer.sample(batch_size)
-          weights = tf.const(1)
-          batch_idxes = tf.const(1)
+          weights = 1
+          batch_idxes = 1
         }
-        val td_errors = train(obses_t, actions, rewards, obses_tp1, dones, weights)
+        val (td_errors) = train(obses_t, actions, rewards, obses_tp1, dones, weights)
         if (prioritized_replay) {
           val new_priorities = abs(td_errors) + prioritized_replay_eps
           replay_buffer.update_priorities(batch_idxes, new_priorities)

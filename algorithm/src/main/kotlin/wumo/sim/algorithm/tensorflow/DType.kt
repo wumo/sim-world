@@ -36,3 +36,11 @@ val Int.is_ref_dytpe
 /**Returns a non-reference `DType` based on this `DType`.*/
 val Int.base_dtype
   get() = if (is_ref_dytpe) this - 100 else this
+
+val int_type = setOf(DT_INT8, DT_UINT8, DT_INT16, DT_UINT16, DT_INT32, DT_UINT32, DT_INT64, DT_UINT64)
+val Int.is_integer: Boolean
+  get() = !is_quantized && base_dtype in int_type
+
+val quantized_type = setOf(DT_QINT8, DT_QUINT8, DT_QINT16, DT_QUINT16, DT_QINT32)
+val Int.is_quantized
+  get() = this.base_dtype in quantized_type

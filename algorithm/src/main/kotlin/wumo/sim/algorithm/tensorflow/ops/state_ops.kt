@@ -1,33 +1,34 @@
+@file:Suppress("UNCHECKED_CAST")
+
 package wumo.sim.algorithm.tensorflow.ops
 
 import wumo.sim.algorithm.tensorflow.*
-import wumo.sim.util.Dimension
-import wumo.sim.util.dim
-import wumo.sim.util.scalarDimension
+import wumo.sim.util.*
+
+private val variable_switch = SwitchType3<String, Boolean, Variable>().apply {
+  case<Float> { tf.variable(_1, _2, _3) }
+  case<Double> { tf.variable(_1, _2, _3) }
+  case<Boolean> { tf.variable(_1, _2, _3) }
+  case<Byte> { tf.variable(_1, _2, _3) }
+  case<Int> { tf.variable(_1, _2, _3) }
+  case<Long> { tf.variable(_1, _2, _3) }
+  case<String> { tf.variable(_1, _2, _3) }
+  case<FloatArray> { tf.variable(_1, _2, _3) }
+  case<DoubleArray> { tf.variable(_1, _2, _3) }
+  case<BooleanArray> { tf.variable(_1, _2, _3) }
+  case<ByteArray> { tf.variable(_1, _2, _3) }
+  case<IntArray> { tf.variable(_1, _2, _3) }
+  case<LongArray> { tf.variable(_1, _2, _3) }
+  case<Array<*>> {
+    if (_1::class.java.componentType == String::class.java)
+      tf.variable(_1 as Array<String>, _2, _3)
+    else
+      throw IllegalArgumentException("unsupported ${_1::class}")
+  }
+}
 
 fun TF.variable(initial_value: Any, name: String = "Variable", trainable: Boolean = true) =
-    when (initial_value) {
-      is Float -> variable(initial_value, name, trainable)
-      is Double -> variable(initial_value, name, trainable)
-      is Boolean -> variable(initial_value, name, trainable)
-      is Byte -> variable(initial_value, name, trainable)
-      is Int -> variable(initial_value, name, trainable)
-      is Long -> variable(initial_value, name, trainable)
-      is String -> variable(initial_value, name, trainable)
-      is FloatArray -> variable(initial_value, name, trainable)
-      is DoubleArray -> variable(initial_value, name, trainable)
-      is BooleanArray -> variable(initial_value, name, trainable)
-      is ByteArray -> variable(initial_value, name, trainable)
-      is IntArray -> variable(initial_value, name, trainable)
-      is LongArray -> variable(initial_value, name, trainable)
-      is Array<*> -> {
-        if (initial_value::class.java.componentType == String::class.java)
-          variable(initial_value as Array<String>, name, trainable)
-        else
-          throw IllegalArgumentException("unsupported ${initial_value::class}")
-      }
-      else -> throw IllegalArgumentException("unsupported ${initial_value::class}")
-    }
+    variable_switch(initial_value, name, trainable)
 
 fun TF.variable(initial_value: Float, name: String = "Variable", trainable: Boolean = true) = variable(scalarDimension, initial_value, name, trainable)
 fun TF.variable(initial_value: Double, name: String = "Variable", trainable: Boolean = true) = variable(scalarDimension, initial_value, name, trainable)
@@ -66,7 +67,7 @@ fun TF.variable(shape: Dimension, initial_value: Long, name: String = "Variable"
 fun TF.variable(shape: Dimension, initial_value: String, name: String = "Variable", trainable: Boolean = true) = variable({ const(shape, initial_value, it) }, name, trainable)
 
 private inline fun TF.variable(initializer: (String) -> Tensor, name: String, trainable: Boolean = true): Variable {
-  init_subsope(name) {
+  subscope(name) {
     val initial_value = initializer("initial_value")
     val v = g.nodeBuilder("VariableV2", parentName)
         .setAttrType("dtype", initial_value.dtype.base_dtype)

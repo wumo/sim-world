@@ -28,30 +28,32 @@ fun TF.fully_connected(inputs: Tensor,
                        normalizer_fn: ((Tensor, Any?) -> Tensor)? = null,
                        normalizer_params: Any? = null,
                        weights_initializer: Initializer = xavier_initializer(),
-                       weights_tensorFunction: TensorFunction? = null,
+                       weights_regularizer: TensorFunction? = null,
                        biases_initializer: Initializer? = zeros_initializer(),
-                       biases_tensorFunction: TensorFunction? = null,
+                       biases_regularizer: TensorFunction? = null,
                        reuse: Any? = null,
                        variables_collections: Any? = null,
                        outputs_collections: Any? = null,
                        trainable: Boolean = true): Tensor {
-  val layer = Dense(this, units = num_outputs,
-                    activation = null,
-                    use_bias = normalizer_fn == null && biases_initializer != null,
-                    kernel_initializer = weights_initializer,
-                    bias_initializer = biases_initializer,
-                    bias_tensorFunction = biases_tensorFunction,
-                    kernel_tensorFunction = weights_tensorFunction,
-                    activity_regularizer = null,
-                    trainable = trainable,
-                    name = "fully_connected",
-                    dtype = inputs.dtype)
-  var outputs = layer(inputs)
-  
-  if (normalizer_fn != null)
-    outputs = normalizer_fn(outputs, normalizer_params)
-  
-  if (activation_fn != null)
-    outputs = activation_fn(outputs)
-  return outputs
+  subscope("fully_connected") {
+    val layer = Dense(units = num_outputs,
+                      activation = null,
+                      use_bias = normalizer_fn == null && biases_initializer != null,
+                      kernel_initializer = weights_initializer,
+                      bias_initializer = biases_initializer,
+                      bias_regularizer = biases_regularizer,
+                      kernel_regularizer = weights_regularizer,
+                      activity_regularizer = null,
+                      trainable = trainable,
+                      name = borrowParentName(),
+                      dtype = inputs.dtype)
+    var outputs = layer(inputs)
+    
+    if (normalizer_fn != null)
+      outputs = normalizer_fn(outputs, normalizer_params)
+    
+    if (activation_fn != null)
+      outputs = activation_fn(outputs)
+    return outputs
+  }
 }

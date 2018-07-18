@@ -1,15 +1,15 @@
 package wumo.sim.algorithm.tensorflow.layers
 
 import org.bytedeco.javacpp.tensorflow.DT_INVALID
-import wumo.sim.algorithm.tensorflow.TF
 import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.ops.Initializer
 import wumo.sim.algorithm.tensorflow.ops.variable
+import wumo.sim.algorithm.tensorflow.tf
 import wumo.sim.util.Dimension
 
 typealias TensorFunction = (Tensor) -> Tensor
 
-open class Layer(val tf: TF, val trainable: Boolean = true,
+open class Layer(val trainable: Boolean = true,
                  val activity_reqularizer: Any? = null,
                  var dtype: Int = 0,
                  val name: String = "") {
@@ -41,12 +41,12 @@ open class Layer(val tf: TF, val trainable: Boolean = true,
   
   protected fun add_variable(shape: Dimension, dtype: Int,
                              initializer: Initializer,
-                             tensorFunction: TensorFunction? = null,
+                             regularizer: TensorFunction? = null,
                              trainable: Boolean = true,
                              name: String = ""): Tensor {
     val v = tf.variable(shape, dtype, initializer, name, trainable)
-    if (tensorFunction != null)
-      losses += tensorFunction(v)
+    if (regularizer != null)
+      losses += regularizer(v)
     return v
   }
 }

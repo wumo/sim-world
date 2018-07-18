@@ -5,7 +5,7 @@ import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.unaryOp
 
 fun TF.biasAdd(value: Tensor, bias: Tensor, name: String = "BiasAdd"): Tensor {
-  val op = g.nodeBuilder("BiadAdd", ctx.getUniqueFullName(name))
+  val op = g.nodeBuilder("BiasAdd", ctx.getUniqueFullName(name))
       .addInput(value)
       .addInput(bias)
       .setAttr("data_format", "NHWC")

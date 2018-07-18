@@ -1,14 +1,11 @@
 package wumo.sim.algorithm.tensorflow.ops
 
 import org.bytedeco.javacpp.tensorflow.*
-import wumo.sim.algorithm.tensorflow.TF
+import wumo.sim.algorithm.tensorflow.*
 import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.TensorBuffer
-import wumo.sim.algorithm.tensorflow.base_dtype
+import wumo.sim.util.*
 import wumo.sim.util.Dimension
-import wumo.sim.util.toByte
-import wumo.sim.util.dim
-import wumo.sim.util.scalarDimension
 
 fun TF.const(value: Float, name: String = "Const") = const(scalarDimension, value, name)
 fun TF.const(value: Double, name: String = "Const") = const(scalarDimension, value, name)
@@ -49,18 +46,19 @@ fun TF.const(shape: Dimension, value: Array<String>, name: String = "Const") = c
 fun TF.const(dtype: Int, value: Any, name: String = "Const") =
     const(scalarDimension, dtype, value, name)
 
+val const_switch = SwitchValue3<Int, Dimension, Any, String, Tensor>().apply {
+  case(DT_INT8, DT_UINT8) { tf.const(_1, (_2 as Number).toByte(), _3) }
+  case(DT_FLOAT) { tf.const(_1, (_2 as Number).toFloat(), _3) }
+  case(DT_DOUBLE) { tf.const(_1, (_2 as Number).toDouble(), _3) }
+  case(DT_BOOL) { tf.const(_1, (_2 as Number) != 0, _3) }
+  case(DT_INT16, DT_UINT16) { tf.const(_1, (_2 as Number).toShort(), _3) }
+  case(DT_INT32, DT_UINT32) { tf.const(_1, (_2 as Number).toInt(), _3) }
+  case(DT_INT64, DT_UINT64) { tf.const(_1, (_2 as Number).toLong(), _3) }
+  case(DT_STRING) { tf.const(_1, _2.toString(), _3) }
+}
+
 fun TF.const(shape: Dimension, dtype: Int, value: Any, name: String = "Const"): Tensor {
-  return when (dtype) {
-    DT_FLOAT -> const(shape, (value as Number).toFloat(), name)
-    DT_DOUBLE -> const(shape, (value as Number).toDouble(), name)
-    DT_BOOL -> const(shape, (value as Number) != 0, name)
-    DT_INT8, DT_UINT8 -> const(shape, (value as Number).toByte(), name)
-    DT_INT16, DT_UINT16 -> const(shape, (value as Number).toShort(), name)
-    DT_INT32, DT_UINT32 -> const(shape, (value as Number).toInt(), name)
-    DT_INT64, DT_UINT64 -> const(shape, (value as Number).toLong(), name)
-    DT_STRING -> const(shape, value.toString(), name)
-    else -> throw IllegalArgumentException("unsupported type $dtype")
-  }
+  return const_switch(dtype, shape, value, name)
 }
 
 private fun TF.const(shape: Dimension, dtype: Int, name: String = "Const", set_value: TensorProto.() -> Unit): Tensor {

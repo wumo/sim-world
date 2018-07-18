@@ -1,21 +1,59 @@
+@file:Suppress("NOTHING_TO_INLINE", "UNCHECKED_CAST")
+
 package wumo.sim.algorithm.drl.deepq
 
 import org.bytedeco.javacpp.tensorflow.DT_FLOAT
 import org.bytedeco.javacpp.tensorflow.DT_INT32
 import wumo.sim.algorithm.tensorflow.Tensor
-import wumo.sim.algorithm.tensorflow.Variable
 import wumo.sim.algorithm.tensorflow.ops.*
 import wumo.sim.algorithm.tensorflow.tf
 import wumo.sim.core.Space
 import wumo.sim.spaces.Box
 import wumo.sim.spaces.Discrete
-import wumo.sim.util.Dimension
-import wumo.sim.util.dim
+import wumo.sim.util.*
 import wumo.sim.util.ndarray.NDArray
-import wumo.sim.util.tuple2
-import wumo.sim.util.x
 
-fun function(inputs: Array<Tensor>? = null, outputs: Tensor? = null, givens: Any? = null, updates: List<Any>? = null): Function {
+val emptyArray = Array(0) { NotImplementedError() }
+inline fun <T> emptyArray() = emptyArray as Array<T>
+
+class Function(val inputs: Array<out Any>,
+               val outputs: Array<Tensor>,
+               val updates: Array<out Any>,
+               val givens: Array<Pair<Tensor, NDArray<*>>>) {
+  
+  operator fun invoke(vararg args: Any): Array<NDArray<*>> {
+    assert(args.size <= inputs.size) { "Too many arguments provided" }
+    val feed_dict = mutableMapOf<Tensor, NDArray<*>>()
+    for (i in 0 until inputs.size) {
+      val input = inputs[i]
+      val value = NDArray.toNDArray(args[i])
+      feed_dict += when (input) {
+        is TfInput -> input.make_feed_dict(value)
+        is Tensor -> input to value
+        else -> throw Exception()
+      }
+    }
+    for ((input, value) in givens)
+      feed_dict.putIfAbsent(input, value)
+    return tf.session.run(outputs, updates, feed_dict = feed_dict)
+  }
+}
+
+fun function(inputs: Array<out Any> = emptyArray(),
+             outputs: Tensor,
+             updates: Array<out Any> = emptyArray(),
+             givens: Array<out Pair<Tensor, Any>> = emptyArray()): Function {
+  val _givens = a(givens.size) {
+    val p = givens[it]
+    p.first to NDArray.toNDArray(p.second)
+  }
+  return Function(inputs, a(outputs), updates, _givens)
+}
+
+fun function(inputs: Array<Any> = emptyArray(),
+             outputs: Array<Tensor> = emptyArray(),
+             updates: Array<Any> = emptyArray(),
+             givens: Array<Pair<Tensor, NDArray<*>>> = emptyArray()): Function {
   TODO()
 }
 

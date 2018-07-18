@@ -13,7 +13,8 @@ infix fun Dimension.x(a: Int): Dimension {
 }
 
 infix fun Int.x(shape: Dimension) = Dimension().apply {
-  this.elements.addAll(shape.elements)
+  elements += this@x
+  elements.addAll(shape.elements)
 }
 
 inline fun <T : Number> dim(d: T) = Dimension(mutableListOf(d.toInt()))
@@ -58,5 +59,15 @@ class Dimension(val elements: MutableList<Int> = mutableListOf()) : Iterable<Int
   
   override fun iterator() = elements.iterator()
   
-  override fun toString() = elements.toString()
+  override fun toString(): String {
+    val sb = StringBuilder()
+    sb.append("(")
+    for ((i, value) in elements.withIndex()) {
+      sb.append(if (value == -1) "?" else value)
+      if (i < elements.lastIndex)
+        sb.append(", ")
+    }
+    sb.append(")")
+    return sb.toString()
+  }
 }

@@ -10,8 +10,8 @@ class train_cartpole {
   @Test
   fun train() {
     val env = CartPole()
-    val model = tf.mlp(64)
-    val act = tf.learn(env,
+    val model = mlp(64)
+    val act = learn(env,
                        q_func = model,
                        lr = 1e-3f,
                        max_timesteps = 100000,

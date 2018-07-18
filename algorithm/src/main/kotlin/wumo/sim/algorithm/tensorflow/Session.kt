@@ -157,4 +157,48 @@ class Session(val c_graph: TF_Graph) {
   fun target(vararg target: Operation) {
     run_list += target
   }
+  
+  fun run(fetch: Array<Tensor>,
+          updates: Array<out Any>,
+          feed_dict: Map<Tensor, NDArray<*>>): Array<NDArray<*>> {
+    val ninputs = feed_dict.size
+    val inputs = TF_Output(ninputs.toLong())
+    val input_values = PointerPointer<TF_Tensor>(ninputs.toLong())
+    for ((i, pair) in feed_dict.entries.withIndex()) {
+      val (input, input_value) = pair
+      inputs.position(i.toLong()).oper(input.op.c_op).index(input.value_index)
+      input_values.position(i.toLong()).put(TensorBuffer.fromNDArray(input_value).c_tensor)
+    }
+    inputs.position(0L)
+    input_values.position(0L)
+    
+    val ntargets = updates.size
+    val target_opers = PointerPointer<TF_Operation>(ntargets.toLong())
+    for ((i, op) in updates.withIndex()) {
+      val op = when (op) {
+        is Tensor -> op.op
+        is Operation -> op
+        else -> throw Exception()
+      }
+      target_opers.position(i.toLong()).put(op.c_op)
+    }
+    target_opers.position(0L)
+    
+    val status = newStatus()
+    val noutputs = fetch.size
+    val outputs = TF_Output(noutputs.toLong())
+    val output_values = PointerPointer<TF_Tensor>(noutputs.toLong())
+    for ((i, f) in fetch.withIndex())
+      outputs.position(i.toLong()).oper(f.op.c_op).index(f.value_index)
+    outputs.position(0L)
+    TF_SessionRun(c_session, null, inputs, input_values, ninputs,
+                  outputs, output_values, noutputs,
+                  target_opers, ntargets,
+                  null, status)
+    throwExceptionIfNotOk(status)
+    clear()
+    return Array(noutputs) {
+      TensorBuffer.toNDArray<Any>(output_values.get(TF_Tensor::class.java, it.toLong()))
+    }
+  }
 }

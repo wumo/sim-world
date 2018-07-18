@@ -20,7 +20,7 @@ interface ControlFlowContext {
  *
  */
 class Scope(val name_map: NameMap = NameMap(),
-            val parentName: String = "", var device: String = "") {
+            val parentName: String = "", var device: String = "", val reuse: Boolean = false) {
   private var useParentScopeName = false
   private var usedOnce = false
   var colocate_with: Operation? = null
@@ -55,11 +55,11 @@ class Scope(val name_map: NameMap = NameMap(),
     return "$parentName$sep$unique_name"
   }
   
-  fun newSubscope(name: String, device: String = "") =
+  fun newSubscope(name: String, device: String = "", reuse: Boolean = false) =
       if (name.isEmpty())
-        Scope(this.name_map, this.parentName, device)
+        Scope(this.name_map, this.parentName, device, reuse)
       else
-        Scope(parentName = getUniqueFullName(name), device = device)
+        Scope(parentName = getUniqueFullName(name), device = device, reuse = reuse)
   
   inline fun <R> with_device(dev: String, block: () -> R): R {
     val tmp = device

@@ -67,4 +67,6 @@ open class Tensor(val op: Operation, val value_index: Int, isInput: Boolean = fa
   open fun value() = this
   
   open fun asRef(): Tensor = throw UnsupportedOperationException("This tensor is not mutable!")
+  
+  override fun toString() = """Tensor("$name:$value_index", shape=$shape, dtype=${dtype.name()}, op=${op.opType})"""
 }

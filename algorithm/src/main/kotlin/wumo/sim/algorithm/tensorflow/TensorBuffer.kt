@@ -19,62 +19,35 @@ import java.nio.*
 
 abstract class TensorBuffer<T> protected constructor(c_tensor: TF_Tensor) : Buf<T> {
   companion object {
-    val convert_func = mapOf<Class<*>, (Dimension, Buf<*>) -> TensorBuffer<*>>(
-        FloatArrayBuf::class.java to { dims, b ->
-          b as FloatArrayBuf
-          TensorBuffer(dims, b.raw)
-        },
-        DoubleArrayBuf::class.java to { dims, b ->
-          b as DoubleArrayBuf
-          TensorBuffer(dims, b.raw)
-        },
-        BooleanArrayBuf::class.java to { dims, b ->
-          b as BooleanArrayBuf
-          TensorBuffer(dims, b.raw)
-        },
-        ByteArrayBuf::class.java to { dims, b ->
-          b as ByteArrayBuf
-          TensorBuffer(dims, b.raw)
-        },
-        ShortArrayBuf::class.java to { dims, b ->
-          b as ShortArrayBuf
-          TensorBuffer(dims, b.raw)
-        },
-        IntArrayBuf::class.java to { dims, b ->
-          b as IntArrayBuf
-          TensorBuffer(dims, b.raw)
-        },
-        LongArrayBuf::class.java to { dims, b ->
-          b as LongArrayBuf
-          TensorBuffer(dims, b.raw)
-        },
-        ArrayBuf::class.java to { dims, b ->
-          b as ArrayBuf
-          TensorBuffer(dims, Array(b.raw.size) { b[it].toString() })
-        })
+    private val convert_switch = SwitchType2<Dimension, TensorBuffer<*>>().apply {
+      case<FloatArrayBuf> { TensorBuffer(_2, _1.raw) }
+      case<DoubleArrayBuf> { TensorBuffer(_2, _1.raw) }
+      case<BooleanArrayBuf> { TensorBuffer(_2, _1.raw) }
+      case<ByteArrayBuf> { TensorBuffer(_2, _1.raw) }
+      case<ShortArrayBuf> { TensorBuffer(_2, _1.raw) }
+      case<IntArrayBuf> { TensorBuffer(_2, _1.raw) }
+      case<LongArrayBuf> { TensorBuffer(_2, _1.raw) }
+      case<ArrayBuf<*>> { TensorBuffer(_2, Array(_1.raw.size) { _1[it].toString() }) }
+    }
     
     fun <T> toNDArray(tb: TensorBuffer<T>) = NDArray(Dimension(tb.dims), tb)
     fun <T> toNDArray(c_tensor: TF_Tensor) = toNDArray(invoke<T>(c_tensor))
-    fun <T> fromNDArray(ndarray: NDArray<T>): TensorBuffer<T> {
-      if (ndarray.raw is TensorBuffer<*>) return ndarray.raw as TensorBuffer<T>
-      val convert = convert_func[ndarray.raw::class.java]!!
-      return convert(ndarray.shape, ndarray.raw) as TensorBuffer<T>
+    fun <T> fromNDArray(ndarray: NDArray<T>) = (if (ndarray.raw is TensorBuffer<*>) ndarray.raw
+    else convert_switch(ndarray.raw, ndarray.shape)) as TensorBuffer<T>
+    
+    private val create_switch = SwitchValue<Int, TF_Tensor, TensorBuffer<*>>().apply {
+      case(DT_COMPLEX64, DT_FLOAT) { FloatTensorBuffer(it) }
+      case(DT_DOUBLE) { DoubleTensorBuffer(it) }
+      case(DT_QINT32, DT_INT32) { IntTensorBuffer(it) }
+      case(DT_BOOL) { BooleanTensorBuffer(it) }
+      case(DT_QUINT8, DT_UINT8, DT_QINT8, DT_INT8) { ByteTensorBuffer(it) }
+      case(DT_BFLOAT16, DT_INT16) { ShortTensorBuffer(it) }
+      case(DT_INT64) { LongTensorBuffer(it) }
+      case(DT_STRING) { StringTensorBuffer(it) }
     }
     
-    operator fun <T> invoke(c_tensor: TF_Tensor): TensorBuffer<T> {
-      val dtype = TF_TensorType(c_tensor)
-      return when (dtype) {
-        DT_COMPLEX64, DT_FLOAT -> FloatTensorBuffer(c_tensor)
-        DT_DOUBLE -> DoubleTensorBuffer(c_tensor)
-        DT_QINT32, DT_INT32 -> IntTensorBuffer(c_tensor)
-        DT_BOOL -> BooleanTensorBuffer(c_tensor)
-        DT_QUINT8, DT_UINT8, DT_QINT8, DT_INT8 -> ByteTensorBuffer(c_tensor)
-        DT_BFLOAT16, DT_INT16 -> ShortTensorBuffer(c_tensor)
-        DT_INT64 -> LongTensorBuffer(c_tensor)
-        DT_STRING -> StringTensorBuffer(c_tensor)
-        else -> throw IllegalStateException("invalid DataType($dtype)")
-      } as TensorBuffer<T>
-    }
+    operator fun <T> invoke(c_tensor: TF_Tensor) =
+        create_switch(TF_TensorType(c_tensor), c_tensor) as TensorBuffer<T>
     
     operator fun invoke(value: Float) = invoke(scalarDimension, f(value))
     operator fun invoke(value: Double) = invoke(scalarDimension, d(value))

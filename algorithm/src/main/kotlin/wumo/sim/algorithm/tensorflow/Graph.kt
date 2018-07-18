@@ -14,7 +14,7 @@ import org.bytedeco.javacpp.tensorflow.*
  * the units of data that flow between operations.
  */
 class Graph(val tf: TF) {
-  val c_graph = newGraph()
+  val c_graph = newGraph()!!
   
   /**Set of tensors that are dangerous to feed!*/
   private val unfeedable_tensors = mutableSetOf<Tensor>()

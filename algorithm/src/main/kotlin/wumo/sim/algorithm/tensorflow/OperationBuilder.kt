@@ -21,6 +21,15 @@ fun TF.binaryOp(op: String, a: Tensor, b: Tensor, name: String): Tensor {
   return Tensor(op, 0)
 }
 
+fun TF.ternaryOp(op: String, a: Tensor, b: Tensor, c: Tensor, name: String): Tensor {
+  val op = g.nodeBuilder(op, ctx.getUniqueFullName(name))
+      .addInput(a)
+      .addInput(b)
+      .addInput(c)
+      .build()
+  return Tensor(op, 0)
+}
+
 class OperationBuilder(val graph: Graph, val opType: String, val name: String) {
   private var c_opDesc: TF_OperationDescription = TF_NewOperation(graph.c_graph, opType, name)
   

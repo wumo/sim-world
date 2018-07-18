@@ -23,13 +23,15 @@ class TF {
   val global_variables = mutableListOf<Variable>()
   val train_ops = mutableListOf<Operation>()
   val scopes = ArrayDeque<Scope>().apply { addLast(Scope()) }
+  lateinit var session: Session
+  
   inline val ctx
     get() = scopes.last
   
-  inline fun <R> init_subsope(name: String, device: String = "", block: Scope.() -> R): R {
+  inline fun <R> init_subsope(name: String, device: String = "", reuse: Boolean = false, block: Scope.() -> R): R {
     scopes.addLast(scopes.first)//添加初始scope
     try {
-      return subscope(name, device, block)
+      return subscope(name, device, reuse, block)
     } finally {
       scopes.removeLast()
     }
@@ -44,8 +46,8 @@ class TF {
     }
   }
   
-  inline fun <R> subscope(name: String, device: String = "", block: Scope.() -> R): R {
-    scopes.addLast(ctx.newSubscope(name, device))
+  inline fun <R> subscope(name: String, device: String = "", reuse: Boolean = false, block: Scope.() -> R): R {
+    scopes.addLast(ctx.newSubscope(name, device,reuse))
     try {
       return block(ctx)
     } finally {
@@ -77,7 +79,8 @@ class TF {
   }
   
   fun session(block: Session.() -> Unit) {
-    block(Session(g.c_graph))
+    session = Session(g.c_graph)
+    block(session)
   }
   
   fun global_variable_initializer(): Operation {

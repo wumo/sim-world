@@ -44,7 +44,7 @@ open class ReplayBuffer<O, A>(val buffer_size: Int) {
     return tuple5(obses_t, actions, rewards, obses_tp1, dones)
   }
   
-  fun update_priorities(batch_idxes: Tensor, new_priorities: NDArray<out Any?>) {
+  fun update_priorities(batch_idxes: Any, new_priorities: NDArray<out Any?>) {
     TODO("not implemented")
   }
 }
