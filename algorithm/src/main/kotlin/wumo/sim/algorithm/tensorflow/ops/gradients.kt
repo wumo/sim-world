@@ -7,41 +7,41 @@ import wumo.sim.algorithm.tensorflow.TF
 import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.throwExceptionIfNotOk
 
-fun TF.gradients(y: Tensor, xs: List<Tensor>): List<Tensor> {
-  val xs = TF_Output(trainables.size.toLong())
-  for ((i, x) in trainables.withIndex())
-    xs.position(i.toLong()).oper(x.op.c_op).index(x.value_index)
-  val dy = TF_Output(trainables.size.toLong())
+fun TF.gradients(y: Tensor, xs: Collection<Tensor>): List<Tensor> {
+  val _xs = TF_Output(xs.size.toLong())
+  for ((i, x) in xs.withIndex())
+    _xs.position(i.toLong()).oper(x.op.c_op).index(x.value_index)
+  val dy = TF_Output(xs.size.toLong())
   val status = newStatus()
   TF_AddGradients(g.c_graph,
                   y.asTF_Output(), 1,
-                  xs.position(0L), trainables.size,
+                  _xs.position(0L), xs.size,
                   null, status,
                   dy)
   throwExceptionIfNotOk(status)
-  return MutableList(trainables.size) {
+  return MutableList(xs.size) {
     val output = dy.position(it.toLong())
     val out_type = TF_OperationOutputType(output)
     Tensor(Operation(g, output.oper()), output.index())
   }
 }
 
-fun TF.gradients(ys: List<Tensor>, xs: List<Tensor>): List<Tensor> {
+fun TF.gradients(ys: List<Tensor>, xs: Collection<Tensor>): List<Tensor> {
   val _ys = TF_Output(ys.size.toLong())
   for ((i, y) in ys.withIndex())
     _ys.position(i.toLong()).oper(y.op.c_op).index(y.value_index)
-  val xs = TF_Output(trainables.size.toLong())
-  for ((i, x) in trainables.withIndex())
-    xs.position(i.toLong()).oper(x.op.c_op).index(x.value_index)
-  val dy = TF_Output(trainables.size.toLong())
+  val _xs = TF_Output(xs.size.toLong())
+  for ((i, x) in xs.withIndex())
+    _xs.position(i.toLong()).oper(x.op.c_op).index(x.value_index)
+  val dy = TF_Output(xs.size.toLong())
   val status = newStatus()
   TF_AddGradients(g.c_graph,
                   _ys, 1,
-                  xs.position(0L), trainables.size,
+                  _xs.position(0L), xs.size,
                   null, status,
                   dy)
   throwExceptionIfNotOk(status)
-  return MutableList(trainables.size) {
+  return MutableList(xs.size) {
     val output = dy.position(it.toLong())
     Tensor(Operation(g, output.oper()), output.index())
   }

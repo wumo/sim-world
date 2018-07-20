@@ -8,9 +8,6 @@ import java.util.*
 import kotlin.collections.HashMap
 
 class NameScope(val name: String, parentScope: NameScope?) : enter_exit {
-  override inline fun enter() {}
-  override inline fun exit() {}
-  
   /**这一层已使用的name，[subscopes]的name是[name_map]的子集*/
   private val name_map = HashMap<String, Int>()
   /**下一层的[NameScope]*/

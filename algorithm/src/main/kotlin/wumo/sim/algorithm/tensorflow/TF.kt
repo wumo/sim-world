@@ -82,10 +82,10 @@ class TF {
    *
    * @param reuse 是否重用[Variable]
    */
-  inline fun <R> variable_scope(name: String, reuse: Boolean = false, block: () -> R): R {
+  inline fun <R> variable_scope(name: String, block: () -> R): R {
     val parentVs = ctxVs
     val parentNs = ctxNs
-    val s = parentVs.variable_scope(name, reuse)
+    val s = parentVs.variable_scope(name, ctxVs.reuse, ctxVs.reenter_increment)
     val subNs = parentNs.new_subscope(name)
     ctxVs = s
     ctxNs = subNs

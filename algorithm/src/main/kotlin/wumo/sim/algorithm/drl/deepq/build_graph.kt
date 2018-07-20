@@ -48,12 +48,13 @@ fun build_train(make_obs_ph: (String) -> TfInput,
                 param_noise: Boolean = false,
                 param_noise_filter_func: ((Variable) -> Boolean)? = null)
     : tuple4<Any, Function, Function, Map<String, Function>> {
+  
   val act_f = if (param_noise)
     build_act_with_param_noise(make_obs_ph, q_func, num_actions,
                                param_noise_filter_func = param_noise_filter_func,
-                               scope = name)
+                               name = name)
   else
-    build_act(make_obs_ph, q_func, num_actions, scope = name)
+    build_act(make_obs_ph, q_func, num_actions, name)
   
   tf.variable_scope(name) {
     //set up placeholders
@@ -65,12 +66,12 @@ fun build_train(make_obs_ph: (String) -> TfInput,
     val importance_weights_ph = tf.placeholder(dim(-1), DT_FLOAT, name = "weight")
     
     //q network evaluation
-    val q_t = q_func(obs_t_input.get(), num_actions, "q_func", true)//TODO reuse parameters from act
-    val q_func_vars = tf.global_variables//filter
+    val q_t = q_func(obs_t_input.get(), num_actions, "q_func", true)
+    val q_func_vars = tf.ctxVs.variable_subscopes["q_func"]!!.all_variables()
     
     //target q network evaluation
     val q_tp1 = q_func(obs_tp1_input.get(), num_actions, "target_q_func", false)
-    val target_q_func_vars = tf.global_variables
+    val target_q_func_vars = tf.ctxVs.variable_subscopes["target_q_func"]!!.all_variables()
     
     //q scores for actions which we know were selected in the given state.
     val q_t_selected = tf.sum(q_t * tf.oneHot(act_t_ph, tf.const(num_actions)), tf.const(1))
@@ -92,8 +93,9 @@ fun build_train(make_obs_ph: (String) -> TfInput,
     //compute the error (potentially clipped)
     val td_error = q_t_selected - tf.stop_gradient(q_t_selected_target)
     val errors = huber_loss(td_error)
-    val weighted_error = tf.mean(importance_weights_ph * errors)
+    val weighted_error = tf.mean(importance_weights_ph * errors, name = "weighted_error")
     
+    tf.printGraph()
     //compute optimization op (potentially with gradient clipping)
     val optimize_expr = if (grad_norm_clipping != null) {
       val gradients = optimizer.compute_gradients(weighted_error, q_func_vars)
@@ -108,8 +110,9 @@ fun build_train(make_obs_ph: (String) -> TfInput,
     //update_target_fn will be called periodically to copy Q network to target Q network
     val update_target_expr = run {
       val update_target_expr = mutableListOf<Operation>()
-      for ((v, v_target) in q_func_vars.apply { sortBy { it.name } }.zip(
-          target_q_func_vars.apply { sortBy { it.name } }))
+      q_func_vars.sortedBy { it.name }.zip(target_q_func_vars.sortedBy { it.name })
+      for ((v, v_target) in q_func_vars.sortedBy { it.name }
+          .zip(target_q_func_vars.sortedBy { it.name }))
         update_target_expr += v_target.assign(v).op
       tf.group(update_target_expr)
     }
@@ -152,12 +155,12 @@ fun build_act_with_param_noise(make_obs_ph: (String) -> TfInput,
                                q_func: Q_func,
                                num_actions: Int,
                                param_noise_filter_func: ((Variable) -> Boolean)?,
-                               scope: String): Function {
+                               name: String): Function {
   val param_noise_filter_func = param_noise_filter_func ?: { v: Variable -> true }
   fun scope_vars(original_scope: String): List<Variable> {
     TODO("not implemented")
   }
-  tf.variable_scope(scope) {
+  tf.variable_scope(name) {
     val observations_ph = make_obs_ph("observation")
     val stochastic_ph = tf.placeholder(scalarDimension, DT_BOOL, name = "stochastic")
     val update_eps_ph = tf.placeholder(scalarDimension, DT_FLOAT, name = "update_eps")
@@ -251,8 +254,8 @@ fun build_act_with_param_noise(make_obs_ph: (String) -> TfInput,
  *function to select and action given observation.
  *       See the top of the file for details.
  */
-fun build_act(make_obs_ph: (String) -> TfInput, q_func: Q_func, num_actions: Int, scope: String): Function {
-  tf.variable_scope(scope) {
+fun build_act(make_obs_ph: (String) -> TfInput, q_func: Q_func, num_actions: Int, name: String): Function {
+  tf.variable_scope(name) {
     val observations_ph = make_obs_ph("observation")
     val stochastic_ph = tf.placeholder(scalarDimension, DT_BOOL, name = "stochastic")
     val update_eps_ph = tf.placeholder(scalarDimension, DT_FLOAT, name = "update_eps")

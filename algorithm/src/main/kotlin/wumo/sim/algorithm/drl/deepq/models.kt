@@ -9,7 +9,9 @@ import wumo.sim.algorithm.tensorflow.tf
 typealias Q_func = (Tensor, Int, String, Boolean) -> Tensor
 
 fun _mlp(hiddens: IntArray, input: Tensor, num_actions: Int, layer_norm: Boolean = false, name: String = "mlp", reuse: Boolean = false): Tensor {
-  tf.variable_scope(name, reuse = reuse) {
+  tf.variable_scope(name) {
+    tf.ctxVs.reuse = reuse
+    tf.ctxVs.reenter_increment = true
     var out = input
     for (hidden in hiddens) {
       out = tf.fully_connected(out, num_outputs = hidden, activation_fn = null)
@@ -18,6 +20,7 @@ fun _mlp(hiddens: IntArray, input: Tensor, num_actions: Int, layer_norm: Boolean
       out = tf.relu(out)
     }
     val q_out = tf.fully_connected(out, num_outputs = num_actions, activation_fn = null)
+    tf.ctxVs.reenter_increment = false
     return q_out
   }
 }

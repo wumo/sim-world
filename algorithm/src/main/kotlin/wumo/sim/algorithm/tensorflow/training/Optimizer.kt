@@ -19,13 +19,13 @@ abstract class Optimizer(val use_locking: Boolean, val name: String) {
   val slots = mutableMapOf<String, MutableMap<Variable, Variable>>()
   val non_slot_dict = mutableMapOf<String, Variable>()
   
-  fun minimize(loss: Tensor, var_list: List<Variable>? = null, name: String = ""): Operation {
+  fun minimize(loss: Tensor, var_list: Collection<Variable>? = null, name: String = ""): Operation {
     val grads_and_vars = compute_gradients(loss, var_list)
     val vars_with_grad = grads_and_vars.map { (g, v) -> v }
     return apply_gradients(grads_and_vars, name = name)
   }
   
-  fun compute_gradients(loss: Tensor, var_list: List<Variable>?): List<tuple2<Tensor, Variable>> {
+  fun compute_gradients(loss: Tensor, var_list: Collection<Variable>?): List<tuple2<Tensor, Variable>> {
     val var_list = var_list ?: tf.trainables
     val grads = tf.gradients(loss, var_list)
     return grads.zip(var_list)
