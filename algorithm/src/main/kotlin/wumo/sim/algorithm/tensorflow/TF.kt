@@ -4,9 +4,11 @@ import org.bytedeco.javacpp.Loader
 import org.bytedeco.javacpp.tensorflow
 import org.bytedeco.javacpp.tensorflow.*
 import org.tensorflow.framework.GraphDef
+import sun.audio.AudioDevice.device
 import wumo.sim.algorithm.tensorflow.ops.group
+import wumo.sim.algorithm.tensorflow.scope.NameScope
+import wumo.sim.algorithm.tensorflow.scope.VariableScope
 import wumo.sim.util.println
-import java.util.*
 
 var tf = TF()
 
@@ -22,56 +24,97 @@ class TF {
   val trainables = mutableListOf<Variable>()
   val global_variables = mutableListOf<Variable>()
   val train_ops = mutableListOf<Operation>()
-  val scopes = ArrayDeque<Scope>().apply { addLast(Scope()) }
+  val rootNs = NameScope("", null)
+  val rootVs = VariableScope("", rootNs)
+  var ctxNs = rootNs
+  var ctxVs = rootVs
   lateinit var session: Session
   
-  inline val ctx
-    get() = scopes.last
-  
-  inline fun <R> init_subsope(name: String, device: String = "", reuse: Boolean = false, block: Scope.() -> R): R {
-    scopes.addLast(scopes.first)//添加初始scope
+  inline fun <R> init_scope(block: () -> R): R {
+    val tmpNs = ctxNs
+    ctxNs = rootNs
     try {
-      return subscope(name, device, reuse, block)
+      ctxNs.enter()
+      return block()
     } finally {
-      scopes.removeLast()
+      ctxNs.exit()
+      ctxNs = tmpNs
     }
   }
   
-  inline fun <R> init_scope(block: Scope.() -> R): R {
-    scopes.addLast(scopes.first)//添加初始scope
+  inline fun <R> with(sub: NameScope, block: () -> R): R {
+    val parentNs = ctxNs
+    ctxNs = sub
     try {
-      return block(ctx)
+      ctxNs.enter()
+      return block()
     } finally {
-      scopes.removeLast()
+      ctxNs.exit()
+      ctxNs = parentNs
     }
   }
-  
-  inline fun <R> subscope(name: String, device: String = "", reuse: Boolean = false, block: Scope.() -> R): R {
-    scopes.addLast(ctx.newSubscope(name, device,reuse))
-    try {
-      return block(ctx)
-    } finally {
-      scopes.removeLast()
-    }
-  }
-  
-  inline fun <R> with_device(dev: String, block: Scope.() -> R): R =
-      ctx.with_device(dev) { block(ctx) }
-  
-  inline fun <R> colocate_with(colocate_with: Tensor, block: Scope.() -> R) =
-      colocate_with(colocate_with.op) { block(ctx) }
-  
-  inline fun <R> colocate_with(colocate_with: Operation, block: Scope.() -> R) =
-      ctx.colocate_with(colocate_with) { block(ctx) }
-  
-  inline fun <R> control_dependencies(control_inputs: List<Operation>, block: Scope.() -> R) =
-      ctx.control_dependencies(control_inputs) { block(ctx) }
   
   /**
-   * @see [Scope.condCtx]
+   * 在[ctxNs]下新生成名称为[name]的sub[NameScope]（名称冲突则会重新命名解决冲突），
+   * 并将其赋值到[ctxNs]。
+   *
+   * [block]执行结束后，恢复[ctxNs]为调用[name_scope]之前的[NameScope]
    */
-  inline fun <R> condCtx(pred: Tensor, pivot: Tensor, branch: Int, block: Scope.() -> R) =
-      ctx.condCtx(pred, pivot, branch) { block(ctx) }
+  inline fun <R> name_scope(name: String, device: String = "", block: () -> R): R {
+    val parentNs = ctxNs
+    val sub = parentNs.new_subscope(name)
+    sub.device = device
+    ctxNs = sub
+    try {
+      ctxNs.enter()
+      return block()
+    } finally {
+      ctxNs.exit()
+      ctxNs = parentNs
+    }
+  }
+  
+  /**
+   * - 在[ctxVs]下复用或新生成名称为[name]的sub[VariableScope]（复用和重命名按照[VariableScope]的特殊条件进行），
+   * 并将其赋值到[ctxVs]；
+   * - 同时在[ctxNs]下新生成名称为[name]的sub[NameScope]（名称冲突则会重新命名解决冲突），
+   * 并将其赋值到[ctxNs]。
+   *
+   * @param reuse 是否重用[Variable]
+   */
+  inline fun <R> variable_scope(name: String, reuse: Boolean = false, block: () -> R): R {
+    val parentVs = ctxVs
+    val parentNs = ctxNs
+    val s = parentVs.variable_scope(name, reuse)
+    val subNs = parentNs.new_subscope(name)
+    ctxVs = s
+    ctxNs = subNs
+    try {
+      ctxNs.enter()
+      ctxVs.enter()
+      return block()
+    } finally {
+      ctxVs.exit()
+      ctxNs.exit()
+      ctxVs = parentVs
+      ctxNs = parentNs
+    }
+  }
+  
+  inline fun <R> on_device(dev: String, block: () -> R): R =
+      ctxNs.with_device(dev) { block() }
+  
+  inline fun <R> colocate_with(colocate_with: Tensor, block: () -> R) =
+      colocate_with(colocate_with.op) { block() }
+  
+  inline fun <R> colocate_with(colocate_with: Operation, block: () -> R) =
+      ctxNs.colocate_with(colocate_with) { block() }
+  
+  inline fun <R> control_dependencies(control_inputs: List<Operation>, block: () -> R) =
+      ctxNs.control_dependencies(control_inputs) { block() }
+  
+  inline fun <R> control_dependencies(vararg control_inputs: Operation, block: () -> R) =
+      ctxNs.control_dependencies(*control_inputs) { block() }
   
   fun debugString() = GraphDef.parseFrom(g.toGraphDef()).toString()
   fun printGraph() {

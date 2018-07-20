@@ -2,15 +2,14 @@ package wumo.sim.algorithm.drl.deepq
 
 import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.algorithm.tensorflow.Operation
-import wumo.sim.algorithm.tensorflow.Scope
 import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.Variable
 import wumo.sim.algorithm.tensorflow.ops.*
+import wumo.sim.algorithm.tensorflow.scope.VariableScope
 import wumo.sim.algorithm.tensorflow.tf
 import wumo.sim.algorithm.tensorflow.training.Optimizer
 import wumo.sim.util.a
 import wumo.sim.util.dim
-import wumo.sim.util.ndarray.NDArray
 import wumo.sim.util.scalarDimension
 import wumo.sim.util.tuple4
 import kotlin.run
@@ -49,12 +48,14 @@ fun build_train(make_obs_ph: (String) -> TfInput,
                 param_noise: Boolean = false,
                 param_noise_filter_func: ((Variable) -> Boolean)? = null)
     : tuple4<Any, Function, Function, Map<String, Function>> {
-  tf.subscope(name) {
-    val act_f = if (param_noise)
-      build_act_with_param_noise(make_obs_ph, q_func, num_actions, param_noise_filter_func = param_noise_filter_func, scope = this)
-    else
-      build_act(make_obs_ph, q_func, num_actions, scope = this)
-    
+  val act_f = if (param_noise)
+    build_act_with_param_noise(make_obs_ph, q_func, num_actions,
+                               param_noise_filter_func = param_noise_filter_func,
+                               scope = name)
+  else
+    build_act(make_obs_ph, q_func, num_actions, scope = name)
+  
+  tf.variable_scope(name) {
     //set up placeholders
     val obs_t_input = make_obs_ph("obs_t")
     val act_t_ph = tf.placeholder(dim(-1), DT_INT32, name = "action")
@@ -151,12 +152,12 @@ fun build_act_with_param_noise(make_obs_ph: (String) -> TfInput,
                                q_func: Q_func,
                                num_actions: Int,
                                param_noise_filter_func: ((Variable) -> Boolean)?,
-                               scope: Scope): Function {
+                               scope: String): Function {
   val param_noise_filter_func = param_noise_filter_func ?: { v: Variable -> true }
   fun scope_vars(original_scope: String): List<Variable> {
     TODO("not implemented")
   }
-  with(scope) {
+  tf.variable_scope(scope) {
     val observations_ph = make_obs_ph("observation")
     val stochastic_ph = tf.placeholder(scalarDimension, DT_BOOL, name = "stochastic")
     val update_eps_ph = tf.placeholder(scalarDimension, DT_FLOAT, name = "update_eps")
@@ -199,7 +200,7 @@ fun build_act_with_param_noise(make_obs_ph: (String) -> TfInput,
     val kl = tf.sum(tf.softmax(q_values) * (tf.log(tf.softmax(q_values)) - tf.log(tf.softmax(q_values_adaptive))), axis = tf.const(-1))
     val mean_kl = tf.mean(kl)
     fun update_scale() =
-        control_dependencies(listOf(perturb_for_adaption.op)) {
+        tf.control_dependencies(perturb_for_adaption.op) {
           tf.cond(tf.less(mean_kl, param_noise_threshold),
                   { param_noise_scale.assign(param_noise_scale * tf.const(1.01f)) },
                   { param_noise_scale.assign(param_noise_scale / tf.const(1.01f)) })
@@ -250,13 +251,13 @@ fun build_act_with_param_noise(make_obs_ph: (String) -> TfInput,
  *function to select and action given observation.
  *       See the top of the file for details.
  */
-fun build_act(make_obs_ph: (String) -> TfInput, q_func: Q_func, num_actions: Int, scope: Scope): Function {
-  with(scope) {
+fun build_act(make_obs_ph: (String) -> TfInput, q_func: Q_func, num_actions: Int, scope: String): Function {
+  tf.variable_scope(scope) {
     val observations_ph = make_obs_ph("observation")
     val stochastic_ph = tf.placeholder(scalarDimension, DT_BOOL, name = "stochastic")
     val update_eps_ph = tf.placeholder(scalarDimension, DT_FLOAT, name = "update_eps")
     
-    val eps = tf.variable(scalarDimension, tf.constant_initializer(0), name = "eps")
+    val eps = tf.get_variable(scalarDimension, tf.constant_initializer(0), name = "eps")
     
     val q_values = q_func(observations_ph.get(), num_actions, "q_func", false)
     val deterministic_actions = tf.argmax(q_values, 1)

@@ -7,14 +7,14 @@ import wumo.sim.util.Dimension
 import wumo.sim.util.toByte
 
 fun TF.unaryOp(op: String, a: Tensor, name: String, dtype: Int = a.dtype): Tensor {
-  val op = g.nodeBuilder(op, ctx.getUniqueFullName(name))
+  val op = g.nodeBuilder(op, ctxNs.getUniqueFullName(name))
       .addInput(a)
       .build()
   return Tensor(op, 0)
 }
 
 fun TF.binaryOp(op: String, a: Tensor, b: Tensor, name: String): Tensor {
-  val op = g.nodeBuilder(op, ctx.getUniqueFullName(name))
+  val op = g.nodeBuilder(op, ctxNs.getUniqueFullName(name))
       .addInput(a)
       .addInput(b)
       .build()
@@ -22,7 +22,7 @@ fun TF.binaryOp(op: String, a: Tensor, b: Tensor, name: String): Tensor {
 }
 
 fun TF.ternaryOp(op: String, a: Tensor, b: Tensor, c: Tensor, name: String): Tensor {
-  val op = g.nodeBuilder(op, ctx.getUniqueFullName(name))
+  val op = g.nodeBuilder(op, ctxNs.getUniqueFullName(name))
       .addInput(a)
       .addInput(b)
       .addInput(c)
@@ -34,6 +34,9 @@ class OperationBuilder(val graph: Graph, val opType: String, val name: String) {
   private var c_opDesc: TF_OperationDescription = TF_NewOperation(graph.c_graph, opType, name)
   
   fun build(): Operation {
+    tf.ctxNs.colocate_with?.apply {
+      TF_ColocateWith(c_opDesc, this.c_op)
+    }
     addContextControlInput()
     val status = newStatus()
     val nativeOp = TF_FinishOperation(c_opDesc, status)
@@ -43,14 +46,8 @@ class OperationBuilder(val graph: Graph, val opType: String, val name: String) {
     return op
   }
   
-  private fun control_flow_post_processing(op: Operation) {
-    tf.ctx.control_flow_ctx?.apply {
-      this.addOp(op)
-    }
-  }
-  
   private fun addContextControlInput(): OperationBuilder {
-    for (control_op in tf.ctx.control_ops)
+    for (control_op in tf.ctxNs.control_ops)
       addControlInput(control_op)
     return this
   }

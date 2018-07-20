@@ -37,13 +37,13 @@ abstract class Optimizer(val use_locking: Boolean, val name: String) {
     create_slots(var_list)
     val update_ops = mutableListOf<Operation>()
     with(tf) {
-      subscope(name) {
+      name_scope(name) {
         prepare()
         for ((grad, v) in grads_and_vars)
-          ctx.colocate_with(v) {
+          ctxNs.colocate_with(v) {
             update_ops += apply_dense(grad, v)
           }
-        val apply_updates = finish(update_ops, borrowParentName())
+        val apply_updates = finish(update_ops, ctxNs.scopeNameForOnce())
         tf.train_ops += apply_updates
         return apply_updates
       }
@@ -77,7 +77,7 @@ abstract class Optimizer(val use_locking: Boolean, val name: String) {
   /**Add an extra variable, not associated with a slot.*/
   open fun create_non_slot_variable(initial_value: Any, name: String, colocate_with: Variable) =
       non_slot_dict.compute(name) { _, v ->
-        v ?: tf.ctx.colocate_with(colocate_with) {
+        v ?: tf.ctxNs.colocate_with(colocate_with) {
           tf.variable(initial_value, name = name, trainable = false)
         }
       }

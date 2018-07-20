@@ -47,14 +47,14 @@ fun TF.group(inputs: List<Any>, name: String = "group_deps"): Operation {
   }
   if (ops_on_device.size == 1) {
     val (dev, deps) = ops_on_device.entries.first()
-    ctx.with_device(dev) {
+    ctxNs.with_device(dev) {
       return noOpDep(deps, name)
     }
   }
   val all_deps = mutableListOf<Operation>()
-  subscope(name) {
+  name_scope(name) {
     for ((dev, deps) in ops_on_device) {
-      ctx.with_device(dev) {
+      ctxNs.with_device(dev) {
         all_deps += noOpDep(deps)
       }
     }
@@ -89,19 +89,14 @@ fun TF.cond(pred: Tensor,
     g.prevent_fetching(tensor.op)
   
   //Build the graph for the true branch in a new context.
-  val res_t = condCtx(pred, pivot_1, branch = 1) {
-    buildCondBranch(true_fn)
-  }
-  val res_f = condCtx(pred, pivot_2, branch = 0) {
-    buildCondBranch(false_fn)
-  }
+  val res_t = buildCondBranch(pred, pivot_1, 1, true_fn)
+  val res_f = buildCondBranch(pred, pivot_2, 0, false_fn)
   return merge(res_t, res_f)[0]
 }
 
-fun TF.buildCondBranch(fn: () -> Tensor): Tensor {
+fun TF.buildCondBranch(pred: Tensor, pivot: Tensor, branch: Int, fn: () -> Tensor): Tensor {
   val t = fn()
-  val cf: CondContext = ctx.control_flow_ctx as CondContext
-  return switchRefOrTensor(t, cf.pred)[cf.branch]
+  return switchRefOrTensor(t, pred)[branch]
 }
 
 /**
@@ -145,7 +140,7 @@ fun TF.merge(vararg inputs: Tensor, name: String = "Merge"): Array<Tensor> {
  * @return A tuple of `Tensor` objects (output, value_index).
  */
 private fun TF._merge(inputs: Array<Tensor>, name: String = "Merge"): Array<Tensor> {
-  val op = g.nodeBuilder("Merge", ctx.getUniqueFullName(name))
+  val op = g.nodeBuilder("Merge", ctxNs.getUniqueFullName(name))
       .addInputList(inputs)
       .build()
   val output = Tensor(op, 0)
@@ -157,7 +152,7 @@ private fun TF._merge(inputs: Array<Tensor>, name: String = "Merge"): Array<Tens
  * @see [_merge]
  */
 private fun TF.ref_merge(inputs: Array<Tensor>, name: String): Array<Tensor> {
-  val op = g.nodeBuilder("RefMerge", ctx.getUniqueFullName(name))
+  val op = g.nodeBuilder("RefMerge", ctxNs.getUniqueFullName(name))
       .addInputList(inputs)
       .build()
   val output = Tensor(op, 0)
@@ -194,7 +189,7 @@ private fun TF.switchRefOrTensor(data: Tensor,
  * to `output_true`, otherwise it goes to `output_false`.
  */
 fun TF.switch(data: Tensor, pred: Tensor, name: String = "Switch"): Array<Tensor> {
-  val op = g.nodeBuilder("Switch", ctx.getUniqueFullName(name))
+  val op = g.nodeBuilder("Switch", ctxNs.getUniqueFullName(name))
       .addInput(data)
       .addInput(pred)
       .build()
@@ -205,7 +200,7 @@ fun TF.switch(data: Tensor, pred: Tensor, name: String = "Switch"): Array<Tensor
 }
 
 fun TF.ref_switch(data: Tensor, pred: Tensor, name: String): Array<Tensor> {
-  val op = g.nodeBuilder("RefSwitch", ctx.getUniqueFullName(name))
+  val op = g.nodeBuilder("RefSwitch", ctxNs.getUniqueFullName(name))
       .addInput(data)
       .addInput(pred)
       .build()

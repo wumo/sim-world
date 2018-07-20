@@ -11,7 +11,7 @@ fun TF.identity(input: Tensor, name: String = "Identity") =
 fun TF.placeholder(dtype: Int = DT_FLOAT, name: String = "Placeholder"): Tensor {
   val tensor_shape_proto = TensorShapeProto()
   tensor_shape_proto.set_unknown_rank(true)
-  val p = g.nodeBuilder("Placeholder", ctx.getUniqueFullName(name))
+  val p = g.nodeBuilder("Placeholder", ctxNs.getUniqueFullName(name))
       .setAttrType("dtype", dtype)
       .setAttr("shape", tensor_shape_proto)
       .build()
@@ -19,7 +19,7 @@ fun TF.placeholder(dtype: Int = DT_FLOAT, name: String = "Placeholder"): Tensor 
 }
 
 fun TF.placeholder(shape: Dimension, dtype: Int = DT_FLOAT, name: String = "Placeholder"): Tensor {
-  val p = g.nodeBuilder("Placeholder", ctx.getUniqueFullName(name))
+  val p = g.nodeBuilder("Placeholder", ctxNs.getUniqueFullName(name))
       .setAttrType("dtype", dtype)
       .setAttr("shape", shape)
       .build()
@@ -37,27 +37,27 @@ fun TF.zeros(shape: Tensor, dtype: Int = DT_FLOAT, name: String = "Ones"): Tenso
 }
 
 fun TF.zeros(shape: Dimension, dtype: Int = DT_FLOAT, name: String = "Ones"): Tensor {
-  subscope(name) {
+  name_scope(name) {
     val zero = when (dtype) {
       DT_STRING -> ""
       else -> 0
     }
     return if (shape.numElements() < 1000)
-      const(shape, dtype, zero, borrowParentName())
+      const(shape, dtype, zero, ctxNs.scopeNameForOnce())
     else {
       val shape = reshape(const(shape.asLongArray()), const(-1))
-      fill(shape, const(dtype, zero), borrowParentName())
+      fill(shape, const(dtype, zero), ctxNs.scopeNameForOnce())
     }
   }
 }
 
 fun TF.ones(shape: Dimension, dtype: Int = DT_FLOAT, name: String = "Ones"): Tensor {
-  subscope(name) {
+  name_scope(name) {
     return if (shape.numElements() < 1000)
-      const(shape, dtype, 1, borrowParentName())
+      const(shape, dtype, 1, ctxNs.scopeNameForOnce())
     else {
       val shape = reshape(const(shape.asLongArray()), const(-1))
-      fill(shape, const(dtype, 1), borrowParentName())
+      fill(shape, const(dtype, 1), ctxNs.scopeNameForOnce())
     }
   }
 }
@@ -70,7 +70,7 @@ fun TF.reshape(tensor: Tensor, shape: Tensor, name: String = "Reshape") =
 
 fun TF.slice(input: Tensor, begin: Tensor, size: Tensor, name: String = "Slice")
     : Tensor {
-  val v = g.nodeBuilder("Slice", ctx.getUniqueFullName(name))
+  val v = g.nodeBuilder("Slice", ctxNs.getUniqueFullName(name))
       .addInput(input)
       .addInput(begin)
       .addInput(size)
@@ -83,7 +83,7 @@ fun TF.oneHot(indices: Tensor, depth: Tensor,
               off_value: Tensor = tf.const(0f),
               name: String = "OneHot")
     : Tensor {
-  val v = g.nodeBuilder("OneHot", ctx.getUniqueFullName(name))
+  val v = g.nodeBuilder("OneHot", ctxNs.getUniqueFullName(name))
       .addInput(indices)
       .addInput(depth)
       .addInput(on_value)
@@ -103,7 +103,7 @@ fun TF.shape(input: Tensor, name: String = "Shape", optimize: Boolean = true): T
   val input_shape = input.shape
   if (optimize && input_shape.is_fully_defined)
     return const(input_shape.asIntArray(), name)
-  val op = g.nodeBuilder("Shape", ctx.getUniqueFullName(name))
+  val op = g.nodeBuilder("Shape", ctxNs.getUniqueFullName(name))
       .addInput(input)
       .setAttrType("out_type", out_type)
       .build()
@@ -168,8 +168,7 @@ operator fun Tensor.get(vararg slice_spec: Int): Tensor {
     strides += 1
     shrink_axis_mask = shrink_axis_mask or (1 shl index)
   }
-  
-  tf.subscope("strided_slice") {
+  tf.name_scope("strided_slice") {
     val packed_begin = tf.stack(begin)
     val packed_end = tf.stack(end)
     val packed_strides = tf.stack(strides)
@@ -179,7 +178,7 @@ operator fun Tensor.get(vararg slice_spec: Int): Tensor {
                               end_mask_ = end_mask,
                               shrink_axis_mask_ = shrink_axis_mask,
                               new_axis_mask_ = new_axis_mask,
-                              ellipsis_mask_ = ellipsis_mask), name = parentName)
+                              ellipsis_mask_ = ellipsis_mask), name = tf.ctxNs.scopeNameForOnce())
   }
 }
 
@@ -192,7 +191,7 @@ class StridedSliceAttrs(var begin_mask_: Int = 0,
 fun TF.strideSlice(input: Tensor, begin: Tensor, end: Tensor, strides: Tensor,
                    attrs: StridedSliceAttrs = StridedSliceAttrs(),
                    name: String = "StridedSlice"): Tensor {
-  val op = g.nodeBuilder("StridedSlice", ctx.getUniqueFullName(name))
+  val op = g.nodeBuilder("StridedSlice", ctxNs.getUniqueFullName(name))
       .addInput(input)
       .addInput(begin)
       .addInput(end)
@@ -211,7 +210,7 @@ fun TF.gather(params: Tensor, indices: Tensor, axis: Int = 0, name: String = "Ga
   
   }
   //TODO detect resource variables
-  val op = g.nodeBuilder("GatherV2", ctx.getUniqueFullName(name))
+  val op = g.nodeBuilder("GatherV2", ctxNs.getUniqueFullName(name))
       .addInput(params)
       .addInput(indices)
       .addInput(const(axis))
@@ -299,7 +298,7 @@ fun TF.stack(values: List<Int>, axis: Int = 0, name: String = "stack"): Tensor {
  * has the same shape as `x` and `y`, then it chooses which element to copy from
  * `x` and `y`.
  */
-fun TF.where(condition: Tensor, x: Tensor, y: Tensor) = ternaryOp("Select",condition, x, y, "Select")
+fun TF.where(condition: Tensor, x: Tensor, y: Tensor) = ternaryOp("Select", condition, x, y, "Select")
 
 fun TF.where(condition: Tensor, name: String = "Where") = unaryOp("Where", condition, name)
 
@@ -310,7 +309,7 @@ fun TF.autopack(v: Array<Tensor>, name: String = "packed"): Tensor {
 
 
 fun TF.pack(value: Array<Tensor>, axis: Int = 0, name: String = "Pack"): Tensor {
-  val op = g.nodeBuilder("Pack", ctx.getUniqueFullName(name))
+  val op = g.nodeBuilder("Pack", ctxNs.getUniqueFullName(name))
       .addInputList(value)
       .setAttr("axis", axis)
       .build()

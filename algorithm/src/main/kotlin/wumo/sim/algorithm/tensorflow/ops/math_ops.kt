@@ -11,7 +11,7 @@ import wumo.sim.util.i
 
 fun TF.abs(x: Tensor, name: String = "Abs") = unaryOp("Abs", x, name)
 fun TF.accumulateNV2(vararg input: Tensor, shape: Dimension, name: String = "AccumulateNV2"): Tensor {
-  val op = g.nodeBuilder("AddN", ctx.getUniqueFullName(name))
+  val op = g.nodeBuilder("AddN", ctxNs.getUniqueFullName(name))
       .addInputList(input as Array<Tensor>)
       .setAttr("shape", shape)
       .build()
@@ -79,7 +79,7 @@ fun TF.sum(input: Tensor, axis: Tensor, name: String = "Sum") =
     binaryOp("Sum", input, axis, name)
 
 fun TF.max(input: Tensor, axis: Tensor, keep_dims: Boolean = false, name: String = "Max"): Tensor {
-  val op = g.nodeBuilder("Max", ctx.getUniqueFullName(name))
+  val op = g.nodeBuilder("Max", ctxNs.getUniqueFullName(name))
       .addInput(input)
       .addInput(axis)
       .setAttr("keep_dims", keep_dims)
@@ -88,7 +88,7 @@ fun TF.max(input: Tensor, axis: Tensor, keep_dims: Boolean = false, name: String
 }
 
 fun TF.min(input: Tensor, axis: Tensor, keep_dims: Boolean = false, name: String = "Min"): Tensor {
-  val op = g.nodeBuilder("Min", ctx.getUniqueFullName(name))
+  val op = g.nodeBuilder("Min", ctxNs.getUniqueFullName(name))
       .addInput(input)
       .addInput(axis)
       .setAttr("keep_dims", keep_dims)
@@ -106,7 +106,7 @@ fun TF.reductionDims(x: Tensor, axis: Tensor?): Tensor {
 }
 
 fun TF.mean(input: Tensor, axis: Tensor? = null, keep_dims: Boolean = false, name: String = "Mean"): Tensor {
-  val op = g.nodeBuilder("Mean", ctx.getUniqueFullName(name))
+  val op = g.nodeBuilder("Mean", ctxNs.getUniqueFullName(name))
       .addInput(input)
       .addInput(reductionDims(input, axis))
       .setAttr("keep_dims", keep_dims)
@@ -118,8 +118,8 @@ fun TF.matmul(a: Tensor, b: Tensor, name: String = "MatMul") =
     binaryOp("MatMul", a, b, name)
 
 fun TF.argmax(a: Tensor, axis: Tensor, name: String = "ArgMax") =
-    subscope(name) {
-      val op = g.nodeBuilder("ArgMax", parentName)
+    name_scope(name) {
+      val op = g.nodeBuilder("ArgMax", ctxNs.fullName)
           .addInput(a)
           .addInput(axis)
           .setAttrType("output_type", DT_INT32)
@@ -128,8 +128,8 @@ fun TF.argmax(a: Tensor, axis: Tensor, name: String = "ArgMax") =
     }
 
 fun TF.argmax(a: Tensor, axis: Int, output_type: Int = DT_INT32, name: String = "ArgMax") =
-    subscope(name) {
-      val op = g.nodeBuilder("ArgMax", parentName)
+    name_scope(name) {
+      val op = g.nodeBuilder("ArgMax", ctxNs.fullName)
           .addInput(a)
           .addInput(const(axis, "dimension"))
           .setAttrType("output_type", output_type)
@@ -141,8 +141,8 @@ fun TF.argmin(a: Tensor, axis: Tensor, name: String = "ArgMin") =
     binaryOp("ArgMin", a, axis, name)
 
 fun TF.argmin(a: Tensor, axis: Int, name: String = "ArgMin") =
-    subscope(name) {
-      val op = g.nodeBuilder("ArgMin", parentName)
+    name_scope(name) {
+      val op = g.nodeBuilder("ArgMin", ctxNs.fullName)
           .addInput(a)
           .addInput(const(axis, "dimension"))
           .build()
@@ -163,8 +163,8 @@ fun TF.neg(a: Tensor, name: String = "Neg") =
     unaryOp("Neg", a, name)
 
 fun TF.addN(vararg a: Tensor, name: String = "AddN") =
-    subscope(name) {
-      val op = g.nodeBuilder("AddN", parentName)
+    name_scope(name) {
+      val op = g.nodeBuilder("AddN", ctxNs.fullName)
           .addInputList(a as Array<Tensor>)
           .build()
       Tensor(op, 0)
@@ -173,7 +173,7 @@ fun TF.addN(vararg a: Tensor, name: String = "AddN") =
 fun TF.cast(x: Tensor, dstT: Int, name: String = "Cast"): Tensor {
   return if (x.dtype == dstT) x
   else {
-    val op = g.nodeBuilder("Cast", ctx.getUniqueFullName(name))
+    val op = g.nodeBuilder("Cast", ctxNs.getUniqueFullName(name))
         .addInput(x)
         .setAttrType("DstT", dstT)
         .build()
@@ -235,7 +235,7 @@ fun TF.range(start: Tensor, limit: Tensor, delta: Tensor = const(1), name: Strin
   val start = cast(start, inferred_dtype)
   val limit = cast(limit, inferred_dtype)
   val delta = cast(delta, inferred_dtype)
-  val op = g.nodeBuilder("Range", ctx.getUniqueFullName(name))
+  val op = g.nodeBuilder("Range", ctxNs.getUniqueFullName(name))
       .addInput(start)
       .addInput(limit)
       .addInput(delta)
@@ -244,7 +244,7 @@ fun TF.range(start: Tensor, limit: Tensor, delta: Tensor = const(1), name: Strin
 }
 
 fun TF.range(start: Tensor, limit: Tensor, delta: Tensor, dtype: Int, name: String = "Range"): Tensor {
-  val op = g.nodeBuilder("Range", ctx.getUniqueFullName(name))
+  val op = g.nodeBuilder("Range", ctxNs.getUniqueFullName(name))
       .addInput(start)
       .addInput(limit)
       .addInput(delta)

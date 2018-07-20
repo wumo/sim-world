@@ -14,11 +14,11 @@ fun TF.one_hot_encoding(labels: Tensor,
                         num_class: Int,
                         on_value: Float = 1f, off_value: Float = 0f,
                         name: String = "OneHotEncoding"): Tensor {
-  subscope(name) {
+  name_scope(name) {
     val labels = if (labels.dtype == DT_INT32) cast(labels, DT_INT64) else labels
     return oneHot(labels, const(num_class, name = "depth"),
                   const(on_value, name = "on_value"),
-                  const(off_value, name = "off_value"), borrowParentName())
+                  const(off_value, name = "off_value"), ctxNs.scopeNameForOnce())
   }
 }
 
@@ -31,11 +31,10 @@ fun TF.fully_connected(inputs: Tensor,
                        weights_regularizer: TensorFunction? = null,
                        biases_initializer: Initializer? = zeros_initializer(),
                        biases_regularizer: TensorFunction? = null,
-                       reuse: Any? = null,
                        variables_collections: Any? = null,
                        outputs_collections: Any? = null,
                        trainable: Boolean = true): Tensor {
-  subscope("fully_connected") {
+  variable_scope("fully_connected") {
     val layer = Dense(units = num_outputs,
                       activation = null,
                       use_bias = normalizer_fn == null && biases_initializer != null,
@@ -45,7 +44,6 @@ fun TF.fully_connected(inputs: Tensor,
                       kernel_regularizer = weights_regularizer,
                       activity_regularizer = null,
                       trainable = trainable,
-                      name = borrowParentName(),
                       dtype = inputs.dtype)
     var outputs = layer(inputs)
     

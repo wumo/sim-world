@@ -22,8 +22,7 @@ class Dense(val units: Int,
             dtype: Int = 0,
             name: String = "") : Layer(trainable = trainable,
                                        activity_reqularizer = activity_regularizer,
-                                       dtype = dtype,
-                                       name = name) {
+                                       dtype = dtype) {
   lateinit var input_spec: Any
   lateinit var kernel: Tensor
   var bias: Tensor? = null

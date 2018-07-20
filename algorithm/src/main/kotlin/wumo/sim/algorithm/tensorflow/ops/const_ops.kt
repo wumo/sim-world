@@ -72,7 +72,7 @@ private fun TF.const(shape: Dimension, dtype: Int, name: String = "Const", set_v
     set_value(this)
   }
   
-  val op = g.nodeBuilder("Const", ctx.getUniqueFullName(name))
+  val op = g.nodeBuilder("Const", ctxNs.getUniqueFullName(name))
       .setAttr("value", tensor_proto)
       .setAttrType("dtype", dtype)
       .build()
@@ -80,7 +80,7 @@ private fun TF.const(shape: Dimension, dtype: Int, name: String = "Const", set_v
 }
 
 fun <T> TF.const(value: TensorBuffer<T>, name: String = "Const"): Tensor {
-  val op = g.nodeBuilder("Const", ctx.getUniqueFullName(name))
+  val op = g.nodeBuilder("Const", ctxNs.getUniqueFullName(name))
       .setAttr("value", value)
       .setAttrType("dtype", value.dtype.base_dtype)
       .build()

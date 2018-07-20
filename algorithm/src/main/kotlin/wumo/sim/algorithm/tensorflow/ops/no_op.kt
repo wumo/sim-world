@@ -4,8 +4,8 @@ import wumo.sim.algorithm.tensorflow.Operation
 import wumo.sim.algorithm.tensorflow.TF
 
 fun TF.noOpDep(dep: Iterable<Operation>, name: String = "NoOp"): Operation {
-  return g.nodeBuilder("NoOp", ctx.getUniqueFullName(name))
-      .setDevice(ctx.device)
+  return g.nodeBuilder("NoOp", ctxNs.getUniqueFullName(name))
+      .setDevice(ctxNs.device)
       .apply {
         for (op in dep)
           addControlInput(op)

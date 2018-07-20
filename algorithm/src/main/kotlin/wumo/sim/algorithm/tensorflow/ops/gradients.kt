@@ -50,12 +50,12 @@ fun TF.gradients(ys: List<Tensor>, xs: List<Tensor>): List<Tensor> {
 //fun TF.gradientDescentOptimizer(learningRate: Float,
 //                                loss: Tensor,
 //                                name: String = "GradientDescent"): Operation {
-//  subscope(name) {
+//  name_scope(name) {
 //    val dy = gradients(loss, trainables)
 //    val alpha = const(learningRate, "learning_rate")
 //    val applyGradient = mutableListOf<Operation>()
 //    for ((i, trainable) in trainables.withIndex())
 //      applyGradient += applyGradientDescent(trainable, alpha, dy[i])
-//    return noOpDep(applyGradient, borrowParentName())
+//    return noOpDep(applyGradient, scopeNameForOnce())
 //  }
 //}
