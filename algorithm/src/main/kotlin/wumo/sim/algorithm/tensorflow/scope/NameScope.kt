@@ -84,7 +84,7 @@ class NameScope(val name: String, parentScope: NameScope?) : enter_exit {
   }
   
   inline fun <R> colocate_with(colocate_with: Tensor, block: () -> R) =
-      colocate_with(colocate_with.op, block)
+      colocate_with(colocate_with.op!!, block)
   
   inline fun <R> colocate_with(colocate_with: Operation, block: () -> R): R {
     val tmp = this.colocate_with

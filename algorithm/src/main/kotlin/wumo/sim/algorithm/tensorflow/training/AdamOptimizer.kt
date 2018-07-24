@@ -23,7 +23,7 @@ class AdamOptimizer(val learningRate: Float = 0.001f,
     // variable. Sort the var_list to make sure this device is consistent across
     // workers (these need to go on the same PS, otherwise some updates are
     // silently ignored).
-    val first_var = var_list.minBy { it.op.name }!!
+    val first_var = var_list.minBy { it.op!!.name }!!
     create_non_slot_variable(initial_value = beta1,
                              name = "beta1_power",
                              colocate_with = first_var)
@@ -53,8 +53,8 @@ class AdamOptimizer(val learningRate: Float = 0.001f,
       tf.ctxNs.colocate_with(beta1_power) {
         val update_beta1 = beta1_power.assign(beta1_power * beta1_t, use_locking = use_locking).op
         val update_beta2 = beta2_power.assign(beta2_power * beta2_t, use_locking = use_locking).op
-        update_ops += update_beta1
-        update_ops += update_beta2
+        update_ops += update_beta1!!
+        update_ops += update_beta2!!
         return tf.group(update_ops, name)
       }
     }

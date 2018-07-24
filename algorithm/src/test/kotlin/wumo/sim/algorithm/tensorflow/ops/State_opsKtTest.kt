@@ -31,8 +31,8 @@ class State_opsKtTest : BaseTest() {
 //    val init = tf.global_variable_initializer()
     printGraph()
     tf.session {
-      b.initializer_op.op.run()
-      a.initializer_op.op.run()
+      b.initializer_op.op!!.run()
+      a.initializer_op.op!!.run()
       b.eval()
     }
   }

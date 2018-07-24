@@ -38,10 +38,10 @@ fun TF.group(inputs: List<Any>, name: String = "group_deps"): Operation {
       is Variable -> input.initializer_op.op
       else -> throw IllegalArgumentException("unsupported ${input::class.java}")
     }
-    val dev = op.device
+    val dev = op!!.device
     ops_on_device.compute(dev) { _, list ->
       val list = list ?: mutableListOf()
-      list += op
+      list += op!!
       list
     }
   }
@@ -86,7 +86,7 @@ fun TF.cond(pred: Tensor,
   val pred = identity(pred, name = "pred_id")
   //Disable the fetching of tensors that are only on one branch of cond.
   for (tensor in a(p_1, p_2, pivot_1, pivot_2, pred))
-    g.prevent_fetching(tensor.op)
+    g.prevent_fetching(tensor.op!!)
   
   //Build the graph for the true branch in a new context.
   val res_t = buildCondBranch(pred, pivot_1, 1, true_fn)

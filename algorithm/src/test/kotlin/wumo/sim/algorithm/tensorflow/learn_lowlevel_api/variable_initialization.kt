@@ -12,7 +12,7 @@ class variable_initialization : BaseTest() {
     val initial_value = tf.const(2f, "initial_value")
     val v = tf.g.nodeBuilder("VariableV2", "v")
         .setAttrType("dtype", initial_value.dtype.base_dtype)
-        .setAttr("shape", initial_value.shape)
+        .setAttr("shape", initial_value.shape())
         .build()
     
     val vt = Tensor(v, 0)
@@ -24,7 +24,7 @@ class variable_initialization : BaseTest() {
     
     val w = tf.g.nodeBuilder("VariableV2", "w")
         .setAttrType("dtype", vt.dtype.base_dtype)
-        .setAttr("shape", vt.shape)
+        .setAttr("shape", vt.shape())
         .build()
     
     val wt = Tensor(w, 0)

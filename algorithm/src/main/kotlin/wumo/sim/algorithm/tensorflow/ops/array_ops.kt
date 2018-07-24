@@ -5,8 +5,16 @@ import wumo.sim.algorithm.tensorflow.*
 import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.util.Dimension
 
+fun TF.concat(values: Array<Tensor>, axis: Tensor, name: String = "ConcatV2") =
+    naryOp("ConcatV2", name) {
+      addInputList(values)
+      addInput(axis)
+    }
+
 fun TF.identity(input: Tensor, name: String = "Identity") =
     unaryOp("Identity", input, name)
+
+fun TF.invertPermutation(x: Tensor, name: String = "InvertPermutation") = unaryOp("InvertPermutation", x, name)
 
 fun TF.placeholder(dtype: Int = DT_FLOAT, name: String = "Placeholder"): Tensor {
   val tensor_shape_proto = TensorShapeProto()
@@ -25,6 +33,11 @@ fun TF.placeholder(shape: Dimension, dtype: Int = DT_FLOAT, name: String = "Plac
       .build()
   return Tensor(p, 0)
 }
+
+fun TF.listDiff(x: Tensor, y: Tensor, out_idx: Int = DT_INT32, name: String = "ListDiff") =
+    naryOp("ListDiff", x, y, name = name, outputs = 2) {
+      setAttrType("out_idx", out_idx)
+    }
 
 fun TF.zerosLike(x: Tensor, name: String = "ZerosLike") =
     unaryOp("ZerosLike", x, name)
@@ -92,6 +105,11 @@ fun TF.oneHot(indices: Tensor, depth: Tensor,
   return Tensor(v, 0)
 }
 
+fun TF.size(input: Tensor, out_type: Int = DT_INT32, name: String = "Size") =
+    naryOp("Size", input, name = name) {
+      setAttrType("out_type", out_type)
+    }
+
 /**
  * Returns the shape of a tensor.
  *
@@ -100,7 +118,7 @@ fun TF.oneHot(indices: Tensor, depth: Tensor,
 fun TF.shape(input: Tensor, name: String = "Shape", optimize: Boolean = true): Tensor {
   //TODO SparseTensor
   val out_type = DT_INT32
-  val input_shape = input.shape
+  val input_shape = input.shape()
   if (optimize && input_shape.is_fully_defined)
     return const(input_shape.asIntArray(), name)
   val op = g.nodeBuilder("Shape", ctxNs.getUniqueFullName(name))
@@ -109,6 +127,12 @@ fun TF.shape(input: Tensor, name: String = "Shape", optimize: Boolean = true): T
       .build()
   return Tensor(op, 0)
 }
+
+fun TF.tile(input: Tensor, multiples: Tensor, name: String = "Tile") =
+    binaryOp("Tile", input, multiples, name)
+
+fun TF.transpose(x: Tensor, perm: Tensor, name: String = "Transpose") =
+    binaryOp("Transpose", x, perm, name)
 
 /**
  *
@@ -220,7 +244,7 @@ fun TF.gather(params: Tensor, indices: Tensor, axis: Int = 0, name: String = "Ga
 
 fun TF.rank(input: Tensor, name: String = "Rank", optimize: Boolean = true): Tensor {
   //TODO SparseTensor
-  val input_shape = input.shape
+  val input_shape = input.shape()
   if (optimize && input_shape.is_fully_defined)
     return const(input_shape.rank(), name)
   return unaryOp("Rank", input, name)

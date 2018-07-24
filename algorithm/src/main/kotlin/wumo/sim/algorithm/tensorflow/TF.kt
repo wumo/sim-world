@@ -4,8 +4,8 @@ import org.bytedeco.javacpp.Loader
 import org.bytedeco.javacpp.tensorflow
 import org.bytedeco.javacpp.tensorflow.*
 import org.tensorflow.framework.GraphDef
-import sun.audio.AudioDevice.device
 import wumo.sim.algorithm.tensorflow.ops.group
+import wumo.sim.algorithm.tensorflow.ops.register_math_grad
 import wumo.sim.algorithm.tensorflow.scope.NameScope
 import wumo.sim.algorithm.tensorflow.scope.VariableScope
 import wumo.sim.util.println
@@ -17,6 +17,7 @@ class TF {
     init {
       Loader.load(tensorflow::class.java)
       tensorflow.InitMain("trainer", null as IntArray?, null)
+      register_math_grad()
     }
   }
   
@@ -105,7 +106,7 @@ class TF {
       ctxNs.with_device(dev) { block() }
   
   inline fun <R> colocate_with(colocate_with: Tensor, block: () -> R) =
-      colocate_with(colocate_with.op) { block() }
+      colocate_with(colocate_with.op!!) { block() }
   
   inline fun <R> colocate_with(colocate_with: Operation, block: () -> R) =
       ctxNs.colocate_with(colocate_with) { block() }
@@ -128,6 +129,18 @@ class TF {
   
   fun global_variable_initializer(): Operation {
     return group(global_variables, name = "init")
+  }
+  
+  inline fun <R> with_device(device: String, block: () -> R) =
+      ctxNs.with_device(device, block)
+  
+  var tmpDev = ""
+  inline fun begin_device(device: String) {
+    tmpDev = ctxNs.device
+  }
+  
+  inline fun end_device() {
+    ctxNs.device = tmpDev
   }
 }
 

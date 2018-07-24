@@ -27,7 +27,7 @@ open class Layer(val trainable: Boolean = true,
     if (!built) {
       if (dtype == DT_INVALID)
         dtype = inputs.dtype
-      val input_shape = inputs.shape
+      val input_shape = inputs.shape()
       build(input_shape)
     }
     //if not in_deferred_mode:

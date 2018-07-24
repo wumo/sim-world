@@ -21,6 +21,8 @@ class Graph(val tf: TF) {
   /**Set of operations that are dangerous to fetch!*/
   private val unfetchable_ops = mutableSetOf<Operation>()
   
+  fun num_node_ids() = c_graph.graph().num_node_ids()
+  
   fun nodeBuilder(opType: String, name: String) = OperationBuilder(this, opType, name)
   fun operation(name: String): Operation {
     val op = TF_GraphOperationByName(c_graph, name)

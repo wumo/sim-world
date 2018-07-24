@@ -6,6 +6,38 @@ import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.util.Dimension
 import wumo.sim.util.toByte
 
+inline fun TF.naryOp(op: String, name: String, build: OperationBuilder.() -> Unit): Tensor {
+  val builder = g.nodeBuilder(op, ctxNs.getUniqueFullName(name))
+  build(builder)
+  val op = builder.build()
+  return Tensor(op, 0)
+}
+
+inline fun TF.naryOp(op: String, name: String, outputs: Int, build: OperationBuilder.() -> Unit): Array<Tensor> {
+  val builder = g.nodeBuilder(op, ctxNs.getUniqueFullName(name))
+  build(builder)
+  val op = builder.build()
+  return Array(outputs) { Tensor(op, it) }
+}
+
+inline fun TF.naryOp(op: String, vararg inputs: Tensor, name: String, setAttr: OperationBuilder.() -> Unit = {}): Tensor {
+  val builder = g.nodeBuilder(op, ctxNs.getUniqueFullName(name))
+  for (input in inputs)
+    builder.addInput(input)
+  setAttr(builder)
+  val op = builder.build()
+  return Tensor(op, 0)
+}
+
+inline fun TF.naryOp(op: String, vararg inputs: Tensor, name: String, outputs: Int, setAttr: OperationBuilder.() -> Unit = {}): Array<Tensor> {
+  val builder = g.nodeBuilder(op, ctxNs.getUniqueFullName(name))
+  for (input in inputs)
+    builder.addInput(input)
+  setAttr(builder)
+  val op = builder.build()
+  return Array(outputs) { Tensor(op, it) }
+}
+
 fun TF.unaryOp(op: String, a: Tensor, name: String, dtype: Int = a.dtype): Tensor {
   val op = g.nodeBuilder(op, ctxNs.getUniqueFullName(name))
       .addInput(a)
@@ -62,7 +94,7 @@ class OperationBuilder(val graph: Graph, val opType: String, val name: String) {
   fun addInputList(input: Array<Tensor>): OperationBuilder {
     val inputs = TF_Output(input.size.toLong())
     for ((i, input) in input.withIndex())
-      inputs.position(i.toLong()).oper(input.op.c_op).index(input.value_index)
+      inputs.position(i.toLong()).oper(input.op!!.c_op).index(input.value_index)
     TF_AddInputList(c_opDesc, inputs.position(0L), input.size)
     return this
   }

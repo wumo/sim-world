@@ -65,7 +65,7 @@ class Variable(op: Operation, value_index: Int) : Tensor(op, value_index) {
       if (op.name in path) return true
       path += op.name
       for (op_input in op.inputs)
-        if (has_cycle(op_input.op, path))
+        if (has_cycle(op_input.op!!, path))
           return true
       for (op_control_input in op.control_inputs)
         if (has_cycle(op_control_input, path))
@@ -73,7 +73,7 @@ class Variable(op: Operation, value_index: Int) : Tensor(op, value_index) {
       path.remove(op.name)
       return false
     }
-    if (has_cycle(initial_value.op, path = mutableSetOf()))
+    if (has_cycle(initial_value.op!!, path = mutableSetOf()))
       return initial_value
     return safe_initial_value_from_tensor(initial_value, mutableMapOf())
   }
@@ -90,7 +90,7 @@ class Variable(op: Operation, value_index: Int) : Tensor(op, value_index) {
    */
   private fun safe_initial_value_from_tensor(tensor: Tensor, op_cache: MutableMap<String, Operation>): Tensor {
     val op = tensor.op
-    val new_op = op_cache.compute(op.name) { _, new_op ->
+    val new_op = op_cache.compute(op!!.name) { _, new_op ->
       new_op ?: safe_initial_value_from_op(op, op_cache)
     }!!
     return new_op.outputs[tensor.value_index]
@@ -129,7 +129,7 @@ class Variable(op: Operation, value_index: Int) : Tensor(op, value_index) {
       var new_op_type = op_type
       if (new_op_type == "RefSwitch")
         new_op_type = "Switch"
-      var new_op_name = op.name + "_" + this.op.name
+      var new_op_name = op.name + "_" + this.op!!.name
       new_op_name = new_op_name.replace(":", "_")
       return tf.g.create_op(new_op_type, new_op_inputs, op.output_types, name = new_op_name, attrs = op.attr)
     }
@@ -147,7 +147,7 @@ class Variable(op: Operation, value_index: Int) : Tensor(op, value_index) {
   private fun find_initialized_value_for_variable(variable_op: Operation): Tensor? {
     val var_names = variable_op.name
     for (v in tf.global_variables)
-      if (v.op.name == var_names)
+      if (v.op!!.name == var_names)
         return v.initialized_value()
     return null
   }

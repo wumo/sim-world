@@ -113,7 +113,7 @@ fun build_train(make_obs_ph: (String) -> TfInput,
       q_func_vars.sortedBy { it.name }.zip(target_q_func_vars.sortedBy { it.name })
       for ((v, v_target) in q_func_vars.sortedBy { it.name }
           .zip(target_q_func_vars.sortedBy { it.name }))
-        update_target_expr += v_target.assign(v).op
+        update_target_expr += v_target.assign(v).op!!
       tf.group(update_target_expr)
     }
     
@@ -203,7 +203,7 @@ fun build_act_with_param_noise(make_obs_ph: (String) -> TfInput,
     val kl = tf.sum(tf.softmax(q_values) * (tf.log(tf.softmax(q_values)) - tf.log(tf.softmax(q_values_adaptive))), axis = tf.const(-1))
     val mean_kl = tf.mean(kl)
     fun update_scale() =
-        tf.control_dependencies(perturb_for_adaption.op) {
+        tf.control_dependencies(perturb_for_adaption.op!!) {
           tf.cond(tf.less(mean_kl, param_noise_threshold),
                   { param_noise_scale.assign(param_noise_scale * tf.const(1.01f)) },
                   { param_noise_scale.assign(param_noise_scale / tf.const(1.01f)) })
@@ -271,7 +271,7 @@ fun build_act(make_obs_ph: (String) -> TfInput, q_func: Q_func, num_actions: Int
     val stochastic_actions = tf.where(chose_random, random_actions, deterministic_actions)
     
     val output_actions = tf.cond(stochastic_ph, { stochastic_actions }, { deterministic_actions })
-    val update_eps_expr = eps.assign(tf.cond(tf.greater(update_eps_ph, tf.const(0f)), { update_eps_ph }, { eps }))
+    val update_eps_expr = eps.assign(tf.cond(tf.greaterEqual(update_eps_ph, tf.const(0f)), { update_eps_ph }, { eps }))
     val _act = function(inputs = a(observations_ph, stochastic_ph, update_eps_ph),
                         outputs = output_actions,
                         givens = a(update_eps_ph to -1.0f, stochastic_ph to true),

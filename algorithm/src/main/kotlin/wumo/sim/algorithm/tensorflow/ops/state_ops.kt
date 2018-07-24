@@ -72,7 +72,7 @@ private inline fun TF.variable(initializer: (String) -> Tensor, name: String, tr
     val initial_value = initializer("initial_value")
     val v = g.nodeBuilder("VariableV2", ctxNs.fullName)
         .setAttrType("dtype", initial_value.dtype.base_dtype)
-        .setAttr("shape", initial_value.shape)
+        .setAttr("shape", initial_value.shape())
         .build()
     
     val t = Variable(v, 0)
@@ -81,7 +81,7 @@ private inline fun TF.variable(initializer: (String) -> Tensor, name: String, tr
     //TODO: Change this class to not take caching_device, b
     //ut to take the op to colocate the snapshot with, so we can use
     //colocation rather than devices.
-    colocate_with(t.op) {
+    colocate_with(t.op!!) {
       t.snapshot = identity(t, name = "read")
     }
     if (trainable) trainables += t
@@ -182,7 +182,7 @@ private inline fun TF.get_variable(initializer: (String) -> Tensor, name: String
         val initial_value = initializer("initial_value")
         val v = g.nodeBuilder("VariableV2", ctxNs.fullName)
             .setAttrType("dtype", initial_value.dtype.base_dtype)
-            .setAttr("shape", initial_value.shape)
+            .setAttr("shape", initial_value.shape())
             .build()
         
         val t = Variable(v, 0)
@@ -191,7 +191,7 @@ private inline fun TF.get_variable(initializer: (String) -> Tensor, name: String
         //TODO: Change this class to not take caching_device, b
         //ut to take the op to colocate the snapshot with, so we can use
         //colocation rather than devices.
-        colocate_with(t.op) {
+        colocate_with(t.op!!) {
           t.snapshot = identity(t, name = "read")
         }
         if (trainable) trainables += t

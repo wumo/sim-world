@@ -58,7 +58,7 @@ fun create_slot_with_initializer(primary: Tensor,
  */
 fun create_zeros_slot(primary: Tensor, name: String, dtype: Int = 0, colocate_with_primary: Boolean = true): Variable {
   val dtype = if (dtype == DT_INVALID) primary.dtype else dtype
-  val slot_shape = primary.shape
+  val slot_shape = primary.shape()
   return if (slot_shape.is_fully_defined) {
     val initializer = tf.zeros_initializer(dtype)
     create_slot_with_initializer(primary,
