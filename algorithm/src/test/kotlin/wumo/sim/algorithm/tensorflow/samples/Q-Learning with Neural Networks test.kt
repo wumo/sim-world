@@ -1,7 +1,6 @@
 package wumo.sim.algorithm.tensorflow.samples
 
 import org.junit.Test
-import wumo.sim.algorithm.tensorflow.TensorBuffer
 import wumo.sim.algorithm.tensorflow.ops.*
 import wumo.sim.algorithm.tensorflow.tf
 import wumo.sim.algorithm.tensorflow.training.GradientDescentOptimizer

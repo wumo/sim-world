@@ -1,20 +1,15 @@
 package wumo.sim.algorithm
 
 
+import org.tensorflow.*
+import org.tensorflow.types.UInt8
 import java.io.IOException
 import java.io.PrintStream
 import java.nio.charset.Charset
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.util.Arrays
-import org.tensorflow.DataType
-import org.tensorflow.Graph
-import org.tensorflow.Output
-import org.tensorflow.Session
-import org.tensorflow.Tensor
-import org.tensorflow.TensorFlow
-import org.tensorflow.types.UInt8
+import java.util.*
 
 /** Sample use of the TensorFlow Java API to label images using a pre-trained model.  */
 private fun printUsage(s: PrintStream) {

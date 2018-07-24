@@ -4,8 +4,8 @@ import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.ops.*
 import wumo.sim.algorithm.tensorflow.tf
 import wumo.sim.util.Dimension
-import wumo.sim.util.i
 import wumo.sim.util.dim
+import wumo.sim.util.i
 import wumo.sim.util.x
 
 class Dense(val units: Int,

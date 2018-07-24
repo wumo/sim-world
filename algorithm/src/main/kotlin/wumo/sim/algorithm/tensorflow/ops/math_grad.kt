@@ -6,7 +6,9 @@ import org.bytedeco.javacpp.tensorflow
 import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.algorithm.tensorflow.Operation
 import wumo.sim.algorithm.tensorflow.Tensor
-import wumo.sim.algorithm.tensorflow.ops.gradients.*
+import wumo.sim.algorithm.tensorflow.ops.gradients.noGradient
+import wumo.sim.algorithm.tensorflow.ops.gradients.register_gradient_op
+import wumo.sim.algorithm.tensorflow.ops.gradients.register_no_gradient_op
 import wumo.sim.algorithm.tensorflow.tf
 import wumo.sim.util.a
 import wumo.sim.util.i
@@ -154,7 +156,7 @@ fun register_math_grad() {
     // Optimization to avoid calculating conj(y) until the gradient is
     // evaluated.
     val grad = grad_inputs[0]
-    tf.control_dependencies(Operation(tf.g, tensorflow.TF_Operation(grad.node()))) {
+    tf.control_dependencies(grad.op!!) {
       val y = conjugateHelper(op.outputs[0])
       grad_outputs.add(tf.sigmoidGrad(y, grad))
     }
@@ -824,8 +826,8 @@ fun register_math_grad() {
         matMulGradHelper(is_batch, grad_inputs[0], false, b, false,
                          grad_inputs[0], true, a, false, grad_outputs)
       ta && !tb ->
-        matMulGradHelper(is_batch, b, true, grad_inputs[0], true,
-                         grad_inputs[0], true, a, true, grad_outputs)
+        matMulGradHelper(is_batch, b, false, grad_inputs[0], true, a,
+                         false, grad_inputs[0], false, grad_outputs)
       else ->
         matMulGradHelper(is_batch, b, true, grad_inputs[0], true,
                          grad_inputs[0], true, a, true, grad_outputs)

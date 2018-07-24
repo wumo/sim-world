@@ -1,6 +1,6 @@
 package wumo.sim.algorithm.tensorflow.ops
 
-import wumo.sim.algorithm.tensorflow.*
+import wumo.sim.algorithm.tensorflow.TF
 import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.ops.gradients.addSymbolicGradients
 

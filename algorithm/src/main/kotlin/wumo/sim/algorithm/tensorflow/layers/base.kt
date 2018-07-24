@@ -4,7 +4,6 @@ import org.bytedeco.javacpp.tensorflow.DT_INVALID
 import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.ops.Initializer
 import wumo.sim.algorithm.tensorflow.ops.get_variable
-import wumo.sim.algorithm.tensorflow.ops.variable
 import wumo.sim.algorithm.tensorflow.tf
 import wumo.sim.util.Dimension
 

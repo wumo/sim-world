@@ -17,7 +17,6 @@ class TF {
     init {
       Loader.load(tensorflow::class.java)
       tensorflow.InitMain("trainer", null as IntArray?, null)
-      register_math_grad()
     }
   }
   

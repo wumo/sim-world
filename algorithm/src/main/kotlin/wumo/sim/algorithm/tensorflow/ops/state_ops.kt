@@ -3,8 +3,11 @@
 package wumo.sim.algorithm.tensorflow.ops
 
 import wumo.sim.algorithm.tensorflow.*
-import wumo.sim.util.*
 import wumo.sim.algorithm.tensorflow.scope.NameScope
+import wumo.sim.util.Dimension
+import wumo.sim.util.SwitchType3
+import wumo.sim.util.dim
+import wumo.sim.util.scalarDimension
 
 private val variable_switch = SwitchType3<String, Boolean, Variable>().apply {
   case<Float> { tf.variable(_1, _2, _3) }

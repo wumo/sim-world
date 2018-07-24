@@ -1,6 +1,5 @@
 package wumo.sim.algorithm.drl.deepq
 
-import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.util.Rand
 import wumo.sim.util.ndarray.NDArray
 import wumo.sim.util.tuple5

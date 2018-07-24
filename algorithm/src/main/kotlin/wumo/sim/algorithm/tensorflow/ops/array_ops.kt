@@ -115,9 +115,8 @@ fun TF.size(input: Tensor, out_type: Int = DT_INT32, name: String = "Size") =
  *
  *
  */
-fun TF.shape(input: Tensor, name: String = "Shape", optimize: Boolean = true): Tensor {
+fun TF.shape(input: Tensor, out_type: Int = DT_INT32, name: String = "Shape", optimize: Boolean = true): Tensor {
   //TODO SparseTensor
-  val out_type = DT_INT32
   val input_shape = input.shape()
   if (optimize && input_shape.is_fully_defined)
     return const(input_shape.asIntArray(), name)

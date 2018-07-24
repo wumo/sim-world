@@ -3,7 +3,6 @@ package wumo.sim.algorithm.tensorflow.samples
 import org.bytedeco.javacpp.tensorflow
 import org.bytedeco.javacpp.tensorflow.DT_INT32
 import org.junit.Test
-import wumo.sim.algorithm.tensorflow.TensorBuffer
 import wumo.sim.algorithm.tensorflow.contrib.fully_connected
 import wumo.sim.algorithm.tensorflow.contrib.one_hot_encoding
 import wumo.sim.algorithm.tensorflow.ops.*

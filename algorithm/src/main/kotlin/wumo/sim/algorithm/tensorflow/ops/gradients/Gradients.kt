@@ -1,16 +1,11 @@
 package wumo.sim.algorithm.tensorflow.ops.gradients
 
-import org.bytedeco.javacpp.Pointer
 import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.algorithm.tensorflow.TF
 import wumo.sim.algorithm.tensorflow.Tensor
-import wumo.sim.algorithm.tensorflow.ops.addN
-import wumo.sim.algorithm.tensorflow.ops.onesLike
-import wumo.sim.algorithm.tensorflow.ops.zerosLike
+import wumo.sim.algorithm.tensorflow.ops.*
 import wumo.sim.algorithm.tensorflow.tf
-import wumo.sim.util.println
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.collections.HashSet
 
@@ -26,7 +21,7 @@ fun TF.addSymbolicGradients(outputs: List<Tensor>,
                             inputs: List<Tensor>,
                             grad_inputs: List<Tensor>): MutableList<Tensor> {
   val out = MutableList(inputs.size) { noGradient }
-  val builder = SymbolicGradientBuilder(this, GlobalRegistry, outputs, inputs, grad_inputs, out)
+  val builder = SymbolicGradientBuilder(this, outputs, inputs, grad_inputs, out)
   builder.addGradients()
   return out
 }
@@ -36,20 +31,27 @@ typealias BackproppedGradients = ArrayList<Tensor>
 
 typealias GradFunc = (wumo.sim.algorithm.tensorflow.Operation, List<Tensor>, MutableList<Tensor>) -> Unit
 
-class GradOpRegistry {
-  val map = HashMap<String, GradFunc?>()
-  operator fun set(name: String, fn: GradFunc?) {
+val nullGradFunc: GradFunc = { _, _, _ -> }
+
+object GradOpRegistry {
+  val map = HashMap<String, GradFunc>()
+  
+  init {
+    register_math_grad()
+    register_nn_grad()
+  }
+  
+  operator fun set(name: String, fn: GradFunc) {
     map[name] = fn
   }
   
-  operator fun get(name: String): GradFunc? {
+  operator fun get(name: String): GradFunc {
     if (name !in map)
       throw NotImplementedError("No gradient defined for op: $name")
-    return map[name]
+    return map[name]!!
   }
 }
 
-val GlobalRegistry = GradOpRegistry()
 fun register_gradient_op(vararg names: String, fn: GradFunc) {
   for (name in names)
     register_gradient_op_uniq(name, fn)
@@ -57,15 +59,14 @@ fun register_gradient_op(vararg names: String, fn: GradFunc) {
 
 fun register_no_gradient_op(vararg names: String) {
   for (name in names)
-    register_gradient_op_uniq(name, null)
+    register_gradient_op_uniq(name, nullGradFunc)
 }
 
-fun register_gradient_op_uniq(name: String, fn: GradFunc?) {
-  GlobalRegistry[name] = fn
+fun register_gradient_op_uniq(name: String, fn: GradFunc) {
+  GradOpRegistry[name] = fn
 }
 
 class SymbolicGradientBuilder(val tf: TF,
-                              val regisry_: GradOpRegistry,
                               val outputs_: List<Tensor>,
                               val inputs_: List<Tensor>,
                               val grad_inputs_: List<Tensor>,
@@ -382,14 +383,14 @@ class SymbolicGradientBuilder(val tf: TF,
   }
   
   private fun callGradFunction(op: Operation, grad_inputs: MutableList<Tensor>, grad_outputs: MutableList<Tensor>) {
-    val grad_fn = regisry_[op.node().type_string().string]!!
+    val grad_fn = GradOpRegistry[op.node().type_string().string]!!
     grad_fn(op.node().toOperation(),
             grad_inputs, grad_outputs)
   }
   
   private fun isPrimitiveOpWithNoGrad(opname: String): Boolean {
-    val grad_fn = regisry_[opname]
-    return grad_fn == null
+    val grad_fn = GradOpRegistry[opname]
+    return grad_fn == nullGradFunc
   }
   
   /**

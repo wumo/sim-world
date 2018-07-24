@@ -6,7 +6,6 @@ import org.tensorflow.Graph
 import org.tensorflow.Session
 import org.tensorflow.Tensor
 import org.tensorflow.TensorFlow
-import java.nio.charset.Charset
 
 fun main(args: Array<String>) {
   Loader.load(org.bytedeco.javacpp.tensorflow::class.java)

@@ -1,6 +1,6 @@
 package wumo.sim.algorithm.tensorflow.training
 
-import org.bytedeco.javacpp.tensorflow.*
+import org.bytedeco.javacpp.tensorflow.DT_INVALID
 import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.Variable
 import wumo.sim.algorithm.tensorflow.ops.*

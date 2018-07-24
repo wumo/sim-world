@@ -1,7 +1,6 @@
 package wumo.sim.algorithm.tensorflow
 
 import org.bytedeco.javacpp.tensorflow.*
-import org.tensorflow.DataType
 
 private val typeCodes = mapOf(
     java.lang.Float::class.java to DT_FLOAT,

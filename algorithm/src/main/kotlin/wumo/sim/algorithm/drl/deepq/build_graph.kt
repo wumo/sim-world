@@ -5,14 +5,12 @@ import wumo.sim.algorithm.tensorflow.Operation
 import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.Variable
 import wumo.sim.algorithm.tensorflow.ops.*
-import wumo.sim.algorithm.tensorflow.scope.VariableScope
 import wumo.sim.algorithm.tensorflow.tf
 import wumo.sim.algorithm.tensorflow.training.Optimizer
 import wumo.sim.util.a
 import wumo.sim.util.dim
 import wumo.sim.util.scalarDimension
 import wumo.sim.util.tuple4
-import kotlin.run
 
 /**
  * Creates the train function

@@ -10,8 +10,11 @@ import wumo.sim.algorithm.tensorflow.tf
 import wumo.sim.core.Space
 import wumo.sim.spaces.Box
 import wumo.sim.spaces.Discrete
-import wumo.sim.util.*
+import wumo.sim.util.a
+import wumo.sim.util.dim
 import wumo.sim.util.ndarray.NDArray
+import wumo.sim.util.tuple2
+import wumo.sim.util.x
 
 val emptyArray = Array(0) { NotImplementedError() }
 inline fun <T> emptyArray() = emptyArray as Array<T>

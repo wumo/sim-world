@@ -1,8 +1,6 @@
 package wumo.sim.algorithm.tensorflow.ops
 
 import org.junit.Test
-
-import wumo.sim.algorithm.tensorflow.TensorBuffer
 import wumo.sim.algorithm.tensorflow.contrib.one_hot_encoding
 import wumo.sim.algorithm.tensorflow.tf
 import wumo.sim.util.f

@@ -3,7 +3,6 @@ package wumo.sim.algorithm.drl.deepq.experiments
 import org.junit.Test
 import wumo.sim.algorithm.drl.deepq.learn
 import wumo.sim.algorithm.drl.deepq.mlp
-import wumo.sim.algorithm.tensorflow.tf
 import wumo.sim.envs.classic_control.CartPole
 
 class train_cartpole {

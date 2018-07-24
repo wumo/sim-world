@@ -1,9 +1,6 @@
 package wumo.sim.algorithm.tensorflow.ops
 
 import wumo.sim.algorithm.tensorflow.*
-import wumo.sim.algorithm.tensorflow.Operation
-import wumo.sim.algorithm.tensorflow.Tensor
-import wumo.sim.algorithm.tensorflow.Variable
 import wumo.sim.util.a
 
 class CondContext(val pred: Tensor,

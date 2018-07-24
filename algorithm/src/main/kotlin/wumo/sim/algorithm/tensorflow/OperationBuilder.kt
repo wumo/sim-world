@@ -135,6 +135,16 @@ class OperationBuilder(val graph: Graph, val opType: String, val name: String) {
     return this
   }
   
+  fun setAttr(name: String, value: Long): OperationBuilder {
+    TF_SetAttrInt(c_opDesc, name, value)
+    return this
+  }
+  
+  fun setAttr(name: String, value: LongArray): OperationBuilder {
+    TF_SetAttrIntList(c_opDesc, name, value, value.size)
+    return this
+  }
+  
   fun setAttr(name: String, value: Float): OperationBuilder {
     TF_SetAttrFloat(c_opDesc, name, value)
     return this

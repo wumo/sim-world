@@ -1,7 +1,6 @@
 package wumo.sim.algorithm.tensorflow
 
 import org.bytedeco.javacpp.Pointer
-import org.bytedeco.javacpp.helper.tensorflow
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Graph.newGraph
 import org.bytedeco.javacpp.tensorflow.*
 

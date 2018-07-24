@@ -1,7 +1,6 @@
 package wumo.sim.algorithm.tensorflow
 
 import org.bytedeco.javacpp.PointerPointer
-import org.bytedeco.javacpp.tensorflow
 import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.algorithm.tensorflow.ops.gradients.iterate
 import wumo.sim.algorithm.tensorflow.ops.gradients.toTensor

@@ -1,6 +1,5 @@
 package wumo.sim.algorithm.tensorflow.ops
 
-import com.sun.org.apache.xpath.internal.operations.Bool
 import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.algorithm.tensorflow.*
 import wumo.sim.algorithm.tensorflow.Tensor
@@ -496,8 +495,10 @@ operator fun Tensor.minus(b: Tensor) = tf.sub(this, b)
 fun TF.sub(a: Tensor, b: Tensor, name: String = "Sub") =
     binaryOp("Sub", a, b, name)
 
-fun TF.sum(input: Tensor, axis: Tensor, name: String = "Sum") =
-    binaryOp("Sum", input, axis, name)
+fun TF.sum(input: Tensor, axis: Tensor, keep_dims: Boolean = false, name: String = "Sum") =
+    naryOp("Sum", input, axis, name = name) {
+      setAttr("keep_dims", keep_dims)
+    }
 
 fun TF.tan(x: Tensor, name: String = "Tan") = unaryOp("Tan", x, name)
 fun TF.tanh(x: Tensor, name: String = "Tanh") = unaryOp("Tanh", x, name)

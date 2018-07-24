@@ -1,6 +1,6 @@
 package wumo.sim.algorithm.tensorflow.layers
 
-import org.bytedeco.javacpp.tensorflow.*
+import org.bytedeco.javacpp.tensorflow.DT_FLOAT
 import wumo.sim.algorithm.tensorflow.TF
 import wumo.sim.algorithm.tensorflow.layers.mode.*
 import wumo.sim.algorithm.tensorflow.ops.Initializer

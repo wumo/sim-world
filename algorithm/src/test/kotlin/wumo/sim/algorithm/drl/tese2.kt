@@ -3,9 +3,6 @@ package wumo.sim.algorithm.drl
 import org.bytedeco.javacpp.Loader
 import org.bytedeco.javacpp.tensorflow.*
 import java.nio.IntBuffer
-import org.tensorflow.Session.Run
-import org.bytedeco.javacpp.tensorflow.Scope.NewRootScope
-import java.nio.FloatBuffer
 
 
 fun main(args: Array<String>) {

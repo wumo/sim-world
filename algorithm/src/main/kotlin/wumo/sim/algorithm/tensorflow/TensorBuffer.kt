@@ -3,15 +3,14 @@
 package wumo.sim.algorithm.tensorflow
 
 import org.bytedeco.javacpp.*
-import org.bytedeco.javacpp.Loader.sizeof
 import org.bytedeco.javacpp.Pointer.memcpy
 import org.bytedeco.javacpp.ShortPointer
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Tensor.allocateTensor
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Tensor.newTensor
 import org.bytedeco.javacpp.tensorflow.*
-import wumo.sim.util.Dimension
 import wumo.sim.util.*
+import wumo.sim.util.Dimension
 import wumo.sim.util.ndarray.Buf
 import wumo.sim.util.ndarray.NDArray
 import wumo.sim.util.ndarray.implementation.*

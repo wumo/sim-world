@@ -1,15 +1,16 @@
 package wumo.sim.algorithm.tensorflow.samples
 
-import org.bytedeco.javacpp.tensorflow.*
+import org.bytedeco.javacpp.tensorflow.DT_FLOAT
+import org.bytedeco.javacpp.tensorflow.DT_INT32
 import org.junit.Test
 import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.contrib.fully_connected
 import wumo.sim.algorithm.tensorflow.ops.*
 import wumo.sim.algorithm.tensorflow.tf
 import wumo.sim.algorithm.tensorflow.training.AdamOptimizer
-import wumo.sim.util.i
 import wumo.sim.envs.classic_control.CartPole
 import wumo.sim.util.dim
+import wumo.sim.util.i
 import wumo.sim.util.x
 import wumo.sim.util.zip
 

@@ -1,6 +1,7 @@
 package wumo.sim.algorithm.tensorflow.contrib
 
-import org.bytedeco.javacpp.tensorflow.*
+import org.bytedeco.javacpp.tensorflow.DT_INT32
+import org.bytedeco.javacpp.tensorflow.DT_INT64
 import wumo.sim.algorithm.tensorflow.TF
 import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.layers.Dense
