@@ -446,3 +446,8 @@ internal fun EdgeSet.iterate() = object : Iterator<Edge> {
     return e
   }
 }
+
+inline fun <E> MutableCollection<E>.AddAll(vararg elements: E) {
+  for (element in elements)
+    add(element)
+}

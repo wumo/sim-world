@@ -115,6 +115,9 @@ class TF {
   inline fun <R> control_dependencies(vararg control_inputs: Operation, block: () -> R) =
       ctxNs.control_dependencies(*control_inputs) { block() }
   
+  inline fun <R> control_dependencies(control_inputs: Tensor, block: () -> R) =
+      ctxNs.control_dependencies(control_inputs.op!!) { block() }
+  
   fun debugString() = GraphDef.parseFrom(g.toGraphDef()).toString()
   fun printGraph() {
     tf.debugString().println()

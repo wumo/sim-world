@@ -25,121 +25,144 @@ fun register_array_grad() {
                           "OneHot")
   
   register_gradient_op("Pack") { op, grad_inputs, grad_outputs ->
+    val grad = grad_inputs[0]
     val N = LongPointer(1)
     GetNodeAttr(op.node().attrs(), "N", N)
     val axis = LongPointer(1)
     GetNodeAttr(op.node().attrs(), "axis", axis)
     
-    val grad_op = tf.unstack(grad_inputs[0], N.get(), axis = axis.get())
+    val grad_op = tf.unstack(grad, N.get(), axis = axis.get())
     for (o in grad_op)
       grad_outputs.add(o)
   }
   register_gradient_op("Unpack") { op, grad_inputs, grad_outputs ->
+    val grad = grad_inputs[0]
     val axis = LongPointer(1)
     GetNodeAttr(op.node().attrs(), "axis", axis)
     grad_outputs.add(tf.pack(grad_inputs, axis = axis.get().toInt()))
   }
   register_gradient_op("Identity") { op, grad_inputs, grad_outputs ->
-    grad_outputs.add(tf.identity(grad_inputs[0]))
+    val grad = grad_inputs[0]
+    grad_outputs.add(tf.identity(grad))
   }
   register_gradient_op("RefIdentity") { op, grad_inputs, grad_outputs ->
-    grad_outputs.add(tf.identity(grad_inputs[0]))
+    val grad = grad_inputs[0]
+    grad_outputs.add(tf.identity(grad))
   }
   register_gradient_op("QuantizeAndDequantize") { op, grad_inputs, grad_outputs ->
-    grad_outputs.add(tf.identity(grad_inputs[0]))
+    val grad = grad_inputs[0]
+    grad_outputs.add(tf.identity(grad))
   }
   register_gradient_op("QuantizeAndDequantizeV2") { op, grad_inputs, grad_outputs ->
-    grad_outputs.add(tf.identity(grad_inputs[0]))
+    val grad = grad_inputs[0]
+    grad_outputs.add(tf.identity(grad))
     grad_outputs.add(noGradient)
     grad_outputs.add(noGradient)
   }
   register_gradient_op("QuantizeAndDequantizeV3") { op, grad_inputs, grad_outputs ->
-    grad_outputs.add(tf.identity(grad_inputs[0]))
+    val grad = grad_inputs[0]
+    grad_outputs.add(tf.identity(grad))
     grad_outputs.add(noGradient)
     grad_outputs.add(noGradient)
     grad_outputs.add(noGradient)
   }
   register_gradient_op("Split") { op, grad_inputs, grad_outputs ->
+    val grad = grad_inputs[0]
     grad_outputs.add(noGradient)
     grad_outputs.add(tf.concat(grad_inputs, op.inputs[0]))
   }
   register_gradient_op("Diag") { op, grad_inputs, grad_outputs ->
-    grad_outputs.add(tf.diagPart(grad_inputs[0]))
+    val grad = grad_inputs[0]
+    grad_outputs.add(tf.diagPart(grad))
   }
   register_gradient_op("DiagPart") { op, grad_inputs, grad_outputs ->
-    grad_outputs.add(tf.diag(grad_inputs[0]))
+    val grad = grad_inputs[0]
+    grad_outputs.add(tf.diag(grad))
   }
   register_gradient_op("MatrixDiag") { op, grad_inputs, grad_outputs ->
-    grad_outputs.add(tf.matrixDiagPart(grad_inputs[0]))
+    val grad = grad_inputs[0]
+    grad_outputs.add(tf.matrixDiagPart(grad))
   }
   register_gradient_op("MatrixBandPart") { op, grad_inputs, grad_outputs ->
+    val grad = grad_inputs[0]
     val num_lower = op.inputs[1]
     val num_upper = op.inputs[2]
-    grad_outputs.add(tf.matrixBandPart(grad_inputs[0], num_lower, num_upper))
+    grad_outputs.add(tf.matrixBandPart(grad, num_lower, num_upper))
     grad_outputs.add(noGradient)
     grad_outputs.add(noGradient)
   }
   register_gradient_op("GatherNd") { op, grad_inputs, grad_outputs ->
+    val grad = grad_inputs[0]
     val ref = op.inputs[0]
     val ref_shape = tf.shape(ref)
     val indices = op.inputs[1]
-    grad_outputs.add(tf.scatterNd(indices, grad_inputs[0], ref_shape))
+    grad_outputs.add(tf.scatterNd(indices, grad, ref_shape))
     grad_outputs.add(noGradient)
   }
   register_gradient_op("CheckNumerics") { op, grad_inputs, grad_outputs ->
+    val grad = grad_inputs[0]
     val message = BytePointer()
     GetNodeAttr(op.node().attrs(), "message", message)
-    grad_outputs.add(tf.checkNumerics(grad_inputs[0], "Not a number (NaN) or infinity (Inf) values detected in gradient. ${message.string}"))
+    grad_outputs.add(tf.checkNumerics(grad, "Not a number (NaN) or infinity (Inf) values detected in gradient. ${message.string}"))
   }
   register_gradient_op("Reshape") { op, grad_inputs, grad_outputs ->
+    val grad = grad_inputs[0]
     val input_shape = tf.shape(op.inputs[0])
-    grad_outputs.add(tf.reshape(grad_inputs[0], input_shape))
+    grad_outputs.add(tf.reshape(grad, input_shape))
     grad_outputs.add(noGradient)
   }
   register_gradient_op("ExpandDims") { op, grad_inputs, grad_outputs ->
+    val grad = grad_inputs[0]
     val input_shape = tf.shape(op.inputs[0])
-    grad_outputs.add(tf.reshape(grad_inputs[0], input_shape))
+    grad_outputs.add(tf.reshape(grad, input_shape))
     grad_outputs.add(noGradient)
   }
   register_gradient_op("Squeeze") { op, grad_inputs, grad_outputs ->
+    val grad = grad_inputs[0]
     val input_shape = tf.shape(op.inputs[0])
-    grad_outputs.add(tf.reshape(grad_inputs[0], input_shape))
+    grad_outputs.add(tf.reshape(grad, input_shape))
   }
   register_gradient_op("Transpose") { op, grad_inputs, grad_outputs ->
+    val grad = grad_inputs[0]
     val inverted_perm = tf.invertPermutation(op.inputs[1])
-    grad_outputs.add(tf.transpose(grad_inputs[0], inverted_perm))
+    grad_outputs.add(tf.transpose(grad, inverted_perm))
     grad_outputs.add(noGradient)
   }
   register_gradient_op("ReverseSequence") { op, grad_inputs, grad_outputs ->
+    val grad = grad_inputs[0]
     val seq_lengths = op.inputs[1]
     val batch_dim = LongPointer(1)
     GetNodeAttr(op.node().attrs(), "batch_dim", batch_dim)
     val seq_dim = LongPointer(1)
     GetNodeAttr(op.node().attrs(), "seq_dim", seq_dim)
     grad_outputs.add(
-        tf.reverseSequence(grad_inputs[0], seq_lengths, seq_dim.get(),
+        tf.reverseSequence(grad, seq_lengths, seq_dim.get(),
                            batch_dim = batch_dim.get()))
     grad_outputs.add(noGradient)
   }
   register_gradient_op("ReverseV2") { op, grad_inputs, grad_outputs ->
+    val grad = grad_inputs[0]
     val reverse_dims = op.inputs[1]
-    grad_outputs.add(tf.reverse(grad_inputs[0], reverse_dims))
+    grad_outputs.add(tf.reverse(grad, reverse_dims))
     grad_outputs.add(noGradient)
   }
   register_gradient_op("ScatterNd") { op, grad_inputs, grad_outputs ->
+    val grad = grad_inputs[0]
     val indices = op.inputs[0]
     grad_outputs.add(noGradient);
-    grad_outputs.add(tf.gatherNd(grad_inputs[0], indices))
+    grad_outputs.add(tf.gatherNd(grad, indices))
     grad_outputs.add(noGradient)
   }
   register_gradient_op("ScatterNdNonAliasingAdd") { op, grad_inputs, grad_outputs ->
+    val grad = grad_inputs[0]
     val indices = op.inputs[1]
-    grad_outputs.add(tf.identity(grad_inputs[0]));
+    grad_outputs.add(tf.identity(grad));
     grad_outputs.add(noGradient)
-    grad_outputs.add(tf.gatherNd(grad_inputs[0], indices));
+    grad_outputs.add(tf.gatherNd(grad, indices));
   }
   
   fun padGrad(op: Operation, grad_inputs: List<Tensor>, grad_outputs: MutableList<Tensor>, isPadV2: Boolean) {
+    val grad = grad_inputs[0]
     val x = op.inputs[0]
     val a = op.inputs[1]  // [Rank(x), 2]
     // Takes a slice of a. The 1st column. [Rank(x), 1].
@@ -147,7 +170,7 @@ fun register_array_grad() {
     val pad_before = tf.slice(a, tf.const(i(0, 0)), size)
     // Make it a 1-D tensor.
     val begin = tf.reshape(pad_before, tf.const(i(-1)))
-    grad_outputs.add(tf.slice(grad_inputs[0], begin, tf.shape(x)));
+    grad_outputs.add(tf.slice(grad, begin, tf.shape(x)));
     grad_outputs.add(noGradient)
     // PadV2 adds a "constant_values" input.
     if (isPadV2) {
@@ -156,60 +179,71 @@ fun register_array_grad() {
   }
   
   register_gradient_op("Pad") { op, grad_inputs, grad_outputs ->
+    val grad = grad_inputs[0]
     padGrad(op, grad_inputs, grad_outputs, false)
   }
   register_gradient_op("PadV2") { op, grad_inputs, grad_outputs ->
+    val grad = grad_inputs[0]
     padGrad(op, grad_inputs, grad_outputs, true)
   }
   register_gradient_op("SpaceToBatch") { op, grad_inputs, grad_outputs ->
+    val grad = grad_inputs[0]
     val block_size = LongPointer(1)
     GetNodeAttr(op.node().attrs(), "block_size", block_size)
     grad_outputs.add(
-        tf.batchToSpace(grad_inputs[0], op.inputs[1], block_size.get()))
+        tf.batchToSpace(grad, op.inputs[1], block_size.get()))
     grad_outputs.add(noGradient)
   }
   register_gradient_op("SpaceToBatchND") { op, grad_inputs, grad_outputs ->
+    val grad = grad_inputs[0]
     grad_outputs.add(
-        tf.batchToSpaceND(grad_inputs[0], op.inputs[1], op.inputs[2]))
+        tf.batchToSpaceND(grad, op.inputs[1], op.inputs[2]))
     grad_outputs.add(noGradient)
     grad_outputs.add(noGradient)
   }
   register_gradient_op("BatchToSpace") { op, grad_inputs, grad_outputs ->
+    val grad = grad_inputs[0]
     val block_size = LongPointer(1)
     GetNodeAttr(op.node().attrs(), "block_size", block_size)
     grad_outputs.add(
-        tf.spaceToBatch(grad_inputs[0], op.inputs[1], block_size.get()))
+        tf.spaceToBatch(grad, op.inputs[1], block_size.get()))
     grad_outputs.add(noGradient)
   }
   register_gradient_op("BatchToSpaceND") { op, grad_inputs, grad_outputs ->
+    val grad = grad_inputs[0]
     grad_outputs.add(
-        tf.spaceToBatchND(grad_inputs[0], op.inputs[1], op.inputs[2]))
+        tf.spaceToBatchND(grad, op.inputs[1], op.inputs[2]))
     grad_outputs.add(noGradient)
     grad_outputs.add(noGradient)
   }
   register_gradient_op("SpaceToDepth") { op, grad_inputs, grad_outputs ->
+    val grad = grad_inputs[0]
     val block_size = LongPointer(1)
     GetNodeAttr(op.node().attrs(), "block_size", block_size)
-    grad_outputs.add(tf.depthToSpace(grad_inputs[0], block_size.get()))
+    grad_outputs.add(tf.depthToSpace(grad, block_size.get()))
   }
   register_gradient_op("DepthToSpace") { op, grad_inputs, grad_outputs ->
+    val grad = grad_inputs[0]
     val block_size = LongPointer(1)
     GetNodeAttr(op.node().attrs(), "block_size", block_size)
-    grad_outputs.add(tf.spaceToDepth(grad_inputs[0], block_size.get()))
+    grad_outputs.add(tf.spaceToDepth(grad, block_size.get()))
   }
   register_gradient_op("MirrorPad") { op, grad_inputs, grad_outputs ->
+    val grad = grad_inputs[0]
     val mode = BytePointer()
     GetNodeAttr(op.node().attrs(), "mode", mode)
-    grad_outputs.add(tf.mirrorPadGrad(grad_inputs[0], op.inputs[1], mode.string))
+    grad_outputs.add(tf.mirrorPadGrad(grad, op.inputs[1], mode.string))
     grad_outputs.add(noGradient)
   }
   register_gradient_op("MirrorPadGrad") { op, grad_inputs, grad_outputs ->
+    val grad = grad_inputs[0]
     val mode = BytePointer()
     GetNodeAttr(op.node().attrs(), "mode", mode)
-    grad_outputs.add(tf.mirrorPad(grad_inputs[0], op.inputs[1], mode.string))
+    grad_outputs.add(tf.mirrorPad(grad, op.inputs[1], mode.string))
     grad_outputs.add(noGradient)
   }
   register_gradient_op("StridedSlice") { op, grad_inputs, grad_outputs ->
+    val grad = grad_inputs[0]
     val x = tf.shape(op.inputs[0])
     val begin = op.inputs[1]
     val end = op.inputs[2]
@@ -225,7 +259,7 @@ fun register_array_grad() {
     GetNodeAttr(op.node().attrs(), "new_axis_mask", new_axis_mask)
     GetNodeAttr(op.node().attrs(), "shrink_axis_mask", shrink_axis_mask)
     grad_outputs.add(
-        tf.stridedSliceGrad(x, begin, end, strides, grad_inputs[0],
+        tf.stridedSliceGrad(x, begin, end, strides, grad,
                             begin_mask = begin_mask.get(),
                             end_mask = end_mask.get(),
                             ellipsis_mask = ellipsis_mask.get(),
@@ -237,6 +271,7 @@ fun register_array_grad() {
     grad_outputs.add(noGradient)
   }
   register_gradient_op("Slice") { op, grad_inputs, grad_outputs ->
+    val grad = grad_inputs[0]
     // Propagate the incoming gradient along all the selected values,
     // and zero everywhere else. Use the Pad operator for this.
     //
@@ -278,7 +313,7 @@ fun register_array_grad() {
     //             [1 0]]
     val paddings =
         tf.concat(listOf(before_padding, after_padding), tf.const(1))
-    grad_outputs.add(tf.pad(grad_inputs[0], paddings));
+    grad_outputs.add(tf.pad(grad, paddings));
     // Nothing propagated for "begin" and "size" inputs
     grad_outputs.add(noGradient)
     grad_outputs.add(noGradient)
