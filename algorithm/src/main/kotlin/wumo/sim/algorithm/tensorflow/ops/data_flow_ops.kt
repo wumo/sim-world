@@ -5,7 +5,7 @@ import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.naryOp
 
 fun TF.dynamicStitch(indices: Array<Tensor>, data: Array<Tensor>, name: String = "DynamicStitch") =
-    naryOp("DynamicStitch", name) {
+    naryOp("DynamicStitch", name=name) {
       addInputList(indices)
       addInputList(data)
     }

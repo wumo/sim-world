@@ -14,17 +14,17 @@ fun TF.avgPool3DGrad(orig_input_shape: Tensor,
                      data_format: String = "NHWC",
                      name: String = "AvgPool3DGrad") =
     naryOp("AvgPool3DGrad", orig_input_shape, grad, name = name) {
-      setAttr("ksize", ksize)
-      setAttr("strides", strides)
-      setAttr("padding", padding)
-      setAttr("data_format", data_format)
+      attr("ksize", ksize)
+      attr("strides", strides)
+      attr("padding", padding)
+      attr("data_format", data_format)
     }
 
 fun TF.biasAdd(value: Tensor, bias: Tensor, name: String = "BiasAdd"): Tensor {
   val op = g.nodeBuilder("BiasAdd", ctxNs.getUniqueFullName(name))
       .addInput(value)
       .addInput(bias)
-      .setAttr("data_format", "NHWC")
+      .attr("data_format", "NHWC")
       .build()
   return Tensor(op, 0)
 }
@@ -38,11 +38,11 @@ fun TF.conv2D(input: Tensor,
               dilations: IntArray = i(1, 1, 1, 1),
               name: String = "Conv2D") =
     naryOp("Conv2D", input, filter, name = name) {
-      setAttr("strides", strides)
-      setAttr("use_cudnn_on_gpu", use_cudnn_on_gpu)
-      setAttr("padding", padding)
-      setAttr("data_format", data_format)
-      setAttr("dilations", dilations)
+      attr("strides", strides)
+      attr("use_cudnn_on_gpu", use_cudnn_on_gpu)
+      attr("padding", padding)
+      attr("data_format", data_format)
+      attr("dilations", dilations)
     }
 
 fun TF.conv2DBackpropFilter(input: Tensor,
@@ -55,11 +55,11 @@ fun TF.conv2DBackpropFilter(input: Tensor,
                             dilations: IntArray = i(1, 1, 1, 1),
                             name: String = "Conv2DBackpropFilter") =
     naryOp("Conv2DBackpropFilter", input, filter_sizes, out_backprop, name = name) {
-      setAttr("strides", strides)
-      setAttr("use_cudnn_on_gpu", use_cudnn_on_gpu)
-      setAttr("padding", padding)
-      setAttr("data_format", data_format)
-      setAttr("dilations", dilations)
+      attr("strides", strides)
+      attr("use_cudnn_on_gpu", use_cudnn_on_gpu)
+      attr("padding", padding)
+      attr("data_format", data_format)
+      attr("dilations", dilations)
     }
 
 fun TF.conv2DBackpropInput(input_sizes: Tensor,
@@ -72,11 +72,11 @@ fun TF.conv2DBackpropInput(input_sizes: Tensor,
                            dilations: IntArray = i(1, 1, 1, 1),
                            name: String = "Conv2DBackpropInput") =
     naryOp("Conv2DBackpropInput", input_sizes, filter, out_backprop, name = name) {
-      setAttr("strides", strides)
-      setAttr("use_cudnn_on_gpu", use_cudnn_on_gpu)
-      setAttr("padding", padding)
-      setAttr("data_format", data_format)
-      setAttr("dilations", dilations)
+      attr("strides", strides)
+      attr("use_cudnn_on_gpu", use_cudnn_on_gpu)
+      attr("padding", padding)
+      attr("data_format", data_format)
+      attr("dilations", dilations)
     }
 
 fun TF.maxPool3DGrad(orig_input: Tensor,
@@ -88,10 +88,10 @@ fun TF.maxPool3DGrad(orig_input: Tensor,
                      data_format: String = "NHWC",
                      name: String = "MaxPool3DGrad") =
     naryOp("MaxPool3DGrad", orig_input, orig_output, grad, name = name) {
-      setAttr("ksize", ksize)
-      setAttr("strides", strides)
-      setAttr("padding", padding)
-      setAttr("data_format", data_format)
+      attr("ksize", ksize)
+      attr("strides", strides)
+      attr("padding", padding)
+      attr("data_format", data_format)
     }
 
 fun TF.maxPool3DGradGrad(orig_input: Tensor,
@@ -103,10 +103,10 @@ fun TF.maxPool3DGradGrad(orig_input: Tensor,
                          data_format: String = "NHWC",
                          name: String = "MaxPool3DGradGrad") =
     naryOp("MaxPool3DGradGrad", orig_input, orig_output, grad, name = name) {
-      setAttr("ksize", ksize)
-      setAttr("strides", strides)
-      setAttr("padding", padding)
-      setAttr("data_format", data_format)
+      attr("ksize", ksize)
+      attr("strides", strides)
+      attr("padding", padding)
+      attr("data_format", data_format)
     }
 
 fun TF.maxPoolGradGrad(orig_input: Tensor,
@@ -118,10 +118,10 @@ fun TF.maxPoolGradGrad(orig_input: Tensor,
                        data_format: String = "NHWC",
                        name: String = "MaxPoolGradGrad") =
     naryOp("MaxPoolGradGrad", orig_input, orig_output, grad, name = name) {
-      setAttr("ksize", ksize)
-      setAttr("strides", strides)
-      setAttr("padding", padding)
-      setAttr("data_format", data_format)
+      attr("ksize", ksize)
+      attr("strides", strides)
+      attr("padding", padding)
+      attr("data_format", data_format)
     }
 
 fun TF.maxPoolGradGradV2(orig_input: Tensor,
@@ -133,8 +133,8 @@ fun TF.maxPoolGradGradV2(orig_input: Tensor,
                          data_format: String = "NHWC",
                          name: String = "MaxPoolGradGradV2") =
     naryOp("MaxPoolGradGradV2", orig_input, orig_output, grad, ksize, strides, name = name) {
-      setAttr("padding", padding)
-      setAttr("data_format", data_format)
+      attr("padding", padding)
+      attr("data_format", data_format)
     }
 
 fun TF.maxPoolGradV2(orig_input: Tensor,
@@ -146,8 +146,8 @@ fun TF.maxPoolGradV2(orig_input: Tensor,
                      data_format: String = "NHWC",
                      name: String = "MaxPoolGradV2") =
     naryOp("MaxPoolGradV2", orig_input, orig_output, grad, ksize, strides, name = name) {
-      setAttr("padding", padding)
-      setAttr("data_format", data_format)
+      attr("padding", padding)
+      attr("data_format", data_format)
     }
 
 fun TF.relu(features: Tensor, name: String = "Relu") =

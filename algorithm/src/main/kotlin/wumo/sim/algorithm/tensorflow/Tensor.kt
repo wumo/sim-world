@@ -47,7 +47,7 @@ open class Tensor(val op: Operation?, val value_index: Int) : TensorLike {
   fun asTF_Output() = TF_Output().oper(op!!.c_op).index(value_index)
   val name: String by lazy { op!!.name }
   
-  fun node() = op!!.c_op.node()
+  inline fun node() = op!!.c_op.node()
   
   override fun equals(other: Any?): Boolean {
     if (this === other) return true

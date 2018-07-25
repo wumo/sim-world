@@ -17,7 +17,7 @@ fun TF.mirrorPadGrad(input: Tensor, paddings: Tensor, mode: String, name: String
   val v = g.nodeBuilder("MirrorPadGrad", ctxNs.getUniqueFullName(name))
       .addInput(input)
       .addInput(paddings)
-      .setAttr("mode", mode)
+      .attr("mode", mode)
       .build()
   return Tensor(v, 0)
 }

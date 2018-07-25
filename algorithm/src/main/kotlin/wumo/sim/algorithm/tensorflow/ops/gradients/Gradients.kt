@@ -39,6 +39,7 @@ object GradOpRegistry {
   init {
     register_math_grad()
     register_nn_grad()
+    register_array_grad()
   }
   
   operator fun set(name: String, fn: GradFunc) {

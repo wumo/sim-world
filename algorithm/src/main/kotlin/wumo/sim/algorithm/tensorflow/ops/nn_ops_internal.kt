@@ -12,10 +12,10 @@ fun TF.avgPoolGrad(orig_input_shape: Tensor,
                    data_format: String = "NHWC",
                    name: String = "AvgPoolGrad") =
     naryOp("AvgPoolGrad", orig_input_shape, grad, name = name) {
-      setAttr("ksize", ksize)
-      setAttr("strides", strides)
-      setAttr("padding", padding)
-      setAttr("data_format", data_format)
+      attr("ksize", ksize)
+      attr("strides", strides)
+      attr("padding", padding)
+      attr("data_format", data_format)
     }
 
 fun TF.eluGrad(gradients: Tensor,
@@ -30,7 +30,7 @@ fun TF.fractionalAvgPoolGrad(orig_input_tensor_shape: Tensor,
                              overlapping: Boolean = false,
                              name: String = "FractionalAvgPoolGrad") =
     naryOp("FractionalAvgPoolGrad", orig_input_tensor_shape, out_backprop, row_polling_sequence, col_pooling_sequence, name = name) {
-      setAttr("overlapping", overlapping)
+      attr("overlapping", overlapping)
     }
 
 fun TF.fractionalMaxPoolGrad(orig_input: Tensor,
@@ -41,7 +41,7 @@ fun TF.fractionalMaxPoolGrad(orig_input: Tensor,
                              overlapping: Boolean = false,
                              name: String = "FractionalMaxPoolGrad") =
     naryOp("FractionalMaxPoolGrad", orig_input, orig_output, out_backprop, row_pooling_sequence, col_pooling_sequence, name = name) {
-      setAttr("overlapping", overlapping)
+      attr("overlapping", overlapping)
     }
 
 fun TF.LRNGrad(intput_grads: Tensor,
@@ -53,10 +53,10 @@ fun TF.LRNGrad(intput_grads: Tensor,
                beta: Float = 0.5f,
                name: String = "LRNGrad") =
     naryOp("LRNGrad", intput_grads, input_image, output_image, name = name) {
-      setAttr("depth_radius", depth_radius)
-      setAttr("bias", bias)
-      setAttr("alpha", alpha)
-      setAttr("beta", beta)
+      attr("depth_radius", depth_radius)
+      attr("bias", bias)
+      attr("alpha", alpha)
+      attr("beta", beta)
     }
 
 fun TF.maxPoolGrad(orig_input: Tensor,
@@ -67,10 +67,10 @@ fun TF.maxPoolGrad(orig_input: Tensor,
                    data_format: String = "NHWC",
                    name: String = "MaxPoolGrad") =
     naryOp("MaxPoolGrad", orig_input, orig_output, grad, name = name) {
-      setAttr("ksize", ksize)
-      setAttr("strides", strides)
-      setAttr("padding", padding)
-      setAttr("data_format", data_format)
+      attr("ksize", ksize)
+      attr("strides", strides)
+      attr("padding", padding)
+      attr("data_format", data_format)
     }
 
 fun TF.maxPoolGradWithArgmax(input: Tensor,
@@ -80,9 +80,9 @@ fun TF.maxPoolGradWithArgmax(input: Tensor,
                              padding: String,
                              name: String = "MaxPoolGradWithArgmax") =
     naryOp("MaxPoolGradWithArgmax", input, grad, argmax, name = name) {
-      setAttr("ksize", ksize)
-      setAttr("strides", strides)
-      setAttr("padding", padding)
+      attr("ksize", ksize)
+      attr("strides", strides)
+      attr("padding", padding)
     }
 
 fun TF.relu6Grad(gradients: Tensor,

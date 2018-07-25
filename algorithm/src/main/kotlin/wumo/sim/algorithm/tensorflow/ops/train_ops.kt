@@ -10,5 +10,5 @@ fun TF.applyGradientDescent(v: Tensor, alpha: Tensor, delta: Tensor,
         .addInput(v)
         .addInput(alpha)
         .addInput(delta)
-        .setAttr("use_locking", false)
+        .attr("use_locking", false)
         .build()

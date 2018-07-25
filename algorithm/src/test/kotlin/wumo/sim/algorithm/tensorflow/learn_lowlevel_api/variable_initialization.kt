@@ -11,8 +11,8 @@ class variable_initialization : BaseTest() {
   fun `variable depend on variable`() {
     val initial_value = tf.const(2f, "initial_value")
     val v = tf.g.nodeBuilder("VariableV2", "v")
-        .setAttrType("dtype", initial_value.dtype.base_dtype)
-        .setAttr("shape", initial_value.shape())
+        .attrType("dtype", initial_value.dtype.base_dtype)
+        .attr("shape", initial_value.shape())
         .build()
     
     val vt = Tensor(v, 0)
@@ -23,8 +23,8 @@ class variable_initialization : BaseTest() {
     val v_read = tf.identity(vt, name = "v/read")
     
     val w = tf.g.nodeBuilder("VariableV2", "w")
-        .setAttrType("dtype", vt.dtype.base_dtype)
-        .setAttr("shape", vt.shape())
+        .attrType("dtype", vt.dtype.base_dtype)
+        .attr("shape", vt.shape())
         .build()
     
     val wt = Tensor(w, 0)

@@ -12,7 +12,7 @@ fun TF.random_normal(shape: Tensor, dtype: Int = DT_FLOAT,
                      name: String = "RandomStandardNormal"): Tensor {
   name_scope(name) {
     val p = g.nodeBuilder("RandomStandardNormal",ctxNs.fullName)
-        .setAttrType("dtype", dtype)
+        .attrType("dtype", dtype)
         .addInput(shape)
         .build()
     return Tensor(p, 0)
@@ -78,7 +78,7 @@ fun TF.random_uniform(shape: Tensor,
                       name: String = "RandomUniform"): Tensor {
   name_scope(name) {
     val p = g.nodeBuilder("RandomUniform",ctxNs.fullName)
-        .setAttrType("dtype", dtype)
+        .attrType("dtype", dtype)
         .addInput(shape)
         .build()
     return Tensor(p, 0)
@@ -90,7 +90,7 @@ fun TF.random_uniform(shape: Dimension,
                       name: String = "RandomUniform"): Tensor {
   name_scope(name) {
     val p = g.nodeBuilder("RandomUniform",ctxNs.fullName)
-        .setAttrType("dtype", dtype)
+        .attrType("dtype", dtype)
         .addInput(const(shape.asIntArray(), "shape"))
         .build()
     return Tensor(p, 0)
@@ -111,7 +111,7 @@ fun TF.random_uniform(shape: Dimension,
 fun TF.truncatedNormal(shape: Tensor, dtype: Int = DT_FLOAT, name: String = "truncated_normal"): Tensor {
   val op = g.nodeBuilder("TruncatedNormal", ctxNs.getUniqueFullName(name))
       .addInput(shape)
-      .setAttrType("dtype", dtype)
+      .attrType("dtype", dtype)
       .build()
   return Tensor(op, 0)
 }

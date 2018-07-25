@@ -6,35 +6,23 @@ import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.util.Dimension
 import wumo.sim.util.toByte
 
-inline fun TF.naryOp(op: String, name: String, build: OperationBuilder.() -> Unit): Tensor {
-  val builder = g.nodeBuilder(op, ctxNs.getUniqueFullName(name))
-  build(builder)
-  val op = builder.build()
-  return Tensor(op, 0)
-}
-
-inline fun TF.naryOp(op: String, name: String, outputs: Int, build: OperationBuilder.() -> Unit): Array<Tensor> {
-  val builder = g.nodeBuilder(op, ctxNs.getUniqueFullName(name))
-  build(builder)
-  val op = builder.build()
-  return Array(outputs) { Tensor(op, it) }
-}
-
 inline fun TF.naryOp(op: String, vararg inputs: Tensor, name: String, setAttr: OperationBuilder.() -> Unit = {}): Tensor {
   val builder = g.nodeBuilder(op, ctxNs.getUniqueFullName(name))
   for (input in inputs)
     builder.addInput(input)
   setAttr(builder)
   val op = builder.build()
+  assert(op.c_op.node().num_outputs() == 1) { "${op.c_op.node().DebugString()} outputs > 1, use naryOps instead." }
   return Tensor(op, 0)
 }
 
-inline fun TF.naryOp(op: String, vararg inputs: Tensor, name: String, outputs: Int, setAttr: OperationBuilder.() -> Unit = {}): Array<Tensor> {
+inline fun TF.naryOps(op: String, vararg inputs: Tensor, name: String, setAttr: OperationBuilder.() -> Unit = {}): Array<Tensor> {
   val builder = g.nodeBuilder(op, ctxNs.getUniqueFullName(name))
   for (input in inputs)
     builder.addInput(input)
   setAttr(builder)
   val op = builder.build()
+  val outputs = op.c_op.node().num_outputs()
   return Array(outputs) { Tensor(op, it) }
 }
 
@@ -91,6 +79,14 @@ class OperationBuilder(val graph: Graph, val opType: String, val name: String) {
   
   fun addInput(input: Tensor) = addInput(input.asTF_Output())
   
+  fun addInputList(input: Collection<Tensor>): OperationBuilder {
+    val inputs = TF_Output(input.size.toLong())
+    for ((i, input) in input.withIndex())
+      inputs.position(i.toLong()).oper(input.op!!.c_op).index(input.value_index)
+    TF_AddInputList(c_opDesc, inputs.position(0L), input.size)
+    return this
+  }
+  
   fun addInputList(input: Array<Tensor>): OperationBuilder {
     val inputs = TF_Output(input.size.toLong())
     for ((i, input) in input.withIndex())
@@ -104,75 +100,75 @@ class OperationBuilder(val graph: Graph, val opType: String, val name: String) {
     return this
   }
   
-  fun setAttr(name: String, value: String): OperationBuilder {
-    return setAttr(name, value.toByteArray())
+  fun attr(name: String, value: String): OperationBuilder {
+    return attr(name, value.toByteArray())
   }
   
-  fun setAttr(name: String, value: ByteArray): OperationBuilder {
+  fun attr(name: String, value: ByteArray): OperationBuilder {
     TF_SetAttrString(c_opDesc, name, BytePointer(*value), value.size.toLong())
     return this
   }
   
-  fun setAttr(name: String, value: Boolean): OperationBuilder {
+  fun attr(name: String, value: Boolean): OperationBuilder {
     TF_SetAttrBool(c_opDesc, name, value.toByte())
     return this
   }
   
-  fun setAttr(name: String, value: BooleanArray): OperationBuilder {
+  fun attr(name: String, value: BooleanArray): OperationBuilder {
     TF_SetAttrBoolList(c_opDesc, name,
                        ByteArray(value.size) { value[it].toByte() }, value.size)
     return this
   }
   
-  fun setAttr(name: String, value: Int): OperationBuilder {
+  fun attr(name: String, value: Int): OperationBuilder {
     TF_SetAttrInt(c_opDesc, name, value.toLong())
     return this
   }
   
-  fun setAttr(name: String, value: IntArray): OperationBuilder {
+  fun attr(name: String, value: IntArray): OperationBuilder {
     TF_SetAttrIntList(c_opDesc, name,
                       LongArray(value.size) { value[it].toLong() }, value.size)
     return this
   }
   
-  fun setAttr(name: String, value: Long): OperationBuilder {
+  fun attr(name: String, value: Long): OperationBuilder {
     TF_SetAttrInt(c_opDesc, name, value)
     return this
   }
   
-  fun setAttr(name: String, value: LongArray): OperationBuilder {
+  fun attr(name: String, value: LongArray): OperationBuilder {
     TF_SetAttrIntList(c_opDesc, name, value, value.size)
     return this
   }
   
-  fun setAttr(name: String, value: Float): OperationBuilder {
+  fun attr(name: String, value: Float): OperationBuilder {
     TF_SetAttrFloat(c_opDesc, name, value)
     return this
   }
   
-  fun setAttr(name: String, value: FloatArray): OperationBuilder {
+  fun attr(name: String, value: FloatArray): OperationBuilder {
     TF_SetAttrFloatList(c_opDesc, name, value, value.size)
     return this
   }
   
-  fun setAttrType(name: String, dtype: Int): OperationBuilder {
+  fun attrType(name: String, dtype: Int): OperationBuilder {
     TF_SetAttrType(c_opDesc, name, dtype)
     return this
   }
   
-  fun <T> setAttr(name: String, value: TensorBuffer<T>): OperationBuilder {
+  fun <T> attr(name: String, value: TensorBuffer<T>): OperationBuilder {
     val status = newStatus()
     TF_SetAttrTensor(c_opDesc, name, value.c_tensor, status)
     throwExceptionIfNotOk(status)
     return this
   }
   
-  fun setAttr(name: String, value: Dimension): OperationBuilder {
+  fun attr(name: String, value: Dimension): OperationBuilder {
     TF_SetAttrShape(c_opDesc, name, value.asLongArray(), value.rank().toInt())
     return this
   }
   
-  fun setAttr(name: String, attrValue: AttrValue): OperationBuilder {
+  fun attr(name: String, attrValue: AttrValue): OperationBuilder {
     val status = newStatus()
     val buf = attrValue.SerializeAsString()
     TF_SetAttrValueProto(c_opDesc, name, buf, buf.limit(), status)
@@ -180,7 +176,7 @@ class OperationBuilder(val graph: Graph, val opType: String, val name: String) {
     return this
   }
   
-  fun setAttr(name: String, tensor_shape_proto: TensorShapeProto): OperationBuilder {
+  fun attr(name: String, tensor_shape_proto: TensorShapeProto): OperationBuilder {
     val status = newStatus()
     val buf = tensor_shape_proto.SerializeAsString()
     TF_SetAttrTensorShapeProto(c_opDesc, name, buf, buf.limit(), status)

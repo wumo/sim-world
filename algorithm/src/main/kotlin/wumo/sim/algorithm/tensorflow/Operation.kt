@@ -35,6 +35,7 @@ class Operation(val graph: Graph, val c_op: TF_Operation) {
   val name: String by lazy { TF_OperationName(c_op).string }
   val device: String by lazy { TF_OperationDevice(c_op).string }
   val opType: String by lazy { TF_OperationOpType(c_op).string }
+  inline fun node() = c_op.node()
   
   val inputs: List<Tensor> by lazy {
     val node = c_op.node()

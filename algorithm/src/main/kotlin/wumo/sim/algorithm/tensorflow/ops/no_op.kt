@@ -8,7 +8,7 @@ import wumo.sim.algorithm.tensorflow.naryOp
 
 fun TF.biasAddGrad(out_backprop: Tensor, data_format: String = "NHWC", name: String = "BiasAddGrad") =
     naryOp("BiasAddGrad", out_backprop, name = name) {
-      setAttr("data_format", data_format)
+      attr("data_format", data_format)
     }
 
 fun TF.noOpDep(dep: Iterable<Operation>, name: String = "NoOp"): Operation {
