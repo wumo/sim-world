@@ -1,6 +1,5 @@
 package wumo.sim.util.ndarray
 
-import org.junit.Assert.*
 import org.junit.Test
 import wumo.sim.util.l
 

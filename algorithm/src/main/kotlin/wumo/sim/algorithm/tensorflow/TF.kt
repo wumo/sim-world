@@ -5,7 +5,6 @@ import org.bytedeco.javacpp.tensorflow
 import org.bytedeco.javacpp.tensorflow.*
 import org.tensorflow.framework.GraphDef
 import wumo.sim.algorithm.tensorflow.ops.group
-import wumo.sim.algorithm.tensorflow.ops.register_math_grad
 import wumo.sim.algorithm.tensorflow.scope.NameScope
 import wumo.sim.algorithm.tensorflow.scope.VariableScope
 import wumo.sim.util.println

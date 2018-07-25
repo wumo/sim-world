@@ -3,7 +3,6 @@
 package wumo.sim.util
 
 import org.apache.commons.lang3.ClassUtils
-import org.apache.commons.lang3.ClassUtils.wrapperToPrimitive
 
 class SwitchValue<T, P1, R> {
   private val branches = HashMap<T, (P1) -> R>()

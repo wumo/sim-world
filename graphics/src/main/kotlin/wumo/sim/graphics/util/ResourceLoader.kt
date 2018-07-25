@@ -2,7 +2,7 @@ package wumo.sim.graphics.util
 
 import java.io.*
 import java.net.URL
-import java.util.ArrayList
+import java.util.*
 
 /**
  * A location from which resources can be loaded

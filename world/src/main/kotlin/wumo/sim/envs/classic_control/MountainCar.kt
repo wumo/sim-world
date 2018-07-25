@@ -2,11 +2,11 @@ package wumo.sim.envs.classic_control
 
 import com.badlogic.gdx.graphics.Color.BLACK
 import com.badlogic.gdx.graphics.Color.YELLOW
+import wumo.sim.core.Env
 import wumo.sim.graphics.Config
 import wumo.sim.graphics.Geom
 import wumo.sim.graphics.ShapeType.Line_Strip
 import wumo.sim.graphics.Viewer
-import wumo.sim.core.Env
 import wumo.sim.spaces.Box
 import wumo.sim.spaces.Discrete
 import wumo.sim.util.Rand

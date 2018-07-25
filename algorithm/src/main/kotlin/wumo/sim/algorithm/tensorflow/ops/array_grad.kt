@@ -1,11 +1,8 @@
 package wumo.sim.algorithm.tensorflow.ops
 
-import com.badlogic.gdx.Gdx.input
 import org.bytedeco.javacpp.BytePointer
-import org.bytedeco.javacpp.IntPointer
 import org.bytedeco.javacpp.LongPointer
 import org.bytedeco.javacpp.tensorflow.GetNodeAttr
-import org.bytedeco.javacpp.tensorflow.NoGradient
 import wumo.sim.algorithm.tensorflow.Operation
 import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.ops.gradients.noGradient

@@ -2,7 +2,6 @@ package wumo.sim.graphics
 
 import com.badlogic.gdx.graphics.Color
 import org.junit.Test
-import javax.swing.TransferHandler
 
 class Testcase {
   @Test
