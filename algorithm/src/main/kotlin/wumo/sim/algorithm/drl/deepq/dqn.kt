@@ -8,6 +8,7 @@ import wumo.sim.core.Env
 import wumo.sim.util.a
 import wumo.sim.util.ndarray.*
 import wumo.sim.util.ndarray.NDArray.Companion.toNDArray
+import wumo.sim.util.tuple2
 import kotlin.math.max
 
 
@@ -58,7 +59,7 @@ fun <O : Any, A : Any> learn(env: Env<O, A>,
                              prioritized_replay_beta0: Float = 0.4f,
                              prioritized_replay_beta_iters: Int? = null,
                              prioritized_replay_eps: Float = 1e-6f,
-                             param_noise: Boolean = false) {
+                             param_noise: Boolean = false): ActFunction {
   fun make_obs_ph(name: String) = ObservationInput(env.observation_space, name = name)
   
   val (act, train, update_target, debug) = build_train(
@@ -158,7 +159,8 @@ fun <O : Any, A : Any> learn(env: Env<O, A>,
                 "mean 100 episode reward: $mean_100ep_reward\n" +
                 "${100 * exploration.value(t)} time spent exploring")
       }
-      
+//      if(mean_100ep_reward>200)
+//        env.render()
       if (checkpoint_freq > 0 && t > learning_starts && num_episodes > 100 && t % checkpoint_freq == 0) {
         if (mean_100ep_reward > saved_mean_reward) {
           if (print_freq > 0)
@@ -166,8 +168,11 @@ fun <O : Any, A : Any> learn(env: Env<O, A>,
           saved_mean_reward = mean_100ep_reward
         }
       }
+      
     }
   }
+  
+  return act
 }
 
 private fun MutableList<Float>.mean(start: Int, end: Int): Float {
