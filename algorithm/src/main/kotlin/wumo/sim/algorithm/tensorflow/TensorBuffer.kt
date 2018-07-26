@@ -78,6 +78,7 @@ abstract class TensorBuffer<T> protected constructor(c_tensor: TF_Tensor) : Buf<
       val t = newTensor(DT_STRING, shape.asLongArray(), data)
       return StringTensorBuffer(t, array)
     }
+  
     
     internal fun create(shape: Dimension, array: Pointer, dtype: Int) =
         create(shape.asLongArray(), array, dtype)

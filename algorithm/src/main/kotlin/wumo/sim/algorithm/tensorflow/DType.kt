@@ -26,6 +26,8 @@ fun Int.name(): String {
   return org.tensorflow.framework.DataType.forNumber(this).name.toLowerCase().substring(3)
 }
 
+fun Int.orUse(dtype: Int) = if (this <= 0) dtype else this
+
 /**Returns a reference `DType` based on this `DType`.*/
 val Int.as_ref
   get() = if (is_ref_dytpe) this else this + 100

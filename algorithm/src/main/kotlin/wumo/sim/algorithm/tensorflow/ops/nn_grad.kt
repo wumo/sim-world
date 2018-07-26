@@ -3,8 +3,7 @@ package wumo.sim.algorithm.tensorflow.ops
 import org.bytedeco.javacpp.BoolPointer
 import org.bytedeco.javacpp.BytePointer
 import org.bytedeco.javacpp.IntPointer
-import org.bytedeco.javacpp.tensorflow.DT_INT64
-import org.bytedeco.javacpp.tensorflow.GetNodeAttr
+import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.algorithm.tensorflow.ops.gradients.noGradient
 import wumo.sim.algorithm.tensorflow.ops.gradients.register_gradient_op
 import wumo.sim.algorithm.tensorflow.tf
@@ -66,108 +65,79 @@ fun register_nn_grad() {
   }
   register_gradient_op("BiasAdd") { op, grad_inputs, grad_outputs ->
     val grad = grad_inputs[0]
-    val data_format = BytePointer()
-    GetNodeAttr(op.outputs[0].node().attrs(), "data_format", data_format)
-    val dx_1 = tf.biasAddGrad(grad, data_format = data_format.string)
+    val data_format = op.outputs[0].op!!.attrString("data_format")
+    val dx_1 = tf.biasAddGrad(grad, data_format = data_format)
     grad_outputs.add(tf.identity(grad))
     grad_outputs.add(dx_1)
   }
   register_gradient_op("Conv2D") { op, grad_inputs, grad_outputs ->
     val grad = grad_inputs[0]
-    val data_format = BytePointer()
-    val padding = BytePointer()
-    val strides = IntPointer()
-    val use_cudnn_on_gpu = BoolPointer(1)
-    val attrs = op.outputs[0].node().attrs()
-    GetNodeAttr(attrs, "data_format", data_format)
-    GetNodeAttr(attrs, "padding", padding)
-    GetNodeAttr(attrs, "strides", strides)
-    GetNodeAttr(attrs, BytePointer("use_cudnn_on_gpu"), use_cudnn_on_gpu)
-    val dx_1 = tf.conv2DBackpropInput(tf.shape(op.inputs[0]), op.inputs[1], grad, strides.toArray(), padding.string,
-                                      data_format = data_format.string,
-                                      use_cudnn_on_gpu = use_cudnn_on_gpu.get())
+    val data_format = op.attrString("data_format")
+    val padding = op.attrString("padding")
+    val strides = op.attrLongList("strides")
+    val use_cudnn_on_gpu = op.attrBool("use_cudnn_on_gpu")
+    val dx_1 = tf.conv2DBackpropInput(tf.shape(op.inputs[0]), op.inputs[1], grad, strides, padding,
+                                      data_format = data_format,
+                                      use_cudnn_on_gpu = use_cudnn_on_gpu)
     grad_outputs.add(dx_1)
     val dx_2 = tf.conv2DBackpropFilter(op.inputs[0], tf.shape(op.inputs[1]),
-                                       grad, strides.toArray(), padding.string,
-                                       data_format = data_format.string,
-                                       use_cudnn_on_gpu = use_cudnn_on_gpu.get())
+                                       grad, strides, padding,
+                                       data_format = data_format,
+                                       use_cudnn_on_gpu = use_cudnn_on_gpu)
     grad_outputs.add(dx_2)
   }
   register_gradient_op("MaxPool") { op, grad_inputs, grad_outputs ->
     val grad = grad_inputs[0]
-    val data_format = BytePointer()
-    val padding = BytePointer()
-    val strides = IntPointer()
-    val ksize = IntPointer()
-    val attrs = op.outputs[0].node().attrs()
-    GetNodeAttr(attrs, "data_format", data_format)
-    GetNodeAttr(attrs, "padding", padding)
-    GetNodeAttr(attrs, "strides", strides)
-    GetNodeAttr(attrs, "ksize", ksize)
+    val data_format = op.attrString("data_format")
+    val padding = op.attrString("padding")
+    val strides = op.attrLongList("strides")
+    val ksize = op.attrLongList("ksize")
     val dx = tf.maxPoolGrad(
-        op.inputs[0], op.outputs[0], grad, ksize.toArray(), strides.toArray(), padding.string,
-        data_format = data_format.string)
+        op.inputs[0], op.outputs[0], grad, ksize, strides, padding,
+        data_format = data_format)
     grad_outputs.add(dx)
   }
   register_gradient_op("MaxPoolV2") { op, grad_inputs, grad_outputs ->
     val grad = grad_inputs[0]
-    val data_format = BytePointer()
-    val padding = BytePointer()
-    val attrs = op.outputs[0].node().attrs()
-    GetNodeAttr(attrs, "data_format", data_format)
-    GetNodeAttr(attrs, "padding", padding)
+    val data_format = op.attrString("data_format")
+    val padding = op.attrString("padding")
     val dx = tf.maxPoolGradV2(op.inputs[0], op.outputs[0], grad,
-                              op.inputs[1], op.inputs[2], padding.string, data_format = data_format.string)
+                              op.inputs[1], op.inputs[2], padding, data_format = data_format)
     grad_outputs.add(dx)
     grad_outputs.add(noGradient)
     grad_outputs.add(noGradient)
   }
   register_gradient_op("MaxPool3D") { op, grad_inputs, grad_outputs ->
     val grad = grad_inputs[0]
-    val ksize = IntPointer()
-    val strides = IntPointer()
-    val data_format = BytePointer()
-    val padding = BytePointer()
-    val attrs = op.outputs[0].node().attrs()
-    GetNodeAttr(attrs, "data_format", data_format)
-    GetNodeAttr(attrs, "padding", padding)
-    GetNodeAttr(attrs, "strides", strides)
-    GetNodeAttr(attrs, "ksize", ksize)
+    val data_format = op.attrString("data_format")
+    val padding = op.attrString("padding")
+    val strides = op.attrLongList("strides")
+    val ksize = op.attrLongList("ksize")
     val dx = tf.maxPool3DGrad(op.inputs[0], op.outputs[0], grad,
-                              ksize.toArray(), strides.toArray(),
-                              padding.string, data_format = data_format.string)
+                              ksize, strides,
+                              padding, data_format = data_format)
     grad_outputs.add(dx)
   }
   register_gradient_op("AvgPool") { op, grad_inputs, grad_outputs ->
     val grad = grad_inputs[0]
-    val ksize = IntPointer()
-    val strides = IntPointer()
-    val data_format = BytePointer()
-    val padding = BytePointer()
-    val attrs = op.outputs[0].node().attrs()
-    GetNodeAttr(attrs, "data_format", data_format)
-    GetNodeAttr(attrs, "padding", padding)
-    GetNodeAttr(attrs, "strides", strides)
-    GetNodeAttr(attrs, "ksize", ksize)
+    val data_format = op.attrString("data_format")
+    val padding = op.attrString("padding")
+    val strides = op.attrLongList("strides")
+    val ksize = op.attrLongList("ksize")
     val dx = tf.avgPoolGrad(tf.shape(op.inputs[0]), grad,
-                            ksize.toArray(), strides.toArray(), padding.string,
-                            data_format = data_format.string)
+                            ksize, strides, padding,
+                            data_format = data_format)
     grad_outputs.add(dx)
   }
   register_gradient_op("AvgPool3D") { op, grad_inputs, grad_outputs ->
     val grad = grad_inputs[0]
-    val ksize = IntPointer()
-    val strides = IntPointer()
-    val data_format = BytePointer()
-    val padding = BytePointer()
-    val attrs = op.outputs[0].node().attrs()
-    GetNodeAttr(attrs, "data_format", data_format)
-    GetNodeAttr(attrs, "padding", padding)
-    GetNodeAttr(attrs, "strides", strides)
-    GetNodeAttr(attrs, "ksize", ksize)
+    val data_format = op.attrString("data_format")
+    val padding = op.attrString("padding")
+    val strides = op.attrLongList("strides")
+    val ksize = op.attrLongList("ksize")
     val dx = tf.avgPool3DGrad(tf.shape(op.inputs[0]), grad,
-                              ksize.toArray(), strides.toArray(), padding.string,
-                              data_format = data_format.string)
+                              ksize, strides, padding,
+                              data_format = data_format)
     grad_outputs.add(dx)
   }
   register_gradient_op("LRN") { op, grad_inputs, grad_outputs ->
@@ -187,21 +157,19 @@ fun register_nn_grad() {
   }
   register_gradient_op("FractionalAvgPool") { op, grad_inputs, grad_outputs ->
     val grad = grad_inputs[0]
-    val overlapping = BoolPointer(1)
-    GetNodeAttr(op.outputs[0].node().attrs(), BytePointer("overlapping"), overlapping)
+    val overlapping = op.attrBool("overlapping")
     val dx = tf.fractionalAvgPoolGrad(
         tf.shape(op.inputs[0], out_type = DT_INT64),
         grad, op.outputs[1], op.outputs[2],
-        overlapping = overlapping.get())
+        overlapping = overlapping)
     grad_outputs.add(dx)
   }
   register_gradient_op("FractionalMaxPool") { op, grad_inputs, grad_outputs ->
     val grad = grad_inputs[0]
-    val overlapping = BoolPointer(1)
-    GetNodeAttr(op.outputs[0].node().attrs(), BytePointer("overlapping"), overlapping)
+    val overlapping = op.attrBool("overlapping")
     val dx = tf.fractionalMaxPoolGrad(
         op.inputs[0], op.outputs[0], grad, op.outputs[1], op.outputs[2],
-        overlapping = overlapping.get())
+        overlapping = overlapping)
     grad_outputs.add(dx)
   }
 }

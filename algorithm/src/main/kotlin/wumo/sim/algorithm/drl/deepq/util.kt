@@ -16,13 +16,13 @@ import wumo.sim.util.ndarray.NDArray
 import wumo.sim.util.tuple2
 import wumo.sim.util.x
 
-val emptyArray = Array(0) { NotImplementedError() }
-inline fun <T> emptyArray() = emptyArray as Array<T>
+val emptyArray = Array<Any>(0) {}
+inline fun <reified T> emptyArray() = Array<T>(0) { throw NotImplementedError() }
 
 class Function(val inputs: Array<out Any>,
                val outputs: Array<Tensor>,
                val updates: Array<out Any>,
-               val givens: Array<Pair<Tensor, NDArray<*>>>) {
+               val givens: Array<out Pair<Tensor, NDArray<*>>>) {
   
   operator fun invoke(vararg args: Any): Array<NDArray<*>> {
     assert(args.size <= inputs.size) { "Too many arguments provided" }
@@ -45,7 +45,7 @@ class Function(val inputs: Array<out Any>,
 fun function(inputs: Array<out Any> = emptyArray(),
              outputs: Tensor,
              updates: Array<out Any> = emptyArray(),
-             givens: Array<out Pair<Tensor, Any>> = emptyArray()): Function {
+             givens: Array<Pair<Tensor, Any>> = emptyArray()): Function {
   val _givens = a(givens.size) {
     val p = givens[it]
     p.first to NDArray.toNDArray(p.second)
@@ -57,7 +57,11 @@ fun function(inputs: Array<Any> = emptyArray(),
              outputs: Array<Tensor> = emptyArray(),
              updates: Array<Any> = emptyArray(),
              givens: Array<Pair<Tensor, NDArray<*>>> = emptyArray()): Function {
-  TODO()
+  val _givens = a(givens.size) {
+    val p = givens[it]
+    p.first to NDArray.toNDArray(p.second)
+  }
+  return Function(inputs, outputs, updates, _givens)
 }
 
 fun huber_loss(x: Tensor, delta: Float = 1f): Tensor {

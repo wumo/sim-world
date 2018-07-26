@@ -1,12 +1,61 @@
 package wumo.sim.algorithm.tensorflow.training
 
-import wumo.sim.algorithm.tensorflow.Operation
-import wumo.sim.algorithm.tensorflow.Tensor
-import wumo.sim.algorithm.tensorflow.Variable
+import wumo.sim.algorithm.tensorflow.*
 import wumo.sim.algorithm.tensorflow.ops.*
-import wumo.sim.algorithm.tensorflow.tf
 import wumo.sim.util.tuple2
 
+/**
+ * Construct a new Adam optimizer.
+
+Initialization:
+
+```
+m_0 <- 0 (Initialize initial 1st moment vector)
+v_0 <- 0 (Initialize initial 2nd moment vector)
+t <- 0 (Initialize timestep)
+```
+
+The update rule for `variable` with gradient `g` uses an optimization
+described at the end of section2 of the paper:
+
+```
+t <- t + 1
+lr_t <- learning_rate * sqrt(1 - beta2^t) / (1 - beta1^t)
+
+m_t <- beta1 * m_{t-1} + (1 - beta1) * g
+v_t <- beta2 * v_{t-1} + (1 - beta2) * g * g
+variable <- variable - lr_t * m_t / (sqrt(v_t) + epsilon)
+```
+
+The default value of 1e-8 for epsilon might not be a good default in
+general. For example, when training an Inception network on ImageNet a
+current good choice is 1.0 or 0.1. Note that since AdamOptimizer uses the
+formulation just before Section 2.1 of the Kingma and Ba paper rather than
+the formulation in Algorithm 1, the "epsilon" referred to here is "epsilon
+hat" in the paper.
+
+The sparse implementation of this algorithm (used when the gradient is an
+IndexedSlices object, typically because of `tf.gather` or an embedding
+lookup in the forward pass) does apply momentum to variable slices even if
+they were not used in the forward pass (meaning they have a gradient equal
+to zero). Momentum decay (beta1) is also applied to the entire momentum
+accumulator. This means that the sparse behavior is equivalent to the dense
+behavior (in contrast to some momentum implementations which ignore momentum
+unless a variable slice was actually used).
+ 
+ 
+ * @param learning_rate: A Tensor or a floating point value.  The learning rate.
+ * @param beta1: A float value or a constant float tensor.
+The exponential decay rate for the 1st moment estimates.
+ * @param beta2: A float value or a constant float tensor.
+The exponential decay rate for the 2nd moment estimates.
+ * @param epsilon: A small constant for numerical stability. This epsilon is
+"epsilon hat" in the Kingma and Ba paper (in the formula just before
+Section 2.1), not the epsilon in Algorithm 1 of the paper.
+ * @param use_locking: If True use locks for update operations.
+ * @param name: Optional name for the operations created when applying gradients.
+Defaults to "Adam".
+ */
 class AdamOptimizer(val learningRate: Float = 0.001f,
                     val beta1: Float = 0.9f,
                     val beta2: Float = 0.999f,
@@ -39,17 +88,28 @@ class AdamOptimizer(val learningRate: Float = 0.001f,
   
   override fun prepare() {
     lr_t = tf.const(learningRate, name = "learning_rate")
-    beta1_t = tf.const(learningRate, name = "beta1")
-    beta2_t = tf.const(learningRate, name = "beta2")
-    epsilon_t = tf.const(learningRate, name = "epsilon")
+    beta1_t = tf.const(beta1, name = "beta1")
+    beta2_t = tf.const(beta2, name = "beta2")
+    epsilon_t = tf.const(epsilon, name = "epsilon")
   }
   
-  override fun apply_dense(grad: Tensor, v: Variable) =
-      tf.applyGradientDescent(v, tf.cast(lr_t, v.dtype), grad)
+  override fun apply_dense(grad: Tensor, _v: Variable): Operation {
+    val m = get_slot(_v, "m")
+    val v = get_slot(_v, "v")
+    val (beta1_power, beta2_power) = get_beta_accumulators()
+    return tf.apply_adam(_v, m, v,
+                         tf.cast(beta1_power, _v.dtype.base_dtype),
+                         tf.cast(beta2_power, _v.dtype.base_dtype),
+                         tf.cast(lr_t, _v.dtype.base_dtype),
+                         tf.cast(beta1_t, _v.dtype.base_dtype),
+                         tf.cast(beta2_t, _v.dtype.base_dtype),
+                         tf.cast(epsilon_t, _v.dtype.base_dtype),
+                         grad, use_locking = use_locking).op!!
+  }
   
   override fun finish(update_ops: MutableList<Operation>, name: String): Operation {
     tf.ctxNs.control_dependencies(update_ops) {
-      val (beta1_power, beta2_power) = get_beta_accumulator()
+      val (beta1_power, beta2_power) = get_beta_accumulators()
       tf.ctxNs.colocate_with(beta1_power) {
         val update_beta1 = beta1_power.assign(beta1_power * beta1_t, use_locking = use_locking).op
         val update_beta2 = beta2_power.assign(beta2_power * beta2_t, use_locking = use_locking).op
@@ -60,7 +120,7 @@ class AdamOptimizer(val learningRate: Float = 0.001f,
     }
   }
   
-  private fun get_beta_accumulator() =
+  private fun get_beta_accumulators() =
       tuple2(get_non_slot_variable("beta1_power"),
              get_non_slot_variable("beta2_power"))
   

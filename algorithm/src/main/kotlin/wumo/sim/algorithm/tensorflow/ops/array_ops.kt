@@ -4,6 +4,7 @@ import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.algorithm.tensorflow.*
 import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.util.Dimension
+import wumo.sim.util.ndarray.NDArray.Companion.zeros
 
 fun TF.batchToSpace(input: Tensor, crops: Tensor, block_size: Long, name: String = "BatchToSpace") =
     naryOp("BatchToSpace", input, crops, name = name) {
@@ -131,10 +132,19 @@ fun TF.listDiff(x: Tensor, y: Tensor, out_idx: Int = DT_INT32, name: String = "L
       attrType("out_idx", out_idx)
     }
 
-fun TF.zerosLike(x: Tensor, name: String = "ZerosLike") =
+fun TF.zerosLike(x: Tensor, dtype: Int = DT_INVALID, optimize: Boolean = true, name: String = "ZerosLike") =
+    when {
+      optimize && x.shape.is_fully_defined && x.dtype != DT_VARIANT ->
+        zeros(x.shape, dtype = dtype.orUse(x.dtype), name = name)
+      dtype != DT_INVALID && dtype != x.dtype && dtype != DT_VARIANT ->
+        zeros(shape(x, optimize = optimize), dtype = dtype, name = name)
+      else -> _zerosLike(x, name)
+    }
+
+fun TF._zerosLike(x: Tensor, name: String = "ZerosLike") =
     unaryOp("ZerosLike", x, name)
 
-fun TF.onesLike(x: Tensor, name: String = "OnesLike") =
+fun TF._onesLike(x: Tensor, name: String = "OnesLike") =
     unaryOp("OnesLike", x, name)
 
 fun TF.zeros(shape: Tensor, dtype: Int = DT_FLOAT, name: String = "Ones"): Tensor {
@@ -209,7 +219,7 @@ fun TF.size(input: Tensor, out_type: Int = DT_INT32, name: String = "Size") =
  */
 fun TF.shape(input: Tensor, out_type: Int = DT_INT32, name: String = "Shape", optimize: Boolean = true): Tensor {
   //TODO SparseTensor
-  val input_shape = input.shape()
+  val input_shape = input.shape
   if (optimize && input_shape.is_fully_defined)
     return const(input_shape.asIntArray(), name)
   val op = g.nodeBuilder("Shape", ctxNs.getUniqueFullName(name))
@@ -335,7 +345,7 @@ fun TF.gather(params: Tensor, indices: Tensor, axis: Int = 0, name: String = "Ga
 
 fun TF.rank(input: Tensor, name: String = "Rank", optimize: Boolean = true): Tensor {
   //TODO SparseTensor
-  val input_shape = input.shape()
+  val input_shape = input.shape
   if (optimize && input_shape.is_fully_defined)
     return const(input_shape.rank(), name)
   return unaryOp("Rank", input, name)

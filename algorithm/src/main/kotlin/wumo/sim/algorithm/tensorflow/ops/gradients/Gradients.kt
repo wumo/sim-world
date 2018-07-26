@@ -12,7 +12,7 @@ import kotlin.collections.HashSet
 fun TF.addSymbolicGradients(outputs: List<Tensor>,
                             inputs: List<Tensor>): MutableList<Tensor> {
   val grad_inputs = MutableList(outputs.size) {
-    onesLike(outputs[it])
+    _onesLike(outputs[it])
   }
   return addSymbolicGradients(outputs, inputs, grad_inputs)
 }
@@ -343,7 +343,7 @@ class SymbolicGradientBuilder(val tf: TF,
         // zero-filled Constant node of appropriate shape.
         
         for (dy_index in no_grad_dy_indices)
-          dy[dy_index] = tf.zerosLike(toTensor(n, dy_index))
+          dy[dy_index] = tf._zerosLike(toTensor(n, dy_index))
       }
       
       // TODO(andydavis) Add option to encapsulate grad function in
@@ -447,7 +447,7 @@ internal fun EdgeSet.iterate() = object : Iterator<Edge> {
   }
 }
 
-inline fun <E> MutableCollection<E>.AddAll(vararg elements: E) {
+inline fun <E> MutableCollection<E>.append(vararg elements: E) {
   for (element in elements)
     add(element)
 }

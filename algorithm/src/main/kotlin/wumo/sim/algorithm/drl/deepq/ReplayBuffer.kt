@@ -18,14 +18,10 @@ open class ReplayBuffer<O, A>(val buffer_size: Int) {
     next_idx = (next_idx + 1) % buffer_size
   }
   
-  fun sample(batch_size: Int, beta: Float): tuple7<Any, Any, Any, Any, Any, Any, Any> {
-    TODO("not implemented")
-  }
-  
   /**
    * Sample a batch of experiences.
    */
-  fun sample(batch_size: Int): tuple5<List<O>, List<A>, List<Double>, List<O>, List<Boolean>> {
+  fun sample(batch_size: Int): tuple5<NDArray<*>, NDArray<*>, NDArray<*>, NDArray<*>, NDArray<*>> {
     val obses_t = ArrayList<O>(batch_size)
     val actions = ArrayList<A>(batch_size)
     val rewards = ArrayList<Double>(batch_size)
@@ -40,10 +36,11 @@ open class ReplayBuffer<O, A>(val buffer_size: Int) {
       obses_tp1 += obs_tp1
       dones += done
     }
-    return tuple5(obses_t, actions, rewards, obses_tp1, dones)
+    return tuple5(NDArray.toNDArray(obses_t),
+                  NDArray.toNDArray(actions),
+                  NDArray.toNDArray(rewards),
+                  NDArray.toNDArray(obses_tp1),
+                  NDArray.toNDArray(dones))
   }
   
-  fun update_priorities(batch_idxes: Any, new_priorities: NDArray<out Any?>) {
-    TODO("not implemented")
-  }
 }

@@ -47,7 +47,7 @@ class Dense(val units: Int,
   }
   
   override fun call(input: Tensor): Tensor {
-    val shape = input.shape()
+    val shape = input.shape
     var output = if (shape.rank() > 2) {
       tf.tensordot(input, kernel, tf.const(2 x 1, i(shape.rank() - 1, 0)))
     } else

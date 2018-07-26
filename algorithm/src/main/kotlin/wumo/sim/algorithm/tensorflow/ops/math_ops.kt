@@ -112,16 +112,14 @@ fun TF.Bucketize(input: Tensor, boundaries: FloatArray, name: String = "Bucketiz
       attr("boundaries", boundaries)
     }
 
-fun TF.cast(x: Tensor, dstT: Int, name: String = "Cast"): Tensor {
-  return if (x.dtype == dstT) x
-  else {
-    val op = g.nodeBuilder("Cast", ctxNs.getUniqueFullName(name))
-        .addInput(x)
-        .attrType("DstT", dstT)
-        .build()
-    Tensor(op, 0)
-  }
-}
+fun TF.cast(x: Tensor, dstT: Int, name: String = "Cast") =
+    if (x.dtype == dstT) x
+    else _cast(x, dstT, name)
+
+fun TF._cast(x: Tensor, dstT: Int, name: String = "Cast") =
+    naryOp("Cast", x, name = name) {
+      attrType("DstT", dstT)
+    }
 
 fun TF.ceil(x: Tensor, name: String = "Ceil") = unaryOp("Ceil", x, name)
 
@@ -141,7 +139,13 @@ fun TF.ComplexAbs(x: Tensor, Tout: Int = DT_FLOAT, name: String = "ComplexAbs") 
       attr("Tout", Tout)
     }
 
-fun TF.conj(x: Tensor, name: String = "Conj") = unaryOp("Conj", x, name)
+fun TF.conj(x: Tensor, name: String = "Conj") =
+    if (x.dtype == DT_COMPLEX64 || x.dtype == DT_COMPLEX128)
+      _conj(x, name)
+    else
+      x
+
+fun TF._conj(x: Tensor, name: String = "Conj") = unaryOp("Conj", x, name)
 
 fun TF.cos(x: Tensor, name: String = "Cos") = unaryOp("Cos", x, name)
 fun TF.cosh(x: Tensor, name: String = "Cosh") = unaryOp("Cosh", x, name)
@@ -252,7 +256,7 @@ fun TF.maximum(x: Tensor, y: Tensor, name: String = "Maximum") =
 fun TF.reductionDims(x: Tensor, axis: Tensor?): Tensor {
   if (axis != null) return axis
   //Fast path: avoid creating Rank and Range ops if ndims is known.
-  return const(arange(x.shape().rank()))
+  return const(arange(x.shape.rank()))
   //TODO SparseTensor
   // Otherwise, we rely on Range and Rank to do the right thing at run-time.
   return range(const(0), rank(x))
@@ -495,7 +499,10 @@ operator fun Tensor.minus(b: Tensor) = tf.sub(this, b)
 fun TF.sub(a: Tensor, b: Tensor, name: String = "Sub") =
     binaryOp("Sub", a, b, name)
 
-fun TF.sum(input: Tensor, axis: Tensor, keep_dims: Boolean = false, name: String = "Sum") =
+fun TF.sum(input: Tensor, axis: Tensor? = null, keep_dims: Boolean = false, name: String = "Sum") =
+    _sum(input, reductionDims(input, axis), keep_dims, name)
+
+fun TF._sum(input: Tensor, axis: Tensor, keep_dims: Boolean = false, name: String = "Sum") =
     naryOp("Sum", input, axis, name = name) {
       attr("keep_dims", keep_dims)
     }

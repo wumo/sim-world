@@ -1,6 +1,7 @@
 package wumo.sim.algorithm.drl.deepq
 
 import org.bytedeco.javacpp.tensorflow.*
+import org.lwjgl.system.linux.X11.True
 import wumo.sim.algorithm.tensorflow.Operation
 import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.Variable
@@ -9,8 +10,10 @@ import wumo.sim.algorithm.tensorflow.tf
 import wumo.sim.algorithm.tensorflow.training.Optimizer
 import wumo.sim.util.a
 import wumo.sim.util.dim
+import wumo.sim.util.ndarray.NDArray
 import wumo.sim.util.scalarDimension
 import wumo.sim.util.tuple4
+import kotlin.reflect.KFunction3
 
 /**
  * Creates the train function
@@ -45,7 +48,7 @@ fun build_train(make_obs_ph: (String) -> TfInput,
                 name: String = "deepq",
                 param_noise: Boolean = false,
                 param_noise_filter_func: ((Variable) -> Boolean)? = null)
-    : tuple4<Any, Function, Function, Map<String, Function>> {
+    : tuple4<ActFunction, Function, Function, Map<String, Function>> {
   
   val act_f = if (param_noise)
     build_act_with_param_noise(make_obs_ph, q_func, num_actions,
@@ -93,7 +96,6 @@ fun build_train(make_obs_ph: (String) -> TfInput,
     val errors = huber_loss(td_error)
     val weighted_error = tf.mean(importance_weights_ph * errors, name = "weighted_error")
     
-    tf.printGraph()
     //compute optimization op (potentially with gradient clipping)
     val optimize_expr = if (grad_norm_clipping != null) {
       val gradients = optimizer.compute_gradients(weighted_error, q_func_vars)
@@ -108,7 +110,6 @@ fun build_train(make_obs_ph: (String) -> TfInput,
     //update_target_fn will be called periodically to copy Q network to target Q network
     val update_target_expr = run {
       val update_target_expr = mutableListOf<Operation>()
-      q_func_vars.sortedBy { it.name }.zip(target_q_func_vars.sortedBy { it.name })
       for ((v, v_target) in q_func_vars.sortedBy { it.name }
           .zip(target_q_func_vars.sortedBy { it.name }))
         update_target_expr += v_target.assign(v).op!!
@@ -117,16 +118,16 @@ fun build_train(make_obs_ph: (String) -> TfInput,
     
     val train = function(
         inputs = a(
-            obs_t_input.get(),
+            obs_t_input,
             act_t_ph,
             rew_t_ph,
-            obs_tp1_input.get(),
+            obs_tp1_input,
             done_mask_ph,
             importance_weights_ph),
         outputs = td_error,
         updates = a(optimize_expr))
     val update_target = function(updates = a(update_target_expr))
-    val q_values = function(a(obs_t_input.get()), q_t)
+    val q_values = function(a(obs_t_input), q_t)
     return tuple4(act_f, train, update_target, mapOf("q_values" to q_values))
   }
 }
@@ -153,7 +154,7 @@ fun build_act_with_param_noise(make_obs_ph: (String) -> TfInput,
                                q_func: Q_func,
                                num_actions: Int,
                                param_noise_filter_func: ((Variable) -> Boolean)?,
-                               name: String): Function {
+                               name: String): ActFunction {
   val param_noise_filter_func = param_noise_filter_func ?: { v: Variable -> true }
   fun scope_vars(original_scope: String): List<Variable> {
     TODO("not implemented")
@@ -226,18 +227,14 @@ fun build_act_with_param_noise(make_obs_ph: (String) -> TfInput,
         tf.cond(reset_ph, { perturb_vars(original_scope = "q_func", perturbed_scope = "perturbed_q_func") }, { Tensor(tf.group(listOf()), 0) }),
         tf.cond(update_param_noise_scale_ph, { update_scale() }, { tf.variable(0f, trainable = false) }),
         update_param_noise_threshold_expr)
-    val inputs = a(observations_ph.get(), stochastic_ph, update_eps_ph, reset_ph, update_param_noise_threshold_ph, update_param_noise_scale_ph)
+    val inputs = a(observations_ph, stochastic_ph, update_eps_ph, reset_ph, update_param_noise_threshold_ph, update_param_noise_scale_ph)
     val outputs = output_actions
     val givens = a(update_eps_ph to -1.0, stochastic_ph to true, reset_ph to false, update_param_noise_threshold_ph to false, update_param_noise_scale_ph to false)
     val _act = function(inputs = inputs,
                         outputs = outputs,
                         givens = givens,
                         updates = updates)
-
-//    fun act(ob, reset, update_param_noise_threshold, update_param_noise_scale, stochastic = True, update_eps = -1):
-//        return _act(ob, stochastic, update_eps, reset, update_param_noise_threshold, update_param_noise_scale)
-//    return act
-    TODO()
+    return ActWithParamNoise(_act)
   }
 }
 
@@ -252,7 +249,7 @@ fun build_act_with_param_noise(make_obs_ph: (String) -> TfInput,
  *function to select and action given observation.
  *       See the top of the file for details.
  */
-fun build_act(make_obs_ph: (String) -> TfInput, q_func: Q_func, num_actions: Int, name: String): Function {
+fun build_act(make_obs_ph: (String) -> TfInput, q_func: Q_func, num_actions: Int, name: String): ActFunction {
   tf.variable_scope(name) {
     val observations_ph = make_obs_ph("observation")
     val stochastic_ph = tf.placeholder(scalarDimension, DT_BOOL, name = "stochastic")
@@ -274,6 +271,21 @@ fun build_act(make_obs_ph: (String) -> TfInput, q_func: Q_func, num_actions: Int
                         outputs = output_actions,
                         givens = a(update_eps_ph to -1.0f, stochastic_ph to true),
                         updates = a(update_eps_expr))
-    return _act
+    
+    return ActFunction(_act)
   }
+}
+
+open class ActFunction(val act: Function) {
+  operator fun invoke(ob: NDArray<*>, stochastic: Boolean = true, update_eps: Float = -1f) =
+      act(ob, stochastic, update_eps)
+}
+
+class ActWithParamNoise(act: Function) : ActFunction(act) {
+  operator fun invoke(ob: NDArray<*>,
+                      reset: Boolean,
+                      update_param_noise_threshold: Float,
+                      update_param_noise_scale: Boolean,
+                      stochastic: Boolean = true, update_eps: Float = -1f) =
+      act(ob, stochastic, update_eps, reset, update_param_noise_threshold, update_param_noise_scale)
 }

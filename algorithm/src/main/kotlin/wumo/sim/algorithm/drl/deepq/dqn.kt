@@ -4,7 +4,9 @@ import wumo.sim.algorithm.tensorflow.ops.const
 import wumo.sim.algorithm.tensorflow.tf
 import wumo.sim.algorithm.tensorflow.training.AdamOptimizer
 import wumo.sim.core.Env
+import wumo.sim.util.ndarray.NDArray
 import wumo.sim.util.ndarray.abs
+import wumo.sim.util.ndarray.ones_like
 import wumo.sim.util.ndarray.plus
 
 /**
@@ -34,25 +36,25 @@ import wumo.sim.util.ndarray.plus
  * @param prioritized_replay_eps: epsilon to add to the TD errors when updating priorities.
  * @return act: Wrapper over act function. Adds ability to save it and load it.
  */
-fun <O, A> learn(env: Env<O, A>,
-                 q_func: Q_func,
-                 lr: Float = 5e-4f,
-                 max_timesteps: Int = 100000,
-                 buffer_size: Int = 50000,
-                 exploration_fraction: Float = 0.1f,
-                 exploration_final_eps: Float = 0.02f,
-                 train_freq: Int = 1,
-                 batch_size: Int = 32,
-                 print_freq: Int = 100,
-                 learning_starts: Int = 1000,
-                 gamma: Float = 1.0f,
-                 target_network_update_freq: Int = 500,
-                 prioritized_replay: Boolean = false,
-                 prioritized_replay_alpha: Float = 0.6f,
-                 prioritized_replay_beta0: Float = 0.4f,
-                 prioritized_replay_beta_iters: Int? = null,
-                 prioritized_replay_eps: Float = 1e-6f,
-                 param_noise: Boolean = false) {
+fun <O : Any, A : Any> learn(env: Env<O, A>,
+                             q_func: Q_func,
+                             lr: Float = 5e-4f,
+                             max_timesteps: Int = 100000,
+                             buffer_size: Int = 50000,
+                             exploration_fraction: Float = 0.1f,
+                             exploration_final_eps: Float = 0.02f,
+                             train_freq: Int = 1,
+                             batch_size: Int = 32,
+                             print_freq: Int = 100,
+                             learning_starts: Int = 1000,
+                             gamma: Float = 1.0f,
+                             target_network_update_freq: Int = 500,
+                             prioritized_replay: Boolean = false,
+                             prioritized_replay_alpha: Float = 0.6f,
+                             prioritized_replay_beta0: Float = 0.4f,
+                             prioritized_replay_beta_iters: Int? = null,
+                             prioritized_replay_eps: Float = 1e-6f,
+                             param_noise: Boolean = false) {
   fun make_obs_ph(name: String) = ObservationInput(env.observation_space, name = name)
   
   val (act, train, update_target, debug) = build_train(
@@ -69,8 +71,7 @@ fun <O, A> learn(env: Env<O, A>,
   val beta_schedule: Schedule
   if (prioritized_replay) {
     replay_buffer = PrioritizedReplayBuffer(buffer_size, alpha = prioritized_replay_alpha)
-    val prioritized_replay_beta_iters = prioritized_replay_beta_iters ?: max_timesteps
-    beta_schedule = LinearSchedule(schedule_timesteps = prioritized_replay_beta_iters,
+    beta_schedule = LinearSchedule(schedule_timesteps = prioritized_replay_beta_iters ?: max_timesteps,
                                    initial_p = prioritized_replay_beta0,
                                    final_p = 1f)
   } else {
@@ -98,9 +99,9 @@ fun <O, A> learn(env: Env<O, A>,
       //Take action and update exploration to the newest value
       var update_eps: Float
       var update_param_noise_threshold: Float
-      if (!param_noise) {
+      val action = if (!param_noise) {
         update_eps = exploration.value(t)
-        update_param_noise_threshold = 0f
+        act(NDArray.toNDArray(obs), update_eps = update_eps)
       } else {
         update_eps = 0f
         // Compute the threshold such that the KL divergence between perturbed and non-perturbed
@@ -108,9 +109,9 @@ fun <O, A> learn(env: Env<O, A>,
         // See Appendix C.1 in Parameter Space Noise for Exploration, Plappert et al., 2017
         // for detailed explanation.
         update_param_noise_threshold = (-Math.log((1 - exploration.value(t) + exploration.value(t) / env.action_space.n).toDouble())).toFloat()
-      }
-//      val action=act(NDArray(obs),update_eps,)
-      val action = 1 as A
+        act as ActWithParamNoise
+        act(NDArray.toNDArray(obs), reset, update_param_noise_threshold, update_param_noise_scale = true, update_eps = update_eps)
+      }[0].get() as A
       val env_action = action
       reset = false
       val (new_obs, rew, done, _) = env.step(env_action as A)
@@ -127,26 +128,19 @@ fun <O, A> learn(env: Env<O, A>,
       
       if (t > learning_starts && t % train_freq == 0) {
         //Minimize the error in Bellman's equation on a batch sampled from replay buffer.
-        val obses_t = 1
-        val actions = 1
-        val rewards = 1
-        val obses_tp1 = 1
-        val dones = 1
-        var weights = 1
-        var batch_idxes = 1
         if (prioritized_replay) {
-          val (obses_t, actions, rewards, obses_tp1, dones, weights, batch_idxes) = replay_buffer.sample(batch_size, beta = beta_schedule.value(t))
-        } else {
-          val (obses_t, actions, rewards, obses_tp1, dones) = replay_buffer.sample(batch_size)
-          weights = 1
-          batch_idxes = 1
-        }
-        val (td_errors) = train(obses_t, actions, rewards, obses_tp1, dones, weights)
-        if (prioritized_replay) {
+          replay_buffer as PrioritizedReplayBuffer
+          val (obses_t, actions, rewards, obses_tp1, dones, weights, batch_idxes) =
+              replay_buffer.sample(batch_size, beta = beta_schedule.value(t))
+          val (td_errors) = train(obses_t, actions, rewards, obses_tp1, dones, weights)
+          
           val new_priorities = abs(td_errors) + prioritized_replay_eps
           replay_buffer.update_priorities(batch_idxes, new_priorities)
+        } else {
+          val (obses_t, actions, rewards, obses_tp1, dones) = replay_buffer.sample(batch_size)
+          val weights = ones_like(rewards)
+          train(obses_t, actions, rewards, obses_tp1, dones, weights)
         }
-        
       }
       
       if (t > learning_starts && t % target_network_update_freq == 0)
@@ -166,6 +160,4 @@ fun <O, A> learn(env: Env<O, A>,
   }
 }
 
-private fun <E> MutableList<E>.mean(): Double {
-  TODO()
-}
+private fun MutableList<Float>.mean() = sum() / size

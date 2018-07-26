@@ -2,23 +2,16 @@ package wumo.sim.algorithm.tensorflow.ops
 
 import org.bytedeco.javacpp.BoolPointer
 import org.bytedeco.javacpp.BytePointer
-import org.bytedeco.javacpp.tensorflow
 import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.algorithm.tensorflow.Operation
 import wumo.sim.algorithm.tensorflow.Tensor
-import wumo.sim.algorithm.tensorflow.ops.gradients.AddAll
+import wumo.sim.algorithm.tensorflow.ops.gradients.append
 import wumo.sim.algorithm.tensorflow.ops.gradients.noGradient
 import wumo.sim.algorithm.tensorflow.ops.gradients.register_gradient_op
 import wumo.sim.algorithm.tensorflow.ops.gradients.register_no_gradient_op
 import wumo.sim.algorithm.tensorflow.tf
 import wumo.sim.util.a
 import wumo.sim.util.i
-
-fun conjugateHelper(out: Tensor) =
-    if (out.dtype == DT_COMPLEX64 || out.dtype == DT_COMPLEX128)
-      tf.conj(out)
-    else
-      out
 
 fun register_math_grad() {
   register_no_gradient_op("Less",
@@ -32,6 +25,10 @@ fun register_math_grad() {
                           "LogicalOr",
                           "LogicalNot",
                           "Floor")
+  
+  register_gradient_op("ArgMax", "ArgMin") { op, grad_inputs, grad_outputs ->
+    grad_outputs.append(noGradient, noGradient)
+  }
   
   register_gradient_op("Abs") { op, grad_inputs, grad_outputs ->
     val grad = grad_inputs[0]
@@ -50,43 +47,69 @@ fun register_math_grad() {
     // Use the built-in operator.
     grad_outputs.add(tf.reciprocalGrad(op.outputs[0], grad))
   }
-  register_gradient_op("InvGrad") { op, grad_inputs, grad_outputs ->
+  register_gradient_op("InvGrad", "ReciprocalGrad") { op, grad_inputs, grad_outputs ->
     val grad = grad_inputs[0]
     val b = op.inputs[1]
     // op.output[0]: y = -b * conj(a)^2
     tf.control_dependencies(grad) {
       val ca = tf.conj(op.inputs[0])
       val cg = tf.conj(grad)
-      grad_outputs.AddAll(cg * tf.const(-2.0) * b * ca, tf.reciprocalGrad(ca, grad))
+      grad_outputs.append(cg * tf.const(-2.0) * b * ca, tf.reciprocalGrad(ca, grad))
     }
   }
   register_gradient_op("Square") { op, grad_inputs, grad_outputs ->
     val grad = grad_inputs[0]
     // dy/dx = (2 * x)
-    val two = tf.cast(tf.const(2), op.inputs[0].dtype)
-    val dydx = tf.mul(two, op.inputs[0])
-    // grad(x) = grad(y) * conj(dy/dx)
-    grad_outputs.add(tf.mul(grad, conjugateHelper(dydx)))
+    val x = op.inputs[0]
+    tf.control_dependencies(grad) {
+      val x = tf.conj(x)
+      val two = tf.const(x.dtype, 2.0)
+      grad_outputs.append(tf.mul(grad, tf.mul(x, two)))
+    }
   }
-  
   register_gradient_op("Sqrt") { op, grad_inputs, grad_outputs ->
     val grad = grad_inputs[0]
     // Use the built-in operator.
     grad_outputs.add(tf.sqrtGrad(op.outputs[0], grad))
   }
-  
+  register_gradient_op("SqrtGrad") { op, grad_inputs, grad_outputs ->
+    val grad = grad_inputs[0]
+    val a = op.inputs[0]
+    val y = op.outputs[0]  // y = 0.5 * b / conj(a)
+    tf.control_dependencies(grad) {
+      val ga = grad / a
+      grad_outputs.append(-tf.conj(ga) * y, tf.const(0.5) * ga)
+    }
+  }
   register_gradient_op("Rsqrt") { op, grad_inputs, grad_outputs ->
     val grad = grad_inputs[0]
     // Use the built-in operator.
     grad_outputs.add(tf.rsqrtGrad(op.outputs[0], grad))
   }
-  
+  register_gradient_op("RsqrtGrad") { op, grad_inputs, grad_outputs ->
+    val grad = grad_inputs[0]
+    //Returns backprop gradient for f(a,b) = -0.5 * b * conj(a)^3.
+    val a = op.inputs[0]  // a = x^{ -1 / 2 }
+    val b = op.inputs[1]  // backprop gradient for a
+    tf.control_dependencies(grad) {
+      val ca = tf.conj(a)
+      val cg = tf.conj(grad)
+      val grad_a = tf.const(-1.5) * cg * b * tf.square(ca)
+      val grad_b = tf.rsqrtGrad(ca, grad)
+      grad_outputs.append(grad_a, grad_b)
+    }
+  }
   register_gradient_op("Exp") { op, grad_inputs, grad_outputs ->
     val grad = grad_inputs[0]
     // dy/dx = exp(x) = y
     // grad(x) = grad(y) * conj(dy/dx)
     //         = grad(y) * conj(y)
-    grad_outputs.add(tf.mul(grad, conjugateHelper(op.outputs[0])))
+    //Returns grad * exp(x).
+    val y = op.outputs[0]  // y = e^x
+    tf.control_dependencies(grad) {
+      val y = tf.conj(y)
+      grad_outputs.append(grad * y)
+    }
   }
   
   register_gradient_op("Expm1") { op, grad_inputs, grad_outputs ->
@@ -94,8 +117,13 @@ fun register_math_grad() {
     // y = expm1(x)
     // dy/dx = exp(x)
     // grad(x) = grad(y) * conj(dy/dx)
-    val dydx = tf.exp(op.inputs[0])
-    grad_outputs.add(tf.mul(grad, conjugateHelper(dydx)))
+    //Returns grad * exp(x).
+    val x = op.inputs[0]
+    tf.control_dependencies(grad) {
+      val x = tf.conj(x)
+      val y = tf.exp(x)
+      grad_outputs.append(grad * y)
+    }
   }
   
   register_gradient_op("Log") { op, grad_inputs, grad_outputs ->
@@ -103,8 +131,13 @@ fun register_math_grad() {
     // y = log(x)
     // dy/dx = 1 / x
     // grad(x) = grad(y) * conj(dy/dx)
-    val dydx = tf.reciprocal(op.inputs[0])
-    grad_outputs.add(tf.mul(grad, conjugateHelper(dydx)))
+    
+    //Returns grad * (1/x).
+    val x = op.inputs[0]
+    tf.control_dependencies(grad) {
+      val x = tf.conj(x)
+      grad_outputs.append(grad * tf.reciprocal(x))
+    }
   }
   
   register_gradient_op("Log1p") { op, grad_inputs, grad_outputs ->
@@ -112,9 +145,11 @@ fun register_math_grad() {
     // y = log1p(x)
     // dy/dx = 1 / (1 + x)
     // grad(x) = grad(y) * conj(dy/dx)
-    val one = tf.cast(tf.const(1.0), op.inputs[0].dtype)
-    val dydx = tf.reciprocal(tf.add(one, op.inputs[0]))
-    grad_outputs.add(tf.mul(grad, conjugateHelper(dydx)))
+    tf.control_dependencies(grad) {
+      val one = tf.cast(tf.const(1.0), op.inputs[0].dtype)
+      val dydx = tf.reciprocal(tf.add(one, op.inputs[0]))
+      grad_outputs.add(tf.mul(grad, tf.conj(dydx)))
+    }
   }
   
   register_gradient_op("Sinh") { op, grad_inputs, grad_outputs ->
@@ -122,16 +157,20 @@ fun register_math_grad() {
     // y = sinh(x)
     // dy/dx = cosh(x)
     // grad(x) = grad(y) * conj(dy/dx)
-    val dydx = tf.cosh(op.inputs[0])
-    grad_outputs.add(tf.mul(grad, conjugateHelper(dydx)))
+    tf.control_dependencies(grad) {
+      val dydx = tf.cosh(op.inputs[0])
+      grad_outputs.add(tf.mul(grad, tf.conj(dydx)))
+    }
   }
   register_gradient_op("Cosh") { op, grad_inputs, grad_outputs ->
     val grad = grad_inputs[0]
     // y = cosh(x)
     // dy/dx = sinh(x)
     // grad(x) = grad(y) * conj(dy/dx)
-    val dydx = tf.sinh(op.inputs[0])
-    grad_outputs.add(tf.mul(grad, conjugateHelper(dydx)))
+    tf.control_dependencies(grad) {
+      val dydx = tf.sinh(op.inputs[0])
+      grad_outputs.add(tf.mul(grad, tf.conj(dydx)))
+    }
   }
   
   register_gradient_op("Tanh") { op, grad_inputs, grad_outputs ->
@@ -141,8 +180,8 @@ fun register_math_grad() {
     // the gradient.
     // Optimization to avoid calculating conj(y) until the gradient is
     // evaluated.
-    tf.control_dependencies(Operation(tf.g, tensorflow.TF_Operation(grad.node()))) {
-      val y = conjugateHelper(op.outputs[0])
+    tf.control_dependencies(grad) {
+      val y = tf.conj(op.outputs[0])
       grad_outputs.add(tf.tanhGrad(y, grad))
     }
   }
@@ -153,7 +192,7 @@ fun register_math_grad() {
     // dy/dx = 1 / cosh(y)
     // grad(x) = grad(y) * conj(dy/dx)
     val dydx = tf.reciprocal(tf.cosh(op.outputs[0]))
-    grad_outputs.add(tf.mul(grad, conjugateHelper(dydx)))
+    grad_outputs.add(tf.mul(grad, tf.conj(dydx)))
   }
   
   register_gradient_op("Acosh") { op, grad_inputs, grad_outputs ->
@@ -162,7 +201,7 @@ fun register_math_grad() {
     // dy/dx = 1 / sinh(y)
     // grad(x) = grad(y) * conj(dy/dx)
     val dydx = tf.reciprocal(tf.sinh(op.outputs[0]))
-    grad_outputs.add(tf.mul(grad, conjugateHelper(dydx)))
+    grad_outputs.add(tf.mul(grad, tf.conj(dydx)))
   }
   register_gradient_op("Atanh") { op, grad_inputs, grad_outputs ->
     val grad = grad_inputs[0]
@@ -171,7 +210,7 @@ fun register_math_grad() {
     // grad(x) = grad(y) * conj(dy/dx)
     val one = tf.cast(tf.const(1.0), op.inputs[0].dtype)
     val dydx = tf.reciprocal(tf.sub(one, tf.square(op.inputs[0])))
-    grad_outputs.add(tf.mul(grad, conjugateHelper(dydx)))
+    grad_outputs.add(tf.mul(grad, tf.conj(dydx)))
   }
   
   register_gradient_op("Sigmoid") { op, grad_inputs, grad_outputs ->
@@ -182,7 +221,7 @@ fun register_math_grad() {
     // Optimization to avoid calculating conj(y) until the gradient is
     // evaluated.
     tf.control_dependencies(grad.op!!) {
-      val y = conjugateHelper(op.outputs[0])
+      val y = tf.conj(op.outputs[0])
       grad_outputs.add(tf.sigmoidGrad(y, grad))
     }
   }
@@ -201,7 +240,7 @@ fun register_math_grad() {
     // dy/dx = cos(x)
     // grad(x) = grad(y) * conj(dy/dx)
     val dydx = tf.cos(op.inputs[0])
-    grad_outputs.add(tf.mul(grad, conjugateHelper(dydx)))
+    grad_outputs.add(tf.mul(grad, tf.conj(dydx)))
   }
   register_gradient_op("Cos") { op, grad_inputs, grad_outputs ->
     val grad = grad_inputs[0]
@@ -209,7 +248,7 @@ fun register_math_grad() {
     // dy/dx = -sin(x)
     // grad(x) = grad(y) * conj(dy/dx)
     val dydx = tf.neg(tf.sin(op.inputs[0]))
-    grad_outputs.add(tf.mul(grad, conjugateHelper(dydx)))
+    grad_outputs.add(tf.mul(grad, tf.conj(dydx)))
   }
   
   register_gradient_op("Asin") { op, grad_inputs, grad_outputs ->
@@ -220,7 +259,7 @@ fun register_math_grad() {
     val x2 = tf.square(op.inputs[0])
     val one = tf.cast(tf.const(1.0), op.inputs[0].dtype)
     val dydx = tf.reciprocal(tf.sqrt(tf.sub(one, x2)))
-    val dx = tf.mul(grad, conjugateHelper(dydx))
+    val dx = tf.mul(grad, tf.conj(dydx))
     grad_outputs.add(dx)
   }
   
@@ -242,7 +281,7 @@ fun register_math_grad() {
     // dy/dx = sec(x)^2 = 1 / cos(x)^2
     // grad(x) = grad(y) * conj(dy/dx)
     val dydx = tf.square(tf.reciprocal(tf.cos(op.inputs[0])))
-    val dx = tf.mul(grad, conjugateHelper(dydx))
+    val dx = tf.mul(grad, tf.conj(dydx))
     grad_outputs.add(dx)
   }
   
@@ -291,8 +330,8 @@ fun register_math_grad() {
     // y = x_1 * x_2
     // dy/dx_1 = x_2
     // dy/dx_2 = x_1
-    val x_1 = conjugateHelper(op.inputs[0])
-    val x_2 = conjugateHelper(op.inputs[1])
+    val x_1 = tf.conj(op.inputs[0])
+    val x_2 = tf.conj(op.inputs[1])
     val gx_1 = tf.mul(grad, x_2)
     val gx_2 = tf.mul(grad, x_1)
     binaryGradCommon(op, grad_outputs, gx_1, gx_2)
@@ -302,8 +341,8 @@ fun register_math_grad() {
     // y = x_1 / x_2
     // dy/dx_1 = 1/x_2
     // dy/dx_2 = -x_1/x_2^2
-    val x_1 = conjugateHelper(op.inputs[0])
-    val x_2 = conjugateHelper(op.inputs[1])
+    val x_1 = tf.conj(op.inputs[0])
+    val x_2 = tf.conj(op.inputs[1])
     val gx_1 = tf.div(grad, x_2)
     val gx_2 = tf.mul(grad,
                       tf.div(tf.div(tf.neg(x_1), x_2), x_2))
@@ -315,8 +354,8 @@ fun register_math_grad() {
     // y = x_1 / x_2
     // dy/dx_1 = 1/x_2
     // dy/dx_2 = -x_1/x_2^2
-    val x_1 = conjugateHelper(op.inputs[0])
-    val x_2 = conjugateHelper(op.inputs[1])
+    val x_1 = tf.conj(op.inputs[0])
+    val x_2 = tf.conj(op.inputs[1])
     val gx_1 = tf.realDiv(grad, x_2)
     val gx_2 = tf.mul(grad,
                       tf.realDiv(tf.realDiv(tf.neg(x_1), x_2), x_2))
@@ -328,8 +367,8 @@ fun register_math_grad() {
     // y = (x_1 - x_2)^2
     // dy/dx_1 = 2 * (x_1 - x_2)
     // dy/dx_2 = -2 * (x_1 - x_2)
-    val x_1 = conjugateHelper(op.inputs[0])
-    val x_2 = conjugateHelper(op.inputs[1])
+    val x_1 = tf.conj(op.inputs[0])
+    val x_2 = tf.conj(op.inputs[1])
     val two = tf.cast(tf.const(2), grad.dtype)
     val gx_1 = tf.mul(grad, tf.mul(two, tf.sub(x_1, x_2)))
     val gx_2 = tf.neg(gx_1)
@@ -351,9 +390,9 @@ fun register_math_grad() {
   }
   register_gradient_op("Pow") { op, grad_inputs, grad_outputs ->
     val grad = grad_inputs[0]
-    val x = conjugateHelper(op.inputs[0])
-    val y = conjugateHelper(op.inputs[1])
-    val z = conjugateHelper(op.outputs[0])
+    val x = tf.conj(op.inputs[0])
+    val y = tf.conj(op.inputs[1])
+    val z = tf.conj(op.outputs[0])
     // grad * y * pow(x, y - 1)
     val one = tf.cast(tf.const(1.0), y.dtype)
     val gx_1 = tf.mul(tf.mul(grad, y),
@@ -363,12 +402,12 @@ fun register_math_grad() {
     val zero = tf.cast(tf.const(0.0), x_dtype)
     if (x_dtype == DT_COMPLEX64 || x_dtype == DT_COMPLEX128) {
       // real(x) < 0 is fine for the complex case
-      val log_x = tf.where(tf.notEqual(x, zero), tf.log(x), tf.zerosLike(x))
+      val log_x = tf.where(tf.notEqual(x, zero), tf.log(x), tf._zerosLike(x))
       val gy_1 = tf.mul(tf.mul(grad, z), log_x)
       binaryGradCommon(op, grad_outputs, gx_1, gy_1)
     } else {
       // There's no sensible real value to return if x < 0, so return 0
-      val log_x = tf.where(tf.greater(x, zero), tf.log(x), tf.zerosLike(x))
+      val log_x = tf.where(tf.greater(x, zero), tf.log(x), tf._zerosLike(x))
       val gy_1 = tf.mul(tf.mul(grad, z), log_x)
       binaryGradCommon(op, grad_outputs, gx_1, gy_1)
     }
@@ -387,7 +426,7 @@ fun register_math_grad() {
     // dy/dx_1 = 1 where comparator is true, and 0 otherwise.
     // dy/dx_2 = 0 where comparator is true, and 1 otherwise.
     val grad = grad_inputs[0]
-    val zeros = tf.zerosLike(grad)
+    val zeros = tf._zerosLike(grad)
     val gx_1 = tf.where(comparator, grad, zeros)
     val gx_2 = tf.where(comparator, zeros, grad)
     binaryGradCommon(op, grad_outputs, gx_1, gx_2)
@@ -482,7 +521,7 @@ fun register_math_grad() {
     // merge these 1s (using axes for indices) to the correct
     // position in the result.
     // axes_ones = [1, 1]
-    val axes_ones = tf.onesLike(axes)
+    val axes_ones = tf._onesLike(axes)
     
     // using DynamicStitch:
     // indices = { input_rank_range, axes }
@@ -573,7 +612,7 @@ fun register_math_grad() {
     val grad = grad_inputs[0]
     val two_over_root_pi = tf.cast(tf.const(2 / Math.sqrt(Math.PI)), grad.dtype)
     tf.control_dependencies(grad.op!!) {
-      val x = conjugateHelper(op.inputs[0])
+      val x = tf.conj(op.inputs[0])
       // grad * 2/sqrt(pi) * exp(-x**2)
       val dx = tf.mul(tf.mul(grad, two_over_root_pi),
                       tf.exp(tf.neg(tf.square(x))))
@@ -584,7 +623,7 @@ fun register_math_grad() {
   register_gradient_op("Lgamma") { op, grad_inputs, grad_outputs ->
     val grad = grad_inputs[0]
     tf.control_dependencies(grad.op!!) {
-      val x = conjugateHelper(op.inputs[0])
+      val x = tf.conj(op.inputs[0])
       val dx = tf.mul(grad, tf.digamma(x))
       grad_outputs.add(dx)
     }
@@ -857,25 +896,21 @@ fun register_math_grad() {
     var b = op.inputs[1]
     // Use conjugate of the inputs for MatMul
     if (!is_batch) {
-      a = conjugateHelper(a)
-      b = conjugateHelper(b)
+      a = tf.conj(a)
+      b = tf.conj(b)
     }
     val product = op.outputs[0]
     
-    val pa = BoolPointer(1)
-    val pb = BoolPointer(1)
-    GetNodeAttr(product.node().attrs(), BytePointer(attr_adj_x), pa)
-    GetNodeAttr(product.node().attrs(), BytePointer(attr_adj_y), pb)
-    val ta = pa.get()
-    val tb = pb.get()
+    val pa = product.op!!.attrBool(attr_adj_x)
+    val pb = product.op!!.attrBool(attr_adj_y)
     when {
-      !ta && !tb ->
+      !pa && !pb ->
         matMulGradHelper(is_batch, grad, false, b, true, a,
                          true, grad, false, grad_outputs)
-      !ta && tb ->
+      !pa && pb ->
         matMulGradHelper(is_batch, grad, false, b, false,
                          grad, true, a, false, grad_outputs)
-      ta && !tb ->
+      pa && !pb ->
         matMulGradHelper(is_batch, b, false, grad, true, a,
                          false, grad, false, grad_outputs)
       else ->
@@ -890,6 +925,15 @@ fun register_math_grad() {
   register_gradient_op("BatchMatMul") { op, grad_inputs, grad_outputs ->
     val grad = grad_inputs[0]
     matMulGradCommon(op, true, grad_inputs, "adj_x", "adj_y", grad_outputs)
+  }
+  
+  register_gradient_op("Select") { op, grad_inputs, grad_outputs ->
+    val grad = grad_inputs[0]
+    val c = op.inputs[0]
+    val x = op.inputs[1]
+    val zeros = tf.zerosLike(x)
+    grad_outputs.append(noGradient, tf.where(c, grad, zeros), tf.where(
+        c, zeros, grad))
   }
 }
 

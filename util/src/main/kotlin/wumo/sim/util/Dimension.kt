@@ -70,4 +70,19 @@ class Dimension(val elements: MutableList<Int> = mutableListOf()) : Iterable<Int
     sb.append(")")
     return sb.toString()
   }
+  
+  fun isCompatibleWith(other: Dimension): Boolean {
+    if (rank() != other.rank()) return false
+    for (i in 0 until rank()) {
+      if (!compatible(this[i], other[i]))
+        return false
+    }
+    return true
+  }
+  
+  fun compatible(d1: Int, d2: Int) = when {
+    d1 == d2 -> true
+    d1 == -1 || d2 == -1 -> true
+    else -> false
+  }
 }

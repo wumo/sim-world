@@ -7,7 +7,7 @@ import wumo.sim.algorithm.tensorflow.naryOp
 
 fun TF.avgPoolGrad(orig_input_shape: Tensor,
                    grad: Tensor,
-                   ksize: IntArray, strides: IntArray,
+                   ksize: LongArray, strides: LongArray,
                    padding: String,
                    data_format: String = "NHWC",
                    name: String = "AvgPoolGrad") =
@@ -62,7 +62,7 @@ fun TF.LRNGrad(intput_grads: Tensor,
 fun TF.maxPoolGrad(orig_input: Tensor,
                    orig_output: Tensor,
                    grad: Tensor,
-                   ksize: IntArray, strides: IntArray,
+                   ksize: LongArray, strides: LongArray,
                    padding: String,
                    data_format: String = "NHWC",
                    name: String = "MaxPoolGrad") =
@@ -76,7 +76,7 @@ fun TF.maxPoolGrad(orig_input: Tensor,
 fun TF.maxPoolGradWithArgmax(input: Tensor,
                              grad: Tensor,
                              argmax: Tensor,
-                             ksize: IntArray, strides: IntArray,
+                             ksize: LongArray, strides: LongArray,
                              padding: String,
                              name: String = "MaxPoolGradWithArgmax") =
     naryOp("MaxPoolGradWithArgmax", input, grad, argmax, name = name) {

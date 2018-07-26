@@ -40,10 +40,12 @@ abstract class Optimizer(val use_locking: Boolean, val name: String) {
       name_scope(name) {
         prepare()
         for ((grad, v) in grads_and_vars)
-          ctxNs.colocate_with(v) {
-            update_ops += apply_dense(grad, v)
+          tf.name_scope("update_$name") {
+            ctxNs.colocate_with(v) {
+              update_ops += apply_dense(grad, v)
+            }
           }
-        val apply_updates = finish(update_ops, ctxNs.scopeNameForOnce())
+        val apply_updates = finish(update_ops, name)
         tf.train_ops += apply_updates
         return apply_updates
       }
@@ -72,6 +74,26 @@ abstract class Optimizer(val use_locking: Boolean, val name: String) {
       slot_variable ?: create_zeros_slot(v, op_name)
       
     }!!
+  }
+  
+  /**
+   * Return a slot named `name` created for `var` by the Optimizer.
+  
+  Some `Optimizer` subclasses use additional variables.  For example
+  `Momentum` and `Adagrad` use variables to accumulate updates.  This method
+  gives access to these `Variable` objects if for some reason you need them.
+  
+  Use `get_slot_names()` to get the list of slot names created by the
+  `Optimizer`.
+   
+   * @param v: A variable passed to `minimize()` or `apply_gradients()`.
+   * @param name: A string.
+   
+   * @return: The `Variable` for the slot if it was created, `None` otherwise.
+   */
+  open fun get_slot(v: Variable, name: String): Variable {
+    val named_slots = slots[name]
+    return named_slots!![v]!!
   }
   
   /**Add an extra variable, not associated with a slot.*/

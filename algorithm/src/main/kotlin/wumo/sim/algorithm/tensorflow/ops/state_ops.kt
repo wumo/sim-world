@@ -75,7 +75,7 @@ private inline fun TF.variable(initializer: (String) -> Tensor, name: String, tr
     val initial_value = initializer("initial_value")
     val v = g.nodeBuilder("VariableV2", ctxNs.fullName)
         .attrType("dtype", initial_value.dtype.base_dtype)
-        .attr("shape", initial_value.shape())
+        .attr("shape", initial_value.shape)
         .build()
     
     val t = Variable(v, 0)
@@ -97,7 +97,7 @@ fun TF.variable(shape: Dimension, initializer: Initializer, name: String, traina
     variable({ initializer(shape, name = "initial_value") }, name, trainable)
 
 fun TF.variable(shape: Dimension, dtype: Int, initializer: Initializer, name: String, trainable: Boolean = true, validate_shape: Boolean = true) =
-    variable({ initializer(shape, dtype, "initial_value") }, name, trainable)
+    variable({ initializer(shape, dtype.base_dtype, "initial_value") }, name, trainable)
 
 fun TF.variable(initial_value: Tensor, name: String = "Variable", trainable: Boolean = true) =
     variable({ initial_value }, name, trainable)
@@ -165,7 +165,7 @@ fun TF.get_variable(shape: Dimension, initializer: Initializer, name: String, tr
     get_variable({ initializer(shape, name = "initial_value") }, name, trainable)
 
 fun TF.get_variable(shape: Dimension, dtype: Int, initializer: Initializer, name: String, trainable: Boolean = true, validate_shape: Boolean = true) =
-    get_variable({ initializer(shape, dtype, "initial_value") }, name, trainable)
+    get_variable({ initializer(shape, dtype.base_dtype, "initial_value") }, name, trainable)
 
 fun TF.get_variable(initial_value: Tensor, name: String = "Variable", trainable: Boolean = true) =
     get_variable({ initial_value }, name, trainable)
@@ -185,7 +185,7 @@ private inline fun TF.get_variable(initializer: (String) -> Tensor, name: String
         val initial_value = initializer("initial_value")
         val v = g.nodeBuilder("VariableV2", ctxNs.fullName)
             .attrType("dtype", initial_value.dtype.base_dtype)
-            .attr("shape", initial_value.shape())
+            .attr("shape", initial_value.shape)
             .build()
         
         val t = Variable(v, 0)

@@ -146,7 +146,7 @@ class Session(val c_graph: TF_Graph) {
   
   
   private fun Tensor.print(v: NDArray<*>) {
-    val prefix = "${op!!.name}:${dtype.name()}${shape()}\n  ="
+    val prefix = "${op!!.name}:${dtype.name()}$shape\n  ="
     println("$prefix${v.toString(3)}\n")
   }
   

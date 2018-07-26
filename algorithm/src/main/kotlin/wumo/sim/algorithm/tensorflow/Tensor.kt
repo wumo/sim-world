@@ -30,7 +30,7 @@ open class Tensor(val op: Operation?, val value_index: Int) : TensorLike {
       op.output_types[value_index]
     } else DT_INVALID
   
-  fun shape(): Dimension {
+  val shape: Dimension by lazy {
     val c_graph = op!!.graph.c_graph
     val output = asTF_Output()
     val status = newStatus()
@@ -39,7 +39,7 @@ open class Tensor(val op: Operation?, val value_index: Int) : TensorLike {
     val dims = LongArray(numDims)
     TF_GraphGetTensorShape(c_graph, output, dims, numDims, status)
     throwExceptionIfNotOk(status)
-    return Dimension(dims)
+    Dimension(dims)
   }
   
   val tf: TF by lazy { op!!.graph.tf }
@@ -77,6 +77,6 @@ open class Tensor(val op: Operation?, val value_index: Int) : TensorLike {
   override fun toString() =
       when (op) {
         null -> "Tensor(null)"
-        else -> """"Tensor("$name:$value_index", shape=${shape()}, dtype=${dtype.name()}, op=${op.opType})"""
+        else -> """Tensor("$name:$value_index", shape=$shape, dtype=${dtype.name()}, op=${op.opType})"""
       }
 }

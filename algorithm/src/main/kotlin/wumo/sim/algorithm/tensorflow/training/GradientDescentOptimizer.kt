@@ -17,6 +17,6 @@ class GradientDescentOptimizer(val learningRate: Float,
   }
   
   override fun apply_dense(grad: Tensor, v: Variable) =
-      tf.applyGradientDescent(v, tf.cast(lr_t, v.dtype.base_dtype), grad)
+      tf.applyGradientDescent(v, tf.cast(lr_t, v.dtype.base_dtype), grad).op!!
   
 }

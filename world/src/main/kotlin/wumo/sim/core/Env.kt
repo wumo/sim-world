@@ -3,7 +3,7 @@ package wumo.sim.core
 import wumo.sim.util.tuple2
 import wumo.sim.util.tuple4
 
-interface Env<O, A> {
+interface Env<O : Any, A : Any> {
   val reward_range: tuple2<Double, Double>
     get() = tuple2(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY)
   val action_space: Space<A>

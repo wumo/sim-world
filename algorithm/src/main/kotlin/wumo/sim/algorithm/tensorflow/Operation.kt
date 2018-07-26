@@ -35,7 +35,8 @@ class Operation(val graph: Graph, val c_op: TF_Operation) {
   val name: String by lazy { TF_OperationName(c_op).string }
   val device: String by lazy { TF_OperationDevice(c_op).string }
   val opType: String by lazy { TF_OperationOpType(c_op).string }
-  inline fun node() = c_op.node()
+  val node: Node by lazy { c_op.node() }
+  val attrs: AttrSlice by lazy { node.attrs() }
   
   val inputs: List<Tensor> by lazy {
     val node = c_op.node()
@@ -81,10 +82,56 @@ class Operation(val graph: Graph, val c_op: TF_Operation) {
     }
   }
   
+  fun attrString(name: String): String {
+    val value = attrs.Find(name)
+    return value.s().string
+  }
+  
+  fun attrBool(name: String): Boolean {
+    val value = attrs.Find(name)
+    return value.b()
+  }
+  
+  fun attrBoolList(name: String): BooleanArray {
+    val value = attrs.Find(name)
+    val list_value = value.list()
+    return BooleanArray(list_value.i_size()) {
+      list_value.b(it)
+    }
+  }
+  
+  fun attrLong(name: String): Long {
+    val value = attrs.Find(name)
+    return value.i()
+  }
+  
+  fun attrLongList(name: String): LongArray {
+    val value = attrs.Find(name)
+    val list_value = value.list()
+    return LongArray(list_value.i_size()) {
+      list_value.i(it)
+    }
+  }
+  
+  fun attrFloat(name: String): Float {
+    val value = attrs.Find(name)
+    return value.f()
+  }
+  
+  fun attrFloatList(name: String): FloatArray {
+    val value = attrs.Find(name)
+    val list_value = value.list()
+    return FloatArray(list_value.i_size()) {
+      list_value.f(it)
+    }
+  }
+  
   val attr: Map<String, Any>
     get() {
       TODO()
     }
   
-  
+  override fun toString(): String {
+    return """"Operation("$name", op=$opType, dev=$device)"""
+  }
 }

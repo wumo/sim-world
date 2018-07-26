@@ -43,10 +43,10 @@ fun create_slot_with_initializer(primary: Tensor,
   val validate_shape = shape.is_fully_defined
   return if (colocate_with_primary)
     tf.ctxNs.colocate_with(primary) {
-      create_slot_var(primary, initializer, "", validate_shape, shape, dtype)
+      create_slot_var(primary, initializer, name, validate_shape, shape, dtype)
     }
   else
-    create_slot_var(primary, initializer, "", validate_shape, shape, dtype)
+    create_slot_var(primary, initializer, name, validate_shape, shape, dtype)
 }
 
 /**Create a slot initialized to 0 with same shape as the primary object
@@ -56,9 +56,9 @@ fun create_slot_with_initializer(primary: Tensor,
  * @param colocate_with_primary f True the slot is located on the same device as [primary].
  * @return A [Variable] object.
  */
-fun create_zeros_slot(primary: Tensor, name: String, dtype: Int = 0, colocate_with_primary: Boolean = true): Variable {
+fun create_zeros_slot(primary: Tensor, name: String, dtype: Int = DT_INVALID, colocate_with_primary: Boolean = true): Variable {
   val dtype = if (dtype == DT_INVALID) primary.dtype else dtype
-  val slot_shape = primary.shape()
+  val slot_shape = primary.shape
   return if (slot_shape.is_fully_defined) {
     val initializer = tf.zeros_initializer(dtype)
     create_slot_with_initializer(primary,

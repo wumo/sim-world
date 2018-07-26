@@ -28,6 +28,7 @@ open class NDArray<T>(val shape: Dimension, val raw: Buf<T>) : Iterable<T> {
     }
     
     private val toNDArraySwitch = SwitchType<NDArray<*>>().apply {
+      case<NDArray<*>> { it }
       case<Float> { NDArray(it) }
       case<Double> { NDArray(it) }
       case<Boolean> { NDArray(it) }
@@ -43,14 +44,68 @@ open class NDArray<T>(val shape: Dimension, val raw: Buf<T>) : Iterable<T> {
       case<ShortArray> { NDArray(it) }
       case<IntArray> { NDArray(it) }
       case<LongArray> { NDArray(it) }
-      case<Array<*>> {
-        if (this::class.java == String::class.java)
-          NDArray.invoke(it as Array<String>)
-        else throw NotImplementedError()
+      case<Array<Float>> { NDArray(it) }
+      case<Array<Double>> { NDArray(it) }
+      case<Array<Boolean>> { NDArray(it) }
+      case<Array<Byte>> { NDArray(it) }
+      case<Array<Short>> { NDArray(it) }
+      case<Array<Int>> { NDArray(it) }
+      case<Array<Long>> { NDArray(it) }
+      case<Array<String>> { NDArray(it) }
+      case<Array<NDArray<*>>> {
+        combine(it.asIterable(), it.size)
+      }
+      caseIs<Array<*>> {
+        val wrap = it.map { toNDArray(it!!) }
+        combine(wrap, wrap.size)
+      }
+      caseIs<Collection<*>> {
+        collectionSwitch(it.first()!!, it)
+      }
+    }
+    private val collectionSwitch = SwitchType2<Collection<*>, NDArray<*>>().apply {
+      case<Float> { NDArray((_2 as Collection<Float>).toFloatArray()) }
+      case<Double> { NDArray((_2 as Collection<Double>).toDoubleArray()) }
+      case<Boolean> { NDArray((_2 as Collection<Boolean>).toBooleanArray()) }
+      case<Byte> { NDArray((_2 as Collection<Byte>).toByteArray()) }
+      case<Short> { NDArray((_2 as Collection<Short>).toShortArray()) }
+      case<Int> { NDArray((_2 as Collection<Int>).toIntArray()) }
+      case<Long> { NDArray((_2 as Collection<Long>).toLongArray()) }
+      case<String> { NDArray((_2 as Collection<String>).toTypedArray()) }
+      case<NDArray<*>> {
+        combine(_2 as Collection<NDArray<*>>, _2.size)
+      }
+      caseElse {
+        val wrap = _2.map { toNDArray(it!!) }
+        combine(wrap, wrap.size)
       }
     }
     
-    fun toNDArray(value: Any) = toNDArraySwitch(value)
+    private fun combine(c: Iterable<NDArray<*>>, size: Int): NDArray<*> {
+      val first = c.first()
+      val shape = size x first.shape
+      val firstElement = first.first()
+      val buf = collectionNDArraySwitch(firstElement!!, shape.numElements()) as Buf<Any>
+      
+      var i = 0
+      for (ndarray in c)
+        for (element in ndarray)
+          buf[i++] = element!!
+      return NDArray(shape, buf)
+    }
+    
+    private val collectionNDArraySwitch = SwitchType2<Int, Buf<*>>().apply {
+      case<Float> { FloatArrayBuf(FloatArray(_2)) }
+      case<Double> { DoubleArrayBuf(DoubleArray(_2)) }
+      case<Boolean> { BooleanArrayBuf(BooleanArray(_2)) }
+      case<Byte> { ByteArrayBuf(ByteArray(_2)) }
+      case<Short> { ShortArrayBuf(ShortArray(_2)) }
+      case<Int> { IntArrayBuf(IntArray(_2)) }
+      case<Long> { LongArrayBuf(LongArray(_2)) }
+      case<String> { ArrayBuf(Array(_2) { "" }) }
+    }
+    
+    fun toNDArray(value: Any): NDArray<*> = toNDArraySwitch(value)
     
     operator fun invoke(value: Float) = invoke(scalarDimension, f(value))
     operator fun invoke(value: Double) = invoke(scalarDimension, d(value))
@@ -61,14 +116,21 @@ open class NDArray<T>(val shape: Dimension, val raw: Buf<T>) : Iterable<T> {
     operator fun invoke(value: Long) = invoke(scalarDimension, l(value))
     operator fun invoke(value: String) = invoke(scalarDimension, a(value))
     
-    operator fun invoke(value: FloatArray) = NDArray(dim(value.size), FloatArrayBuf(value))
-    operator fun invoke(value: DoubleArray) = NDArray(dim(value.size), DoubleArrayBuf(value))
-    operator fun invoke(value: BooleanArray) = NDArray(dim(value.size), BooleanArrayBuf(value))
-    operator fun invoke(value: ByteArray) = NDArray(dim(value.size), ByteArrayBuf(value))
-    operator fun invoke(value: ShortArray) = NDArray(dim(value.size), ShortArrayBuf(value))
-    operator fun invoke(value: IntArray) = NDArray(dim(value.size), IntArrayBuf(value))
-    operator fun invoke(value: LongArray) = NDArray(dim(value.size), LongArrayBuf(value))
-    operator fun invoke(value: Array<String>) = NDArray(dim(value.size), ArrayBuf(value))
+    operator fun invoke(value: FloatArray) = NDArray(dim(value.size), value)
+    operator fun invoke(value: Array<Float>) = NDArray(dim(value.size), value.toFloatArray())
+    operator fun invoke(value: DoubleArray) = NDArray(dim(value.size), value)
+    operator fun invoke(value: Array<Double>) = NDArray(dim(value.size), value.toDoubleArray())
+    operator fun invoke(value: BooleanArray) = NDArray(dim(value.size), value)
+    operator fun invoke(value: Array<Boolean>) = NDArray(dim(value.size), value.toBooleanArray())
+    operator fun invoke(value: ByteArray) = NDArray(dim(value.size), value)
+    operator fun invoke(value: Array<Byte>) = NDArray(dim(value.size), value.toByteArray())
+    operator fun invoke(value: ShortArray) = NDArray(dim(value.size), value)
+    operator fun invoke(value: Array<Short>) = NDArray(dim(value.size), value.toShortArray())
+    operator fun invoke(value: IntArray) = NDArray(dim(value.size), value)
+    operator fun invoke(value: Array<Int>) = NDArray(dim(value.size), value.toIntArray())
+    operator fun invoke(value: LongArray) = NDArray(dim(value.size), value)
+    operator fun invoke(value: Array<Long>) = NDArray(dim(value.size), value.toLongArray())
+    operator fun invoke(value: Array<String>) = NDArray(dim(value.size), value)
     
     operator fun invoke(shape: Dimension, value: FloatArray) = NDArray(shape, FloatArrayBuf(value))
     operator fun invoke(shape: Dimension, value: DoubleArray) = NDArray(shape, DoubleArrayBuf(value))

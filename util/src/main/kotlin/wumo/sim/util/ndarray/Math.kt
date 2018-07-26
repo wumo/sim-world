@@ -18,3 +18,7 @@ operator fun <T> NDArray<T>.plus(b: Number): NDArray<T> {
 fun <T> abs(a: NDArray<T>): NDArray<T> {
   TODO()
 }
+
+fun <T> ones_like(a: NDArray<T>): NDArray<T> {
+  TODO()
+}
