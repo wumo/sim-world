@@ -6,7 +6,9 @@ import wumo.sim.util.ndarray.NDArray
 import java.util.concurrent.ThreadLocalRandom
 
 inline fun Rand() = ThreadLocalRandom.current()!!
-fun Rand(low: Double, high: Double, n: Int) = NDArray(d(n) { Rand().nextDouble(low, high) })
+inline fun ThreadLocalRandom.nextFloat(origin: Float, bound: Float) = origin + nextFloat() * (bound - origin)
+
+fun Rand(low: Float, high: Float, n: Int) = NDArray(f(n) { Rand().nextFloat(low, high) })
 
 fun <T> max(set: Iterable<T>, default: Double = Double.NaN, evaluate: T.(T) -> Double): Double {
   val iterator = set.iterator()

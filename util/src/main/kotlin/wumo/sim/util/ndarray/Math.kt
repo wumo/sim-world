@@ -1,6 +1,11 @@
 package wumo.sim.util.ndarray
 
-operator fun NDArray<Double>.unaryMinus(): NDArray<Double> {
+import wumo.sim.util.Dimension
+import wumo.sim.util.SwitchType
+import wumo.sim.util.SwitchType2
+import wumo.sim.util.ndarray.NDArray.Companion.toNDArray
+
+operator fun NDArray<Float>.unaryMinus(): NDArray<Float> {
   val c = copy()
   for (i in 0 until c.size)
     c[i] = -c[i]
@@ -19,6 +24,15 @@ fun <T> abs(a: NDArray<T>): NDArray<T> {
   TODO()
 }
 
-fun <T> ones_like(a: NDArray<T>): NDArray<T> {
-  TODO()
+val ones_like_switch = SwitchType2<Dimension, NDArray<*>>().apply {
+  case<Float> { NDArray(_2, 1f) }
+  case<Double> { NDArray(_2, 1.0) }
+  case<Byte> { NDArray(_2, 1.toByte()) }
+  case<Short> { NDArray(_2, 1.toShort()) }
+  case<Int> { NDArray(_2, 1) }
+  case<Long> { NDArray(_2, 1L) }
 }
+
+fun <T : Number> ones_like(a: NDArray<T>) = ones_like_switch(a.first(), a.shape) as NDArray<T>
+
+fun <T> newaxis(a: NDArray<T>) = toNDArray(arrayOf(a))

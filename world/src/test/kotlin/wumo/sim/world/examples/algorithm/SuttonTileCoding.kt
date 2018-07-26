@@ -8,31 +8,31 @@ import kotlin.math.floor
 private const val MAXIMUM_CAPACITY = 1 shl 30
 
 class SuttonTileCoding(numTilesPerTiling: Int, _numTilings: Int, val allowCollisions: Boolean = false,
-                       val _tiles: (NDArray<Double>, Int, (NDArray<Double>, IntArray) -> IntArray) -> IntArray) {
+                       val _tiles: (NDArray<Float>, Int, (NDArray<Float>, IntArray) -> IntArray) -> IntArray) {
   val numTilings = tableSizeFor(_numTilings)
   val numOfComponents = numTilings * (numTilesPerTiling + 1)
-  operator fun invoke(s: NDArray<Double>, a: Int): IntArray {
+  operator fun invoke(s: NDArray<Float>, a: Int): IntArray {
     return _tiles(s, a, ::tiles)
   }
   
-  val data = HashMap<ArrayList<Double>, Int>(ceil(numOfComponents / 0.75).toInt())
+  val data = HashMap<ArrayList<Float>, Int>(ceil(numOfComponents / 0.75).toInt())
   
-  fun tiles(floats: NDArray<Double>, ints: IntArray): IntArray {
+  fun tiles(floats: NDArray<Float>, ints: IntArray): IntArray {
     for ((i, v) in floats.flatten())
       floats[i] = floor(v * numTilings)
     
     val result = IntArray(numTilings)
     for (tiling in 0 until numTilings) {
       val tilingX2 = tiling * 2
-      val coords = ArrayList<Double>(1 + floats.size + ints.size)
-      coords.add(tiling.toDouble())
+      val coords = ArrayList<Float>(1 + floats.size + ints.size)
+      coords.add(tiling.toFloat())
       var b = tiling
       for (q in floats) {
         coords.add(floor(((q + b) / numTilings)))
         b += tilingX2
       }
       for (int in ints)
-        coords.add(int.toDouble())
+        coords.add(int.toFloat())
       when {
         data.size < numOfComponents -> result[tiling] = data.getOrPut(coords, { data.size })
         allowCollisions -> result[tiling] = abs(coords.hashCode()) % numOfComponents

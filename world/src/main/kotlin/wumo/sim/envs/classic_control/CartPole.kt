@@ -10,6 +10,7 @@ import wumo.sim.spaces.Box
 import wumo.sim.spaces.Discrete
 import wumo.sim.util.Rand
 import wumo.sim.util.d
+import wumo.sim.util.f
 import wumo.sim.util.ndarray.NDArray
 import wumo.sim.util.ndarray.unaryMinus
 import wumo.sim.util.tuple4
@@ -17,28 +18,28 @@ import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
-class CartPole : Env<NDArray<Double>, Int> {
+class CartPole : Env<NDArray<Float>, Int> {
   companion object {
-    val gravity = 9.8
-    val masscart = 1.0
-    val masspole = 0.1
+    val gravity = 9.8f
+    val masscart = 1.0f
+    val masspole = 0.1f
     val total_mass = (masspole + masscart)
-    val length = 0.5 // actually half the pole's length
+    val length = 0.5f // actually half the pole's length
     val polemass_length = (masspole * length)
-    val force_mag = 10.0
-    val tau = 0.02  // seconds between state updates
+    val force_mag = 10.0f
+    val tau = 0.02f  // seconds between state updates
     
     // Angle at which to fail the episode
-    val theta_threshold_radians = 12 * 2 * PI / 360
-    val x_threshold = 2.4
+    val theta_threshold_radians = (12 * 2 * PI / 360).toFloat()
+    val x_threshold = 2.4f
   }
   
   // Angle limit set to 2 * theta_threshold_radians so failing observation is still within bounds
-  val high = NDArray(d(
+  val high = NDArray(f(
       x_threshold * 2,
-      Double.MAX_VALUE,
+      Float.MAX_VALUE,
       theta_threshold_radians * 2,
-      Double.MAX_VALUE))
+      Float.MAX_VALUE))
   
   val state = NDArray.zeros(4)
   
@@ -47,7 +48,7 @@ class CartPole : Env<NDArray<Double>, Int> {
   override val action_space = Discrete(2)
   override val observation_space = Box(-high, high)
   
-  override fun step(a: Int): tuple4<NDArray<Double>, Double, Boolean, Map<String, Any>> {
+  override fun step(a: Int): tuple4<NDArray<Float>, Float, Boolean, Map<String, Any>> {
     assert(action_space.contains(a)) { "invalid a:$a" }
     var (x, x_dot, theta, theta_dot) = state
     
@@ -55,7 +56,7 @@ class CartPole : Env<NDArray<Double>, Int> {
     val costheta = cos(theta)
     val sintheta = sin(theta)
     val temp = (force + polemass_length * theta_dot * theta_dot * sintheta) / total_mass
-    val thetaacc = (gravity * sintheta - costheta * temp) / (length * (4.0 / 3.0 - masspole * costheta * costheta / total_mass))
+    val thetaacc = (gravity * sintheta - costheta * temp) / (length * (4.0f / 3.0f - masspole * costheta * costheta / total_mass))
     val xacc = temp - polemass_length * thetaacc * costheta / total_mass
     x += tau * x_dot
     x_dot += tau * xacc
@@ -70,23 +71,23 @@ class CartPole : Env<NDArray<Double>, Int> {
                || theta < -theta_threshold_radians
                || theta > theta_threshold_radians
     val reward = when {
-      !done -> 1.0
+      !done -> 1.0f
       steps_beyond_done.isNaN() -> {
         steps_beyond_done = 0.0
-        1.0
+        1.0f
       }
       else -> {
         if (steps_beyond_done == 0.0)
           println("You are calling 'step()' even though this environment has already returned done = True. You should always call 'reset()' once you receive 'done = True' -- any further steps are undefined behavior.")
         steps_beyond_done += 1
-        0.0
+        0.0f
       }
     }
     return tuple4(state.copy(), reward, done, emptyMap())
   }
   
-  override fun reset(): NDArray<Double> {
-    val s = Rand(-0.05, 0.05, 4)
+  override fun reset(): NDArray<Float> {
+    val s = Rand(-0.05f, 0.05f, 4)
     state.setFrom(s)
 //    arrayCopy(s, state, state.size)
     steps_beyond_done = Double.NaN

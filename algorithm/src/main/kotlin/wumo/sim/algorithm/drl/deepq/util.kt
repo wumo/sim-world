@@ -16,7 +16,6 @@ import wumo.sim.util.ndarray.NDArray
 import wumo.sim.util.tuple2
 import wumo.sim.util.x
 
-val emptyArray = Array<Any>(0) {}
 inline fun <reified T> emptyArray() = Array<T>(0) { throw NotImplementedError() }
 
 class Function(val inputs: Array<out Any>,
@@ -53,10 +52,10 @@ fun function(inputs: Array<out Any> = emptyArray(),
   return Function(inputs, a(outputs), updates, _givens)
 }
 
-fun function(inputs: Array<Any> = emptyArray(),
+fun function(inputs: Array<out Any> = emptyArray(),
              outputs: Array<Tensor> = emptyArray(),
-             updates: Array<Any> = emptyArray(),
-             givens: Array<Pair<Tensor, NDArray<*>>> = emptyArray()): Function {
+             updates: Array<out Any> = emptyArray(),
+             givens: Array<Pair<Tensor, Any>> = emptyArray()): Function {
   val _givens = a(givens.size) {
     val p = givens[it]
     p.first to NDArray.toNDArray(p.second)

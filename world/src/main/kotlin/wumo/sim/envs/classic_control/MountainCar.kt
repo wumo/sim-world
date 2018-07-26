@@ -9,60 +9,57 @@ import wumo.sim.graphics.ShapeType.Line_Strip
 import wumo.sim.graphics.Viewer
 import wumo.sim.spaces.Box
 import wumo.sim.spaces.Discrete
-import wumo.sim.util.Rand
-import wumo.sim.util.d
+import wumo.sim.util.*
 import wumo.sim.util.ndarray.NDArray
-import wumo.sim.util.rangeTo
-import wumo.sim.util.tuple4
 import kotlin.math.cos
 import kotlin.math.sin
 
 
-class MountainCar : Env<NDArray<Double>, Int> {
+class MountainCar : Env<NDArray<Float>, Int> {
   companion object {
-    val min_position = -1.2
-    val max_position = 0.6
-    val max_speed = 0.07
-    val goal_position = 0.5
+    val min_position = -1.2f
+    val max_position = 0.6f
+    val max_speed = 0.07f
+    val goal_position = 0.5f
   }
   
   val state = NDArray.zeros(2)
   
   override val action_space = Discrete(3)
-  override val observation_space = Box(low = NDArray(d(min_position, -max_speed)),
-                                       high = NDArray(d(max_position, max_speed)))
+  override val observation_space = Box(low = NDArray(f(min_position, -max_speed)),
+                                       high = NDArray(f(max_position, max_speed)))
   
-  override fun step(a: Int): tuple4<NDArray<Double>, Double, Boolean, Map<String, Any>> {
+  override fun step(a: Int): tuple4<NDArray<Float>, Float, Boolean, Map<String, Any>> {
     assert(action_space.contains(a)) { "invalid a:$a" }
     var (position, velocity) = state
-    velocity += (a - 1) * 0.001 + cos(3 * position) * (-0.0025)
+    velocity += ((a - 1) * 0.001 + cos(3 * position) * (-0.0025)).toFloat()
     velocity = velocity.coerceIn(-max_speed, max_speed)
     position += velocity
     position = position.coerceIn(min_position, max_position)
-    if (position == min_position && velocity < 0) velocity = 0.0
+    if (position == min_position && velocity < 0) velocity = 0.0f
     val done = position >= goal_position
-    val reward = -1.0
+    val reward = -1.0f
     state[0] = position
     state[1] = velocity
     return tuple4(state.copy(), reward, done, emptyMap())
   }
   
-  override fun reset(): NDArray<Double> {
-    state[0] = Rand().nextDouble(-0.6, -0.4)
-    state[1] = 0.0
+  override fun reset(): NDArray<Float> {
+    state[0] = Rand().nextFloat(-0.6f, -0.4f)
+    state[1] = 0.0f
     return state.copy()
   }
   
   lateinit var viewer: Viewer
   lateinit var car: Geom
   var scale: Float = 1f
-  fun height(x: Double) = sin(3 * x) * .45 + .55
+  fun height(x: Float) = sin(3 * x) * .45 + .55
   override fun render() {
     if (!::viewer.isInitialized) {
       val screen_width = 600
       val screen_height = 400
       val world_width = max_position - min_position
-      scale = screen_width / world_width.toFloat()
+      scale = screen_width / world_width
       val carwidth = 40
       val carheight = 20
       viewer = Viewer(Config(screen_width, screen_height, isContinousRendering = false))
@@ -70,7 +67,7 @@ class MountainCar : Env<NDArray<Double>, Int> {
         color(BLACK)
         for (x in (min_position..max_position) / 100) {
           val y = height(x)
-          vertex((x - min_position).toFloat() * scale, y.toFloat() * scale)
+          vertex((x - min_position) * scale, y.toFloat() * scale)
         }
       }
       val clearance = 10f
@@ -89,7 +86,7 @@ class MountainCar : Env<NDArray<Double>, Int> {
       }
       viewer += car
       viewer += Geom {
-        val flagx = ((goal_position - min_position) * scale).toFloat()
+        val flagx = (goal_position - min_position) * scale
         val flagy1 = (height(goal_position) * scale).toFloat()
         val flagy2 = flagy1 + 50
         color(BLACK)
@@ -100,8 +97,8 @@ class MountainCar : Env<NDArray<Double>, Int> {
       viewer.startAsync()
     }
     val pos = state[0]
-    car.translation.set(((pos - min_position) * scale).toFloat(), (height(pos) * scale).toFloat())
-    car.rotation = cos(3 * pos).toFloat()
+    car.translation.set(((pos - min_position) * scale), (height(pos) * scale).toFloat())
+    car.rotation = cos(3 * pos)
     viewer.requestRender()
     Thread.sleep(1000 / 60)
   }

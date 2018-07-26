@@ -432,7 +432,7 @@ fun TF.unstack(value: Tensor, num: Long, axis: Long = 0L, name: String = "Unstac
  * has the same shape as `x` and `y`, then it chooses which element to copy from
  * `x` and `y`.
  */
-fun TF.where(condition: Tensor, x: Tensor, y: Tensor) = ternaryOp("Select", condition, x, y, "Select")
+fun TF.where(condition: Tensor, x: Tensor, y: Tensor, name: String = "Where") = ternaryOp("Select", condition, x, y, name)
 
 fun TF.where(condition: Tensor, name: String = "Where") = unaryOp("Where", condition, name)
 

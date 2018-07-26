@@ -3,6 +3,7 @@ package wumo.sim.algorithm.tensorflow.ops
 import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.algorithm.tensorflow.*
 import wumo.sim.algorithm.tensorflow.Tensor
+import wumo.sim.algorithm.tensorflow.Variable
 import wumo.sim.util.Dimension
 import wumo.sim.util.arange
 import wumo.sim.util.i
@@ -112,9 +113,11 @@ fun TF.Bucketize(input: Tensor, boundaries: FloatArray, name: String = "Bucketiz
       attr("boundaries", boundaries)
     }
 
-fun TF.cast(x: Tensor, dstT: Int, name: String = "Cast") =
-    if (x.dtype == dstT) x
-    else _cast(x, dstT, name)
+fun TF.cast(x: Tensor, dstT: Int, name: String = "Cast"): Tensor {
+  val x = (x as? Variable)?.value() ?: x
+  return if (x.dtype == dstT) x
+  else _cast(x, dstT, name)
+}
 
 fun TF._cast(x: Tensor, dstT: Int, name: String = "Cast") =
     naryOp("Cast", x, name = name) {

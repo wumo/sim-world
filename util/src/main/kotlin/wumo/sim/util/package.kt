@@ -1,29 +1,29 @@
 package wumo.sim.util
 
-class ClosedDoubleRange(val start: Double, val last: Double)
-  : Iterable<Double> {
+class ClosedFloatRange(val start: Float, val last: Float)
+  : Iterable<Float> {
   var step = last - start
   
   init {
     check(start < last && step > 0)
   }
   
-  override fun iterator() = object : Iterator<Double> {
+  override fun iterator() = object : Iterator<Float> {
     var current = start
     override fun hasNext() = current < last
     
-    override fun next(): Double {
+    override fun next(): Float {
       current += step
       return minOf(last, current)
     }
   }
   
-  operator fun div(n: Int): ClosedDoubleRange {
+  operator fun div(n: Int): ClosedFloatRange {
     check(n > 0)
     this.step = (last - start) / n
     return this
   }
 }
 
-operator fun Double.rangeTo(endInclusive: Double) =
-    ClosedDoubleRange(this, endInclusive)
+operator fun Float.rangeTo(endInclusive: Float) =
+    ClosedFloatRange(this, endInclusive)

@@ -6,7 +6,7 @@ import wumo.sim.core.Env
 import wumo.sim.util.Rand
 import wumo.sim.util.ndarray.NDArray
 
-fun argmax_tie_random(set: IntRange, evaluate: (Int) -> Double): Int {
+fun argmax_tie_random(set: IntRange, evaluate: (Int) -> Float): Int {
   val iterator = set.iterator()
   val max_a = mutableListOf(iterator.next())
   var max = evaluate(max_a[0])
@@ -25,56 +25,56 @@ fun argmax_tie_random(set: IntRange, evaluate: (Int) -> Double): Int {
   return max_a[Rand().nextInt(max_a.size)]
 }
 
-inline fun HashMap<Int, Double>.scale(s: Double) {
+inline fun HashMap<Int, Float>.scale(s: Float) {
   for (key in keys)
     compute(key) { _, v ->
       v!! * s
     }
 }
 
-inline fun HashMap<Int, Double>.scaleAdd(s: Double, x: IntArray) {
+inline fun HashMap<Int, Float>.scaleAdd(s: Float, x: IntArray) {
   for (i in x) {
     compute(i) { _, v ->
-      (v ?: 0.0) + s
+      (v ?: 0.0f) + s
     }
   }
 }
 
-inline fun HashMap<Int, Double>.innerProduct(x: IntArray): Double {
-  var sum = 0.0
+inline fun HashMap<Int, Float>.innerProduct(x: IntArray): Float {
+  var sum = 0.0f
   for (i in x)
-    sum += this[i] ?: 0.0
+    sum += this[i] ?: 0.0f
   return sum
 }
 
-inline fun DoubleArray.innerProduct(x: IntArray): Double {
-  var sum = 0.0
+inline fun FloatArray.innerProduct(x: IntArray): Float {
+  var sum = 0.0f
   for (i in x)
     sum += this[i]
   return sum
 }
 
-inline fun DoubleArray.scaleAdd(s: Double, z: HashMap<Int, Double>) {
+inline fun FloatArray.scaleAdd(s: Float, z: HashMap<Int, Float>) {
   for ((i, v) in z.entries)
     this[i] += s * v
 }
 
-inline fun DoubleArray.scaleAdd(s: Double, x: IntArray) {
+inline fun FloatArray.scaleAdd(s: Float, x: IntArray) {
   for (i in x)
     this[i] += s
 }
 
-inline fun Env<NDArray<Double>, Int>.`True Online Sarsa(λ)`(
+inline fun Env<NDArray<Float>, Int>.`True Online Sarsa(λ)`(
     Qfunc: LinearTileCodingFunc,
-    π: (NDArray<Double>) -> Int,
-    λ: Double,
-    α: Double,
+    π: (NDArray<Float>) -> Int,
+    λ: Float,
+    α: Float,
     episodes: Int,
     maxStep: Int = Int.MAX_VALUE) {
-  val γ = 1.0
+  val γ = 1.0f
   val X = Qfunc.feature
   val w = Qfunc.w
-  val z = HashMap<Int, Double>()
+  val z = HashMap<Int, Float>()
   for (episode in 0 until episodes) {
     print("$episode/$episodes")
     var step = 0
@@ -82,9 +82,9 @@ inline fun Env<NDArray<Double>, Int>.`True Online Sarsa(λ)`(
     var a = π(s)
     var x = X(s, a)
     z.clear()
-    var Q_old = 0.0
+    var Q_old = 0.0f
     var terminal = false
-    var G = 0.0
+    var G = 0.0f
     while (true) {
       step++
       if (terminal || step >= maxStep) break
@@ -92,7 +92,7 @@ inline fun Env<NDArray<Double>, Int>.`True Online Sarsa(λ)`(
       val (s_next, reward, done) = step(a)
       G += γ * reward
       terminal = done
-      val tmp1 = (1.0 - α * γ * λ * z.innerProduct(x))
+      val tmp1 = (1.0f - α * γ * λ * z.innerProduct(x))
       z.scale(γ * λ)
       z.scaleAdd(tmp1, x)
       
@@ -117,11 +117,11 @@ inline fun Env<NDArray<Double>, Int>.`True Online Sarsa(λ)`(
   }
 }
 
-inline fun Env<NDArray<Double>, Int>.Play(
-    π: (NDArray<Double>) -> Int,
+inline fun Env<NDArray<Float>, Int>.Play(
+    π: (NDArray<Float>) -> Int,
     episodes: Int,
     maxStep: Int = Int.MAX_VALUE) {
-  val γ = 1.0
+  val γ = 1.0f
   for (episode in 0 until episodes) {
     print("$episode/$episodes")
     var step = 0

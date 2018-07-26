@@ -18,7 +18,7 @@ class Math_opsKtTest : BaseTest() {
     val C = tf.matmul(A, B)
     val node = tensorflow.Node(C.op!!.c_op)
     node.DebugString().string.println()
-    
+
 //    printGraph()
 //    tf.session {
 //      C.eval()
@@ -44,6 +44,15 @@ class Math_opsKtTest : BaseTest() {
     printGraph()
     tf.session {
       b.eval()
+    }
+  }
+  
+  @Test
+  fun argmax() {
+    val A = tf.const(3 x 3, 1f)
+    val B = tf.argmax(A, 1)
+    tf.session {
+      B.eval()
     }
   }
 }

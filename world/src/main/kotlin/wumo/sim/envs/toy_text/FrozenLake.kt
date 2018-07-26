@@ -1,9 +1,6 @@
 package wumo.sim.envs.toy_text
 
-import wumo.sim.util.ANSI_RED_BACKGROUND
-import wumo.sim.util.ANSI_RESET
-import wumo.sim.util.tuple2
-import wumo.sim.util.tuple4
+import wumo.sim.util.*
 
 val LEFT = 0
 val DOWN = 1
@@ -35,7 +32,7 @@ class FrozenLake
 private constructor(val desc: Array<String>, val nrow: Int, val ncol: Int,
                     nS: Int, nA: Int,
                     P: Transition,
-                    isd: DoubleArray) : DiscreteEnv(nS, nA, P, isd) {
+                    isd: FloatArray) : DiscreteEnv(nS, nA, P, isd) {
   companion object {
     operator fun invoke(_desc: Array<String>? = null,
                         map_name: String? = "4x4",
@@ -49,8 +46,8 @@ private constructor(val desc: Array<String>, val nrow: Int, val ncol: Int,
       val ncol = desc[0].length
       val nS = nrow * ncol
       val nA = 4
-      val P = Array(nS) { Array(nA) { mutableListOf<tuple4<Double, Int, Double, Boolean>>() } }
-      val isd = DoubleArray(nS) { if (desc[it / ncol][it % ncol] == 'S') 1.0 else 0.0 }
+      val P = Array(nS) { Array(nA) { mutableListOf<tuple4<Float, Int, Float, Boolean>>() } }
+      val isd = f(nS) { if (desc[it / ncol][it % ncol] == 'S') 1.0f else 0.0f }
       fun to_s(row: Int, col: Int) = row * ncol + col
       
       fun inc(row: Int, col: Int, a: Int): tuple2<Int, Int> {
@@ -69,7 +66,7 @@ private constructor(val desc: Array<String>, val nrow: Int, val ncol: Int,
             val li = P[s][a]
             val letter = desc[row][col]
             if (letter in "GH")
-              li += tuple4(1.0, s, 0.0, true)
+              li += tuple4(1.0f, s, 0.0f, true)
             else {
               if (is_slippery) {
                 for (b in intArrayOf(((a - 1) % 4 + 4) % 4, a, (a + 1) % 4)) {
@@ -77,16 +74,16 @@ private constructor(val desc: Array<String>, val nrow: Int, val ncol: Int,
                   val newstate = to_s(newrow, newcol)
                   val newletter = desc[newrow][newcol]
                   val done = newletter in "GH"
-                  val rew = if (newletter == 'G') 1.0 else 0.0
-                  li += tuple4(1.0 / 3.0, newstate, rew, done)
+                  val rew = if (newletter == 'G') 1.0f else 0.0f
+                  li += tuple4(1.0f / 3.0f, newstate, rew, done)
                 }
               } else {
                 val (newrow, newcol) = inc(row, col, a)
                 val newstate = to_s(newrow, newcol)
                 val newletter = desc[newrow][newcol]
                 val done = newletter in "GH"
-                val rew = if (newletter == 'G') 1.0 else 0.0
-                li += tuple4(1.0, newstate, rew, done)
+                val rew = if (newletter == 'G') 1.0f else 0.0f
+                li += tuple4(1.0f, newstate, rew, done)
               }
             }
           }
@@ -95,7 +92,7 @@ private constructor(val desc: Array<String>, val nrow: Int, val ncol: Int,
     }
   }
   
-  override val reward_range = tuple2(0.0, 1.0)
+  override val reward_range = tuple2(0.0f, 1.0f)
   
   override fun render() {
     val row = s / ncol

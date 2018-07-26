@@ -11,7 +11,7 @@ import wumo.sim.util.scalarDimension
 fun TF.random_normal(shape: Tensor, dtype: Int = DT_FLOAT,
                      name: String = "RandomStandardNormal"): Tensor {
   name_scope(name) {
-    val p = g.nodeBuilder("RandomStandardNormal",ctxNs.fullName)
+    val p = g.nodeBuilder("RandomStandardNormal", ctxNs.fullName)
         .attrType("dtype", dtype)
         .addInput(shape)
         .build()
@@ -52,11 +52,9 @@ fun TF.random_uniform(shape: Tensor, dtype: Int = DT_FLOAT,
   name_scope(name) {
     val minval = const(scalarDimension, dtype, min, name = "min")
     val maxval = const(scalarDimension, dtype, max, name = "max")
-    val rand = if (dtype.is_integer)
-      random_uniform_int(shape, minval, maxval)
-    else
-      random_uniform(shape, dtype)
-    
+    if (dtype.is_integer)
+      return random_uniform_int(shape, minval, maxval)
+    val rand = random_uniform(shape, dtype)
     return add(rand * (maxval - minval), minval, ctxNs.scopeNameForOnce())
   }
 }
@@ -64,7 +62,7 @@ fun TF.random_uniform(shape: Tensor, dtype: Int = DT_FLOAT,
 fun TF.random_uniform_int(shape: Tensor, minval: Tensor, maxval: Tensor,
                           name: String = "RandomUniformInt"): Tensor {
   name_scope(name) {
-    val p = g.nodeBuilder("RandomUniformInt",ctxNs.fullName)
+    val p = g.nodeBuilder("RandomUniformInt", ctxNs.fullName)
         .addInput(shape)
         .addInput(minval)
         .addInput(maxval)
@@ -77,7 +75,7 @@ fun TF.random_uniform(shape: Tensor,
                       dtype: Int = DT_FLOAT,
                       name: String = "RandomUniform"): Tensor {
   name_scope(name) {
-    val p = g.nodeBuilder("RandomUniform",ctxNs.fullName)
+    val p = g.nodeBuilder("RandomUniform", ctxNs.fullName)
         .attrType("dtype", dtype)
         .addInput(shape)
         .build()
@@ -89,7 +87,7 @@ fun TF.random_uniform(shape: Dimension,
                       dtype: Int = DT_FLOAT,
                       name: String = "RandomUniform"): Tensor {
   name_scope(name) {
-    val p = g.nodeBuilder("RandomUniform",ctxNs.fullName)
+    val p = g.nodeBuilder("RandomUniform", ctxNs.fullName)
         .attrType("dtype", dtype)
         .addInput(const(shape.asIntArray(), "shape"))
         .build()

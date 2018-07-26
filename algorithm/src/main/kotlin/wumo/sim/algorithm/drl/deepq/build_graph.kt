@@ -116,6 +116,8 @@ fun build_train(make_obs_ph: (String) -> TfInput,
       tf.group(update_target_expr)
     }
     
+    tf.printGraph()
+    
     val train = function(
         inputs = a(
             obs_t_input,
@@ -258,14 +260,15 @@ fun build_act(make_obs_ph: (String) -> TfInput, q_func: Q_func, num_actions: Int
     val eps = tf.get_variable(scalarDimension, tf.constant_initializer(0), name = "eps")
     
     val q_values = q_func(observations_ph.get(), num_actions, "q_func", false)
-    val deterministic_actions = tf.argmax(q_values, 1)
+    g_q_values = q_values
+    val deterministic_actions = tf.argmax(q_values, 1, name = "deterministic_actions")
     
     val batch_size = tf.shape(observations_ph.get())[0]
-    val random_actions = tf.random_uniform(tf.stack(a(batch_size)), min = 0, max = num_actions, dtype = DT_INT32)
+    val random_actions = tf.random_uniform(tf.stack(a(batch_size)), min = 0, max = num_actions, dtype = DT_INT32, name = "random_actions")
     val chose_random = tf.less(tf.random_uniform(tf.stack(a(batch_size)), min = 0, max = 1, dtype = DT_FLOAT), eps)
-    val stochastic_actions = tf.where(chose_random, random_actions, deterministic_actions)
+    val stochastic_actions = tf.where(chose_random, random_actions, deterministic_actions, name = "stochastic_action")
     
-    val output_actions = tf.cond(stochastic_ph, { stochastic_actions }, { deterministic_actions })
+    val output_actions = tf.cond(stochastic_ph, { stochastic_actions }, { deterministic_actions }, name = "output_actions")
     val update_eps_expr = eps.assign(tf.cond(tf.greaterEqual(update_eps_ph, tf.const(0f)), { update_eps_ph }, { eps }))
     val _act = function(inputs = a(observations_ph, stochastic_ph, update_eps_ph),
                         outputs = output_actions,

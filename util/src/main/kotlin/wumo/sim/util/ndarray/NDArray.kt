@@ -19,8 +19,8 @@ interface Buf<T> {
 
 open class NDArray<T>(val shape: Dimension, val raw: Buf<T>) : Iterable<T> {
   companion object {
-    fun zeros(shape: Int): NDArray<Double> {
-      return NDArray(dim(shape), DoubleArray(shape))
+    fun zeros(shape: Int): NDArray<Float> {
+      return NDArray(dim(shape), FloatArray(shape))
     }
     
     fun zeros(shape: Dimension): NDArray<Float> {
@@ -140,6 +140,16 @@ open class NDArray<T>(val shape: Dimension, val raw: Buf<T>) : Iterable<T> {
     operator fun invoke(shape: Dimension, value: IntArray) = NDArray(shape, IntArrayBuf(value))
     operator fun invoke(shape: Dimension, value: LongArray) = NDArray(shape, LongArrayBuf(value))
     operator fun invoke(shape: Dimension, value: Array<String>) = NDArray(shape, ArrayBuf(value))
+    
+    operator fun invoke(shape: Dimension, initvalue: Float) = NDArray(shape, FloatArray(shape.numElements()) { initvalue })
+    operator fun invoke(shape: Dimension, initvalue: Double) = NDArray(shape, DoubleArray(shape.numElements()) { initvalue })
+    operator fun invoke(shape: Dimension, initvalue: Boolean) = NDArray(shape, BooleanArray(shape.numElements()) { initvalue })
+    operator fun invoke(shape: Dimension, initvalue: Byte) = NDArray(shape, ByteArray(shape.numElements()) { initvalue })
+    operator fun invoke(shape: Dimension, initvalue: Short) = NDArray(shape, ShortArray(shape.numElements()) { initvalue })
+    operator fun invoke(shape: Dimension, initvalue: Int) = NDArray(shape, IntArray(shape.numElements()) { initvalue })
+    operator fun invoke(shape: Dimension, initvalue: Long) = NDArray(shape, LongArray(shape.numElements()) { initvalue })
+    operator fun invoke(shape: Dimension, initvalue: String) = NDArray(shape, Array(shape.numElements()) { initvalue })
+    
   }
   
   private val stride: IntArray
@@ -162,11 +172,15 @@ open class NDArray<T>(val shape: Dimension, val raw: Buf<T>) : Iterable<T> {
   }
   
   private inline fun <U> get_set(vararg idx: Int, op: (Int) -> U): U {
-    require(idx.size == dims.size)
-    var offset = 0L
-    for ((i, value) in idx.withIndex()) {
-      require(value in 0 until dims[i]) { "dim($i)=$value is out of range[0,${dims[i]})" }
-      offset += value * stride[i]
+    val offset = if (idx.isEmpty()) 0L
+    else {
+      require(idx.size == dims.size)
+      var offset = 0L
+      for ((i, value) in idx.withIndex()) {
+        require(value in 0 until dims[i]) { "dim($i)=$value is out of range[0,${dims[i]})" }
+        offset += value * stride[i]
+      }
+      offset
     }
     return op(offset.toInt())
   }

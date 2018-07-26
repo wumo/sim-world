@@ -5,6 +5,7 @@ import wumo.sim.envs.classic_control.CartPole
 import wumo.sim.envs.classic_control.MountainCar
 import wumo.sim.util.Rand
 import wumo.sim.util.d
+import wumo.sim.util.f
 import wumo.sim.util.ndarray.NDArray
 import wumo.sim.world.examples.algorithm.*
 
@@ -35,11 +36,11 @@ class Test {
   fun `Test Mountain_Car True Online Sarsa`() {
     val env = MountainCar()
     val feature = SuttonTileCoding(511, 8) { s, a, tilesFunc ->
-      tilesFunc(NDArray(d(s[0] * 8 / (MountainCar.max_position - MountainCar.min_position),
+      tilesFunc(NDArray(f(s[0] * 8 / (MountainCar.max_position - MountainCar.min_position),
                           s[1] * 8 / (MountainCar.max_speed + MountainCar.max_speed))), intArrayOf(a))
     }
     val func = LinearTileCodingFunc(feature)
-    val π = { s: NDArray<Double> ->
+    val π = { s: NDArray<Float> ->
       if (Rand().nextDouble() < 0.1)
         env.action_space.sample()
       else
@@ -48,8 +49,8 @@ class Test {
     env.`True Online Sarsa(λ)`(
         Qfunc = func,
         π = π,
-        λ = 0.96,
-        α = 0.3 / 8,
+        λ = 0.96f,
+        α = 0.3f / 8,
         episodes = 9000
     )
     env.close()
@@ -59,12 +60,12 @@ class Test {
   fun `Test Cart Pole True Online Sarsa`() {
     val env = CartPole()
     val feature = SuttonTileCoding(511, 8) { s, a, tilesFunc ->
-      tilesFunc(NDArray(d(s[0] * 8 / (CartPole.x_threshold * 4), s[1],
+      tilesFunc(NDArray(f(s[0] * 8 / (CartPole.x_threshold * 4), s[1],
                           s[2] * 8 / (CartPole.theta_threshold_radians * 4), s[3])), intArrayOf(a))
     }
     val func = LinearTileCodingFunc(feature)
-    var epsilon = 0.1
-    val π = { s: NDArray<Double> ->
+    var epsilon = 0.1f
+    val π = { s: NDArray<Float> ->
       if (Rand().nextDouble() < epsilon)
         env.action_space.sample()
       else
@@ -73,11 +74,11 @@ class Test {
     env.`True Online Sarsa(λ)`(
         Qfunc = func,
         π = π,
-        λ = 0.96,
-        α = 0.3 / 8,
+        λ = 0.96f,
+        α = 0.3f / 8,
         episodes = 100
     )
-    epsilon = 0.0
+    epsilon = 0.0f
     env.Play(
         π = π,
         episodes = 9000

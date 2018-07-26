@@ -1,14 +1,17 @@
 package wumo.sim.algorithm.drl.deepq
 
+import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.ops.const
 import wumo.sim.algorithm.tensorflow.tf
 import wumo.sim.algorithm.tensorflow.training.AdamOptimizer
 import wumo.sim.core.Env
-import wumo.sim.util.ndarray.NDArray
-import wumo.sim.util.ndarray.abs
-import wumo.sim.util.ndarray.ones_like
-import wumo.sim.util.ndarray.plus
+import wumo.sim.util.a
+import wumo.sim.util.ndarray.*
+import wumo.sim.util.ndarray.NDArray.Companion.toNDArray
+import kotlin.math.max
 
+
+lateinit var g_q_values: Tensor
 /**
  * Train a deepq model.
  *
@@ -46,6 +49,7 @@ fun <O : Any, A : Any> learn(env: Env<O, A>,
                              train_freq: Int = 1,
                              batch_size: Int = 32,
                              print_freq: Int = 100,
+                             checkpoint_freq: Int = 10000,
                              learning_starts: Int = 1000,
                              gamma: Float = 1.0f,
                              target_network_update_freq: Int = 500,
@@ -91,7 +95,7 @@ fun <O : Any, A : Any> learn(env: Env<O, A>,
     update_target()
     
     val episode_rewards = mutableListOf(0f)
-    var saved_mean_reward = 0f
+    var saved_mean_reward = Float.NEGATIVE_INFINITY
     var obs = env.reset()
     var reset = true
     
@@ -101,7 +105,7 @@ fun <O : Any, A : Any> learn(env: Env<O, A>,
       var update_param_noise_threshold: Float
       val action = if (!param_noise) {
         update_eps = exploration.value(t)
-        act(NDArray.toNDArray(obs), update_eps = update_eps)
+        act(newaxis(toNDArray(obs)), update_eps = update_eps)
       } else {
         update_eps = 0f
         // Compute the threshold such that the KL divergence between perturbed and non-perturbed
@@ -110,16 +114,16 @@ fun <O : Any, A : Any> learn(env: Env<O, A>,
         // for detailed explanation.
         update_param_noise_threshold = (-Math.log((1 - exploration.value(t) + exploration.value(t) / env.action_space.n).toDouble())).toFloat()
         act as ActWithParamNoise
-        act(NDArray.toNDArray(obs), reset, update_param_noise_threshold, update_param_noise_scale = true, update_eps = update_eps)
+        act(newaxis(toNDArray(obs)), reset, update_param_noise_threshold, update_param_noise_scale = true, update_eps = update_eps)
       }[0].get() as A
       val env_action = action
       reset = false
-      val (new_obs, rew, done, _) = env.step(env_action as A)
+      val (new_obs, rew, done, _) = env.step(env_action)
       //Store transition in the replay buffer.
       replay_buffer.add(obs, action, rew, new_obs, done)
       obs = new_obs
       
-      episode_rewards[episode_rewards.lastIndex] += rew.toFloat()
+      episode_rewards[episode_rewards.lastIndex] += rew
       if (done) {
         obs = env.reset()
         episode_rewards += 0f
@@ -146,18 +150,32 @@ fun <O : Any, A : Any> learn(env: Env<O, A>,
       if (t > learning_starts && t % target_network_update_freq == 0)
         update_target()
       
-      val mean_100ep_reward = episode_rewards.mean()
+      val mean_100ep_reward = episode_rewards.mean(-101, -1)
       val num_episodes = episode_rewards.size
       if (done && episode_rewards.size % print_freq == 0) {
-        println("steps:t\n" +
+        println("steps:$t\n" +
                 "episodes: $num_episodes\n" +
                 "mean 100 episode reward: $mean_100ep_reward\n" +
                 "${100 * exploration.value(t)} time spent exploring")
       }
       
-      
+      if (checkpoint_freq > 0 && t > learning_starts && num_episodes > 100 && t % checkpoint_freq == 0) {
+        if (mean_100ep_reward > saved_mean_reward) {
+          if (print_freq > 0)
+            System.err.println("Saving model due to mean reward increase: $saved_mean_reward -> $mean_100ep_reward")
+          saved_mean_reward = mean_100ep_reward
+        }
+      }
     }
   }
 }
 
-private fun MutableList<Float>.mean() = sum() / size
+private fun MutableList<Float>.mean(start: Int, end: Int): Float {
+  val start = max(0, if (start < 0) size + start else start)
+  val end = max(0, if (end < 0) size + end else end)
+  var sum = 0f
+  for (i in start..end) {
+    sum += this[i]
+  }
+  return sum / (end - start + 1)
+}
