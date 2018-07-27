@@ -8,11 +8,8 @@ import wumo.sim.algorithm.tensorflow.Variable
 import wumo.sim.algorithm.tensorflow.ops.*
 import wumo.sim.algorithm.tensorflow.tf
 import wumo.sim.algorithm.tensorflow.training.Optimizer
-import wumo.sim.util.a
-import wumo.sim.util.dim
+import wumo.sim.util.*
 import wumo.sim.util.ndarray.NDArray
-import wumo.sim.util.scalarDimension
-import wumo.sim.util.tuple4
 import kotlin.reflect.KFunction3
 
 /**
@@ -48,9 +45,9 @@ fun build_train(make_obs_ph: (String) -> TfInput,
                 name: String = "deepq",
                 param_noise: Boolean = false,
                 param_noise_filter_func: ((Variable) -> Boolean)? = null)
-    : tuple4<ActFunction, Function, Function, Map<String, Function>> {
+    : tuple4<ActFunction, Function, Function, Map<String, Any>> {
   
-  val act_f = if (param_noise)
+  val (act_f, act_vars, act_graph_def) = if (param_noise)
     build_act_with_param_noise(make_obs_ph, q_func, num_actions,
                                param_noise_filter_func = param_noise_filter_func,
                                name = name)
@@ -130,7 +127,7 @@ fun build_train(make_obs_ph: (String) -> TfInput,
         updates = a(optimize_expr))
     val update_target = function(updates = a(update_target_expr))
     val q_values = function(a(obs_t_input), q_t)
-    return tuple4(act_f, train, update_target, mapOf("q_values" to q_values))
+    return tuple4(act_f, train, update_target, mapOf("q_values" to q_values, "act_vars" to act_vars, "act_graph_def" to act_graph_def))
   }
 }
 
@@ -156,7 +153,7 @@ fun build_act_with_param_noise(make_obs_ph: (String) -> TfInput,
                                q_func: Q_func,
                                num_actions: Int,
                                param_noise_filter_func: ((Variable) -> Boolean)?,
-                               name: String): ActFunction {
+                               name: String): tuple3<ActFunction, List<Variable>, ByteArray> {
   val param_noise_filter_func = param_noise_filter_func ?: { v: Variable -> true }
   fun scope_vars(original_scope: String): List<Variable> {
     TODO("not implemented")
@@ -236,7 +233,8 @@ fun build_act_with_param_noise(make_obs_ph: (String) -> TfInput,
                         outputs = outputs,
                         givens = givens,
                         updates = updates)
-    return ActWithParamNoise(_act)
+    val graphDef = tf.g.toGraphDef()
+    return tuple3(ActWithParamNoise(_act), listOf(), graphDef)
   }
 }
 
@@ -251,7 +249,7 @@ fun build_act_with_param_noise(make_obs_ph: (String) -> TfInput,
  *function to select and action given observation.
  *       See the top of the file for details.
  */
-fun build_act(make_obs_ph: (String) -> TfInput, q_func: Q_func, num_actions: Int, name: String): ActFunction {
+fun build_act(make_obs_ph: (String) -> TfInput, q_func: Q_func, num_actions: Int, name: String): tuple3<ActFunction, List<Variable>, ByteArray> {
   tf.variable_scope(name) {
     val observations_ph = make_obs_ph("observation")
     val stochastic_ph = tf.placeholder(scalarDimension, DT_BOOL, name = "stochastic")
@@ -260,7 +258,6 @@ fun build_act(make_obs_ph: (String) -> TfInput, q_func: Q_func, num_actions: Int
     val eps = tf.get_variable(scalarDimension, tf.constant_initializer(0), name = "eps")
     
     val q_values = q_func(observations_ph.get(), num_actions, "q_func", false)
-    g_q_values = q_values
     val deterministic_actions = tf.argmax(q_values, 1, name = "deterministic_actions")
     
     val batch_size = tf.shape(observations_ph.get())[0]
@@ -270,12 +267,13 @@ fun build_act(make_obs_ph: (String) -> TfInput, q_func: Q_func, num_actions: Int
     
     val output_actions = tf.cond(stochastic_ph, { stochastic_actions }, { deterministic_actions }, name = "output_actions")
     val update_eps_expr = eps.assign(tf.cond(tf.greaterEqual(update_eps_ph, tf.const(0f)), { update_eps_ph }, { eps }))
+    val q_func_vars = tf.ctxVs.variable_subscopes["q_func"]!!.all_variables()
     val _act = function(inputs = a(observations_ph, stochastic_ph, update_eps_ph),
                         outputs = output_actions,
                         givens = a(update_eps_ph to -1.0f, stochastic_ph to true),
                         updates = a(update_eps_expr))
-    
-    return ActFunction(_act)
+    val gradphDef = tf.g.toGraphDef()
+    return tuple3(ActFunction(_act), listOf(eps) + q_func_vars, gradphDef)
   }
 }
 

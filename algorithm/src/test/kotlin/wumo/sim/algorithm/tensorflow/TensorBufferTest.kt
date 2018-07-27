@@ -11,7 +11,7 @@ class TensorBufferTest {
   fun `get set`() {
     tf
     val _t = TensorBuffer(2 x 2, f(1f, 2f, 3f, 4f))
-    val t = NDArray(2 x 2, _t)
+    val t = NDArray(2 x 2, _t, Float::class.java)
     println(t)
     t[0, 0] = 3f
     println(t)

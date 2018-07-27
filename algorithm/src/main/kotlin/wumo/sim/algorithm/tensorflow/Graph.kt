@@ -1,7 +1,9 @@
 package wumo.sim.algorithm.tensorflow
 
+import org.bytedeco.javacpp.BytePointer
 import org.bytedeco.javacpp.Pointer
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Graph.newGraph
+import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
 import org.bytedeco.javacpp.tensorflow.*
 
 /**
@@ -42,6 +44,17 @@ class Graph(val tf: TF) {
     TF_DeleteStatus(status)
     TF_DeleteBuffer(buf)
     return bytes
+  }
+  
+  fun import(act_graph_def: ByteArray, prefix: String) {
+    val buf = TF_NewBufferFromString(BytePointer(*act_graph_def), act_graph_def.size.toLong())
+    val status = newStatus()
+    val opt = TF_NewImportGraphDefOptions()
+    TF_ImportGraphDefOptionsSetPrefix(opt, prefix)
+    TF_GraphImportGraphDef(c_graph, buf, opt, status)
+    throwExceptionIfNotOk(status)
+    TF_DeleteImportGraphDefOptions(opt)
+    TF_DeleteBuffer(buf)
   }
   
   fun create_op(new_op_type: String,

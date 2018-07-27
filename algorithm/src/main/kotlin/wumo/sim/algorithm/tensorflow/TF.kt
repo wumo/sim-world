@@ -11,6 +11,16 @@ import wumo.sim.util.println
 
 var tf = TF()
 
+inline fun <R> defaut(_tf: TF, block: () -> R): R {
+  val tmp = tf
+  tf = _tf
+  try {
+    return block()
+  } finally {
+    tf = tmp
+  }
+}
+
 class TF {
   companion object {
     init {

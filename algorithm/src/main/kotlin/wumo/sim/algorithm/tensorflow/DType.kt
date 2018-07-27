@@ -7,19 +7,35 @@ private val typeCodes = mapOf(
     Float::class.java to DT_FLOAT,
     java.lang.Double::class.java to DT_DOUBLE,
     Double::class.java to DT_DOUBLE,
-    Int::class.java to DT_INT32,
-    java.lang.Integer::class.java to DT_INT32,
-    Long::class.java to DT_INT64,
-    java.lang.Long::class.java to DT_INT64,
     Boolean::class.java to DT_BOOL,
     java.lang.Boolean::class.java to DT_BOOL,
     Byte::class.java to DT_INT8,
     java.lang.Byte::class.java to DT_INT8,
+    Short::class.java to DT_INT16,
+    java.lang.Short::class.java to DT_INT16,
+    Int::class.java to DT_INT32,
+    java.lang.Integer::class.java to DT_INT32,
+    Long::class.java to DT_INT64,
+    java.lang.Long::class.java to DT_INT64,
     String::class.java to DT_STRING
 )
 
 fun dtypeFromClass(c: Class<*>): Int {
   return typeCodes[c] ?: throw IllegalArgumentException("${c.name} objects cannot be used as elements in a TensorFlow Tensor")
+}
+
+fun dtypeToClass(dtype: Int): Class<*> {
+  return when (dtype) {
+    DT_INT8, DT_UINT8 -> Byte::class.java
+    DT_FLOAT -> Float::class.java
+    DT_DOUBLE -> Double::class.java
+    DT_BOOL -> Boolean::class.java
+    DT_INT16, DT_UINT16 -> Short::class.java
+    DT_INT32, DT_UINT32 -> Int::class.java
+    DT_INT64, DT_UINT64 -> Long::class.java
+    DT_STRING -> String::class.java
+    else -> throw IllegalArgumentException("$dtype not supported")
+  }
 }
 
 fun Int.name(): String {

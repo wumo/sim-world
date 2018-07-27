@@ -17,7 +17,7 @@ interface Buf<T> {
   val size: Int
 }
 
-open class NDArray<T>(val shape: Dimension, val raw: Buf<T>) : Iterable<T> {
+open class NDArray<T>(val shape: Dimension, val raw: Buf<T>, val dtype: Class<*>) : Iterable<T> {
   companion object {
     fun zeros(shape: Int): NDArray<Float> {
       return NDArray(dim(shape), FloatArray(shape))
@@ -89,9 +89,10 @@ open class NDArray<T>(val shape: Dimension, val raw: Buf<T>) : Iterable<T> {
       
       var i = 0
       for (ndarray in c)
-        for (element in ndarray)
+        for (element in ndarray) {
           buf[i++] = element!!
-      return NDArray(shape, buf)
+        }
+      return NDArray(shape, buf, firstElement::class.java)
     }
     
     private val collectionNDArraySwitch = SwitchType2<Int, Buf<*>>().apply {
@@ -132,14 +133,14 @@ open class NDArray<T>(val shape: Dimension, val raw: Buf<T>) : Iterable<T> {
     operator fun invoke(value: Array<Long>) = NDArray(dim(value.size), value.toLongArray())
     operator fun invoke(value: Array<String>) = NDArray(dim(value.size), value)
     
-    operator fun invoke(shape: Dimension, value: FloatArray) = NDArray(shape, FloatArrayBuf(value))
-    operator fun invoke(shape: Dimension, value: DoubleArray) = NDArray(shape, DoubleArrayBuf(value))
-    operator fun invoke(shape: Dimension, value: BooleanArray) = NDArray(shape, BooleanArrayBuf(value))
-    operator fun invoke(shape: Dimension, value: ByteArray) = NDArray(shape, ByteArrayBuf(value))
-    operator fun invoke(shape: Dimension, value: ShortArray) = NDArray(shape, ShortArrayBuf(value))
-    operator fun invoke(shape: Dimension, value: IntArray) = NDArray(shape, IntArrayBuf(value))
-    operator fun invoke(shape: Dimension, value: LongArray) = NDArray(shape, LongArrayBuf(value))
-    operator fun invoke(shape: Dimension, value: Array<String>) = NDArray(shape, ArrayBuf(value))
+    operator fun invoke(shape: Dimension, value: FloatArray) = NDArray(shape, FloatArrayBuf(value), Float::class.java)
+    operator fun invoke(shape: Dimension, value: DoubleArray) = NDArray(shape, DoubleArrayBuf(value), Double::class.java)
+    operator fun invoke(shape: Dimension, value: BooleanArray) = NDArray(shape, BooleanArrayBuf(value), Boolean::class.java)
+    operator fun invoke(shape: Dimension, value: ByteArray) = NDArray(shape, ByteArrayBuf(value), Byte::class.java)
+    operator fun invoke(shape: Dimension, value: ShortArray) = NDArray(shape, ShortArrayBuf(value), Short::class.java)
+    operator fun invoke(shape: Dimension, value: IntArray) = NDArray(shape, IntArrayBuf(value), Int::class.java)
+    operator fun invoke(shape: Dimension, value: LongArray) = NDArray(shape, LongArrayBuf(value), Long::class.java)
+    operator fun invoke(shape: Dimension, value: Array<String>) = NDArray(shape, ArrayBuf(value), String::class.java)
     
     operator fun invoke(shape: Dimension, initvalue: Float) = NDArray(shape, FloatArray(shape.numElements()) { initvalue })
     operator fun invoke(shape: Dimension, initvalue: Double) = NDArray(shape, DoubleArray(shape.numElements()) { initvalue })
@@ -272,7 +273,7 @@ open class NDArray<T>(val shape: Dimension, val raw: Buf<T>) : Iterable<T> {
     val sb = StringBuilder()
     when (dims.size) {
       0 -> return get().toString()
-      1 -> printVector(0, dims[0].toInt(), sb)
+      1 -> printVector(0, dims[0], sb)
       else -> printTensor(padding, 0, 0, sb)
     }
     return sb.toString()
@@ -288,7 +289,7 @@ open class NDArray<T>(val shape: Dimension, val raw: Buf<T>) : Iterable<T> {
     return sb.toString()
   }
   
-  fun copy() = NDArray(shape, raw.copy())
+  fun copy() = NDArray(shape, raw.copy(), dtype)
   fun setFrom(other: NDArray<T>) {
     raw.setFrom(other.raw)
   }

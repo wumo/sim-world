@@ -72,7 +72,7 @@ open class Tensor(val op: Operation?, val value_index: Int) : TensorLike {
    */
   open fun value() = this
   
-  open fun asRef(): Tensor = throw UnsupportedOperationException("This tensor is not mutable!")
+  open fun asRef(): Tensor = this
   
   override fun toString() =
       when (op) {

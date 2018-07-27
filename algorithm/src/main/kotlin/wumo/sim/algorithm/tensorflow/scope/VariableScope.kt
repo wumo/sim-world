@@ -18,7 +18,7 @@ class VariableScope(val name: String, val namescope: NameScope) : enter_exit {
   var reenter_increment = false
   var reuse = false
   /***/
-  val var_scope_count = HashMap<String, Int>()
+  private val var_scope_count = HashMap<String, Int>()
   /**这一层存储的所有变量*/
   val variables = HashMap<String, Variable>()
   /**这一层下的sub variable scope, */

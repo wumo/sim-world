@@ -29,7 +29,7 @@ abstract class TensorBuffer<T> protected constructor(c_tensor: TF_Tensor) : Buf<
       case<ArrayBuf<*>> { TensorBuffer(_2, Array(_1.raw.size) { _1[it].toString() }) }
     }
     
-    fun <T> toNDArray(tb: TensorBuffer<T>) = NDArray(Dimension(tb.dims), tb)
+    fun <T> toNDArray(tb: TensorBuffer<T>) = NDArray(Dimension(tb.dims), tb, dtypeToClass(tb.dtype.base_dtype))
     fun <T> toNDArray(c_tensor: TF_Tensor) = toNDArray(invoke<T>(c_tensor))
     fun <T> fromNDArray(ndarray: NDArray<T>) = (if (ndarray.raw is TensorBuffer<*>) ndarray.raw
     else convert_switch(ndarray.raw, ndarray.shape)) as TensorBuffer<T>
@@ -78,7 +78,7 @@ abstract class TensorBuffer<T> protected constructor(c_tensor: TF_Tensor) : Buf<
       val t = newTensor(DT_STRING, shape.asLongArray(), data)
       return StringTensorBuffer(t, array)
     }
-  
+    
     
     internal fun create(shape: Dimension, array: Pointer, dtype: Int) =
         create(shape.asLongArray(), array, dtype)

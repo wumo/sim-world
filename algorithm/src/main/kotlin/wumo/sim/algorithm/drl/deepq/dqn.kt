@@ -1,18 +1,19 @@
 package wumo.sim.algorithm.drl.deepq
 
-import wumo.sim.algorithm.tensorflow.Tensor
+import org.tensorflow.framework.GraphDef
+import wumo.sim.algorithm.tensorflow.Variable
 import wumo.sim.algorithm.tensorflow.ops.const
 import wumo.sim.algorithm.tensorflow.tf
 import wumo.sim.algorithm.tensorflow.training.AdamOptimizer
 import wumo.sim.core.Env
-import wumo.sim.util.a
 import wumo.sim.util.ndarray.*
 import wumo.sim.util.ndarray.NDArray.Companion.toNDArray
-import wumo.sim.util.tuple2
+import java.io.BufferedOutputStream
+import java.io.File
+import java.io.FileOutputStream
 import kotlin.math.max
 
 
-lateinit var g_q_values: Tensor
 /**
  * Train a deepq model.
  *
@@ -42,6 +43,7 @@ lateinit var g_q_values: Tensor
  */
 fun <O : Any, A : Any> learn(env: Env<O, A>,
                              q_func: Q_func,
+                             model_file_path: String,
                              lr: Float = 5e-4f,
                              max_timesteps: Int = 100000,
                              buffer_size: Int = 50000,
@@ -70,6 +72,9 @@ fun <O : Any, A : Any> learn(env: Env<O, A>,
       gamma = gamma,
       grad_norm_clipping = tf.const(10),
       param_noise = param_noise)
+  
+  val act_vars = debug["act_vars"] as List<Variable>
+  val act_graph_def = debug["act_graph_def"] as ByteArray
   
   //Create the replay buffer
   val replay_buffer: ReplayBuffer<O, A>
@@ -100,11 +105,13 @@ fun <O : Any, A : Any> learn(env: Env<O, A>,
     var obs = env.reset()
     var reset = true
     
+    val model_file = File(model_file_path)
+    val outstream = BufferedOutputStream(FileOutputStream(model_file))
     for (t in 0 until max_timesteps) {
       //Take action and update exploration to the newest value
       var update_eps: Float
       var update_param_noise_threshold: Float
-      val action = if (!param_noise) {
+      val act_result = if (!param_noise) {
         update_eps = exploration.value(t)
         act(newaxis(toNDArray(obs)), update_eps = update_eps)
       } else {
@@ -116,7 +123,8 @@ fun <O : Any, A : Any> learn(env: Env<O, A>,
         update_param_noise_threshold = (-Math.log((1 - exploration.value(t) + exploration.value(t) / env.action_space.n).toDouble())).toFloat()
         act as ActWithParamNoise
         act(newaxis(toNDArray(obs)), reset, update_param_noise_threshold, update_param_noise_scale = true, update_eps = update_eps)
-      }[0].get() as A
+      }
+      val action = act_result[0].get() as A
       val env_action = action
       reset = false
       val (new_obs, rew, done, _) = env.step(env_action)
@@ -166,10 +174,16 @@ fun <O : Any, A : Any> learn(env: Env<O, A>,
           if (print_freq > 0)
             System.err.println("Saving model due to mean reward increase: $saved_mean_reward -> $mean_100ep_reward")
           saved_mean_reward = mean_100ep_reward
+          val result = eval(act_vars)
+          val def = saveModel(act_graph_def, act_vars.map { it.name }.zip(result))
+          outstream.write(def)
+//          val debugString = GraphDef.parseFrom(def).toString()
+//          println(debugString)
         }
       }
       
     }
+    outstream.close()
   }
   
   return act

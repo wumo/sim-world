@@ -23,6 +23,7 @@ val scalarDimension = Dimension()
 
 class Dimension(val elements: MutableList<Int> = mutableListOf()) : Iterable<Int> {
   constructor(elements: LongArray) : this(MutableList(elements.size) { elements[it].toInt() })
+  constructor(elements: IntArray) : this(elements.toMutableList())
   
   fun asLongArray() =
       LongArray(elements.size) { elements[it].toLong() }

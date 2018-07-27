@@ -153,6 +153,4 @@ class Variable(op: Operation, value_index: Int) : Tensor(op, value_index) {
   }
   
   override fun value() = snapshot
-  
-  override fun asRef() = this
 }

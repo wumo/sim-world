@@ -6,6 +6,7 @@ import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.TensorBuffer
 import wumo.sim.util.*
 import wumo.sim.util.Dimension
+import wumo.sim.util.ndarray.NDArray
 
 fun TF.const(value: Float, name: String = "Const") = const(scalarDimension, value, name)
 fun TF.const(value: Double, name: String = "Const") = const(scalarDimension, value, name)
@@ -83,6 +84,15 @@ fun <T> TF.const(value: TensorBuffer<T>, name: String = "Const"): Tensor {
   val op = g.nodeBuilder("Const", ctxNs.getUniqueFullName(name))
       .attr("value", value)
       .attrType("dtype", value.dtype.base_dtype)
+      .build()
+  return Tensor(op, 0)
+}
+
+fun <T> TF.const(value: NDArray<T>, name: String = "Const"): Tensor {
+  val dtype = dtypeFromClass(value.dtype)
+  val op = g.nodeBuilder("Const", ctxNs.getUniqueFullName(name))
+      .attr("value", TensorBuffer.fromNDArray(value))
+      .attrType("dtype", dtype)
       .build()
   return Tensor(op, 0)
 }
