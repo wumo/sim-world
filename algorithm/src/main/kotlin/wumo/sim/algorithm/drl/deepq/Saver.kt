@@ -1,25 +1,95 @@
 package wumo.sim.algorithm.drl.deepq
 
-import com.badlogic.gdx.math.Rectangle.tmp
+import com.badlogic.gdx.Gdx.input
+import okio.*
 import wumo.sim.algorithm.tensorflow.*
 import wumo.sim.algorithm.tensorflow.ops.assign
 import wumo.sim.algorithm.tensorflow.ops.const
 import wumo.sim.algorithm.tensorflow.ops.group
-import wumo.sim.util.ndarray.NDArray
-import java.io.BufferedOutputStream
+import wumo.sim.util.ndarray.*
+import wumo.sim.util.tuple2
+import java.io.*
 
-class Model {
-
-}
-
-fun saveModel(act_graph_def: ByteArray, act_vars: List<Pair<String, NDArray<Any>>>): ByteArray {
-  val _tf = TF()
-  _tf.g.import(act_graph_def, "save")
-  defaut(_tf) {
-    val init_ops = arrayListOf<Operation>()
-    for ((v, value) in act_vars)
-      init_ops += tf.assign(Tensor(tf.g.operation("save/$v"), 0), tf.const(value.copy())).op!!
-    tf.group(init_ops, name = "init")
-    return tf.g.toGraphDef()
+fun BufferedSink.encode(act: ActFunction, prefix: String) {
+  with(act.act as FunctionTensor) {
+    writeInt(inputs.size)
+    for (input in inputs) {
+      val name = "$prefix/" + when (input) {
+        is TfInput -> input.name
+        is Tensor -> input.name
+        else -> throw Exception()
+      }
+      encode(name)
+    }
+    for (input in outputs) {
+      val name = "$prefix/" + input.name
+      encode(name)
+    }
+    for (input in updates) {
+      val name = "$prefix/" + when (input) {
+        is Operation -> input.name
+        is Tensor -> input.op!!.name
+        else -> throw Exception()
+      }
+      encode(name)
+    }
+    for ((t, value) in givens) {
+      val name = "$prefix/" + t.name
+      encode(name)
+      encode(value)
+    }
   }
 }
+
+fun BufferedSource.decodeActFunction(): ActFunction {
+  val inputs = Array(readInt()) {
+    decodeString()
+  }
+  val outputs = Array(readInt()) {
+    decodeString()
+  }
+  val updates = Array(readInt()) {
+    decodeString()
+  }
+  val givens = Array(readInt()) {
+    decodeString() to decodeNDArray()
+  }
+  return ActFunction(function(inputs, outputs, updates, givens))
+}
+
+fun kotlin.ByteArray.writeTo(sink: BufferedSink) {
+  sink.writeInt(size)
+  sink.write(this)
+}
+
+fun saveModel(model_file_path: String,
+              act_graph_def: ByteArray,
+              act_vars: List<Pair<String, NDArray<Any>>>,
+              act: ActFunction) {
+  File(model_file_path).sink().buffer().use { sink ->
+    val prefix = "save"
+    val _tf = TF()
+    _tf.g.import(act_graph_def, prefix)
+    defaut(_tf) {
+      val init_ops = arrayListOf<Operation>()
+      for ((v, value) in act_vars)
+        init_ops += tf.assign(Tensor(tf.g.operation("$prefix/$v"), 0), tf.const(value.copy())).op!!
+      tf.group(init_ops, name = "init")
+      val bytes = tf.g.toGraphDef()
+      sink.encode(bytes)
+      sink.encode(act, prefix)
+    }
+  }
+}
+
+fun loadModel(model_file_path: String): tuple2<TF, ActFunction> {
+  File(model_file_path).source().buffer().use { source ->
+    val def = source.decodeByteArray()
+    val act = source.decodeActFunction()
+    val tf = TF()
+    tf.g.import(def)
+    return tuple2(tf, act)
+  }
+}
+
+

@@ -20,6 +20,11 @@
     </properties>
 
     <dependencies>
+        <!-- https://mvnrepository.com/artifact/com.squareup.okio/okio -->
+        <dependency>
+            <groupId>com.squareup.okio</groupId>
+            <artifactId>okio</artifactId>
+        </dependency>
         <dependency>
             <groupId>wumo.sim</groupId>
             <artifactId>util</artifactId>

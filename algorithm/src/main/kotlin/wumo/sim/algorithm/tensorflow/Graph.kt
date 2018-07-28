@@ -46,11 +46,12 @@ class Graph(val tf: TF) {
     return bytes
   }
   
-  fun import(act_graph_def: ByteArray, prefix: String) {
+  fun import(act_graph_def: ByteArray, prefix: String = "") {
     val buf = TF_NewBufferFromString(BytePointer(*act_graph_def), act_graph_def.size.toLong())
     val status = newStatus()
     val opt = TF_NewImportGraphDefOptions()
-    TF_ImportGraphDefOptionsSetPrefix(opt, prefix)
+    if (prefix.isNotBlank())
+      TF_ImportGraphDefOptionsSetPrefix(opt, prefix)
     TF_GraphImportGraphDef(c_graph, buf, opt, status)
     throwExceptionIfNotOk(status)
     TF_DeleteImportGraphDefOptions(opt)

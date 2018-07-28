@@ -1,6 +1,5 @@
 package wumo.sim.algorithm.drl.deepq
 
-import org.tensorflow.framework.GraphDef
 import wumo.sim.algorithm.tensorflow.Variable
 import wumo.sim.algorithm.tensorflow.ops.const
 import wumo.sim.algorithm.tensorflow.tf
@@ -8,9 +7,6 @@ import wumo.sim.algorithm.tensorflow.training.AdamOptimizer
 import wumo.sim.core.Env
 import wumo.sim.util.ndarray.*
 import wumo.sim.util.ndarray.NDArray.Companion.toNDArray
-import java.io.BufferedOutputStream
-import java.io.File
-import java.io.FileOutputStream
 import kotlin.math.max
 
 
@@ -105,8 +101,6 @@ fun <O : Any, A : Any> learn(env: Env<O, A>,
     var obs = env.reset()
     var reset = true
     
-    val model_file = File(model_file_path)
-    val outstream = BufferedOutputStream(FileOutputStream(model_file))
     for (t in 0 until max_timesteps) {
       //Take action and update exploration to the newest value
       var update_eps: Float
@@ -175,15 +169,10 @@ fun <O : Any, A : Any> learn(env: Env<O, A>,
             System.err.println("Saving model due to mean reward increase: $saved_mean_reward -> $mean_100ep_reward")
           saved_mean_reward = mean_100ep_reward
           val result = eval(act_vars)
-          val def = saveModel(act_graph_def, act_vars.map { it.name }.zip(result))
-          outstream.write(def)
-//          val debugString = GraphDef.parseFrom(def).toString()
-//          println(debugString)
+          saveModel(model_file_path, act_graph_def, act_vars.map { it.name }.zip(result),act)
         }
       }
-      
     }
-    outstream.close()
   }
   
   return act

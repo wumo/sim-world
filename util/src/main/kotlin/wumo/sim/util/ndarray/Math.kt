@@ -12,15 +12,15 @@ operator fun NDArray<Float>.unaryMinus(): NDArray<Float> {
   return c
 }
 
-operator fun <T> NDArray<T>.plus(b: NDArray<T>): NDArray<T> {
+operator fun <T : Any> NDArray<T>.plus(b: NDArray<T>): NDArray<T> {
   TODO()
 }
 
-operator fun <T> NDArray<T>.plus(b: Number): NDArray<T> {
+operator fun <T : Any> NDArray<T>.plus(b: Number): NDArray<T> {
   TODO()
 }
 
-fun <T> abs(a: NDArray<T>): NDArray<T> {
+fun <T : Any> abs(a: NDArray<T>): NDArray<T> {
   TODO()
 }
 
@@ -35,4 +35,4 @@ val ones_like_switch = SwitchType2<Dimension, NDArray<*>>().apply {
 
 fun <T : Number> ones_like(a: NDArray<T>) = ones_like_switch(a.first(), a.shape) as NDArray<T>
 
-fun <T> newaxis(a: NDArray<T>) = toNDArray(arrayOf(a))
+fun <T : Any> newaxis(a: NDArray<T>) = toNDArray(arrayOf(a))

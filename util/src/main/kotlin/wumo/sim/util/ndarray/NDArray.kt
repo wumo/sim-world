@@ -17,7 +17,8 @@ interface Buf<T> {
   val size: Int
 }
 
-open class NDArray<T>(val shape: Dimension, val raw: Buf<T>, val dtype: Class<*>) : Iterable<T> {
+open class NDArray<T : Any>(val shape: Dimension, val raw: Buf<T>, val dtype: Class<*> = raw[0]::class.java) : Iterable<T> {
+  
   companion object {
     fun zeros(shape: Int): NDArray<Float> {
       return NDArray(dim(shape), FloatArray(shape))

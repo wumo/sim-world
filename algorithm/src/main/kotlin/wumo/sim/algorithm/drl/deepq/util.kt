@@ -18,12 +18,16 @@ import wumo.sim.util.x
 
 inline fun <reified T> emptyArray() = Array<T>(0) { throw NotImplementedError() }
 
-class Function(val inputs: Array<out Any>,
-               val outputs: Array<Tensor>,
-               val updates: Array<out Any>,
-               val givens: Array<out Pair<Tensor, NDArray<*>>>) {
+interface Function {
+  operator fun invoke(vararg args: Any): Array<NDArray<*>>
+}
+
+class FunctionTensor(val inputs: Array<out Any>,
+                     val outputs: Array<Tensor>,
+                     val updates: Array<out Any>,
+                     val givens: Array<out Pair<Tensor, NDArray<*>>>) : Function {
   
-  operator fun invoke(vararg args: Any): Array<NDArray<*>> {
+  override operator fun invoke(vararg args: Any): Array<NDArray<*>> {
     assert(args.size <= inputs.size) { "Too many arguments provided" }
     val feed_dict = mutableMapOf<Tensor, NDArray<*>>()
     for (i in 0 until inputs.size) {
@@ -41,6 +45,32 @@ class Function(val inputs: Array<out Any>,
   }
 }
 
+class FunctionString(val inputs: Array<String>,
+                     val outputs: Array<String>,
+                     val updates: Array<String>,
+                     val givens: Array<out Pair<String, NDArray<*>>>) : Function {
+  
+  override operator fun invoke(vararg args: Any): Array<NDArray<*>> {
+    assert(args.size <= inputs.size) { "Too many arguments provided" }
+    val feed_dict = mutableMapOf<String, NDArray<*>>()
+    for (i in 0 until inputs.size) {
+      val input = inputs[i]
+      val value = NDArray.toNDArray(args[i])
+      feed_dict += input to value
+    }
+    for ((input, value) in givens)
+      feed_dict.putIfAbsent(input, value)
+    return tf.session.run(outputs, updates, feed_dict = feed_dict)
+  }
+}
+
+fun function(inputs: Array<String> = emptyArray(),
+             outputs: Array<String> = emptyArray(),
+             updates: Array<String> = emptyArray(),
+             givens: Array<Pair<String, NDArray<*>>> = emptyArray()): Function {
+  return FunctionString(inputs, outputs, updates, givens)
+}
+
 fun function(inputs: Array<out Any> = emptyArray(),
              outputs: Tensor,
              updates: Array<out Any> = emptyArray(),
@@ -49,7 +79,7 @@ fun function(inputs: Array<out Any> = emptyArray(),
     val p = givens[it]
     p.first to NDArray.toNDArray(p.second)
   }
-  return Function(inputs, a(outputs), updates, _givens)
+  return FunctionTensor(inputs, a(outputs), updates, _givens)
 }
 
 fun function(inputs: Array<out Any> = emptyArray(),
@@ -60,7 +90,7 @@ fun function(inputs: Array<out Any> = emptyArray(),
     val p = givens[it]
     p.first to NDArray.toNDArray(p.second)
   }
-  return Function(inputs, outputs, updates, _givens)
+  return FunctionTensor(inputs, outputs, updates, _givens)
 }
 
 fun huber_loss(x: Tensor, delta: Float = 1f): Tensor {
