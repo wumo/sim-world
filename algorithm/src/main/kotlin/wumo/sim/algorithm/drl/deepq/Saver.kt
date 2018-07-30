@@ -1,6 +1,5 @@
 package wumo.sim.algorithm.drl.deepq
 
-import com.badlogic.gdx.Gdx.input
 import okio.*
 import wumo.sim.algorithm.tensorflow.*
 import wumo.sim.algorithm.tensorflow.ops.assign
@@ -8,6 +7,7 @@ import wumo.sim.algorithm.tensorflow.ops.const
 import wumo.sim.algorithm.tensorflow.ops.group
 import wumo.sim.util.ndarray.*
 import wumo.sim.util.tuple2
+import wumo.sim.util.tuple3
 import java.io.*
 
 fun BufferedSink.encode(act: ActFunction, prefix: String) {
@@ -21,10 +21,12 @@ fun BufferedSink.encode(act: ActFunction, prefix: String) {
       }
       encode(name)
     }
+    writeInt(outputs.size)
     for (input in outputs) {
       val name = "$prefix/" + input.name
       encode(name)
     }
+    writeInt(updates.size)
     for (input in updates) {
       val name = "$prefix/" + when (input) {
         is Operation -> input.name
@@ -33,6 +35,7 @@ fun BufferedSink.encode(act: ActFunction, prefix: String) {
       }
       encode(name)
     }
+    writeInt(givens.size)
     for ((t, value) in givens) {
       val name = "$prefix/" + t.name
       encode(name)
@@ -57,11 +60,6 @@ fun BufferedSource.decodeActFunction(): ActFunction {
   return ActFunction(function(inputs, outputs, updates, givens))
 }
 
-fun kotlin.ByteArray.writeTo(sink: BufferedSink) {
-  sink.writeInt(size)
-  sink.write(this)
-}
-
 fun saveModel(model_file_path: String,
               act_graph_def: ByteArray,
               act_vars: List<Pair<String, NDArray<Any>>>,
@@ -82,13 +80,14 @@ fun saveModel(model_file_path: String,
   }
 }
 
-fun loadModel(model_file_path: String): tuple2<TF, ActFunction> {
+fun loadModel(model_file_path: String): tuple3<TF, Operation, ActFunction> {
   File(model_file_path).source().buffer().use { source ->
     val def = source.decodeByteArray()
     val act = source.decodeActFunction()
     val tf = TF()
     tf.g.import(def)
-    return tuple2(tf, act)
+    val init = tf.g.operation("init")
+    return tuple3(tf, init, act)
   }
 }
 

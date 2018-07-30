@@ -8,7 +8,7 @@ class PrioritizedReplayBuffer<O, A>(buffer_size: Int, alpha: Float) : ReplayBuff
     TODO("not implemented")
   }
   
-  fun update_priorities(batch_idxes: Any, new_priorities: NDArray<out Any?>) {
+  fun update_priorities(batch_idxes: Any, new_priorities: NDArray<out Any>) {
     TODO("not implemented")
   }
 }

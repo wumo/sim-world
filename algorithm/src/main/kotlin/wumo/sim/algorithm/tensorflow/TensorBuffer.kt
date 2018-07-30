@@ -16,7 +16,7 @@ import wumo.sim.util.ndarray.NDArray
 import wumo.sim.util.ndarray.implementation.*
 import java.nio.*
 
-abstract class TensorBuffer<T> protected constructor(c_tensor: TF_Tensor) : Buf<T> {
+abstract class TensorBuffer<T : Any> protected constructor(c_tensor: TF_Tensor) : Buf<T> {
   companion object {
     private val convert_switch = SwitchType2<Dimension, TensorBuffer<*>>().apply {
       case<FloatArrayBuf> { TensorBuffer(_2, _1.raw) }
@@ -29,9 +29,9 @@ abstract class TensorBuffer<T> protected constructor(c_tensor: TF_Tensor) : Buf<
       case<ArrayBuf<*>> { TensorBuffer(_2, Array(_1.raw.size) { _1[it].toString() }) }
     }
     
-    fun <T> toNDArray(tb: TensorBuffer<T>) = NDArray(Dimension(tb.dims), tb, dtypeToClass(tb.dtype.base_dtype))
-    fun <T> toNDArray(c_tensor: TF_Tensor) = toNDArray(invoke<T>(c_tensor))
-    fun <T> fromNDArray(ndarray: NDArray<T>) = (if (ndarray.raw is TensorBuffer<*>) ndarray.raw
+    fun <T : Any> toNDArray(tb: TensorBuffer<T>) = NDArray(Dimension(tb.dims), tb, dtypeToClass(tb.dtype.base_dtype))
+    fun <T : Any> toNDArray(c_tensor: TF_Tensor) = toNDArray(invoke<T>(c_tensor))
+    fun <T : Any> fromNDArray(ndarray: NDArray<T>) = (if (ndarray.raw is TensorBuffer<*>) ndarray.raw
     else convert_switch(ndarray.raw, ndarray.shape)) as TensorBuffer<T>
     
     private val create_switch = SwitchValue<Int, TF_Tensor, TensorBuffer<*>>().apply {
@@ -45,7 +45,7 @@ abstract class TensorBuffer<T> protected constructor(c_tensor: TF_Tensor) : Buf<
       case(DT_STRING) { StringTensorBuffer(it) }
     }
     
-    operator fun <T> invoke(c_tensor: TF_Tensor) =
+    operator fun <T : Any> invoke(c_tensor: TF_Tensor) =
         create_switch(TF_TensorType(c_tensor), c_tensor) as TensorBuffer<T>
     
     operator fun invoke(value: Float) = invoke(scalarDimension, f(value))

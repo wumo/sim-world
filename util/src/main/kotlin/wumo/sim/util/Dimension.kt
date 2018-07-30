@@ -35,11 +35,6 @@ class Dimension(val elements: MutableList<Int> = mutableListOf()) : Iterable<Int
     return elements.size
   }
   
-  val firstDim
-    get() = elements[0]
-  
-  val otherDim
-    get() = LongArray(elements.size - 1) { elements[it + 1].toLong() }
   val is_fully_defined: Boolean
     get() {
       for (element in elements)
@@ -47,7 +42,7 @@ class Dimension(val elements: MutableList<Int> = mutableListOf()) : Iterable<Int
       return true
     }
   
-  fun numElements() = elements.reduce { num, e ->
+  fun numElements() = if (elements.isEmpty()) 1 else elements.reduce { num, e ->
     num * e
   }
   

@@ -144,6 +144,9 @@ class Session(val c_graph: TF_Graph) {
     print(eval<Any>(this))
   }
   
+  fun Operation.eval(){
+  
+  }
   
   private fun Tensor.print(v: NDArray<*>) {
     val prefix = "${op!!.name}:${dtype.name()}$shape\n  ="

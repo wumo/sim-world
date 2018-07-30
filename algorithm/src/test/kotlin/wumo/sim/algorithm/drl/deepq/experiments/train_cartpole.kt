@@ -5,6 +5,7 @@ import wumo.sim.algorithm.drl.deepq.build_act
 import wumo.sim.algorithm.drl.deepq.learn
 import wumo.sim.algorithm.drl.deepq.loadModel
 import wumo.sim.algorithm.drl.deepq.mlp
+import wumo.sim.algorithm.tensorflow.defaut
 import wumo.sim.envs.classic_control.CartPole
 import wumo.sim.util.ndarray.NDArray
 import wumo.sim.util.ndarray.newaxis
@@ -28,21 +29,24 @@ class train_cartpole {
   @Test
   fun enjoy() {
     val env = CartPole()
-    val (tf, act) = loadModel("cartpole.model")
-    tf.session {
-      while (true) {
-        var _obs = env.reset()
-        var _done = false
-        var episode_rew = 0f
-        while (!_done) {
-          env.render()
-          val action = act(newaxis(NDArray.toNDArray(_obs)), stochastic = false)[0].get() as Int
-          val (obs, rew, done) = env.step(action)
-          _done = done
-          _obs = obs
-          episode_rew += rew
+    val (tf, init, act) = loadModel("cartpole.model")
+    defaut(tf) {
+      tf.session {
+        init.run()
+        while (true) {
+          var _obs = env.reset()
+          var _done = false
+          var episode_rew = 0f
+          while (!_done) {
+            env.render()
+            val action = act(newaxis(NDArray.toNDArray(_obs)), stochastic = false)[0].get() as Int
+            val (obs, rew, done) = env.step(action)
+            _done = done
+            _obs = obs
+            episode_rew += rew
+          }
+          println("Episode reward $episode_rew")
         }
-        println("Episode reward $episode_rew")
       }
     }
   }

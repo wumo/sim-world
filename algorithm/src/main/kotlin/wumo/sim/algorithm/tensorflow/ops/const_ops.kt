@@ -80,7 +80,7 @@ private fun TF.const(shape: Dimension, dtype: Int, name: String = "Const", set_v
   return Tensor(op, 0)
 }
 
-fun <T> TF.const(value: TensorBuffer<T>, name: String = "Const"): Tensor {
+fun <T : Any> TF.const(value: TensorBuffer<T>, name: String = "Const"): Tensor {
   val op = g.nodeBuilder("Const", ctxNs.getUniqueFullName(name))
       .attr("value", value)
       .attrType("dtype", value.dtype.base_dtype)
@@ -88,7 +88,7 @@ fun <T> TF.const(value: TensorBuffer<T>, name: String = "Const"): Tensor {
   return Tensor(op, 0)
 }
 
-fun <T> TF.const(value: NDArray<T>, name: String = "Const"): Tensor {
+fun <T : Any> TF.const(value: NDArray<T>, name: String = "Const"): Tensor {
   val dtype = dtypeFromClass(value.dtype)
   val op = g.nodeBuilder("Const", ctxNs.getUniqueFullName(name))
       .attr("value", TensorBuffer.fromNDArray(value))

@@ -163,14 +163,12 @@ open class NDArray<T : Any>(val shape: Dimension, val raw: Buf<T>, val dtype: Cl
   init {
     stride = IntArray(numDims)
     dims = shape.asIntArray()
-    var n = 0
     if (dims.isNotEmpty()) {
       stride[stride.lastIndex] = 1
       for (a in stride.lastIndex - 1 downTo 0)
         stride[a] = dims[a + 1] * stride[a + 1]
-      n = dims[0] * stride[0]
     }
-    size = n
+    size = raw.size
   }
   
   private inline fun <U> get_set(vararg idx: Int, op: (Int) -> U): U {
