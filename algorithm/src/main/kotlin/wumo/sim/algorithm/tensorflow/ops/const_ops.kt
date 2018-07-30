@@ -18,12 +18,19 @@ fun TF.const(value: Long, name: String = "Const") = const(scalarDimension, value
 fun TF.const(value: String, name: String = "Const") = const(scalarDimension, value, name)
 
 fun TF.const(value: FloatArray, name: String = "Const") = const(TensorBuffer(dim(value.size), value), name)
+fun TF.const(value: Array<Float>, name: String = "Const") = const(TensorBuffer(dim(value.size), value.toFloatArray()), name)
 fun TF.const(value: DoubleArray, name: String = "Const") = const(TensorBuffer(dim(value.size), value), name)
+fun TF.const(value: Array<Double>, name: String = "Const") = const(TensorBuffer(dim(value.size), value.toDoubleArray()), name)
 fun TF.const(value: BooleanArray, name: String = "Const") = const(TensorBuffer(dim(value.size), ByteArray(value.size) { value[it].toByte() }), name)
+fun TF.const(value: Array<Boolean>, name: String = "Const") = const(TensorBuffer(dim(value.size), value.toBooleanArray()), name)
 fun TF.const(value: ByteArray, name: String = "Const") = const(TensorBuffer(dim(value.size), value), name)
+fun TF.const(value: Array<Byte>, name: String = "Const") = const(TensorBuffer(dim(value.size), value.toByteArray()), name)
 fun TF.const(value: ShortArray, name: String = "Const") = const(TensorBuffer(dim(value.size), value), name)
+fun TF.const(value: Array<Short>, name: String = "Const") = const(TensorBuffer(dim(value.size), value.toShortArray()), name)
 fun TF.const(value: IntArray, name: String = "Const") = const(TensorBuffer(dim(value.size), value), name)
+fun TF.const(value: Array<Int>, name: String = "Const") = const(TensorBuffer(dim(value.size), value.toIntArray()), name)
 fun TF.const(value: LongArray, name: String = "Const") = const(TensorBuffer(dim(value.size), value), name)
+fun TF.const(value: Array<Long>, name: String = "Const") = const(TensorBuffer(dim(value.size), value.toLongArray()), name)
 fun TF.const(value: Array<String>, name: String = "Const") = const(TensorBuffer(dim(value.size), value), name)
 
 fun TF.const(shape: Dimension, value: Float, name: String = "Const") = const(shape, DT_FLOAT, name) { add_float_val(value) }

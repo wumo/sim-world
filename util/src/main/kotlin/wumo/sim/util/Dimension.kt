@@ -53,6 +53,17 @@ class Dimension(val elements: MutableList<Int> = mutableListOf()) : Iterable<Int
       elements[idx]
   }
   
+  operator fun get(idx: IntRange): Dimension {
+    val dim = Dimension()
+    for (i in idx)
+      dim += this[i]
+    return dim
+  }
+  
+  operator fun plusAssign(d: Int) {
+    elements += d
+  }
+  
   override fun iterator() = elements.iterator()
   
   override fun toString(): String {

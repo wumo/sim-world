@@ -1,16 +1,14 @@
 package wumo.sim.algorithm.drl.deepq
 
 import org.bytedeco.javacpp.tensorflow.*
-import org.lwjgl.system.linux.X11.True
+import wumo.sim.algorithm.tensorflow.*
 import wumo.sim.algorithm.tensorflow.Operation
 import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.Variable
 import wumo.sim.algorithm.tensorflow.ops.*
-import wumo.sim.algorithm.tensorflow.tf
 import wumo.sim.algorithm.tensorflow.training.Optimizer
 import wumo.sim.util.*
 import wumo.sim.util.ndarray.NDArray
-import kotlin.reflect.KFunction3
 
 /**
  * Creates the train function
@@ -49,7 +47,7 @@ fun build_train(make_obs_ph: (String) -> TfInput,
   
   val (act_f, act_vars, act_graph_def) = if (param_noise)
     build_act_with_param_noise(make_obs_ph, q_func, num_actions,
-                               param_noise_filter_func = param_noise_filter_func,
+                               _param_noise_filter_func = param_noise_filter_func,
                                name = name)
   else
     build_act(make_obs_ph, q_func, num_actions, name)
@@ -79,9 +77,8 @@ fun build_train(make_obs_ph: (String) -> TfInput,
       val q_tp1_using_online_net = q_func(obs_tp1_input.get(), num_actions, "q_func", true)
       val q_tp1_best_using_online_net = tf.argmax(q_tp1_using_online_net, 1)
       tf.sum(q_tp1 * tf.oneHot(q_tp1_best_using_online_net, tf.const(num_actions)), tf.const(1))
-    } else {
+    } else
       tf.max(q_tp1, tf.const(1))
-    }
     
     val q_tp1_best_masked = (tf.const(1f) - done_mask_ph) * q_tp1_best
     
@@ -142,7 +139,7 @@ the output of observation placeholder
  * @param num_actions: int
 number of actions
  * @param name: str
- * @param param_noise_filter_func: tf.Variable -> bool
+ * @param _param_noise_filter_func: tf.Variable -> bool
 function that decides whether or not a variable should be perturbed. Only applicable
 if param_noise is True. If set to None, default_param_noise_filter is used by default.
  
@@ -152,12 +149,24 @@ function to select and action given observation.
 fun build_act_with_param_noise(make_obs_ph: (String) -> TfInput,
                                q_func: Q_func,
                                num_actions: Int,
-                               param_noise_filter_func: ((Variable) -> Boolean)?,
+                               _param_noise_filter_func: ((Variable) -> Boolean)?,
                                name: String): tuple3<ActFunction, List<Variable>, ByteArray> {
-  val param_noise_filter_func = param_noise_filter_func ?: { v: Variable -> true }
-  fun scope_vars(original_scope: String): List<Variable> {
-    TODO("not implemented")
+  val param_noise_filter_func = _param_noise_filter_func ?: {
+    when {
+    //We never perturb non -trainable vars .
+      it !in tf.trainables -> false
+    //We perturb fully-connected layers.
+      "fully_connected" in it.name -> true
+    /*
+    The remaining layers are likely conv or layer norm layers, which we do not wish to
+    perturb (in the former case because they only extract features, in the latter case because
+    we use them for normalization purposes). If you change your network, you will likely want
+    to re-consider which layers to perturb and which to keep untouched.
+     */
+      else -> false
+    }
   }
+  
   tf.variable_scope(name) {
     val observations_ph = make_obs_ph("observation")
     val stochastic_ph = tf.placeholder(scalarDimension, DT_BOOL, name = "stochastic")
@@ -166,9 +175,9 @@ fun build_act_with_param_noise(make_obs_ph: (String) -> TfInput,
     val update_param_noise_scale_ph = tf.placeholder(scalarDimension, DT_BOOL, name = "update_param_noise_scale")
     val reset_ph = tf.placeholder(scalarDimension, DT_BOOL, name = "reset")
     
-    val eps = tf.variable(scalarDimension, tf.constant_initializer(0), name = "eps")
-    val param_noise_scale = tf.variable(scalarDimension, initializer = tf.constant_initializer(0.01), trainable = false, name = "param_noise_scale")
-    val param_noise_threshold = tf.variable(scalarDimension, initializer = tf.constant_initializer(0.05), trainable = false, name = "param_noise_threshold")
+    val eps = tf.get_variable(scalarDimension, tf.constant_initializer(0), name = "eps")
+    val param_noise_scale = tf.get_variable(scalarDimension, initializer = tf.constant_initializer(0.01f), trainable = false, name = "param_noise_scale")
+    val param_noise_threshold = tf.get_variable(scalarDimension, initializer = tf.constant_initializer(0.05f), trainable = false, name = "param_noise_threshold")
     
     //unmodified Q
     val q_values = q_func(observations_ph.get(), num_actions, "q_func", false)
@@ -178,19 +187,22 @@ fun build_act_with_param_noise(make_obs_ph: (String) -> TfInput,
     //We have to wrap this code into a function due to the way tf.cond() works. See
     //https://stackoverflow.com/questions/37063952/confused-by-the-behavior-of-tf-cond for
     //a more detailed discussion.
-    fun perturb_vars(original_scope: String, perturbed_scope: String): Tensor {
-      val all_vars = scope_vars(original_scope)
-      val all_perturbed_vars = scope_vars(perturbed_scope)
+    fun perturb_vars(original_scope: String, perturbed_scope: String): Operation {
+      val all_vars = tf.ctxVs.variable_subscopes[original_scope]!!.all_variables()
+      val all_perturbed_vars = tf.ctxVs.variable_subscopes[perturbed_scope]!!.all_variables()
+      assert(all_vars.size == all_perturbed_vars.size)
       val perturb_ops = mutableListOf<Tensor>()
       for ((v, perturbed_var) in all_vars.zip(all_perturbed_vars)) {
         val op = if (param_noise_filter_func(perturbed_var))
+        //Perturb this variable.
           tf.assign(perturbed_var, v + tf.random_normal(tf.shape(v), mean = tf.const(0f), stddev = param_noise_scale))
         else
+        //Do not perturb, just assign.
           tf.assign(perturbed_var, v)
         perturb_ops += op
       }
       val t = tf.group(perturb_ops)
-      return Tensor(t, 0)
+      return t
     }
     
     // Set up functionality to re-compute `param_noise_scale`. This perturbs yet another copy
@@ -201,7 +213,7 @@ fun build_act_with_param_noise(make_obs_ph: (String) -> TfInput,
     val kl = tf.sum(tf.softmax(q_values) * (tf.log(tf.softmax(q_values)) - tf.log(tf.softmax(q_values_adaptive))), axis = tf.const(-1))
     val mean_kl = tf.mean(kl)
     fun update_scale() =
-        tf.control_dependencies(perturb_for_adaption.op!!) {
+        tf.control_dependencies(perturb_for_adaption) {
           tf.cond(tf.less(mean_kl, param_noise_threshold),
                   { param_noise_scale.assign(param_noise_scale * tf.const(1.01f)) },
                   { param_noise_scale.assign(param_noise_scale / tf.const(1.01f)) })
@@ -215,26 +227,32 @@ fun build_act_with_param_noise(make_obs_ph: (String) -> TfInput,
     //Put everything together.
     val deterministic_actions = tf.argmax(q_values_perturbed, axis = 1)
     val batch_size = tf.shape(observations_ph.get())[0]
-    val random_actions = tf.random_uniform(tf.stack(a(batch_size)), dtype = DT_INT64, min = 0, max = num_actions)
-    val chose_random = tf.less(tf.random_uniform(tf.stack(a(batch_size)), dtype = DT_FLOAT, min = 0, max = 1), eps)
+    val random_actions = tf.random_uniform(tf.stack(a(batch_size)), min = 0, max = num_actions, dtype = DT_INT32)
+    val chose_random = tf.less(tf.random_uniform(tf.stack(a(batch_size)), min = 0, max = 1, dtype = DT_FLOAT), eps)
     val stochastic_actions = tf.where(chose_random, random_actions, deterministic_actions)
     
     val output_actions = tf.cond(stochastic_ph, { stochastic_actions }, { deterministic_actions })
-    val update_eps_expr = eps.assign(tf.cond(tf.greaterEqual(update_eps_ph, tf.const(0)), { update_eps_ph }, { eps }))
+    val update_eps_expr = eps.assign(tf.cond(tf.greaterEqual(update_eps_ph, tf.const(0f)), { update_eps_ph }, { eps }))
     val updates = a(
         update_eps_expr,
-        tf.cond(reset_ph, { perturb_vars(original_scope = "q_func", perturbed_scope = "perturbed_q_func") }, { Tensor(tf.group(listOf()), 0) }),
+        tf.cond(reset_ph, { Tensor(perturb_vars(original_scope = "q_func", perturbed_scope = "perturbed_q_func"), 0) },
+                { Tensor(tf.group(listOf()), 0) }),
         tf.cond(update_param_noise_scale_ph, { update_scale() }, { tf.variable(0f, trainable = false) }),
         update_param_noise_threshold_expr)
     val inputs = a(observations_ph, stochastic_ph, update_eps_ph, reset_ph, update_param_noise_threshold_ph, update_param_noise_scale_ph)
     val outputs = output_actions
-    val givens = a(update_eps_ph to -1.0, stochastic_ph to true, reset_ph to false, update_param_noise_threshold_ph to false, update_param_noise_scale_ph to false)
+    val givens = a(update_eps_ph to -1.0, stochastic_ph to true, reset_ph to false, update_param_noise_threshold_ph to 0f, update_param_noise_scale_ph to false)
     val _act = function(inputs = inputs,
                         outputs = outputs,
                         givens = givens,
                         updates = updates)
-    val graphDef = tf.g.toGraphDef()
-    return tuple3(ActWithParamNoise(_act), listOf(), graphDef)
+    val q_func_vars = tf.ctxVs.variable_subscopes["q_func"]!!.all_variables()
+    val act_graph_def =
+        defaut(TF()) {
+          val (_, _, act_graph_def) = build_act(make_obs_ph, q_func, num_actions, name)
+          act_graph_def
+        }
+    return tuple3(ActWithParamNoise(_act), listOf(eps) + q_func_vars, act_graph_def)
   }
 }
 

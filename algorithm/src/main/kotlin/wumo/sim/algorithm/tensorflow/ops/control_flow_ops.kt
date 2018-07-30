@@ -32,13 +32,14 @@ fun TF.group(inputs: List<Any>, name: String = "group_deps"): Operation {
   for (input in inputs) {
     val op = when (input) {
       is Operation -> input
+      is Tensor -> input.op
       is Variable -> input.initializer_op.op
       else -> throw IllegalArgumentException("unsupported ${input::class.java}")
     }
     val dev = op!!.device
     ops_on_device.compute(dev) { _, list ->
       val list = list ?: mutableListOf()
-      list += op!!
+      list += op
       list
     }
   }

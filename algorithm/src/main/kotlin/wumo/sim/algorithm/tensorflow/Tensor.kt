@@ -30,16 +30,57 @@ open class Tensor(val op: Operation?, val value_index: Int) : TensorLike {
       op.output_types[value_index]
     } else DT_INVALID
   
-  val shape: Dimension by lazy {
-    val c_graph = op!!.graph.c_graph
-    val output = asTF_Output()
+  val shape: Dimension
+    get() {
+      val c_graph = op!!.graph.c_graph
+      val output = asTF_Output()
+      val status = newStatus()
+      val numDims = TF_GraphGetTensorNumDims(c_graph, output, status)
+      throwExceptionIfNotOk(status)
+      val dims = LongArray(numDims)
+      TF_GraphGetTensorShape(c_graph, output, dims, numDims, status)
+      throwExceptionIfNotOk(status)
+      return Dimension(dims)
+    }
+  
+  /**
+   * Updates the shape of this tensor.
+  
+  This method can be called multiple times, and will merge the given
+  `shape` with the current shape of this tensor. It can be used to
+  provide additional information about the shape of this tensor that
+  cannot be inferred from the graph alone. For example, this can be used
+  to provide additional information about the shapes of images:
+  
+  ```python
+  _, image_data = tf.TFRecordReader(...).read(...)
+  image = tf.image.decode_png(image_data, channels=3)
+  
+  # The height and width dimensions of `image` are data dependent, and
+  # cannot be computed without executing the op.
+  print(image.shape)
+  ==> TensorShape([Dimension(None), Dimension(None), Dimension(3)])
+  
+  # We know that each image in this dataset is 28 x 28 pixels.
+  image.set_shape([28, 28, 3])
+  print(image.shape)
+  ==> TensorShape([Dimension(28), Dimension(28), Dimension(3)])
+  ```
+   
+   * @param shape: A `TensorShape` representing the shape of this tensor, a
+  `TensorShapeProto`, a list, a tuple, or None.
+  
+  Raises:
+  ValueError: If `shape` is not compatible with the current shape of
+  this tensor.
+   */
+  fun set_shape(shape: Dimension) {
+    assert(this.shape.isCompatibleWith(shape))
+    op!!
+    val dims = shape.asLongArray()
     val status = newStatus()
-    val numDims = TF_GraphGetTensorNumDims(c_graph, output, status)
+    TF_GraphSetTensorShape(op.graph.c_graph, asTF_Output(), dims, dims.size, status)
     throwExceptionIfNotOk(status)
-    val dims = LongArray(numDims)
-    TF_GraphGetTensorShape(c_graph, output, dims, numDims, status)
-    throwExceptionIfNotOk(status)
-    Dimension(dims)
   }
   
   val tf: TF by lazy { op!!.graph.tf }

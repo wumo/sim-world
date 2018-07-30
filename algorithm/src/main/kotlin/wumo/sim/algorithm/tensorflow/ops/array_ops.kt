@@ -127,6 +127,11 @@ fun TF.stridedSliceGrad(shape: Tensor, begin: Tensor, end: Tensor, strides: Tens
 fun TF.scatterNd(indices: Tensor, updates: Tensor, shape: Tensor, name: String = "ScatterNd") =
     ternaryOp("ScatterNd", indices, updates, shape, name)
 
+fun TF.squeeze(input: Tensor, axis: IntArray = IntArray(0), name: String = "Squeeze") =
+    naryOp("Squeeze", input, name = name) {
+      attr("squeeze_dims", axis)
+    }
+
 fun TF.listDiff(x: Tensor, y: Tensor, out_idx: Int = DT_INT32, name: String = "ListDiff") =
     naryOps("ListDiff", x, y, name = name) {
       attrType("out_idx", out_idx)
