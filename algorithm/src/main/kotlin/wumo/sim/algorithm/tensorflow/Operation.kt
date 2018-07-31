@@ -16,7 +16,6 @@ class Operation(val graph: Graph, val c_op: TF_Operation) {
    */
   internal fun update_input(index: Int, tensor: Tensor, update_dtype: Boolean = true) {
     val g = graph.c_graph
-    val input = inputs[index]
     g.graph().UpdateEdge(tensor.node(), tensor.value_index, c_op.node(), index)
     inputs = _inputs()
   }
