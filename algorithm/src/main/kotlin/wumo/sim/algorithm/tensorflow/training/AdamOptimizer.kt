@@ -72,7 +72,7 @@ class AdamOptimizer(val learningRate: Float = 0.001f,
     // variable. Sort the var_list to make sure this device is consistent across
     // workers (these need to go on the same PS, otherwise some updates are
     // silently ignored).
-    val first_var = var_list.minBy { it.op!!.name }!!
+    val first_var = var_list.minBy { it.name }!!
     create_non_slot_variable(initial_value = beta1,
                              name = "beta1_power",
                              colocate_with = first_var)

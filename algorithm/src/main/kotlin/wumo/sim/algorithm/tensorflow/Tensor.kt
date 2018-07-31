@@ -86,7 +86,8 @@ open class Tensor(val op: Operation?, val value_index: Int) : TensorLike {
   val tf: TF by lazy { op!!.graph.tf }
   
   fun asTF_Output() = TF_Output().oper(op!!.c_op).index(value_index)
-  val name: String by lazy { op!!.name }
+  val name: String by lazy { "${op!!.name}:$value_index" }
+//  val name: String by lazy { op!!.name }
   
   inline fun node() = op!!.c_op.node()
   

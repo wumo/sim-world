@@ -3,28 +3,158 @@ package wumo.sim.algorithm.tensorflow.ops
 import wumo.sim.algorithm.tensorflow.*
 import wumo.sim.util.a
 
+abstract class ControlFlowContext {
+  var outer_context = tf.control_flow_context
+  val values = hashSetOf<String>()
+  val external_values = hashMapOf<String, Tensor>()
+  abstract fun addOp(op: Operation)
+}
+
 class CondContext(val pred: Tensor,
                   val pivot: Tensor,
-                  val branch: Int) : ControlFlowContext {
+                  val branch: Int) : ControlFlowContext() {
+  
+  init {
+    //Values considered to have been already seen in this context. pred is not
+    //included in this context.
+    values += pred.name
+    external_values[pred.name] = pred
+    values += pivot.name
+  }
+  
   override fun addOp(op: Operation) {
     if (op.inputs.isEmpty()) {
-      //TODO Remove any external control dependency on this op
-      TODO()//add control input
+      _removeExternalControlEdges(op)
+      op.addControlInput(pivot.op!!)
     } else {
       for (i in 0 until op.inputs.size) {
         val x = op.inputs[i]
         val real_x = addValue(x)
         if (real_x != x)
           op.update_input(i, real_x)
+        _removeExternalControlEdges(op)
+        if (op.graph.is_function(op.opType) || op.opType == "SymbolicGradient")
+          op.addControlInput(pivot.op!!)
       }
     }
-    TODO("not implemented")
+    //Mark op's outputs as seen by this context and any outer contexts.
+    val output_names = op.outputs.map { it.name }
+    var ctxt: ControlFlowContext? = this
+    while (ctxt != null) {
+      ctxt.values.addAll(output_names)
+      ctxt = ctxt.outer_context
+    }
+    if (outer_context != null || !isLoopExit(op))
+      op.graph.prevent_fetching(op)
+  }
+  
+  private fun _removeExternalControlEdges(op: Operation) {
+    //TODO Remove any external control dependency on this op
   }
   
   /**Add `val` to the current context and its outer context recursively.*/
-  private fun addValue(x: Tensor): Tensor {
-    TODO("not implemented")
+  private fun addValue(v: Tensor): Tensor {
+    return if (v.name in values) {
+      //Use the real value if it comes from outer context. This is needed in
+      //particular for nested conds.
+      external_values[v.name] ?: v
+    } else {
+      var result = v
+      values += v.name
+      if (outer_context != null) {
+        result = (outer_context as CondContext).addValue(v)
+        values += result.name
+        external_values[result.name] = result
+      }
+      tf.control_dependencies {
+        result = tf.switchRefOrTensor(result, pred)[branch]
+      }
+      result.op!!.graph.prevent_fetching(result.op!!)
+      
+      values += result.name
+      external_values[v.name] = result
+      result
+    }
   }
+  
+  fun buildCondTensor(v: Any): Tensor {
+    return when (v) {
+      is Operation -> {//Use pivot as the proxy for this op.
+        with_dependencies(v, output_tensor = pivot)
+      }
+      is IndexedSlices, is SparseTensor -> {
+        TODO()
+      }
+      else -> processOutputTensor(v as Tensor)
+    }
+  }
+  
+  /**Add the subgraph defined by fn() to the graph.*/
+  fun buildCondBranch(fn: () -> Tensor): Tensor {
+    val original_result = fn()
+    val result = buildCondTensor(original_result)
+    return result
+  }
+  
+  private fun processOutputTensor(v: Tensor): Tensor {
+    var real_v = v
+    if (v.name !in values) {
+      values += v.name
+      real_v = tf.switchRefOrTensor(v, pred)[branch]
+      external_values[v.name] = real_v
+    } else {
+      val external_v = external_values[v.name]
+      if (external_v != null)
+        real_v = external_v
+    }
+    return real_v
+  }
+}
+
+/**Return true if `op` is an Exit.*/
+fun isLoopExit(op: Operation) = op.opType == "Exit" || op.opType == "RefExit"
+
+/**
+Produces the content of `output_tensor` only after `dependencies`.
+
+In some cases, a user may want the output of an operation to be
+consumed externally only after some other dependencies have run
+first. This function ensures returns `output_tensor`, but only after all
+operations in `dependencies` have run. Note that this means that there is
+no guarantee that `output_tensor` will be evaluated after any `dependencies`
+have run.
+
+See also @{tf.tuple$tuple} and @{tf.group$group}.
+
+Args:
+ * @param dependencies: Iterable of operations to run before this op finishes.
+ * @param output_tensor: A `Tensor` or `IndexedSlices` that will be returned.
+ * @param name: (Optional) A name for this operation.
+
+Returns:
+Same as `output_tensor`.
+ */
+fun with_dependencies(vararg dependencies: Operation,
+                      output_tensor: Tensor,
+                      name: String = "control_dependency"): Tensor {
+  with(tf) {
+    name_scope(name) {
+      colocate_with(output_tensor) {
+        control_dependencies(*dependencies) {
+          return _identity(output_tensor, name = name)
+          //TODO indexedSlices
+        }
+      }
+    }
+  }
+}
+
+fun TF._identity(data: Tensor, name: String): Tensor {
+  return if (data.dtype.is_ref_dytpe)
+    refIdentity(data, name)
+  else
+    identity(data, name)
+  //TODO indexedSlice
 }
 
 fun TF.group(inputs: List<Any>, name: String = "group_deps"): Operation {
@@ -32,8 +162,8 @@ fun TF.group(inputs: List<Any>, name: String = "group_deps"): Operation {
   for (input in inputs) {
     val op = when (input) {
       is Operation -> input
-      is Tensor -> input.op
       is Variable -> input.initializer_op.op
+      is Tensor -> input.op
       else -> throw IllegalArgumentException("unsupported ${input::class.java}")
     }
     val dev = op!!.device
@@ -78,23 +208,33 @@ fun TF.cond(pred: Tensor,
             true_fn: () -> Tensor,
             false_fn: () -> Tensor,
             name: String = "cond"): Tensor {
-  val (p_2, p_1) = switch(pred, pred)
-  val pivot_1 = identity(p_1, name = "switch_t")
-  val pivot_2 = identity(p_2, name = "switch_f")
-  val pred = identity(pred, name = "pred_id")
-  //Disable the fetching of tensors that are only on one branch of cond.
-  for (tensor in a(p_1, p_2, pivot_1, pivot_2, pred))
-    g.prevent_fetching(tensor.op!!)
-  
-  //Build the graph for the true branch in a new context.
-  val res_t = buildCondBranch(pred, pivot_1, 1, true_fn)
-  val res_f = buildCondBranch(pred, pivot_2, 0, false_fn)
-  return merge(res_t, res_f)[0]
+  name_scope(name) {
+    val (p_2, p_1) = switch(pred, pred)
+    val pivot_1 = identity(p_1, name = "switch_t")
+    val pivot_2 = identity(p_2, name = "switch_f")
+    val pred = identity(pred, name = "pred_id")
+    //Disable the fetching of tensors that are only on one branch of cond.
+    for (tensor in a(p_1, p_2, pivot_1, pivot_2, pred))
+      g.prevent_fetching(tensor.op!!)
+    
+    //Build the graph for the true branch in a new context.
+    val res_t = condContext(pred, pivot_1, branch = 1) {
+      it.buildCondBranch(true_fn)
+    }
+    val res_f = condContext(pred, pivot_2, branch = 0) {
+      it.buildCondBranch(false_fn)
+    }
+//    val res_t = buildCondBranch(pred, pivot_1, 1, true_fn)
+//     = buildCondBranch(pred, pivot_2, 0, false_fn)
+    return merge(res_t, res_f)[0]
+  }
 }
 
-fun TF.buildCondBranch(pred: Tensor, pivot: Tensor, branch: Int, fn: () -> Tensor): Tensor {
-  val t = fn()
-  return switchRefOrTensor(t, pred)[branch]
+fun TF.buildCondBranch(pred: Tensor, pivot: Tensor, branch: Int, fn: () -> Tensor): Tensor {//TODO control deped on pivot Tensor
+  condContext(pred, pivot, branch) {
+    val t = fn()
+    return switchRefOrTensor(t, pred)[branch]
+  }
 }
 
 /**

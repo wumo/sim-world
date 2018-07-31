@@ -5,6 +5,8 @@ import org.bytedeco.javacpp.Pointer
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Graph.newGraph
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
 import org.bytedeco.javacpp.tensorflow.*
+import java.util.*
+import kotlin.collections.LinkedHashMap
 
 /**
  * A TensorFlow computation, represented as a dataflow graph.
@@ -21,7 +23,7 @@ class Graph(val tf: TF) {
   private val unfeedable_tensors = mutableSetOf<Tensor>()
   /**Set of operations that are dangerous to fetch!*/
   private val unfetchable_ops = mutableSetOf<Operation>()
-  
+  private val functions = LinkedHashSet<String>()
   fun num_node_ids() = c_graph.graph().num_node_ids()
   
   fun nodeBuilder(opType: String, name: String) = OperationBuilder(this, opType, name)
@@ -29,6 +31,18 @@ class Graph(val tf: TF) {
     val op = TF_GraphOperationByName(c_graph, name)
     return Operation(this, op)
   }
+  
+  fun getTensor(name: String): Tensor {
+    val idx = name.indexOf(':')
+    val valueIdx = if (idx == -1) 0
+    else name.substring(idx + 1).toInt()
+    val name = if (idx == -1) name
+    else name.substring(0, idx)
+    val op = wumo.sim.algorithm.tensorflow.tf.g.operation(name)
+    return Tensor(op, valueIdx)
+  }
+  
+  fun is_function(name: String) = name in functions
   
   fun toGraphDef(): ByteArray {
     val buf = TF_NewBuffer()

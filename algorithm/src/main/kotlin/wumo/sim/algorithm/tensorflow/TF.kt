@@ -4,6 +4,8 @@ import org.bytedeco.javacpp.Loader
 import org.bytedeco.javacpp.tensorflow
 import org.bytedeco.javacpp.tensorflow.*
 import org.tensorflow.framework.GraphDef
+import wumo.sim.algorithm.tensorflow.ops.CondContext
+import wumo.sim.algorithm.tensorflow.ops.ControlFlowContext
 import wumo.sim.algorithm.tensorflow.ops.group
 import wumo.sim.algorithm.tensorflow.scope.NameScope
 import wumo.sim.algorithm.tensorflow.scope.VariableScope
@@ -37,6 +39,7 @@ class TF {
   val rootVs = VariableScope("", rootNs)
   var ctxNs = rootNs
   var ctxVs = rootVs
+  var control_flow_context: ControlFlowContext? = null
   lateinit var session: Session
   
   inline fun <R> init_scope(block: () -> R): R {
@@ -152,6 +155,16 @@ class TF {
   
   inline fun end_device() {
     ctxNs.device = tmpDev
+  }
+  
+  inline fun <R> condContext(pred: Tensor, pivot: Tensor, branch: Int, block: (CondContext) -> R): R {
+    val tmp = control_flow_context
+    control_flow_context = CondContext(pred, pivot, branch)
+    try {
+      return block(control_flow_context as CondContext)
+    } finally {
+      control_flow_context = tmp
+    }
   }
 }
 

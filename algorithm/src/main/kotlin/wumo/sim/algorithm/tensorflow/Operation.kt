@@ -10,12 +10,15 @@ class Operation(val graph: Graph, val c_op: TF_Operation) {
    * Update the input to this operation at the given index.
    * NOTE: This is for TF internal use only. Please don't use it.
    *
-   * @param i the index of the input to update.
+   * @param index the index of the input to update.
    * @param tensor the Tensor to be used as the input at the given index.
    * @param update_dtype If `False`, the type for this input is not updated.
    */
-  internal fun update_input(i: Int, tensor: Tensor, update_dtype: Boolean = true) {
-    TODO("not implemented")
+  internal fun update_input(index: Int, tensor: Tensor, update_dtype: Boolean = true) {
+    val g = graph.c_graph
+    val input = inputs[index]
+    g.graph().UpdateEdge(tensor.node(), tensor.value_index, c_op.node(), index)
+    inputs = _inputs()
   }
   
   override fun equals(other: Any?): Boolean {
@@ -38,7 +41,7 @@ class Operation(val graph: Graph, val c_op: TF_Operation) {
   val node: Node by lazy { c_op.node() }
   val attrs: AttrSlice by lazy { node.attrs() }
   
-  val inputs: List<Tensor> by lazy {
+  fun _inputs() = run {
     val node = c_op.node()
     val numInputs = node.num_inputs()
     val inputs = MutableList(numInputs) { Tensor(null, it) }
@@ -49,6 +52,8 @@ class Operation(val graph: Graph, val c_op: TF_Operation) {
     inputs
   }
   
+  var inputs: List<Tensor> = _inputs()
+  
   val outputs: List<Tensor> by lazy {
     val numOutputs = TF_OperationNumOutputs(c_op)
     
@@ -57,22 +62,23 @@ class Operation(val graph: Graph, val c_op: TF_Operation) {
     }
   }
   
-  val control_inputs: List<Operation> by lazy {
-    val numControlOps = TF_OperationNumControlInputs(c_op)
-    val control_ops = PointerPointer<TF_Operation>(numControlOps.toLong())
-    TF_OperationGetControlInputs(c_op, control_ops, numControlOps)
-    List(numControlOps) {
-      Operation(graph, control_ops.get(TF_Operation::class.java, it.toLong()))
-    }
+  /**
+   * Add a new control input to this operation.
+   */
+  fun addControlInput(op: Operation) {
+    val g = tf.g.c_graph.graph()
+    g.AddControlEdge(op.node, node)
   }
   
-  val input_types: List<Int> by lazy {
-    val numOutputs = TF_OperationNumInputs(c_op)
-    
-    List(numOutputs) {
-      TF_OperationInputType(TF_Input().oper(c_op).index(it))
+  val control_inputs: List<Operation>
+    get() {
+      val numControlOps = TF_OperationNumControlInputs(c_op)
+      val control_ops = PointerPointer<TF_Operation>(numControlOps.toLong())
+      TF_OperationGetControlInputs(c_op, control_ops, numControlOps)
+      return List(numControlOps) {
+        Operation(graph, control_ops.get(TF_Operation::class.java, it.toLong()))
+      }
     }
-  }
   
   val output_types: List<Int> by lazy {
     val numOutputs = TF_OperationNumOutputs(c_op)

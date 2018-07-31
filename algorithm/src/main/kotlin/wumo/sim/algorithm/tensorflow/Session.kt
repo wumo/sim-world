@@ -144,7 +144,7 @@ class Session(val c_graph: TF_Graph) {
     print(eval<Any>(this))
   }
   
-  fun Operation.eval(){
+  fun Operation.eval() {
   
   }
   
@@ -161,16 +161,6 @@ class Session(val c_graph: TF_Graph) {
     run_list += target
   }
   
-  fun getTensor(name: String): Tensor {
-    val idx = name.indexOf(':')
-    val valueIdx = if (idx == -1) 0
-    else name.substring(idx + 1).toInt()
-    val name = if (idx == -1) name
-    else name.substring(0, idx)
-    val op = tf.g.operation(name)
-    return Tensor(op, valueIdx)
-  }
-  
   fun run(fetch: Array<String>,
           updates: Array<String>,
           feed_dict: Map<String, NDArray<*>>): Array<NDArray<*>> {
@@ -179,7 +169,7 @@ class Session(val c_graph: TF_Graph) {
     val input_values = PointerPointer<TF_Tensor>(ninputs.toLong())
     for ((i, pair) in feed_dict.entries.withIndex()) {
       val (_input, input_value) = pair
-      val input = getTensor(_input)
+      val input = tf.g.getTensor(_input)
       inputs.position(i.toLong()).oper(input.op!!.c_op).index(input.value_index)
       input_values.position(i.toLong()).put(TensorBuffer.fromNDArray(input_value).c_tensor)
     }
@@ -189,7 +179,7 @@ class Session(val c_graph: TF_Graph) {
     val ntargets = updates.size
     val target_opers = PointerPointer<TF_Operation>(ntargets.toLong())
     for ((i, op) in updates.withIndex()) {
-      val op = getTensor(op).op!!
+      val op = tf.g.getTensor(op).op!!
       target_opers.position(i.toLong()).put(op.c_op)
     }
     target_opers.position(0L)
@@ -199,7 +189,7 @@ class Session(val c_graph: TF_Graph) {
     val outputs = TF_Output(noutputs.toLong())
     val output_values = PointerPointer<TF_Tensor>(noutputs.toLong())
     for ((i, _f) in fetch.withIndex()) {
-      val f = getTensor(_f)
+      val f = tf.g.getTensor(_f)
       outputs.position(i.toLong()).oper(f.op!!.c_op).index(f.value_index)
     }
     outputs.position(0L)

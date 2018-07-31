@@ -14,7 +14,7 @@ import wumo.sim.util.x
 class c_api_test {
   @Test
   fun `update edge`() {
-    val a=tf.variable(1,name="a")
+    val a = tf.variable(1, name = "a")
     
     val A = tf.const(4 x 1, f(1f, 2f, 3f, 4f))
     val B = tf.const(4 x 1, f(1f, 2f, 3f, 4f))
@@ -27,6 +27,20 @@ class c_api_test {
     println(pb.get())
 //    tensorflow.GetNodeAttr(product.node().attrs(), attr_adj_y, *pb)
     tf.printGraph()
+  }
+  
+  @Test
+  fun `add control input`() {
+    val a = tf.const(1f, name = "a")
+    tf.control_dependencies(a) {
+      val b = tf.const(2f, name = "b")
+    }
     
+    val c = tf.const(3f, name = "c")
+    tf.printGraph()
+    
+    val g = tf.g.c_graph.graph()
+    g.AddControlEdge(a.node(), c.node())
+    tf.printGraph()
   }
 }

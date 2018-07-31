@@ -71,7 +71,7 @@ fun saveModel(model_file_path: String,
     defaut(_tf) {
       val init_ops = arrayListOf<Operation>()
       for ((v, value) in act_vars)
-        init_ops += tf.assign(Tensor(tf.g.operation("$prefix/$v"), 0), tf.const(value.copy())).op!!
+        init_ops += tf.assign(tf.g.getTensor("$prefix/$v"), tf.const(value.copy())).op!!
       tf.group(init_ops, name = "init")
       val bytes = tf.g.toGraphDef()
       sink.encode(bytes)

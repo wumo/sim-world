@@ -97,26 +97,40 @@ class NameScope(val name: String, parentScope: NameScope?) : enter_exit {
   }
   
   inline fun <R> control_dependencies(vararg control_inputs: Operation, block: () -> R): R {
+    val tmp = if (control_inputs.isEmpty()) control_ops.clone() else null
     val size = control_inputs.size
-    control_ops += control_inputs
+    if (size == 0)
+      control_ops.clear()
+    else
+      control_ops += control_inputs
     try {
       return block()
     } finally {
-      repeat(size) {
-        control_ops.removeLast()
-      }
+      if (size == 0)
+        control_ops.addAll(tmp!!)
+      else
+        repeat(size) {
+          control_ops.removeLast()
+        }
     }
   }
   
   inline fun <R> control_dependencies(control_inputs: List<Operation>, block: () -> R): R {
+    val tmp = if (control_inputs.isEmpty()) control_ops.clone() else null
     val size = control_inputs.size
-    control_ops += control_inputs
+    if (size == 0)
+      control_ops.clear()
+    else
+      control_ops += control_inputs
     try {
       return block()
     } finally {
-      repeat(size) {
-        control_ops.removeLast()
-      }
+      if (size == 0)
+        control_ops.addAll(tmp!!)
+      else
+        repeat(size) {
+          control_ops.removeLast()
+        }
     }
   }
 }

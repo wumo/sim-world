@@ -62,8 +62,12 @@ class OperationBuilder(val graph: Graph, val opType: String, val name: String) {
     val nativeOp = TF_FinishOperation(c_opDesc, status)
     throwExceptionIfNotOk(status)
     val op = Operation(graph, nativeOp)
-//    control_flow_post_processing(op)
+    control_flow_post_processing(op)
     return op
+  }
+  
+  private fun control_flow_post_processing(op: Operation) {
+    tf.control_flow_context?.addOp(op)
   }
   
   private fun addContextControlInput(): OperationBuilder {
@@ -81,16 +85,16 @@ class OperationBuilder(val graph: Graph, val opType: String, val name: String) {
   
   fun addInputList(input: Collection<Tensor>): OperationBuilder {
     val inputs = TF_Output(input.size.toLong())
-    for ((i, input) in input.withIndex())
-      inputs.position(i.toLong()).oper(input.op!!.c_op).index(input.value_index)
+    for ((i, _input) in input.withIndex())
+      inputs.position(i.toLong()).oper(_input.op!!.c_op).index(_input.value_index)
     TF_AddInputList(c_opDesc, inputs.position(0L), input.size)
     return this
   }
   
   fun addInputList(input: Array<Tensor>): OperationBuilder {
     val inputs = TF_Output(input.size.toLong())
-    for ((i, input) in input.withIndex())
-      inputs.position(i.toLong()).oper(input.op!!.c_op).index(input.value_index)
+    for ((i, _input) in input.withIndex())
+      inputs.position(i.toLong()).oper(_input.op!!.c_op).index(_input.value_index)
     TF_AddInputList(c_opDesc, inputs.position(0L), input.size)
     return this
   }
@@ -156,7 +160,7 @@ class OperationBuilder(val graph: Graph, val opType: String, val name: String) {
     return this
   }
   
-  fun <T:Any> attr(name: String, value: TensorBuffer<T>): OperationBuilder {
+  fun <T : Any> attr(name: String, value: TensorBuffer<T>): OperationBuilder {
     val status = newStatus()
     TF_SetAttrTensor(c_opDesc, name, value.c_tensor, status)
     throwExceptionIfNotOk(status)
