@@ -216,7 +216,7 @@ fun build_act_with_param_noise(make_obs_ph: (String) -> TfInput,
         tf.control_dependencies(perturb_for_adaption) {
           tf.cond(tf.less(mean_kl, param_noise_threshold),
                   { param_noise_scale.assign(param_noise_scale * tf.const(1.01f)) },
-                  { param_noise_scale.assign(param_noise_scale / tf.const(1.01f)) }, name = "update_scale_expr_cond")
+                  { param_noise_scale.assign(tf.realDiv(param_noise_scale, tf.const(1.01f))) }, name = "update_scale_expr_cond")
         }
     
     //Functionality to update the threshold for parameter space noise.
@@ -228,15 +228,16 @@ fun build_act_with_param_noise(make_obs_ph: (String) -> TfInput,
     val deterministic_actions = tf.argmax(q_values_perturbed, axis = 1, name = "deterministic_actions")
     val batch_size = tf.shape(observations_ph.get())[0]
     val random_actions = tf.random_uniform(tf.stack(a(batch_size)), min = 0, max = num_actions, dtype = DT_INT32, name = "random_actions")
-    val chose_random = tf.less(tf.random_uniform(tf.stack(a(batch_size)), min = 0, max = 1, dtype = DT_FLOAT), eps, name = "chose_random")
+    val part_a = tf.random_uniform(tf.stack(a(batch_size)), min = 0, max = 1, dtype = DT_FLOAT)
+    val chose_random = tf.less(part_a, eps, name = "chose_random")
     val stochastic_actions = tf.where(chose_random, random_actions, deterministic_actions, name = "stochastic_actions")
     
     val output_actions = tf.cond(stochastic_ph, { stochastic_actions }, { deterministic_actions }, name = "output_actions")
     val update_eps_expr = eps.assign(tf.cond(tf.greaterEqual(update_eps_ph, tf.const(0f)), { update_eps_ph }, { eps }))
     val updates = a(
         update_eps_expr,
-        tf.cond(reset_ph, { Tensor(perturb_vars(original_scope = "q_func", perturbed_scope = "perturbed_q_func"), 0) },
-                { Tensor(tf.group(listOf()), 0) }, name = "reset_cond"),
+        tf.cond(reset_ph, { perturb_vars(original_scope = "q_func", perturbed_scope = "perturbed_q_func") },
+                { tf.group(listOf()) }, name = "reset_cond"),
         tf.cond(update_param_noise_scale_ph, { update_scale() }, { tf.variable(0f, trainable = false) }, name = "update_param_noise_scale_cond"),
         update_param_noise_threshold_expr)
     val inputs = a(observations_ph, stochastic_ph, update_eps_ph, reset_ph, update_param_noise_threshold_ph, update_param_noise_scale_ph)

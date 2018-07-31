@@ -137,6 +137,6 @@ class Operation(val graph: Graph, val c_op: TF_Operation) {
     }
   
   override fun toString(): String {
-    return """"Operation("$name", op=$opType, dev=$device)"""
+    return """"Operation("$name", op=$opType, dev=$device, def=${c_op.node().DebugString().string})"""
   }
 }

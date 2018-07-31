@@ -100,7 +100,7 @@ class MountainCar : Env<NDArray<Float>, Int> {
     car.translation.set(((pos - min_position) * scale), (height(pos) * scale).toFloat())
     car.rotation = cos(3 * pos)
     viewer.requestRender()
-    Thread.sleep(1000 / 60)
+//    Thread.sleep(10)
   }
   
   override fun close() {

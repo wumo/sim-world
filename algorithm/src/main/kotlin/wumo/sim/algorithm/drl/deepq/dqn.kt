@@ -119,9 +119,11 @@ fun <O : Any, A : Any> learn(env: Env<O, A>,
         act(newaxis(toNDArray(obs)), reset, update_param_noise_threshold, update_param_noise_scale = true, update_eps = update_eps)
       }
       val action = act_result[0].get() as A
+      println(action)
       val env_action = action
       reset = false
       val (new_obs, rew, done, _) = env.step(env_action)
+      env.render()
       //Store transition in the replay buffer.
       replay_buffer.add(obs, action, rew, new_obs, done)
       obs = new_obs
@@ -155,6 +157,11 @@ fun <O : Any, A : Any> learn(env: Env<O, A>,
       
       val mean_100ep_reward = episode_rewards.mean(-101, -1)
       val num_episodes = episode_rewards.size
+//      if (episode_rewards.size % print_freq == 0)
+//        println("steps:$t\n" +
+//                "episodes: $num_episodes\n" +
+//                "mean 100 episode reward: $mean_100ep_reward\n" +
+//                "${100 * exploration.value(t)} time spent exploring")
       if (done && episode_rewards.size % print_freq == 0) {
         println("steps:$t\n" +
                 "episodes: $num_episodes\n" +
@@ -169,7 +176,7 @@ fun <O : Any, A : Any> learn(env: Env<O, A>,
             System.err.println("Saving model due to mean reward increase: $saved_mean_reward -> $mean_100ep_reward")
           saved_mean_reward = mean_100ep_reward
           val result = eval(act_vars)
-          saveModel(model_file_path, act_graph_def, act_vars.map { it.name }.zip(result),act)
+          saveModel(model_file_path, act_graph_def, act_vars.map { it.name }.zip(result), act)
         }
       }
     }
@@ -180,7 +187,8 @@ fun <O : Any, A : Any> learn(env: Env<O, A>,
 
 private fun MutableList<Float>.mean(start: Int, end: Int): Float {
   val start = max(0, if (start < 0) size + start else start)
-  val end = max(0, if (end < 0) size + end else end)
+  var end = end - 1
+  end = max(0, if (end < 0) size + end else end)
   var sum = 0f
   for (i in start..end) {
     sum += this[i]

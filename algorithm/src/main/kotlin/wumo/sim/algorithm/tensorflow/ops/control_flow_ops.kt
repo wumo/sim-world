@@ -90,7 +90,7 @@ class CondContext(val pred: Tensor,
   }
   
   /**Add the subgraph defined by fn() to the graph.*/
-  fun buildCondBranch(fn: () -> Tensor): Tensor {
+  fun buildCondBranch(fn: () -> Any): Tensor {
     val original_result = fn()
     val result = buildCondTensor(original_result)
     return result
@@ -205,8 +205,8 @@ fun TF.group(inputs: List<Any>, name: String = "group_deps"): Operation {
  * callables return a singleton list, the element is extracted from the list.
  */
 fun TF.cond(pred: Tensor,
-            true_fn: () -> Tensor,
-            false_fn: () -> Tensor,
+            true_fn: () -> Any,
+            false_fn: () -> Any,
             name: String = "cond"): Tensor {
   name_scope(name) {
     val (p_2, p_1) = switch(pred, pred)
@@ -227,13 +227,6 @@ fun TF.cond(pred: Tensor,
 //    val res_t = buildCondBranch(pred, pivot_1, 1, true_fn)
 //     = buildCondBranch(pred, pivot_2, 0, false_fn)
     return merge(res_t, res_f)[0]
-  }
-}
-
-fun TF.buildCondBranch(pred: Tensor, pivot: Tensor, branch: Int, fn: () -> Tensor): Tensor {//TODO control deped on pivot Tensor
-  condContext(pred, pivot, branch) {
-    val t = fn()
-    return switchRefOrTensor(t, pred)[branch]
   }
 }
 

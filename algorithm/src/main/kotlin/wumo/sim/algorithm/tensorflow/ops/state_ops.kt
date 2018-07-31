@@ -72,24 +72,26 @@ fun TF.variable(shape: Dimension, initial_value: String, name: String = "Variabl
 
 private inline fun TF.variable(initializer: (String) -> Tensor, name: String, trainable: Boolean = true): Variable {
   name_scope(name) {
-    val initial_value = initializer("initial_value")
-    val v = g.nodeBuilder("VariableV2", ctxNs.fullName)
-        .attrType("dtype", initial_value.dtype.base_dtype)
-        .attr("shape", initial_value.shape)
-        .build()
-    
-    val t = Variable(v, 0)
-    t.initial_value = initial_value
-    t.initializer_op = assign(t, t.try_guard_against_uninitialized_dependencies(initial_value))
-    //TODO: Change this class to not take caching_device, b
-    //ut to take the op to colocate the snapshot with, so we can use
-    //colocation rather than devices.
-    colocate_with(t.op!!) {
-      t.snapshot = identity(t, name = "read")
+    init_scope {
+      val initial_value = initializer("initial_value")
+      val v = g.nodeBuilder("VariableV2", ctxNs.fullName)
+          .attrType("dtype", initial_value.dtype.base_dtype)
+          .attr("shape", initial_value.shape)
+          .build()
+      
+      val t = Variable(v, 0)
+      t.initial_value = initial_value
+      t.initializer_op = assign(t, t.try_guard_against_uninitialized_dependencies(initial_value))
+      //TODO: Change this class to not take caching_device, b
+      //ut to take the op to colocate the snapshot with, so we can use
+      //colocation rather than devices.
+      colocate_with(t.op!!) {
+        t.snapshot = identity(t, name = "read")
+      }
+      if (trainable) trainables += t
+      global_variables += t
+      return t
     }
-    if (trainable) trainables += t
-    global_variables += t
-    return t
   }
 }
 
@@ -103,6 +105,8 @@ fun TF.variable(initial_value: Tensor, name: String = "Variable", trainable: Boo
     variable({ initial_value }, name, trainable)
 
 fun TF.assign(ref: Tensor, value: Tensor, name: String = "Assign"): Tensor {
+  //TODO NOTE(mrry): We add an explicit colocation constraint between
+  //the newly created op and any of its reference-typed inputs.
   val op = g.nodeBuilder("Assign", ctxNs.getUniqueFullName(name))
       .addInput(ref.asRef())
       .addInput(value)

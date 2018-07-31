@@ -119,6 +119,6 @@ open class Tensor(val op: Operation?, val value_index: Int) : TensorLike {
   override fun toString() =
       when (op) {
         null -> "Tensor(null)"
-        else -> """Tensor("$name:$value_index", shape=$shape, dtype=${dtype.name()}, op=${op.opType})"""
+        else -> """Tensor("$name", shape=$shape, dtype=${dtype.name()}, op=$op)"""
       }
 }
