@@ -5,8 +5,11 @@ import wumo.sim.algorithm.tensorflow.ops.const
 import wumo.sim.algorithm.tensorflow.tf
 import wumo.sim.algorithm.tensorflow.training.AdamOptimizer
 import wumo.sim.core.Env
-import wumo.sim.util.ndarray.*
 import wumo.sim.util.ndarray.NDArray.Companion.toNDArray
+import wumo.sim.util.ndarray.abs
+import wumo.sim.util.ndarray.newaxis
+import wumo.sim.util.ndarray.ones_like
+import wumo.sim.util.ndarray.plus
 import kotlin.math.max
 
 
@@ -119,11 +122,11 @@ fun <O : Any, A : Any> learn(env: Env<O, A>,
         act(newaxis(toNDArray(obs)), reset, update_param_noise_threshold, update_param_noise_scale = true, update_eps = update_eps)
       }
       val action = act_result[0].get() as A
-      println(action)
+//      println(action)
       val env_action = action
       reset = false
       val (new_obs, rew, done, _) = env.step(env_action)
-      env.render()
+//      env.render()
       //Store transition in the replay buffer.
       replay_buffer.add(obs, action, rew, new_obs, done)
       obs = new_obs

@@ -1,14 +1,17 @@
 package wumo.sim.algorithm.drl.deepq
 
-import okio.*
+import okio.BufferedSink
+import okio.BufferedSource
 import wumo.sim.algorithm.tensorflow.*
 import wumo.sim.algorithm.tensorflow.ops.assign
 import wumo.sim.algorithm.tensorflow.ops.const
 import wumo.sim.algorithm.tensorflow.ops.group
+import wumo.sim.util.buffer
 import wumo.sim.util.ndarray.*
-import wumo.sim.util.tuple2
+import wumo.sim.util.sink
+import wumo.sim.util.source
 import wumo.sim.util.tuple3
-import java.io.*
+import java.io.File
 
 fun BufferedSink.encode(act: ActFunction, prefix: String) {
   with(act.act as FunctionTensor) {

@@ -1,7 +1,6 @@
 package wumo.sim.algorithm.drl.deepq.experiments
 
 import org.junit.Test
-import wumo.sim.algorithm.drl.deepq.build_act
 import wumo.sim.algorithm.drl.deepq.learn
 import wumo.sim.algorithm.drl.deepq.loadModel
 import wumo.sim.algorithm.drl.deepq.mlp
@@ -9,11 +8,12 @@ import wumo.sim.algorithm.tensorflow.defaut
 import wumo.sim.envs.classic_control.CartPole
 import wumo.sim.util.ndarray.NDArray
 import wumo.sim.util.ndarray.newaxis
+import wumo.sim.wrappers.TimeLimit
 
 class train_cartpole {
   @Test
   fun train() {
-    val env = CartPole()
+    val env = TimeLimit(CartPole(), 200)
     val model = mlp(64)
     learn(env,
           q_func = model,
@@ -37,9 +37,16 @@ class train_cartpole {
           var _obs = env.reset()
           var _done = false
           var episode_rew = 0f
+          var interval = 200
           while (!_done) {
             env.render()
-            val action = act(newaxis(NDArray.toNDArray(_obs)), stochastic = false)[0].get() as Int
+            interval--
+            val action = if (interval < 0) {
+              if (interval < -4)
+                interval = 200
+              0
+            } else
+              act(newaxis(NDArray.toNDArray(_obs)), stochastic = false)[0].get() as Int
             val (obs, rew, done) = env.step(action)
             _done = done
             _obs = obs
