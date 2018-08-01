@@ -85,7 +85,7 @@ class CondContext(val pred: Tensor,
       is IndexedSlices, is SparseTensor -> {
         TODO()
       }
-      else -> processOutputTensor(v as Tensor)
+      else -> processOutputTensor((v as Tensor).value())
     }
   }
   
@@ -141,7 +141,7 @@ fun with_dependencies(vararg dependencies: Operation,
     name_scope(name) {
       colocate_with(output_tensor) {
         control_dependencies(*dependencies) {
-          return _identity(output_tensor, name = name)
+          return _identity(output_tensor, name = ctxNs.scopeName)
           //TODO indexedSlices
         }
       }
@@ -186,8 +186,8 @@ fun TF.group(inputs: List<Any>, name: String = "group_deps"): Operation {
         all_deps += noOpDep(deps)
       }
     }
+    return noOpDep(all_deps, ctxNs.scopeName)
   }
-  return noOpDep(all_deps, name)
 }
 
 /**
@@ -216,7 +216,6 @@ fun TF.cond(pred: Tensor,
     //Disable the fetching of tensors that are only on one branch of cond.
     for (tensor in a(p_1, p_2, pivot_1, pivot_2, pred))
       g.prevent_fetching(tensor.op!!)
-    
     //Build the graph for the true branch in a new context.
     val res_t = condContext(pred, pivot_1, branch = 1) {
       it.buildCondBranch(true_fn)
@@ -270,26 +269,18 @@ fun TF.merge(vararg inputs: Tensor, name: String = "Merge"): Array<Tensor> {
  * @param name A name for the operation (optional).
  * @return A tuple of `Tensor` objects (output, value_index).
  */
-private fun TF._merge(inputs: Array<Tensor>, name: String = "Merge"): Array<Tensor> {
-  val op = g.nodeBuilder("Merge", ctxNs.getUniqueFullName(name))
-      .addInputList(inputs)
-      .build()
-  val output = Tensor(op, 0)
-  val value_index = Tensor(op, 1)
-  return a(output, value_index)
-}
+private fun TF._merge(inputs: Array<Tensor>, name: String = "Merge") =
+    naryOps("Merge", name = name) {
+      addInputList(inputs)
+    }
 
 /**
  * @see [_merge]
  */
-private fun TF.ref_merge(inputs: Array<Tensor>, name: String): Array<Tensor> {
-  val op = g.nodeBuilder("RefMerge", ctxNs.getUniqueFullName(name))
-      .addInputList(inputs)
-      .build()
-  val output = Tensor(op, 0)
-  val value_index = Tensor(op, 1)
-  return a(output, value_index)
-}
+private fun TF.ref_merge(inputs: Array<Tensor>, name: String) =
+    naryOps("RefMerge", name = name) {
+      addInputList(inputs)
+    }
 
 /**
  * @see [switch]
@@ -319,24 +310,8 @@ private fun TF.switchRefOrTensor(data: Tensor,
  * @return `(output_false, output_true)`: If `pred` is true, data will be forwarded
  * to `output_true`, otherwise it goes to `output_false`.
  */
-fun TF.switch(data: Tensor, pred: Tensor, name: String = "Switch"): Array<Tensor> {
-  val op = g.nodeBuilder("Switch", ctxNs.getUniqueFullName(name))
-      .addInput(data)
-      .addInput(pred)
-      .build()
-  //TODO handle IndexedSlices and SparseTensor
-  val output_false = Tensor(op, 0)
-  val output_true = Tensor(op, 1)
-  return a(output_false, output_true)
-}
+fun TF.switch(data: Tensor, pred: Tensor, name: String = "Switch") =
+    naryOps("Switch", data, pred, name = name)//TODO handle IndexedSlices and SparseTensor
 
-fun TF.ref_switch(data: Tensor, pred: Tensor, name: String): Array<Tensor> {
-  val op = g.nodeBuilder("RefSwitch", ctxNs.getUniqueFullName(name))
-      .addInput(data)
-      .addInput(pred)
-      .build()
-  //TODO handle IndexedSlices and SparseTensor
-  val output_false = Tensor(op, 0)
-  val output_true = Tensor(op, 1)
-  return a(output_false, output_true)
-}
+fun TF.ref_switch(data: Tensor, pred: Tensor, name: String) =
+    naryOps("RefSwitch", data, pred, name = name)//TODO handle IndexedSlices and SparseTensor

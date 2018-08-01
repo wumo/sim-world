@@ -10,7 +10,6 @@ class Variable(op: Operation, value_index: Int) : Tensor(op, value_index) {
   lateinit var initial_value: Tensor
   lateinit var initializer_op: Tensor
   lateinit var snapshot: Tensor
-  
   /**
    * Returns the value of the initialized variable.
    *
@@ -21,7 +20,7 @@ class Variable(op: Operation, value_index: Int) : Tensor(op, value_index) {
    */
   fun initialized_value() =
       tf.init_scope {
-        tf.cond(is_variable_initialized(), { asRef() }, { initial_value })
+        tf.cond(is_variable_initialized(), { read_value() }, { initial_value })
       }
   
   /**
@@ -34,7 +33,6 @@ class Variable(op: Operation, value_index: Int) : Tensor(op, value_index) {
       tf.is_variable_initialized(this)
   
   fun read_value() = tf.identity(this, name = "read")
-  
   fun assign(value: Tensor, use_locking: Boolean = false): Tensor {
     return tf.assign(this, value)
   }
@@ -123,7 +121,6 @@ class Variable(op: Operation, value_index: Int) : Tensor(op, value_index) {
       new_op_inputs += new_op_input
       modified = modified || (new_op_input != op_input)
     }
-    
     //If at least one input was modified, replace the op.
     if (modified) {
       var new_op_type = op_type

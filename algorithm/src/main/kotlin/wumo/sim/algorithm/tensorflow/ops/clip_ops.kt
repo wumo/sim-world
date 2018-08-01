@@ -46,6 +46,6 @@ fun TF.clip_by_norm(t: Tensor, clip_norm: Tensor, axes: Tensor? = null, name: St
 //    t.shape x intermediate.shape
     assert(t.shape.isCompatibleWith(intermediate.shape))
     return tf.identity(
-        intermediate / tf.maximum(l2norm, clip_norm), name = ctxNs.scopeNameForOnce())
+        intermediate / tf.maximum(l2norm, clip_norm), name = ctxNs.scopeName)
   }
 }

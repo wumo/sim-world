@@ -12,7 +12,6 @@ import wumo.sim.algorithm.tensorflow.scope.VariableScope
 import wumo.sim.util.println
 
 var tf = TF()
-
 inline fun <R> defaut(_tf: TF, block: () -> R): R {
   val tmp = tf
   tf = _tf
@@ -22,6 +21,8 @@ inline fun <R> defaut(_tf: TF, block: () -> R): R {
     tf = tmp
   }
 }
+
+const val scopeChar = '$'
 
 class TF {
   companion object {
@@ -35,13 +36,13 @@ class TF {
   val trainables = mutableListOf<Variable>()
   val global_variables = mutableListOf<Variable>()
   val train_ops = mutableListOf<Operation>()
-  val rootNs = NameScope("", null)
-  val rootVs = VariableScope("", rootNs)
+  val rootNs = NameScope("$", null)
+  val rootVs = VariableScope("$", rootNs)
   var ctxNs = rootNs
   var ctxVs = rootVs
   var control_flow_context: ControlFlowContext? = null
+  val attr_scope_map = hashMapOf<String, AttrValue>()
   lateinit var session: Session
-  
   /**
   A context manager that lifts ops out of control-flow scopes and function-building graphs.
   
@@ -101,6 +102,8 @@ class TF {
    * [block]执行结束后，恢复[ctxNs]为调用[name_scope]之前的[NameScope]
    */
   inline fun <R> name_scope(name: String, device: String = "", block: () -> R): R {
+    if (name.startsWith(scopeChar))//already in scope
+      return block()
     val parentNs = ctxNs
     val sub = parentNs.new_subscope(name)
     sub.device = device
@@ -138,6 +141,25 @@ class TF {
       ctxNs.exit()
       ctxVs = parentVs
       ctxNs = parentNs
+    }
+  }
+  
+  inline fun <R> attr_scope(vararg attrs: Pair<String, AttrValue>, block: () -> R): R {
+    val saved_attrs = hashMapOf<String, AttrValue>()
+    attrs.forEach { (key, value) ->
+      attr_scope_map.compute(key) { k, v ->
+        if (v != null) saved_attrs[k] = v
+        value
+      }
+    }
+    try {
+      return block()
+    } finally {
+      attrs.forEach { (key, _) ->
+        attr_scope_map.compute(key) { k, v ->
+          saved_attrs[k]
+        }
+      }
     }
   }
   

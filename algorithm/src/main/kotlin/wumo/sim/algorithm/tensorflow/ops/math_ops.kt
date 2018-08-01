@@ -9,30 +9,30 @@ import wumo.sim.util.arange
 import wumo.sim.util.i
 
 fun TF.abs(x: Tensor, name: String = "Abs") = unaryOp("Abs", x, name)
-fun TF.accumulateNV2(vararg input: Tensor, shape: Dimension, name: String = "AccumulateNV2"): Tensor {
-  val op = g.nodeBuilder("AccumulateNV2", ctxNs.getUniqueFullName(name))
-      .addInputList(input as Array<Tensor>)
-      .attr("shape", shape)
-      .build()
-  return Tensor(op, 0)
-}
+fun TF.accumulateNV2(vararg input: Tensor, shape: Dimension, name: String = "AccumulateNV2") =
+    naryOp("AccumulateNV2", name = name) {
+      addInputList(input as Array<Tensor>)
+      attr("shape", shape)
+    }
 
 fun TF.acos(x: Tensor, name: String = "Acos") = unaryOp("Acos", x, name)
 fun TF.acosh(x: Tensor, name: String = "Acosh") = unaryOp("Acosh", x, name)
+operator fun Tensor.plus(b: Any) =
+    tf.name_scope("add") {
+      val y = tf.const(this.dtype.base_dtype, b, name = "y")
+      tf.add(this, y, name = tf.ctxNs.scopeName)
+    }
 
 operator fun Tensor.plus(b: Tensor) = tf.add(this, b)
-fun TF.add(a: Tensor, b: Tensor, name: String = "Add") =
-    binaryOp("Add", a, b, name)
+fun TF.add(a: Tensor, b: Tensor, name: String = "add") =
+    binaryOp("Add", a.value(), b.value(), name)
 
 fun TF.addV2(a: Tensor, b: Tensor, name: String = "AddV2") =
-    binaryOp("AddV2", a, b, name)
+    binaryOp("AddV2", a.value(), b.value(), name)
 
 fun TF.addN(vararg a: Tensor, name: String = "AddN") =
-    name_scope(name) {
-      val op = g.nodeBuilder("AddN", ctxNs.fullName)
-          .addInputList(a as Array<Tensor>)
-          .build()
-      Tensor(op, 0)
+    naryOp("AddN", name = name) {
+      addInputList(a as Array<Tensor>)
     }
 
 fun TF.all(input: Tensor, axis: Tensor, keep_dims: Boolean = false, name: String = "All") =
@@ -57,22 +57,13 @@ fun TF.approximateEqual(x: Tensor, y: Tensor, tolerance: Float = 1e-5f, name: St
 
 fun TF.argmax(a: Tensor, axis: Int, output_type: Int = DT_INT32, name: String = "ArgMax") =
     name_scope(name) {
-      val op = g.nodeBuilder("ArgMax", ctxNs.fullName)
-          .addInput(a)
-          .addInput(const(axis, "dimension"))
-          .attrType("output_type", output_type)
-          .build()
-      Tensor(op, 0)
+      val dimension = const(axis, "dimension")
+      argmax(a, dimension, output_type, ctxNs.scopeName)
     }
 
-fun TF.argmax(a: Tensor, axis: Tensor, name: String = "ArgMax") =
-    name_scope(name) {
-      val op = g.nodeBuilder("ArgMax", ctxNs.fullName)
-          .addInput(a)
-          .addInput(axis)
-          .attrType("output_type", DT_INT32)
-          .build()
-      Tensor(op, 0)
+fun TF.argmax(a: Tensor, axis: Tensor, output_type: Int = DT_INT32, name: String = "ArgMax") =
+    naryOp("ArgMax", a, axis, name = name) {
+      attrType("output_type", output_type)
     }
 
 fun TF.argmin(a: Tensor, axis: Tensor, name: String = "ArgMin") =
@@ -80,11 +71,8 @@ fun TF.argmin(a: Tensor, axis: Tensor, name: String = "ArgMin") =
 
 fun TF.argmin(a: Tensor, axis: Int, name: String = "ArgMin") =
     name_scope(name) {
-      val op = g.nodeBuilder("ArgMin", ctxNs.fullName)
-          .addInput(a)
-          .addInput(const(axis, "dimension"))
-          .build()
-      Tensor(op, 0)
+      val dimension = const(axis, "dimension")
+      argmin(a, dimension, ctxNs.scopeName)
     }
 
 fun TF.asin(x: Tensor, name: String = "Asin") = unaryOp("Asin", x, name)
@@ -92,16 +80,13 @@ fun TF.asinh(x: Tensor, name: String = "Asinh") = unaryOp("Asinh", x, name)
 fun TF.atan(x: Tensor, name: String = "Atan") = unaryOp("Atan", x, name)
 fun TF.atan2(x: Tensor, y: Tensor, name: String = "Atan2") = binaryOp("Atan2", x, y, name)
 fun TF.atanh(x: Tensor, name: String = "Atanh") = unaryOp("Atanh", x, name)
-
 fun TF.batchMatMul(a: Tensor, b: Tensor, adj_x: Boolean = false, adj_y: Boolean = false, name: String = "BatchMatMul") =
     naryOp("BatchMatMul", a, b, name = name) {
       attr("adj_x", adj_x).attr("adj_y", adj_y)
     }
 
 fun TF.besselI0e(x: Tensor, name: String = "BesselI0e") = unaryOp("BesselI0e", x, name)
-
 fun TF.besselI1e(x: Tensor, name: String = "BesselI1e") = unaryOp("BesselI1e", x, name)
-
 fun TF.betainc(a: Tensor, b: Tensor, x: Tensor, name: String = "Betainc") =
     ternaryOp("Betainc", a, b, x, name = name)
 
@@ -125,7 +110,6 @@ fun TF._cast(x: Tensor, dstT: Int, name: String = "Cast") =
     }
 
 fun TF.ceil(x: Tensor, name: String = "Ceil") = unaryOp("Ceil", x, name)
-
 fun TF.clipByValue(t: Tensor, clip_value_min: Tensor, clip_value_max: Tensor, name: String = "ClipByValue") =
     ternaryOp("ClipByValue", t, clip_value_min, clip_value_max, name = name)
 
@@ -149,10 +133,8 @@ fun TF.conj(x: Tensor, name: String = "Conj") =
       x
 
 fun TF._conj(x: Tensor, name: String = "Conj") = unaryOp("Conj", x, name)
-
 fun TF.cos(x: Tensor, name: String = "Cos") = unaryOp("Cos", x, name)
 fun TF.cosh(x: Tensor, name: String = "Cosh") = unaryOp("Cosh", x, name)
-
 fun TF.cross(a: Tensor, b: Tensor, name: String = "Cross") =
     binaryOp("Cross", a, b, name)
 
@@ -167,20 +149,17 @@ fun TF.cumsum(x: Tensor, axis: Tensor, exclusive: Boolean = false, reverse: Bool
     }
 
 fun TF.digamma(x: Tensor, name: String = "Digamma") = unaryOp("Digamma", x, name)
-
 operator fun Tensor.div(b: Tensor) = tf.div(this, b)
 fun TF.div(a: Tensor, b: Tensor, name: String = "Div") =
-    binaryOp("Div", a, b, name)
+    binaryOp("Div", a.value(), b.value(), name)
 
 fun TF.equal(a: Tensor, b: Tensor, name: String = "Equal") =
     binaryOp("Equal", a, b, name)
 
 fun TF.erf(x: Tensor, name: String = "Erf") = unaryOp("Erf", x, name)
 fun TF.erfc(x: Tensor, name: String = "Erfc") = unaryOp("Erfc", x, name)
-
 fun TF.exp(x: Tensor, name: String = "Exp") = unaryOp("Exp", x, name)
 fun TF.expm1(x: Tensor, name: String = "Expm1") = unaryOp("Expm1", x, name)
-
 fun TF.floor(x: Tensor, name: String = "Floor") = unaryOp("Floor", x, name)
 fun TF.floorDiv(a: Tensor, b: Tensor, name: String = "FloorDiv") =
     binaryOp("FloorDiv", a, b, name)
@@ -190,6 +169,12 @@ fun TF.floorMod(a: Tensor, b: Tensor, name: String = "FloorMod") =
 
 fun TF.greater(a: Tensor, b: Tensor, name: String = "Greater") =
     binaryOp("Greater", a, b, name)
+
+fun TF.greaterEqual(a: Tensor, b: Any, name: String = "GreaterEqual") =
+    name_scope(name) {
+      val y = tf.const(a.dtype.base_dtype, b, name = "y")
+      binaryOp("GreaterEqual", a, y, ctxNs.scopeName)
+    }
 
 fun TF.greaterEqual(a: Tensor, b: Tensor, name: String = "GreaterEqual") =
     binaryOp("GreaterEqual", a, b, name)
@@ -211,11 +196,9 @@ fun TF.imag(x: Tensor, Tout: Int = DT_FLOAT, name: String = "Imag") =
     }
 
 fun TF.inv(x: Tensor, name: String = "Inv") = unaryOp("Inv", x, name)
-
 fun TF.isFinite(x: Tensor, name: String = "IsFinite") = unaryOp("IsFinite", x, name)
 fun TF.isInf(x: Tensor, name: String = "IsInf") = unaryOp("IsInf", x, name)
 fun TF.isNan(x: Tensor, name: String = "IsNan") = unaryOp("IsNan", x, name)
-
 fun TF.less(a: Tensor, b: Tensor, name: String = "Less") =
     binaryOp("Less", a, b, name)
 
@@ -223,7 +206,6 @@ fun TF.lessEqual(a: Tensor, b: Tensor, name: String = "LessEqual") =
     binaryOp("LessEqual", a, b, name)
 
 fun TF.lgamma(x: Tensor, name: String = "Lgamma") = unaryOp("Lgamma", x, name)
-
 fun TF.LinSpace(start: Tensor, stop: Tensor, num: Tensor, name: String = "LinSpace") =
     ternaryOp("LinSpace", start, stop, num, name)
 
@@ -243,7 +225,7 @@ fun TF.logicalOr(a: Tensor, b: Tensor, name: String = "LogicalOr") =
     binaryOp("LogicalOr", a, b, name)
 
 fun TF.matmul(a: Tensor, b: Tensor, transpose_a: Boolean = false, transpose_b: Boolean = false, name: String = "MatMul") =
-    naryOp("MatMul", a, b, name = name) {
+    naryOp("MatMul", a.value(), b.value(), name = name) {
       attr("transpose_a", transpose_a)
       attr("transpose_b", transpose_b)
     }
@@ -259,17 +241,29 @@ fun TF.maximum(x: Tensor, y: Tensor, name: String = "Maximum") =
 fun TF.reductionDims(x: Tensor, axis: Tensor?): Tensor {
   if (axis != null) return axis
   //Fast path: avoid creating Rank and Range ops if ndims is known.
-  return const(arange(x.shape.rank()))
+  return const(arange(x.shape.rank()), name = "reduction_indices")
   //TODO SparseTensor
   // Otherwise, we rely on Range and Rank to do the right thing at run-time.
   return range(const(0), rank(x))
 }
 
-fun TF.mean(input: Tensor, axis: Tensor? = null, keep_dims: Boolean = false, name: String = "Mean") =
-    naryOp("Mean", input, reductionDims(input, axis), name = name) {
-      attr("keep_dims", keep_dims)
+fun TF.mean(input: Tensor, axis: IntArray? = null, keep_dims: Boolean = false, name: String = "mean") =
+    name_scope(name) {
+      val reduction_indices =
+          reductionDims(input,
+                        if (axis != null) tf.const(axis, "reduction_indices")
+                        else null)
+      naryOp("Mean", input,
+             reduction_indices,
+             name = ctxNs.scopeName) {
+        attr("keep_dims", keep_dims)
+      }
     }
 
+//fun TF.mean(input: Tensor, axis: Tensor? = null, keep_dims: Boolean = false, name: String = "mean") =
+//    naryOp("Mean", input, reductionDims(input, axis), name = name) {
+//      attr("keep_dims", keep_dims)
+//    }
 fun TF.min(input: Tensor, axis: Tensor, keep_dims: Boolean = false, name: String = "Min") =
     naryOp("Min", input, axis, name = name) {
       attr("keep_dims", keep_dims)
@@ -282,8 +276,8 @@ fun TF.mod(x: Tensor, y: Tensor, name: String = "Mod") =
     binaryOp("Mod", x, y, name = name)
 
 operator fun Tensor.times(b: Tensor) = tf.mul(this, b)
-fun TF.mul(a: Tensor, b: Tensor, name: String = "Mul") =
-    binaryOp("Mul", a, b, name)
+fun TF.mul(a: Tensor, b: Tensor, name: String = "mul") =
+    binaryOp("Mul", a.value(), b.value(), name)
 
 operator fun Tensor.unaryMinus() = tf.neg(this)
 fun TF.neg(a: Tensor, name: String = "Neg") =
@@ -335,7 +329,6 @@ fun TF.quantizedMul(a: Tensor, b: Tensor, min_a: Tensor, max_a: Tensor, min_b: T
       attrType("Toutput", Toutput)
     }
 
-
 private val dtype_hierarchy = mapOf(DT_INT32 to 0,
                                     DT_INT64 to 1,
                                     DT_FLOAT to 2,
@@ -386,22 +379,11 @@ fun TF.range(start: Tensor, limit: Tensor, delta: Tensor = const(1), name: Strin
   val start = cast(start, inferred_dtype)
   val limit = cast(limit, inferred_dtype)
   val delta = cast(delta, inferred_dtype)
-  val op = g.nodeBuilder("Range", ctxNs.getUniqueFullName(name))
-      .addInput(start)
-      .addInput(limit)
-      .addInput(delta)
-      .build()
-  return Tensor(op, 0)
+  return naryOp("Range", start, limit, delta, name = name)
 }
 
-fun TF.range(start: Tensor, limit: Tensor, delta: Tensor, dtype: Int, name: String = "Range"): Tensor {
-  val op = g.nodeBuilder("Range", ctxNs.getUniqueFullName(name))
-      .addInput(start)
-      .addInput(limit)
-      .addInput(delta)
-      .build()
-  return Tensor(op, 0)
-}
+fun TF.range(start: Tensor, limit: Tensor, delta: Tensor, dtype: Int, name: String = "Range") =
+    naryOp("Range", start, limit, delta, name = name)
 
 fun TF.real(input: Tensor, Tout: Int = DT_FLOAT, name: String = "Real") =
     naryOp("Real", input, name = name) {
@@ -409,7 +391,7 @@ fun TF.real(input: Tensor, Tout: Int = DT_FLOAT, name: String = "Real") =
     }
 
 fun TF.realDiv(a: Tensor, b: Tensor, name: String = "RealDiv") =
-    binaryOp("RealDiv", a, b, name)
+    binaryOp("RealDiv", a.value(), b.value(), name)
 
 fun TF.reciprocal(x: Tensor, name: String = "Reciprocal") =
     unaryOp("Reciprocal", x, name)
@@ -424,11 +406,8 @@ fun TF.requantize(input: Tensor, input_min: Tensor, input_max: Tensor, requested
     }
 
 fun TF.rint(x: Tensor, name: String = "Rint") = unaryOp("Rint", x, name)
-
 fun TF.round(x: Tensor, name: String = "Round") = unaryOp("Round", x, name)
-
 fun TF.rsqrt(x: Tensor, name: String = "Rsqrt") = unaryOp("Rsqrt", x, name)
-
 fun TF.segmentMax(data: Tensor, segmen_ids: Tensor, name: String = "SegmentMax") =
     binaryOp("SegmentMax", data, segmen_ids, name)
 
@@ -452,7 +431,6 @@ fun TF.sign(x: Tensor, name: String = "Sign") =
 
 fun TF.sin(x: Tensor, name: String = "Sin") = unaryOp("Sin", x, name)
 fun TF.sinh(x: Tensor, name: String = "Sinh") = unaryOp("Sinh", x, name)
-
 fun TF.sparseMatMul(a: Tensor, b: Tensor,
                     transpose_a: Boolean = false,
                     transpose_b: Boolean = false,
@@ -491,7 +469,6 @@ fun TF.sparseSegmentSumWithNumSegments(data: Tensor, indices: Tensor, segment_id
     naryOp("SparseSegmentSumWithNumSegments", data, indices, segment_ids, num_segments, name = name)
 
 fun TF.sqrt(x: Tensor, name: String = "Sqrt") = unaryOp("Sqrt", x, name)
-
 fun TF.square(a: Tensor, name: String = "Square") =
     unaryOp("Square", a, name)
 
@@ -499,10 +476,19 @@ fun TF.squaredDifference(a: Tensor, b: Tensor, name: String = "SquaredDifference
     binaryOp("SquaredDifference", a, b, name)
 
 operator fun Tensor.minus(b: Tensor) = tf.sub(this, b)
-fun TF.sub(a: Tensor, b: Tensor, name: String = "Sub") =
-    binaryOp("Sub", a, b, name)
+fun TF.sub(a: Tensor, b: Tensor, name: String = "sub") =
+    binaryOp("Sub", a.value(), b.value(), name)
 
-fun TF.sum(input: Tensor, axis: Tensor? = null, keep_dims: Boolean = false, name: String = "Sum") =
+fun TF.sum(input: Tensor, axis: Int? = null, keep_dims: Boolean = false, name: String = "sum") =
+    name_scope(name) {
+      val reduction_indices =
+          reductionDims(input,
+                        if (axis != null) tf.const(axis, "reduction_indices")
+                        else null)
+      _sum(input, reduction_indices, keep_dims, ctxNs.scopeName)
+    }
+
+fun TF.sum(input: Tensor, axis: Tensor? = null, keep_dims: Boolean = false, name: String = "sum") =
     _sum(input, reductionDims(input, axis), keep_dims, name)
 
 fun TF._sum(input: Tensor, axis: Tensor, keep_dims: Boolean = false, name: String = "Sum") =
@@ -512,7 +498,6 @@ fun TF._sum(input: Tensor, axis: Tensor, keep_dims: Boolean = false, name: Strin
 
 fun TF.tan(x: Tensor, name: String = "Tan") = unaryOp("Tan", x, name)
 fun TF.tanh(x: Tensor, name: String = "Tanh") = unaryOp("Tanh", x, name)
-
 fun TF.truncateDiv(a: Tensor, b: Tensor, name: String = "TruncateDiv") =
     binaryOp("TruncateDiv", a, b, name)
 

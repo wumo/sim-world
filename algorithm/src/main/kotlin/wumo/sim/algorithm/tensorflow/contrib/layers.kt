@@ -20,7 +20,7 @@ fun TF.one_hot_encoding(labels: Tensor,
     val labels = if (labels.dtype == DT_INT32) cast(labels, DT_INT64) else labels
     return oneHot(labels, const(num_class, name = "depth"),
                   const(on_value, name = "on_value"),
-                  const(off_value, name = "off_value"), ctxNs.scopeNameForOnce())
+                  const(off_value, name = "off_value"), ctxNs.scopeName)
   }
 }
 
@@ -42,8 +42,8 @@ fun TF.fully_connected(inputs: Tensor,
                       use_bias = normalizer_fn == null && biases_initializer != null,
                       kernel_initializer = weights_initializer,
                       bias_initializer = biases_initializer,
-                      bias_regularizer = biases_regularizer,
                       kernel_regularizer = weights_regularizer,
+                      bias_regularizer = biases_regularizer,
                       activity_regularizer = null,
                       trainable = trainable,
                       dtype = inputs.dtype)
@@ -128,11 +128,11 @@ fun TF.layer_norm(inputs: Tensor,
     } else _begin_norm_axis
     if (begin_params_axis >= inputs_rank || begin_norm_axis >= inputs_rank)
       throw IllegalArgumentException("begin_params_axis ($begin_params_axis) and begin_norm_axis ($begin_norm_axis) " +
-                                     "must be < rank(inputs) ($inputs_rank)")
+                                         "must be < rank(inputs) ($inputs_rank)")
     val params_shape = inputs_shape[-1 until 0]
     if (!params_shape.is_fully_defined)
       throw IllegalArgumentException("Inputs ${inputs.name}: shape(inputs)[$begin_params_axis:]" +
-                                     " is not fully defined: $inputs_shape")
+                                         " is not fully defined: $inputs_shape")
     //Allocate parameters for the beta and gamma of the normalization.
     val beta = if (center)
       tf.get_variable(params_shape, dtype, zeros_initializer(), "beta", trainable)

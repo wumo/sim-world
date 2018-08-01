@@ -4,7 +4,6 @@ import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.algorithm.tensorflow.*
 import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.util.Dimension
-import wumo.sim.util.ndarray.NDArray.Companion.zeros
 
 fun TF.batchToSpace(input: Tensor, crops: Tensor, block_size: Long, name: String = "BatchToSpace") =
     naryOp("BatchToSpace", input, crops, name = name) {
@@ -39,7 +38,6 @@ fun TF.depthToSpace(input: Tensor, block_size: Long, data_format: String = "NHWC
 
 fun TF.diag(diagonal: Tensor, name: String = "Diag") = unaryOp("Diag", diagonal, name)
 fun TF.diagPart(input: Tensor, name: String = "DiagPart") = unaryOp("DiagPart", input, name)
-
 fun TF.gatherNd(params: Tensor, indices: Tensor, name: String = "GatherNd") =
     binaryOp("GatherNd", params, indices, name)
 
@@ -50,14 +48,12 @@ fun TF.identity(input: Tensor, name: String = "Identity") =
     unaryOp("Identity", input, name)
 
 fun TF.invertPermutation(x: Tensor, name: String = "InvertPermutation") = unaryOp("InvertPermutation", x, name)
-
 fun TF.matrixBandPart(input: Tensor, num_lower: Tensor, num_upper: Tensor, name: String = "MatrixBandPart") =
     ternaryOp("MatrixBandPart", input, num_lower, num_upper, name)
 
 fun TF.matrixDiag(diagonal: Tensor, name: String = "MatrixDiag") = unaryOp("MatrixDiag", diagonal, name)
 fun TF.matrixDiagPart(input: Tensor, name: String = "MatrixDiagPart") = unaryOp("MatrixDiagPart", input, name)
 fun TF.matrixSetDiag(input: Tensor, diagonal: Tensor, name: String = "MatrixSetDiag") = binaryOp("MatrixSetDiag", input, diagonal, name)
-
 fun TF.mirrorPad(input: Tensor, paddings: Tensor,
                  mode: String,
                  name: String = "MirrorPad") =
@@ -163,10 +159,10 @@ fun TF.zeros(shape: Dimension, dtype: Int = DT_FLOAT, name: String = "Ones"): Te
       else -> 0
     }
     return if (shape.numElements() < 1000)
-      const(shape, dtype, zero, ctxNs.scopeNameForOnce())
+      const(shape, dtype, zero, ctxNs.scopeName)
     else {
       val shape = reshape(const(shape.asLongArray()), const(-1))
-      fill(shape, const(dtype, zero), ctxNs.scopeNameForOnce())
+      fill(shape, const(dtype, zero), ctxNs.scopeName)
     }
   }
 }
@@ -174,10 +170,10 @@ fun TF.zeros(shape: Dimension, dtype: Int = DT_FLOAT, name: String = "Ones"): Te
 fun TF.ones(shape: Dimension, dtype: Int = DT_FLOAT, name: String = "Ones"): Tensor {
   name_scope(name) {
     return if (shape.numElements() < 1000)
-      const(shape, dtype, 1, ctxNs.scopeNameForOnce())
+      const(shape, dtype, 1, ctxNs.scopeName)
     else {
       val shape = reshape(const(shape.asLongArray()), const(-1))
-      fill(shape, const(dtype, 1), ctxNs.scopeNameForOnce())
+      fill(shape, const(dtype, 1), ctxNs.scopeName)
     }
   }
 }
@@ -188,29 +184,14 @@ fun TF.fill(dims: Tensor, value: Tensor, name: String = "Fill") =
 fun TF.reshape(tensor: Tensor, shape: Tensor, name: String = "Reshape") =
     binaryOp("Reshape", tensor, shape, name)
 
-fun TF.slice(input: Tensor, begin: Tensor, size: Tensor, name: String = "Slice")
-    : Tensor {
-  val v = g.nodeBuilder("Slice", ctxNs.getUniqueFullName(name))
-      .addInput(input)
-      .addInput(begin)
-      .addInput(size)
-      .build()
-  return Tensor(v, 0)
-}
+fun TF.slice(input: Tensor, begin: Tensor, size: Tensor, name: String = "Slice") =
+    naryOp("Slice", input, begin, size, name = name)
 
 fun TF.oneHot(indices: Tensor, depth: Tensor,
               on_value: Tensor = tf.const(1f),
               off_value: Tensor = tf.const(0f),
-              name: String = "OneHot")
-    : Tensor {
-  val v = g.nodeBuilder("OneHot", ctxNs.getUniqueFullName(name))
-      .addInput(indices)
-      .addInput(depth)
-      .addInput(on_value)
-      .addInput(off_value)
-      .build()
-  return Tensor(v, 0)
-}
+              name: String = "OneHot") =
+    naryOp("OneHot", indices, depth, on_value, off_value, name = name)
 
 fun TF.size(input: Tensor, out_type: Int = DT_INT32, name: String = "Size") =
     naryOp("Size", input, name = name) {
@@ -227,11 +208,9 @@ fun TF.shape(input: Tensor, out_type: Int = DT_INT32, name: String = "Shape", op
   val input_shape = input.shape
   if (optimize && input_shape.is_fully_defined)
     return const(input_shape.asIntArray(), name)
-  val op = g.nodeBuilder("Shape", ctxNs.getUniqueFullName(name))
-      .addInput(input)
-      .attrType("out_type", out_type)
-      .build()
-  return Tensor(op, 0)
+  return naryOp("Shape", input, name = name) {
+    attrType("out_type", out_type)
+  }
 }
 
 fun TF.tile(input: Tensor, multiples: Tensor, name: String = "Tile") =
@@ -285,7 +264,6 @@ operator fun Tensor.get(vararg slice_spec: Int): Tensor {
   val begin = mutableListOf<Int>()
   val end = mutableListOf<Int>()
   val strides = mutableListOf<Int>()
-  
   var shrink_axis_mask = 0
   var new_axis_mask = 0
   var begin_mask = 0
@@ -308,7 +286,7 @@ operator fun Tensor.get(vararg slice_spec: Int): Tensor {
                               end_mask_ = end_mask,
                               shrink_axis_mask_ = shrink_axis_mask,
                               new_axis_mask_ = new_axis_mask,
-                              ellipsis_mask_ = ellipsis_mask), name = tf.ctxNs.scopeNameForOnce())
+                              ellipsis_mask_ = ellipsis_mask), name = tf.ctxNs.scopeName)
   }
 }
 
@@ -320,32 +298,20 @@ class StridedSliceAttrs(var begin_mask_: Int = 0,
 
 fun TF.strideSlice(input: Tensor, begin: Tensor, end: Tensor, strides: Tensor,
                    attrs: StridedSliceAttrs = StridedSliceAttrs(),
-                   name: String = "StridedSlice"): Tensor {
-  val op = g.nodeBuilder("StridedSlice", ctxNs.getUniqueFullName(name))
-      .addInput(input)
-      .addInput(begin)
-      .addInput(end)
-      .addInput(strides)
-      .attr("begin_mask", attrs.begin_mask_)
-      .attr("end_mask", attrs.end_mask_)
-      .attr("ellipsis_mask", attrs.ellipsis_mask_)
-      .attr("new_axis_mask", attrs.new_axis_mask_)
-      .attr("shrink_axis_mask", attrs.shrink_axis_mask_)
-      .build()
-  return Tensor(op, 0)
-}
+                   name: String = "StridedSlice") =
+    naryOp("StridedSlice", input, begin, end, strides, name = name) {
+      attr("begin_mask", attrs.begin_mask_)
+      attr("end_mask", attrs.end_mask_)
+      attr("ellipsis_mask", attrs.ellipsis_mask_)
+      attr("new_axis_mask", attrs.new_axis_mask_)
+      attr("shrink_axis_mask", attrs.shrink_axis_mask_)
+    }
 
 fun TF.gather(params: Tensor, indices: Tensor, axis: Int = 0, name: String = "GatherV2"): Tensor {
   if (axis == 0) {
-  
   }
   //TODO detect resource variables
-  val op = g.nodeBuilder("GatherV2", ctxNs.getUniqueFullName(name))
-      .addInput(params)
-      .addInput(indices)
-      .addInput(const(axis))
-      .build()
-  return Tensor(op, 0)
+  return naryOp("GatherV2", params, indices, const(axis), name = name)
 }
 
 fun TF.rank(input: Tensor, name: String = "Rank", optimize: Boolean = true): Tensor {
@@ -440,7 +406,6 @@ fun TF.unstack(value: Tensor, num: Long, axis: Long = 0L, name: String = "Unstac
 fun TF.where(condition: Tensor, x: Tensor, y: Tensor, name: String = "Where") = ternaryOp("Select", condition, x, y, name)
 
 fun TF.where(condition: Tensor, name: String = "Where") = unaryOp("Where", condition, name)
-
 /**Tensor conversion function that automatically packs arguments.*/
 fun TF.autopack(v: Array<Tensor>, name: String = "packed"): Tensor {
   TODO()

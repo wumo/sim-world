@@ -4,6 +4,7 @@ package wumo.sim.algorithm.tensorflow.scope
 
 import wumo.sim.algorithm.tensorflow.Operation
 import wumo.sim.algorithm.tensorflow.Tensor
+import wumo.sim.algorithm.tensorflow.scopeChar
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -12,12 +13,10 @@ class NameScope(val name: String, parentScope: NameScope?) : enter_exit {
   private val name_map = HashMap<String, Int>()
   /**下一层的[NameScope]*/
   private val subscopes = HashMap<String, NameScope>()
-  /**本层的全称*/
-  val fullName: String = if (parentScope == null) name else concate(parentScope.fullName, name)
-  private var useParentScopeName = false
-  private var usedOnce = false
+  /**本层的全称以$特殊标志*/
+  val scopeName: String = if (parentScope == null) name else concate(parentScope.scopeName, name)
   
-  fun getUniqueName(prefix: String): String {
+  private fun getUniqueName(prefix: String): String {
     var unique_name = prefix
     name_map.compute(prefix) { _, n ->
       if (n == null)
@@ -28,37 +27,20 @@ class NameScope(val name: String, parentScope: NameScope?) : enter_exit {
     return unique_name
   }
   
-  fun getUniqueFullName(default_name: String): String {
-    if (useParentScopeName) {
-      assert(!usedOnce)
-      usedOnce = true
-      return fullName
-    }
-    val unique_name = getUniqueName(default_name)
-    return concate(fullName, unique_name)
-  }
-  
   private fun concate(a: String, b: String): String {
-    val sep = if (a.isEmpty() || b.isEmpty()) "" else "/"
-    return "$a$sep$b"
-  }
-  
-  /**需要确保此函数调用后，[getUniqueFullName]函数只调用一次，否则报错*/
-  fun scopeNameForOnce(): String {
-    useParentScopeName = true
-    return ""
+    assert(a.isNotEmpty() && b.isNotEmpty())
+    return "$a/$b"
   }
   
   var device: String = ""
   var colocate_with: Operation? = null
   val control_ops = ArrayDeque<Operation>()
-  
   /**
    * 新建subscope
    * @param name subscope的名字，不能为空
    */
   fun new_subscope(name: String): NameScope {
-    assert(name.isNotEmpty())
+    assert(name.isNotEmpty() && !name.startsWith(scopeChar))
     val subname = getUniqueName(name)
     val sub = NameScope(subname, this)
     subscopes[subname] = sub
@@ -69,7 +51,7 @@ class NameScope(val name: String, parentScope: NameScope?) : enter_exit {
    * 寻找名为[name]的subscope，如果存在则直接返回，否则新建subscope，并重命名
    */
   internal fun reuse_or_new_subscope(name: String): NameScope {
-    assert(name.isNotEmpty())
+    assert(name.isNotEmpty() && !name.startsWith(scopeChar))
     return subscopes.computeIfAbsent(name) { NameScope(name, this) }
   }
   

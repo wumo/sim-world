@@ -20,9 +20,9 @@ class VariableScope(val name: String, val namescope: NameScope) : enter_exit {
   /***/
   private val var_scope_count = HashMap<String, Int>()
   /**这一层存储的所有变量*/
-  val variables = HashMap<String, Variable>()
+  val variables = LinkedHashMap<String, Variable>()
   /**这一层下的sub variable scope, */
-  val variable_subscopes = HashMap<String, VariableScope>()
+  val variable_subscopes = LinkedHashMap<String, VariableScope>()
   
   fun all_variables(): List<Variable> {
     val a_variables = mutableListOf<Variable>()

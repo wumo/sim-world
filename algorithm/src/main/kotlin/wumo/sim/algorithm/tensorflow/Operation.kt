@@ -39,7 +39,6 @@ class Operation(val graph: Graph, val c_op: TF_Operation) {
   val opType: String by lazy { TF_OperationOpType(c_op).string }
   val node: Node by lazy { c_op.node() }
   val attrs: AttrSlice by lazy { node.attrs() }
-  
   fun _inputs() = run {
     val node = c_op.node()
     val numInputs = node.num_inputs()
@@ -52,7 +51,6 @@ class Operation(val graph: Graph, val c_op: TF_Operation) {
   }
   
   var inputs: List<Tensor> = _inputs()
-  
   val outputs: List<Tensor> by lazy {
     val numOutputs = TF_OperationNumOutputs(c_op)
     
@@ -69,6 +67,11 @@ class Operation(val graph: Graph, val c_op: TF_Operation) {
     g.AddControlEdge(op.node, node)
   }
   
+  fun set_attr(key: String, value: AttrValue) {
+    val attr = c_op.node().def().mutable_attr()
+    //TODO require attr's operator[]
+  }
+  
   val control_inputs: List<Operation>
     get() {
       val numControlOps = TF_OperationNumControlInputs(c_op)
@@ -78,7 +81,6 @@ class Operation(val graph: Graph, val c_op: TF_Operation) {
         Operation(graph, control_ops.get(TF_Operation::class.java, it.toLong()))
       }
     }
-  
   val output_types: List<Int> by lazy {
     val numOutputs = TF_OperationNumOutputs(c_op)
     

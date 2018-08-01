@@ -20,14 +20,10 @@ fun TF.avgPool3DGrad(orig_input_shape: Tensor,
       attr("data_format", data_format)
     }
 
-fun TF.biasAdd(value: Tensor, bias: Tensor, name: String = "BiasAdd"): Tensor {
-  val op = g.nodeBuilder("BiasAdd", ctxNs.getUniqueFullName(name))
-      .addInput(value)
-      .addInput(bias)
-      .attr("data_format", "NHWC")
-      .build()
-  return Tensor(op, 0)
-}
+fun TF.biasAdd(value: Tensor, bias: Tensor, name: String = "BiasAdd") =
+    naryOp("BiasAdd", value.value(), bias.value(), name = name) {
+      attr("data_format", "NHWC")
+    }
 
 fun TF.conv2D(input: Tensor,
               filter: Tensor,
@@ -190,10 +186,10 @@ fun TF.moments(x: Tensor,
     //on 32-bit floats before converting the mean and variance back to fp16
     val y = if (x.dtype == DT_HALF) tf.cast(x, DT_FLOAT) else x
     //Compute true mean while keeping the dims for proper broadcasting.
-    var mean = tf.mean(y, tf.const(axes), keep_dims = true, name = "mean")
+    var mean = tf.mean(y, axes, keep_dims = true, name = "mean")
     //sample variance, not unbiased variance
     var variance = tf.mean(tf.squaredDifference(y, tf.stop_gradient(mean)),
-                           tf.const(axes), keep_dims = true, name = "variance")
+                           axes, keep_dims = true, name = "variance")
     if (!keep_dims) {
       mean = tf.squeeze(mean, axes)
       variance = tf.squeeze(variance, axes)
@@ -250,8 +246,8 @@ fun TF.batch_normalization(x: Tensor,
                            variance_epsilon: Float,
                            name: String = "batchnorm"): Tensor {
   name_scope(name) {
-    val _variance_epsilon = tf.const(variance_epsilon)
-    var inv = tf.rsqrt(variance + _variance_epsilon)
+    //    val _variance_epsilon = tf.const(variance_epsilon)
+    var inv = tf.rsqrt(variance + variance_epsilon)
     if (scale != null)
       inv *= scale
     return x * inv + (if (offset != null) offset - mean * inv else -mean * inv)

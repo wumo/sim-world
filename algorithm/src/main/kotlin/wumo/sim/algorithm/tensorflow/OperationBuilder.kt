@@ -6,48 +6,61 @@ import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.util.Dimension
 import wumo.sim.util.toByte
 
+val String.fullName
+  get() = substring(2)
+
 inline fun TF.naryOp(op: String, vararg inputs: Tensor, name: String, setAttr: OperationBuilder.() -> Unit = {}): Tensor {
-  val builder = g.nodeBuilder(op, ctxNs.getUniqueFullName(name))
-  for (input in inputs)
-    builder.addInput(input)
-  setAttr(builder)
-  val op = builder.build()
-  assert(op.c_op.node().num_outputs() == 1) { "${op.c_op.node().DebugString()} outputs > 1, use naryOps instead." }
-  return Tensor(op, 0)
+  name_scope(name) {
+    val builder = g.nodeBuilder(op, ctxNs.scopeName.fullName)
+    for (input in inputs)
+      builder.addInput(input)
+    setAttr(builder)
+    val op = builder.build()
+    assert(op.c_op.node().num_outputs() == 1) { "${op.c_op.node().DebugString()} outputs > 1, use naryOps instead." }
+    return Tensor(op, 0)
+  }
 }
 
 inline fun TF.naryOps(op: String, vararg inputs: Tensor, name: String, setAttr: OperationBuilder.() -> Unit = {}): Array<Tensor> {
-  val builder = g.nodeBuilder(op, ctxNs.getUniqueFullName(name))
-  for (input in inputs)
-    builder.addInput(input)
-  setAttr(builder)
-  val op = builder.build()
-  val outputs = op.c_op.node().num_outputs()
-  return Array(outputs) { Tensor(op, it) }
+  name_scope(name) {
+    val builder = g.nodeBuilder(op, ctxNs.scopeName.fullName)
+    for (input in inputs)
+      builder.addInput(input)
+    setAttr(builder)
+    val op = builder.build()
+    val outputs = op.c_op.node().num_outputs()
+    return Array(outputs) { Tensor(op, it) }
+  }
 }
 
-fun TF.unaryOp(op: String, a: Tensor, name: String, dtype: Int = a.dtype): Tensor {
-  val op = g.nodeBuilder(op, ctxNs.getUniqueFullName(name))
-      .addInput(a)
-      .build()
-  return Tensor(op, 0)
+inline fun TF.unaryOp(op: String, a: Tensor, name: String, dtype: Int = a.dtype): Tensor {
+  name_scope(name) {
+    val op = g.nodeBuilder(op, ctxNs.scopeName.fullName)
+        .addInput(a)
+        .build()
+    return Tensor(op, 0)
+  }
 }
 
-fun TF.binaryOp(op: String, a: Tensor, b: Tensor, name: String): Tensor {
-  val op = g.nodeBuilder(op, ctxNs.getUniqueFullName(name))
-      .addInput(a)
-      .addInput(b)
-      .build()
-  return Tensor(op, 0)
+inline fun TF.binaryOp(op: String, a: Tensor, b: Tensor, name: String): Tensor {
+  name_scope(name) {
+    val op = g.nodeBuilder(op, ctxNs.scopeName.fullName)
+        .addInput(a)
+        .addInput(b)
+        .build()
+    return Tensor(op, 0)
+  }
 }
 
-fun TF.ternaryOp(op: String, a: Tensor, b: Tensor, c: Tensor, name: String): Tensor {
-  val op = g.nodeBuilder(op, ctxNs.getUniqueFullName(name))
-      .addInput(a)
-      .addInput(b)
-      .addInput(c)
-      .build()
-  return Tensor(op, 0)
+inline fun TF.ternaryOp(op: String, a: Tensor, b: Tensor, c: Tensor, name: String): Tensor {
+  name_scope(name) {
+    val op = g.nodeBuilder(op, ctxNs.scopeName.fullName)
+        .addInput(a)
+        .addInput(b)
+        .addInput(c)
+        .build()
+    return Tensor(op, 0)
+  }
 }
 
 class OperationBuilder(val graph: Graph, val opType: String, val name: String) {
@@ -58,11 +71,17 @@ class OperationBuilder(val graph: Graph, val opType: String, val name: String) {
       TF_ColocateWith(c_opDesc, this.c_op)
     }
     addContextControlInput()
+    tf.attr_scope_map.forEach { key, value ->
+      attr(key, value)
+    }
     val status = newStatus()
     val nativeOp = TF_FinishOperation(c_opDesc, status)
     throwExceptionIfNotOk(status)
     val op = Operation(graph, nativeOp)
     control_flow_post_processing(op)
+//    tf.attr_scope_map.forEach { key, value ->
+//      op.set_attr(key, value)
+//    }
     return op
   }
   
