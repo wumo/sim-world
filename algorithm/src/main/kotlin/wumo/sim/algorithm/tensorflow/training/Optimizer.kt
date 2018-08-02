@@ -41,7 +41,7 @@ abstract class Optimizer(val use_locking: Boolean, val name: String) {
         prepare()
         for ((grad, v) in grads_and_vars)
           tf.name_scope("update_$name") {
-            ctxNs.colocate_with(v) {
+            colocate_with(v) {
               update_ops += apply_dense(grad, v)
             }
           }
@@ -99,7 +99,7 @@ abstract class Optimizer(val use_locking: Boolean, val name: String) {
   /**Add an extra variable, not associated with a slot.*/
   open fun create_non_slot_variable(initial_value: Any, name: String, colocate_with: Variable) =
       non_slot_dict.compute(name) { _, v ->
-        v ?: tf.ctxNs.colocate_with(colocate_with) {
+        v ?: tf.colocate_with(colocate_with) {
           tf.variable(initial_value, name = name, trainable = false)
         }
       }

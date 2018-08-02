@@ -119,7 +119,7 @@ fun TF.assign(ref: Tensor, value: Tensor, name: String = "Assign") =
 
 fun TF.is_variable_initialized(ref: Tensor, name: String = "IsVariableInitialized"): Tensor {
   if (ref.dtype.is_ref_dytpe) {
-    naryOp("IsVariableInitialized", ref, name = name)
+    naryOp("IsVariableInitialized", ref.asRef(), name = name)
   }
   TODO("handle resource")
 }

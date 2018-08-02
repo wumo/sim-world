@@ -1,11 +1,19 @@
 package wumo.sim.algorithm.tensorflow
 
+import org.bytedeco.javacpp.BytePointer
 import org.bytedeco.javacpp.PointerPointer
 import org.bytedeco.javacpp.tensorflow.*
+import wumo.sim.algorithm.tensorflow.ops.CondContext
+import wumo.sim.algorithm.tensorflow.ops.ControlFlowContext
 import wumo.sim.algorithm.tensorflow.ops.gradients.iterate
 import wumo.sim.algorithm.tensorflow.ops.gradients.toTensor
 
 class Operation(val graph: Graph, val c_op: TF_Operation) {
+  var control_flow_context: ControlFlowContext? = null
+  fun set_control_flow_context(condContext: CondContext) {
+    this.control_flow_context = condContext
+  }
+  
   /**
    * Update the input to this operation at the given index.
    * NOTE: This is for TF internal use only. Please don't use it.
@@ -69,6 +77,7 @@ class Operation(val graph: Graph, val c_op: TF_Operation) {
   
   fun set_attr(key: String, value: AttrValue) {
     val attr = c_op.node().def().mutable_attr()
+    attr.put(BytePointer("_class"), value)
     //TODO require attr's operator[]
   }
   
@@ -92,6 +101,14 @@ class Operation(val graph: Graph, val c_op: TF_Operation) {
   fun attrString(name: String): String {
     val value = attrs.Find(name)
     return value.s().string
+  }
+  
+  fun attrStringList(name: String): Array<String>? {
+    val value = attrs.Find(name) ?: return null
+    val list_value = value.list()
+    return Array(list_value.s_size()) {
+      list_value.s(it).string
+    }
   }
   
   fun attrBool(name: String): Boolean {

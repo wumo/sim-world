@@ -42,7 +42,7 @@ fun create_slot_with_initializer(primary: Tensor,
                                  colocate_with_primary: Boolean): Variable {
   val validate_shape = shape.is_fully_defined
   return if (colocate_with_primary)
-    tf.ctxNs.colocate_with(primary) {
+    tf.colocate_with(primary) {
       create_slot_var(primary, initializer, name, validate_shape, shape, dtype)
     }
   else

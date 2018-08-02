@@ -157,6 +157,7 @@ fun build_act_with_param_noise(make_obs_ph: (String) -> TfInput,
   }
   
   tf.variable_scope(name) {
+    
     val observations_ph = make_obs_ph("observation")
     val stochastic_ph = tf.placeholder(scalarDimension, DT_BOOL, name = "stochastic")
     val update_eps_ph = tf.placeholder(scalarDimension, DT_FLOAT, name = "update_eps")
@@ -205,8 +206,9 @@ fun build_act_with_param_noise(make_obs_ph: (String) -> TfInput,
     fun update_scale() =
         tf.control_dependencies(perturb_for_adaption) {
           tf.cond(tf.less(mean_kl, param_noise_threshold),
-                  { param_noise_scale.assign(param_noise_scale * tf.const(1.01f)) },
-                  { param_noise_scale.assign(tf.realDiv(param_noise_scale, tf.const(1.01f))) }, name = "update_scale_expr_cond")
+                  { param_noise_scale.assign(param_noise_scale * 1.01f) },
+                  { param_noise_scale.assign(tf.realDiv(param_noise_scale, 1.01f)) },
+                  name = "update_scale_expr_cond")
         }
     //Functionality to update the threshold for parameter space noise.
     val update_param_noise_threshold_expr = param_noise_threshold.assign(

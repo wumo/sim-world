@@ -6,66 +6,68 @@ import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.util.Dimension
 
 fun TF.batchToSpace(input: Tensor, crops: Tensor, block_size: Long, name: String = "BatchToSpace") =
-    naryOp("BatchToSpace", input, crops, name = name) {
+    naryOp("BatchToSpace", input.value(), crops.value(), name = name) {
       attr("block_size", block_size)
     }
 
 fun TF.batchToSpaceND(input: Tensor, block_shape: Tensor, crops: Tensor, name: String = "BatchToSpaceND") =
-    ternaryOp("BatchToSpaceND", input, block_shape, crops, name)
+    ternaryOp("BatchToSpaceND", input.value(), block_shape.value(), crops, name)
 
 fun TF.checkNumerics(tensor: Tensor, message: String, name: String = "CheckNumerics") =
-    naryOp("CheckNumerics", tensor, name = name) {
+    naryOp("CheckNumerics", tensor.value(), name = name) {
       attr("messge", message)
     }
 
 fun TF.concat(values: Collection<Tensor>, axis: Tensor, name: String = "ConcatV2") =
     naryOp("ConcatV2", name = name) {
-      addInputList(values)
+      addInputList(values.map { it.value() })
       addInput(axis)
     }
 
 fun TF.concat(values: Array<Tensor>, axis: Tensor, name: String = "ConcatV2") =
     naryOp("ConcatV2", name = name) {
-      addInputList(values)
+      addInputList(values.map { it.value() })
       addInput(axis)
     }
 
 fun TF.depthToSpace(input: Tensor, block_size: Long, data_format: String = "NHWC", name: String = "DepthToSpace") =
-    naryOp("DepthToSpace", input, name = name) {
+    naryOp("DepthToSpace", input.value(), name = name) {
       attr("block_size", block_size)
       attr("data_format", data_format)
     }
 
-fun TF.diag(diagonal: Tensor, name: String = "Diag") = unaryOp("Diag", diagonal, name)
-fun TF.diagPart(input: Tensor, name: String = "DiagPart") = unaryOp("DiagPart", input, name)
+fun TF.diag(diagonal: Tensor, name: String = "Diag") = unaryOp("Diag", diagonal.value(), name)
+fun TF.diagPart(input: Tensor, name: String = "DiagPart") = unaryOp("DiagPart", input.value(), name)
 fun TF.gatherNd(params: Tensor, indices: Tensor, name: String = "GatherNd") =
-    binaryOp("GatherNd", params, indices, name)
+    binaryOp("GatherNd", params.value(), indices.value(), name)
 
 fun TF.gatherV2(params: Tensor, indices: Tensor, axis: Tensor, name: String = "GatherV2") =
-    ternaryOp("GatherV2", params, indices, axis, name)
+    ternaryOp("GatherV2", params.value(), indices.value(), axis.value(), name)
 
 fun TF.identity(input: Tensor, name: String = "Identity") =
     unaryOp("Identity", input, name)
 
-fun TF.invertPermutation(x: Tensor, name: String = "InvertPermutation") = unaryOp("InvertPermutation", x, name)
+fun TF.invertPermutation(x: Tensor, name: String = "InvertPermutation") = unaryOp("InvertPermutation", x.value(), name)
 fun TF.matrixBandPart(input: Tensor, num_lower: Tensor, num_upper: Tensor, name: String = "MatrixBandPart") =
-    ternaryOp("MatrixBandPart", input, num_lower, num_upper, name)
+    ternaryOp("MatrixBandPart", input.value(), num_lower.value(), num_upper.value(), name)
 
-fun TF.matrixDiag(diagonal: Tensor, name: String = "MatrixDiag") = unaryOp("MatrixDiag", diagonal, name)
-fun TF.matrixDiagPart(input: Tensor, name: String = "MatrixDiagPart") = unaryOp("MatrixDiagPart", input, name)
-fun TF.matrixSetDiag(input: Tensor, diagonal: Tensor, name: String = "MatrixSetDiag") = binaryOp("MatrixSetDiag", input, diagonal, name)
+fun TF.matrixDiag(diagonal: Tensor, name: String = "MatrixDiag") = unaryOp("MatrixDiag", diagonal.value(), name)
+fun TF.matrixDiagPart(input: Tensor, name: String = "MatrixDiagPart") = unaryOp("MatrixDiagPart", input.value(), name)
+fun TF.matrixSetDiag(input: Tensor, diagonal: Tensor, name: String = "MatrixSetDiag") =
+    binaryOp("MatrixSetDiag", input.value(), diagonal.value(), name)
+
 fun TF.mirrorPad(input: Tensor, paddings: Tensor,
                  mode: String,
                  name: String = "MirrorPad") =
-    naryOp("MirrorPad", input, paddings, name = name) {
+    naryOp("MirrorPad", input.value(), paddings.value(), name = name) {
       attr("mode", mode)
     }
 
 fun TF.pad(input: Tensor, paddings: Tensor, name: String = "Pad") =
-    binaryOp("Pad", input, paddings, name)
+    binaryOp("Pad", input.value(), paddings.value(), name)
 
 fun TF.padV2(input: Tensor, paddings: Tensor, constant_values: Tensor, name: String = "PadV2") =
-    ternaryOp("PadV2", input, paddings, constant_values, name)
+    ternaryOp("PadV2", input.value(), paddings.value(), constant_values.value(), name)
 
 fun TF.placeholder(dtype: Int = DT_FLOAT, name: String = "Placeholder") =
     naryOp("Placeholder", name = name) {
@@ -86,24 +88,24 @@ fun TF.placeholder(shape: Dimension, dtype: Int = DT_FLOAT, name: String = "Plac
 fun TF.reverseSequence(input: Tensor, seq_lengths: Tensor,
                        seq_dim: Long, batch_dim: Long = 0,
                        name: String = "ReverseSequence") =
-    naryOp("ReverseSequence", input, seq_lengths, name = name) {
+    naryOp("ReverseSequence", input.value(), seq_lengths.value(), name = name) {
       attr("seq_dim", seq_dim)
       attr("batch_dim", batch_dim)
     }
 
 fun TF.reverse(tensor: Tensor, axis: Tensor, name: String = "Reverse") =
-    binaryOp("Reverse", tensor, axis, name = name)
+    binaryOp("Reverse", tensor.value(), axis.value(), name = name)
 
 fun TF.spaceToBatch(input: Tensor, paddings: Tensor, block_size: Long, name: String = "SpaceToBatch") =
-    naryOp("SpaceToBatch", input, paddings, name = name) {
+    naryOp("SpaceToBatch", input.value(), paddings.value(), name = name) {
       attr("block_size", block_size)
     }
 
 fun TF.spaceToBatchND(input: Tensor, block_shape: Tensor, paddings: Tensor, name: String = "SpaceToBatchND") =
-    ternaryOp("SpaceToBatchND", input, block_shape, paddings, name)
+    ternaryOp("SpaceToBatchND", input.value(), block_shape.value(), paddings, name)
 
 fun TF.spaceToDepth(input: Tensor, block_size: Long, data_format: String = "NHWC", name: String = "SpaceToDepth") =
-    naryOp("SpaceToDepth", input, name = name) {
+    naryOp("SpaceToDepth", input.value(), name = name) {
       attr("block_size", block_size)
       attr("data_format", data_format)
     }
@@ -112,7 +114,7 @@ fun TF.stridedSliceGrad(shape: Tensor, begin: Tensor, end: Tensor, strides: Tens
                         begin_mask: Long = 0L, end_mask: Long = 0L, ellipsis_mask: Long = 0L,
                         new_axis_mask: Long = 0L, shrink_axis_mask: Long = 0L,
                         name: String = "StridedSliceGrad") =
-    naryOp("StridedSliceGrad", shape, begin, end, strides, dy, name = name) {
+    naryOp("StridedSliceGrad", shape.value(), begin.value(), end.value(), strides.value(), dy.value(), name = name) {
       attr("begin_mask", begin_mask)
       attr("end_mask", end_mask)
       attr("ellipsis_mask", ellipsis_mask)
@@ -121,15 +123,15 @@ fun TF.stridedSliceGrad(shape: Tensor, begin: Tensor, end: Tensor, strides: Tens
     }
 
 fun TF.scatterNd(indices: Tensor, updates: Tensor, shape: Tensor, name: String = "ScatterNd") =
-    ternaryOp("ScatterNd", indices, updates, shape, name)
+    ternaryOp("ScatterNd", indices.value(), updates.value(), shape.value(), name)
 
 fun TF.squeeze(input: Tensor, axis: IntArray = IntArray(0), name: String = "Squeeze") =
-    naryOp("Squeeze", input, name = name) {
+    naryOp("Squeeze", input.value(), name = name) {
       attr("squeeze_dims", axis)
     }
 
 fun TF.listDiff(x: Tensor, y: Tensor, out_idx: Int = DT_INT32, name: String = "ListDiff") =
-    naryOps("ListDiff", x, y, name = name) {
+    naryOps("ListDiff", x.value(), y.value(), name = name) {
       attrType("out_idx", out_idx)
     }
 
@@ -143,10 +145,10 @@ fun TF.zerosLike(x: Tensor, dtype: Int = DT_INVALID, optimize: Boolean = true, n
     }
 
 fun TF._zerosLike(x: Tensor, name: String = "ZerosLike") =
-    unaryOp("ZerosLike", x, name)
+    unaryOp("ZerosLike", x.value(), name)
 
 fun TF._onesLike(x: Tensor, name: String = "OnesLike") =
-    unaryOp("OnesLike", x, name)
+    unaryOp("OnesLike", x.value(), name)
 
 fun TF.zeros(shape: Tensor, dtype: Int = DT_FLOAT, name: String = "Ones"): Tensor {
   TODO()
@@ -179,22 +181,22 @@ fun TF.ones(shape: Dimension, dtype: Int = DT_FLOAT, name: String = "Ones"): Ten
 }
 
 fun TF.fill(dims: Tensor, value: Tensor, name: String = "Fill") =
-    binaryOp("Fill", dims, value, name)
+    binaryOp("Fill", dims.value(), value.value(), name)
 
 fun TF.reshape(tensor: Tensor, shape: Tensor, name: String = "Reshape") =
-    binaryOp("Reshape", tensor, shape, name)
+    binaryOp("Reshape", tensor.value(), shape.value(), name)
 
 fun TF.slice(input: Tensor, begin: Tensor, size: Tensor, name: String = "Slice") =
-    naryOp("Slice", input, begin, size, name = name)
+    naryOp("Slice", input.value(), begin.value(), size, name = name)
 
 fun TF.oneHot(indices: Tensor, depth: Tensor,
               on_value: Tensor = tf.const(1f),
               off_value: Tensor = tf.const(0f),
               name: String = "OneHot") =
-    naryOp("OneHot", indices, depth, on_value, off_value, name = name)
+    naryOp("OneHot", indices.value(), depth.value(), on_value.value(), off_value.value(), name = name)
 
 fun TF.size(input: Tensor, out_type: Int = DT_INT32, name: String = "Size") =
-    naryOp("Size", input, name = name) {
+    naryOp("Size", input.value(), name = name) {
       attrType("out_type", out_type)
     }
 
@@ -208,16 +210,16 @@ fun TF.shape(input: Tensor, out_type: Int = DT_INT32, name: String = "Shape", op
   val input_shape = input.shape
   if (optimize && input_shape.is_fully_defined)
     return const(input_shape.asIntArray(), name)
-  return naryOp("Shape", input, name = name) {
+  return naryOp("Shape", input.value(), name = name) {
     attrType("out_type", out_type)
   }
 }
 
 fun TF.tile(input: Tensor, multiples: Tensor, name: String = "Tile") =
-    binaryOp("Tile", input, multiples, name)
+    binaryOp("Tile", input.value(), multiples.value(), name)
 
 fun TF.transpose(x: Tensor, perm: Tensor, name: String = "Transpose") =
-    binaryOp("Transpose", x, perm, name)
+    binaryOp("Transpose", x.value(), perm.value(), name)
 
 /**
  *
@@ -299,7 +301,7 @@ class StridedSliceAttrs(var begin_mask_: Int = 0,
 fun TF.strideSlice(input: Tensor, begin: Tensor, end: Tensor, strides: Tensor,
                    attrs: StridedSliceAttrs = StridedSliceAttrs(),
                    name: String = "StridedSlice") =
-    naryOp("StridedSlice", input, begin, end, strides, name = name) {
+    naryOp("StridedSlice", input.value(), begin.value(), end.value(), strides.value(), name = name) {
       attr("begin_mask", attrs.begin_mask_)
       attr("end_mask", attrs.end_mask_)
       attr("ellipsis_mask", attrs.ellipsis_mask_)
@@ -311,7 +313,7 @@ fun TF.gather(params: Tensor, indices: Tensor, axis: Int = 0, name: String = "Ga
   if (axis == 0) {
   }
   //TODO detect resource variables
-  return naryOp("GatherV2", params, indices, const(axis), name = name)
+  return naryOp("GatherV2", params.value(), indices.value(), const(axis), name = name)
 }
 
 fun TF.rank(input: Tensor, name: String = "Rank", optimize: Boolean = true): Tensor {
@@ -319,7 +321,7 @@ fun TF.rank(input: Tensor, name: String = "Rank", optimize: Boolean = true): Ten
   val input_shape = input.shape
   if (optimize && input_shape.is_fully_defined)
     return const(input_shape.rank(), name)
-  return unaryOp("Rank", input, name)
+  return unaryOp("Rank", input.value(), name)
 }
 
 /**
@@ -369,10 +371,10 @@ fun TF.stack(values: List<Int>, axis: Int = 0, name: String = "stack"): Tensor {
 }
 
 fun TF.stack(values: Collection<Tensor>, axis: Int = 0, name: String = "stack") =
-    tf.pack(values.toTypedArray(), axis, name)
+    tf.pack(values, axis, name)
 
 fun TF.unstack(value: Tensor, num: Long, axis: Long = 0L, name: String = "Unstack") =
-    naryOps("Unpack", value, name = name) {
+    naryOps("Unpack", value.value(), name = name) {
       attr("num", num)
       attr("axis", axis)
     }
@@ -403,9 +405,10 @@ fun TF.unstack(value: Tensor, num: Long, axis: Long = 0L, name: String = "Unstac
  * has the same shape as `x` and `y`, then it chooses which element to copy from
  * `x` and `y`.
  */
-fun TF.where(condition: Tensor, x: Tensor, y: Tensor, name: String = "Where") = ternaryOp("Select", condition, x, y, name)
+fun TF.where(condition: Tensor, x: Tensor, y: Tensor, name: String = "Where") =
+    ternaryOp("Select", condition.value(), x.value(), y.value(), name)
 
-fun TF.where(condition: Tensor, name: String = "Where") = unaryOp("Where", condition, name)
+fun TF.where(condition: Tensor, name: String = "Where") = unaryOp("Where", condition.value(), name)
 /**Tensor conversion function that automatically packs arguments.*/
 fun TF.autopack(v: Array<Tensor>, name: String = "packed"): Tensor {
   TODO()
@@ -413,14 +416,14 @@ fun TF.autopack(v: Array<Tensor>, name: String = "packed"): Tensor {
 
 fun TF.pack(value: Collection<Tensor>, axis: Int = 0, name: String = "Pack") =
     naryOp("Pack", name = name) {
-      addInputList(value)
+      addInputList(value.map { it.value() })
       attr("axis", axis)
     }
 
 fun TF.pack(value: Array<Tensor>, axis: Int = 0, name: String = "Pack") =
     naryOp("Pack", name = name) {
-      addInputList(value)
+      addInputList(value.map { it.value() })
       attr("axis", axis)
     }
 
-fun TF.stop_gradient(input: Tensor, name: String = "StopGradient") = unaryOp("StopGradient", input, name)
+fun TF.stop_gradient(input: Tensor, name: String = "StopGradient") = unaryOp("StopGradient", input.value(), name)

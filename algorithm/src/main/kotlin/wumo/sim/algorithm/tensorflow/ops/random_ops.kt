@@ -7,10 +7,8 @@ import wumo.sim.util.scalarDimension
 
 fun TF.random_normal(shape: Tensor, dtype: Int = DT_FLOAT,
                      name: String = "RandomStandardNormal") =
-    name_scope(name) {
-      naryOp("RandomStandardNormal", shape, name = name) {
-        attrType("dtype", dtype)
-      }
+    naryOp("RandomStandardNormal", shape.value(), name = name) {
+      attrType("dtype", dtype)
     }
 
 fun TF.random_normal(shape: Tensor, dtype: Int = DT_FLOAT,
@@ -61,12 +59,12 @@ fun TF.random_uniform(shape: Tensor, dtype: Int = DT_FLOAT,
 
 fun TF.random_uniform_int(shape: Tensor, minval: Tensor, maxval: Tensor,
                           name: String = "RandomUniformInt") =
-    naryOp("RandomUniformInt", shape, minval, maxval, name = name)
+    naryOp("RandomUniformInt", shape.value(), minval.value(), maxval.value(), name = name)
 
 fun TF._random_uniform(shape: Tensor,
                        dtype: Int = DT_FLOAT,
                        name: String = "RandomUniform") =
-    naryOp("RandomUniform", shape, name = name) {
+    naryOp("RandomUniform", shape.value(), name = name) {
       attrType("dtype", dtype)
     }
 
@@ -94,10 +92,8 @@ fun TF.random_uniform(shape: Dimension,
 }
 
 fun TF.truncatedNormal(shape: Tensor, dtype: Int = DT_FLOAT, name: String = "truncated_normal") =
-    name_scope(name) {
-      naryOp("TruncatedNormal", shape, name = name) {
-        attrType("dtype", dtype)
-      }
+    naryOp("TruncatedNormal", shape.value(), name = name) {
+      attrType("dtype", dtype)
     }
 
 fun TF.truncatedNormal(shape: Tensor, mean: Float = 0f, stddev: Float = 1f, dtype: Int = DT_FLOAT, name: String = "truncated_normal"): Tensor {

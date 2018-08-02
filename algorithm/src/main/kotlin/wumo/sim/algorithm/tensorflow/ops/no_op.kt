@@ -1,18 +1,15 @@
 package wumo.sim.algorithm.tensorflow.ops
 
-import wumo.sim.algorithm.tensorflow.Operation
-import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.Tensor
-import wumo.sim.algorithm.tensorflow.naryOp
+import wumo.sim.algorithm.tensorflow.*
 
 fun TF.biasAddGrad(out_backprop: Tensor, data_format: String = "NHWC", name: String = "BiasAddGrad") =
-    naryOp("BiasAddGrad", out_backprop, name = name) {
+    naryOp("BiasAddGrad", out_backprop.value(), name = name) {
       attr("data_format", data_format)
     }
 
 fun TF.noOpDep(dep: Iterable<Operation>, name: String = "NoOp") =
-    naryOp("NoOp", name = name) {
-      setDevice(ctxNs.device)
+    buildOp("NoOp", name = name) {
+      setDevice(device)
       for (op in dep)
         addControlInput(op)
-    }.op!!
+    }

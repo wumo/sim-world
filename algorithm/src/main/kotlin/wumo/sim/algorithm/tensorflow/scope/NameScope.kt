@@ -2,11 +2,7 @@
 
 package wumo.sim.algorithm.tensorflow.scope
 
-import wumo.sim.algorithm.tensorflow.Operation
-import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.scopeChar
-import java.util.*
-import kotlin.collections.HashMap
 
 class NameScope(val name: String, parentScope: NameScope?) : enter_exit {
   /**这一层已使用的name，[subscopes]的name是[name_map]的子集*/
@@ -32,9 +28,6 @@ class NameScope(val name: String, parentScope: NameScope?) : enter_exit {
     return "$a/$b"
   }
   
-  var device: String = ""
-  var colocate_with: Operation? = null
-  val control_ops = ArrayDeque<Operation>()
   /**
    * 新建subscope
    * @param name subscope的名字，不能为空
@@ -53,66 +46,5 @@ class NameScope(val name: String, parentScope: NameScope?) : enter_exit {
   internal fun reuse_or_new_subscope(name: String): NameScope {
     assert(name.isNotEmpty() && !name.startsWith(scopeChar))
     return subscopes.computeIfAbsent(name) { NameScope(name, this) }
-  }
-  
-  inline fun <R> with_device(dev: String, block: () -> R): R {
-    val tmp = device
-    device = dev
-    try {
-      return block()
-    } finally {
-      device = tmp
-    }
-  }
-  
-  inline fun <R> colocate_with(colocate_with: Tensor, block: () -> R) =
-      colocate_with(colocate_with.op!!, block)
-  
-  inline fun <R> colocate_with(colocate_with: Operation, block: () -> R): R {
-    val tmp = this.colocate_with
-    this.colocate_with = colocate_with
-    try {
-      return block()
-    } finally {
-      this.colocate_with = tmp
-    }
-  }
-  
-  inline fun <R> control_dependencies(vararg control_inputs: Operation, block: () -> R): R {
-    val tmp = if (control_inputs.isEmpty()) control_ops.clone() else null
-    val size = control_inputs.size
-    if (size == 0)
-      control_ops.clear()
-    else
-      control_ops += control_inputs
-    try {
-      return block()
-    } finally {
-      if (size == 0)
-        control_ops.addAll(tmp!!)
-      else
-        repeat(size) {
-          control_ops.removeLast()
-        }
-    }
-  }
-  
-  inline fun <R> control_dependencies(control_inputs: List<Operation>, block: () -> R): R {
-    val tmp = if (control_inputs.isEmpty()) control_ops.clone() else null
-    val size = control_inputs.size
-    if (size == 0)
-      control_ops.clear()
-    else
-      control_ops += control_inputs
-    try {
-      return block()
-    } finally {
-      if (size == 0)
-        control_ops.addAll(tmp!!)
-      else
-        repeat(size) {
-          control_ops.removeLast()
-        }
-    }
   }
 }

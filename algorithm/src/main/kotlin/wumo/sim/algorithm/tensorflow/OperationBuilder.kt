@@ -9,31 +9,29 @@ import wumo.sim.util.toByte
 val String.fullName
   get() = substring(2)
 
-inline fun TF.naryOp(op: String, vararg inputs: Tensor, name: String, setAttr: OperationBuilder.() -> Unit = {}): Tensor {
+inline fun TF.buildOp(op: String, vararg inputs: Tensor, name: String, setAttr: OperationBuilder.() -> Unit = {}): Operation {
   name_scope(name) {
     val builder = g.nodeBuilder(op, ctxNs.scopeName.fullName)
     for (input in inputs)
       builder.addInput(input)
     setAttr(builder)
-    val op = builder.build()
-    assert(op.c_op.node().num_outputs() == 1) { "${op.c_op.node().DebugString()} outputs > 1, use naryOps instead." }
-    return Tensor(op, 0)
+    return builder.build()
   }
+}
+
+inline fun TF.naryOp(op: String, vararg inputs: Tensor, name: String, setAttr: OperationBuilder.() -> Unit = {}): Tensor {
+  val _op = buildOp(op, *inputs, name = name, setAttr = setAttr)
+  assert(_op.c_op.node().num_outputs() == 1) { "${_op.c_op.node().DebugString()} outputs > 1, use naryOps instead." }
+  return Tensor(_op, 0)
 }
 
 inline fun TF.naryOps(op: String, vararg inputs: Tensor, name: String, setAttr: OperationBuilder.() -> Unit = {}): Array<Tensor> {
-  name_scope(name) {
-    val builder = g.nodeBuilder(op, ctxNs.scopeName.fullName)
-    for (input in inputs)
-      builder.addInput(input)
-    setAttr(builder)
-    val op = builder.build()
-    val outputs = op.c_op.node().num_outputs()
-    return Array(outputs) { Tensor(op, it) }
-  }
+  val _op = buildOp(op, *inputs, name = name, setAttr = setAttr)
+  val outputs = _op.c_op.node().num_outputs()
+  return Array(outputs) { Tensor(_op, it) }
 }
 
-inline fun TF.unaryOp(op: String, a: Tensor, name: String, dtype: Int = a.dtype): Tensor {
+inline fun TF.unaryOp(op: String, a: Tensor, name: String): Tensor {
   name_scope(name) {
     val op = g.nodeBuilder(op, ctxNs.scopeName.fullName)
         .addInput(a)
@@ -67,53 +65,89 @@ class OperationBuilder(val graph: Graph, val opType: String, val name: String) {
   private var c_opDesc: TF_OperationDescription = TF_NewOperation(graph.c_graph, opType, name)
   
   fun build(): Operation {
-    tf.ctxNs.colocate_with?.apply {
-      TF_ColocateWith(c_opDesc, this.c_op)
-    }
-    addContextControlInput()
-    tf.attr_scope_map.forEach { key, value ->
-      attr(key, value)
-    }
+    controlInput()
+    attr_scope()
+    colocate()
     val status = newStatus()
     val nativeOp = TF_FinishOperation(c_opDesc, status)
     throwExceptionIfNotOk(status)
     val op = Operation(graph, nativeOp)
+    op.control_flow_context = tf.control_flow_context
+    
     control_flow_post_processing(op)
-//    tf.attr_scope_map.forEach { key, value ->
-//      op.set_attr(key, value)
-//    }
     return op
   }
   
+  private fun colocate() {
+    val all_colocation_groups = hashSetOf<String>()
+    for (op in tf.colocate_with) {
+      val class_attr = op.attrStringList("_class")
+      var hasDependent = false
+      if (class_attr != null) {
+        for (class_name in class_attr)
+          if (class_name.startsWith("loc:@")) {
+            all_colocation_groups += class_name
+            hasDependent = true
+          }
+      }
+      if (!hasDependent)
+        all_colocation_groups += "loc:@${op.name}"
+    }
+    if (all_colocation_groups.isEmpty()) return
+    val a = AttrValue()
+    a.mutable_list().apply {
+      for (loc in all_colocation_groups)
+        add_s(loc)
+    }
+    attr("_class", a)
+  }
+  
+  private fun attr_scope() {
+    tf.attr_scope_map.forEach { key, value ->
+      attr(key, value)
+    }
+  }
+  
   private fun control_flow_post_processing(op: Operation) {
-    tf.control_flow_context?.addOp(op)
+    op.control_flow_context?.addOp(op)
   }
   
-  private fun addContextControlInput(): OperationBuilder {
-    for (control_op in tf.ctxNs.control_ops)
-      addControlInput(control_op)
-    return this
+  private fun controlInput() {
+    for (control_op in tf.control_ops) {
+      //If any of the input_ops already depends on the inputs from controller,
+      //we say that the new op is dominated (by that input), and we therefore
+      //do not need to add control dependencies for this controller's inputs.
+      var dominated = false
+      for (input_op in input_ops)
+        if (input_op.control_inputs.contains(control_op)) {
+          dominated = true
+          break
+        }
+      if (!dominated) {
+        //Don't add a control input if we already have a data dependency on it.
+        //NOTE(mrry): We do not currently track transitive data dependencies,
+        //so we may add redundant control inputs.
+        addControlInput(control_op)
+      }
+    }
   }
   
-  fun addInput(input: TF_Output): OperationBuilder {
+  private fun addInput(input: TF_Output): OperationBuilder {
     TF_AddInput(c_opDesc, input)
     return this
   }
   
-  fun addInput(input: Tensor) = addInput(input.asTF_Output())
+  private val input_ops = mutableSetOf<Operation>()
+  
+  fun addInput(input: Tensor) = addInput(input.asTF_Output()).apply { input_ops += input.op!! }
   
   fun addInputList(input: Collection<Tensor>): OperationBuilder {
     val inputs = TF_Output(input.size.toLong())
     for ((i, _input) in input.withIndex())
       inputs.position(i.toLong()).oper(_input.op!!.c_op).index(_input.value_index)
-    TF_AddInputList(c_opDesc, inputs.position(0L), input.size)
-    return this
-  }
-  
-  fun addInputList(input: Array<Tensor>): OperationBuilder {
-    val inputs = TF_Output(input.size.toLong())
-    for ((i, _input) in input.withIndex())
-      inputs.position(i.toLong()).oper(_input.op!!.c_op).index(_input.value_index)
+          .apply {
+            input_ops += _input.op
+          }
     TF_AddInputList(c_opDesc, inputs.position(0L), input.size)
     return this
   }

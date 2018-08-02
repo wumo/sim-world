@@ -10,6 +10,7 @@ import wumo.sim.algorithm.tensorflow.ops.group
 import wumo.sim.algorithm.tensorflow.scope.NameScope
 import wumo.sim.algorithm.tensorflow.scope.VariableScope
 import wumo.sim.util.println
+import java.util.*
 
 var tf = TF()
 inline fun <R> defaut(_tf: TF, block: () -> R): R {
@@ -36,12 +37,17 @@ class TF {
   val trainables = mutableListOf<Variable>()
   val global_variables = mutableListOf<Variable>()
   val train_ops = mutableListOf<Operation>()
-  val rootNs = NameScope("$", null)
-  val rootVs = VariableScope("$", rootNs)
+  private val rootNs = NameScope("$", null)
+  private val rootVs = VariableScope("$", rootNs)
   var ctxNs = rootNs
   var ctxVs = rootVs
+  
   var control_flow_context: ControlFlowContext? = null
+  var device: String = ""
+  var colocate_with = ArrayDeque<Operation>()
+  val control_ops = ArrayDeque<Operation>()
   val attr_scope_map = hashMapOf<String, AttrValue>()
+  
   lateinit var session: Session
   /**
   A context manager that lifts ops out of control-flow scopes and function-building graphs.
@@ -72,14 +78,11 @@ class TF {
   (3) The gradient tape is paused while the scope is active.
    */
   inline fun <R> init_scope(block: () -> R): R {
-    val ctx = tf.control_flow_context
-    tf.control_flow_context = null
     try {
-      ctxNs.control_dependencies {
+      control_dependencies {
         return block()
       }
     } finally {
-      tf.control_flow_context = ctx
     }
   }
   
@@ -101,12 +104,11 @@ class TF {
    *
    * [block]执行结束后，恢复[ctxNs]为调用[name_scope]之前的[NameScope]
    */
-  inline fun <R> name_scope(name: String, device: String = "", block: () -> R): R {
+  inline fun <R> name_scope(name: String, block: () -> R): R {
     if (name.startsWith(scopeChar))//already in scope
       return block()
     val parentNs = ctxNs
     val sub = parentNs.new_subscope(name)
-    sub.device = device
     ctxNs = sub
     try {
       ctxNs.enter()
@@ -163,24 +165,6 @@ class TF {
     }
   }
   
-  inline fun <R> on_device(dev: String, block: () -> R): R =
-      ctxNs.with_device(dev) { block() }
-  
-  inline fun <R> colocate_with(colocate_with: Tensor, block: () -> R) =
-      colocate_with(colocate_with.op!!) { block() }
-  
-  inline fun <R> colocate_with(colocate_with: Operation, block: () -> R) =
-      ctxNs.colocate_with(colocate_with) { block() }
-  
-  inline fun <R> control_dependencies(control_inputs: List<Operation>, block: () -> R) =
-      ctxNs.control_dependencies(control_inputs) { block() }
-  
-  inline fun <R> control_dependencies(vararg control_inputs: Operation, block: () -> R) =
-      ctxNs.control_dependencies(*control_inputs) { block() }
-  
-  inline fun <R> control_dependencies(control_inputs: Tensor, block: () -> R) =
-      ctxNs.control_dependencies(control_inputs.op!!) { block() }
-  
   fun debugString() = GraphDef.parseFrom(g.toGraphDef()).toString()
   fun printGraph() {
     tf.debugString().println()
@@ -195,16 +179,14 @@ class TF {
     return group(global_variables, name = "init")
   }
   
-  inline fun <R> with_device(device: String, block: () -> R) =
-      ctxNs.with_device(device, block)
-  
-  var tmpDev = ""
-  inline fun begin_device(device: String) {
-    tmpDev = ctxNs.device
+  private var tmpDev = ""
+  fun begin_device(device: String) {
+    tmpDev = this.device
+    this.device = device
   }
   
-  inline fun end_device() {
-    ctxNs.device = tmpDev
+  fun end_device() {
+    this.device = tmpDev
   }
   
   inline fun <R> condContext(pred: Tensor, pivot: Tensor, branch: Int, block: (CondContext) -> R): R {
@@ -214,6 +196,90 @@ class TF {
       return block(control_flow_context as CondContext)
     } finally {
       control_flow_context = tmp
+    }
+  }
+  
+  inline fun <R> on_device(dev: String, block: () -> R): R {
+    val tmp = device
+    device = dev
+    try {
+      return block()
+    } finally {
+      device = tmp
+    }
+  }
+  
+  inline fun <R> control_dependencies(control_inputs: Tensor, block: () -> R) =
+      control_dependencies(control_inputs.op!!) { block() }
+  
+  inline fun <R> colocate_with(op: Tensor, ignore_existing: Boolean = false, block: () -> R) =
+      colocate_with(op.op!!, ignore_existing, block)
+  
+  inline fun <R> colocate_with(op: Operation, ignore_existing: Boolean = false, block: () -> R) =
+      colocate_with(listOf(op), ignore_existing, block)
+  
+  inline fun <R> colocate_with(op: List<Operation>, ignore_existing: Boolean = false, block: () -> R): R {
+    val current_stack: Collection<Operation> =
+        if (ignore_existing) colocate_with.clone().apply { colocate_with.clear() }
+        else Collections.emptyList()
+    val size = op.size
+    op.forEach { colocate_with.addLast(it) }
+    try {
+      return block()
+    } finally {
+      repeat(size) {
+        colocate_with.removeLast()
+      }
+      if (ignore_existing)
+        colocate_with.addAll(current_stack)
+    }
+  }
+  
+  inline fun <R> colocate_with_tensors(op: List<Tensor>, ignore_existing: Boolean = false, block: () -> R): R {
+    return colocate_with(op.map { it.op!! }, ignore_existing, block)
+  }
+  
+  inline fun <R> control_dependencies(vararg control_inputs: Operation, block: () -> R): R {
+    var tmpctx: ControlFlowContext? = null
+    val tmp = if (control_inputs.isEmpty()) {
+      tmpctx = tf.control_flow_context
+      tf.control_flow_context = null
+      control_ops.clone()
+    } else null
+    val size = control_inputs.size
+    if (size == 0)
+      control_ops.clear()
+    else
+      control_ops += control_inputs
+    try {
+      return block()
+    } finally {
+      if (size == 0) {
+        tf.control_flow_context = tmpctx
+        control_ops.addAll(tmp!!)
+      } else
+        repeat(size) {
+          control_ops.removeLast()
+        }
+    }
+  }
+  
+  inline fun <R> control_dependencies(control_inputs: List<Operation>, block: () -> R): R {
+    val tmp = if (control_inputs.isEmpty()) control_ops.clone() else null
+    val size = control_inputs.size
+    if (size == 0)
+      control_ops.clear()
+    else
+      control_ops += control_inputs
+    try {
+      return block()
+    } finally {
+      if (size == 0)
+        control_ops.addAll(tmp!!)
+      else
+        repeat(size) {
+          control_ops.removeLast()
+        }
     }
   }
 }

@@ -12300,7 +12300,7 @@ op {
   }
 }
 op {
-  name: "Identity"
+  name: RefMerge
   input_arg {
     name: "input"
     type_attr: "T"

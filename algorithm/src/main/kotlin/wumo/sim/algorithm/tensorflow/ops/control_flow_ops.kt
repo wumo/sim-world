@@ -20,6 +20,7 @@ class CondContext(val pred: Tensor,
     values += pred.name
     external_values[pred.name] = pred
     values += pivot.name
+    pivot.op!!.set_control_flow_context(this)
   }
   
   override fun addOp(op: Operation) {
@@ -32,10 +33,10 @@ class CondContext(val pred: Tensor,
         val real_x = addValue(x)
         if (real_x != x)
           op.update_input(i, real_x)
-        _removeExternalControlEdges(op)
-        if (op.graph.is_function(op.opType) || op.opType == "SymbolicGradient")
-          op.addControlInput(pivot.op!!)
       }
+      _removeExternalControlEdges(op)
+      if (op.graph.is_function(op.opType) || op.opType == "SymbolicGradient")
+        op.addControlInput(pivot.op!!)
     }
     //Mark op's outputs as seen by this context and any outer contexts.
     val output_names = op.outputs.map { it.name }
@@ -67,7 +68,7 @@ class CondContext(val pred: Tensor,
         external_values[result.name] = result
       }
       tf.control_dependencies {
-        result = tf.switchRefOrTensor(result, pred)[branch]
+        result = tf._switchRefOrTensor(result, pred)[branch]
       }
       result.op!!.graph.prevent_fetching(result.op!!)
       
@@ -100,7 +101,7 @@ class CondContext(val pred: Tensor,
     var real_v = v
     if (v.name !in values) {
       values += v.name
-      real_v = tf.switchRefOrTensor(v, pred)[branch]
+      real_v = tf._switchRefOrTensor(v, pred)[branch]
       external_values[v.name] = real_v
     } else {
       val external_v = external_values[v.name]
@@ -175,14 +176,14 @@ fun TF.group(inputs: List<Any>, name: String = "group_deps"): Operation {
   }
   if (ops_on_device.size == 1) {
     val (dev, deps) = ops_on_device.entries.first()
-    ctxNs.with_device(dev) {
+    on_device(dev) {
       return noOpDep(deps, name)
     }
   }
   val all_deps = mutableListOf<Operation>()
   name_scope(name) {
     for ((dev, deps) in ops_on_device) {
-      ctxNs.with_device(dev) {
+      on_device(dev) {
         all_deps += noOpDep(deps)
       }
     }
@@ -271,24 +272,28 @@ fun TF.merge(vararg inputs: Tensor, name: String = "Merge"): Array<Tensor> {
  */
 private fun TF._merge(inputs: Array<Tensor>, name: String = "Merge") =
     naryOps("Merge", name = name) {
-      addInputList(inputs)
+      addInputList(inputs.map { it.value() })
     }
 
 /**
  * @see [_merge]
  */
-private fun TF.ref_merge(inputs: Array<Tensor>, name: String) =
-    naryOps("RefMerge", name = name) {
+private fun TF.ref_merge(inputs: Array<Tensor>, name: String): Array<Tensor> {
+  val inputs = inputs.map { it.asRef() }
+  colocate_with_tensors(inputs) {
+    return naryOps("RefMerge", name = name) {
       addInputList(inputs)
     }
+  }
+}
 
 /**
  * @see [switch]
  */
-private fun TF.switchRefOrTensor(data: Tensor,
-                                 pred: Tensor,
-                                 name: String = "Switch"): Array<Tensor> {
-  tf.colocate_with(data) {
+private fun TF._switchRefOrTensor(data: Tensor,
+                                  pred: Tensor,
+                                  name: String = "Switch"): Array<Tensor> {
+  tf.colocate_with(data, ignore_existing = true) {
     if (data.dtype.is_ref_dytpe)
       return ref_switch(data, pred, name)
     return switch(data, pred, name)
@@ -311,7 +316,7 @@ private fun TF.switchRefOrTensor(data: Tensor,
  * to `output_true`, otherwise it goes to `output_false`.
  */
 fun TF.switch(data: Tensor, pred: Tensor, name: String = "Switch") =
-    naryOps("Switch", data, pred, name = name)//TODO handle IndexedSlices and SparseTensor
+    naryOps("Switch", data.value(), pred.value(), name = name)//TODO handle IndexedSlices and SparseTensor
 
 fun TF.ref_switch(data: Tensor, pred: Tensor, name: String) =
-    naryOps("RefSwitch", data, pred, name = name)//TODO handle IndexedSlices and SparseTensor
+    naryOps("RefSwitch", data.asRef(), pred.value(), name = name)//TODO handle IndexedSlices and SparseTensor

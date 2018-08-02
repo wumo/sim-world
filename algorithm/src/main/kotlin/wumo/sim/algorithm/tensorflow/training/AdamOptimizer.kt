@@ -108,9 +108,9 @@ class AdamOptimizer(val learningRate: Float = 0.001f,
   }
   
   override fun finish(update_ops: MutableList<Operation>, name: String): Operation {
-    tf.ctxNs.control_dependencies(update_ops) {
+    tf.control_dependencies(update_ops) {
       val (beta1_power, beta2_power) = get_beta_accumulators()
-      tf.ctxNs.colocate_with(beta1_power) {
+      tf.colocate_with(beta1_power) {
         val update_beta1 = beta1_power.assign(beta1_power * beta1_t, use_locking = use_locking).op
         val update_beta2 = beta2_power.assign(beta2_power * beta2_t, use_locking = use_locking).op
         update_ops += update_beta1!!

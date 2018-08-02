@@ -11,7 +11,7 @@ fun TF.avgPoolGrad(orig_input_shape: Tensor,
                    padding: String,
                    data_format: String = "NHWC",
                    name: String = "AvgPoolGrad") =
-    naryOp("AvgPoolGrad", orig_input_shape, grad, name = name) {
+    naryOp("AvgPoolGrad", orig_input_shape.value(), grad.value(), name = name) {
       attr("ksize", ksize)
       attr("strides", strides)
       attr("padding", padding)
@@ -21,7 +21,7 @@ fun TF.avgPoolGrad(orig_input_shape: Tensor,
 fun TF.eluGrad(gradients: Tensor,
                outputs: Tensor,
                name: String = "EluGrad") =
-    binaryOp("EluGrad", gradients, outputs, name = name)
+    binaryOp("EluGrad", gradients.value(), outputs.value(), name = name)
 
 fun TF.fractionalAvgPoolGrad(orig_input_tensor_shape: Tensor,
                              out_backprop: Tensor,
@@ -29,7 +29,8 @@ fun TF.fractionalAvgPoolGrad(orig_input_tensor_shape: Tensor,
                              col_pooling_sequence: Tensor,
                              overlapping: Boolean = false,
                              name: String = "FractionalAvgPoolGrad") =
-    naryOp("FractionalAvgPoolGrad", orig_input_tensor_shape, out_backprop, row_polling_sequence, col_pooling_sequence, name = name) {
+    naryOp("FractionalAvgPoolGrad", orig_input_tensor_shape.value(), out_backprop.value(),
+           row_polling_sequence.value(), col_pooling_sequence.value(), name = name) {
       attr("overlapping", overlapping)
     }
 
@@ -40,7 +41,8 @@ fun TF.fractionalMaxPoolGrad(orig_input: Tensor,
                              col_pooling_sequence: Tensor,
                              overlapping: Boolean = false,
                              name: String = "FractionalMaxPoolGrad") =
-    naryOp("FractionalMaxPoolGrad", orig_input, orig_output, out_backprop, row_pooling_sequence, col_pooling_sequence, name = name) {
+    naryOp("FractionalMaxPoolGrad", orig_input.value(), orig_output.value(), out_backprop.value(),
+           row_pooling_sequence.value(), col_pooling_sequence.value(), name = name) {
       attr("overlapping", overlapping)
     }
 
@@ -52,7 +54,7 @@ fun TF.LRNGrad(intput_grads: Tensor,
                alpha: Float = 1f,
                beta: Float = 0.5f,
                name: String = "LRNGrad") =
-    naryOp("LRNGrad", intput_grads, input_image, output_image, name = name) {
+    naryOp("LRNGrad", intput_grads.value(), input_image.value(), output_image.value(), name = name) {
       attr("depth_radius", depth_radius)
       attr("bias", bias)
       attr("alpha", alpha)
@@ -66,7 +68,7 @@ fun TF.maxPoolGrad(orig_input: Tensor,
                    padding: String,
                    data_format: String = "NHWC",
                    name: String = "MaxPoolGrad") =
-    naryOp("MaxPoolGrad", orig_input, orig_output, grad, name = name) {
+    naryOp("MaxPoolGrad", orig_input.value(), orig_output.value(), grad.value(), name = name) {
       attr("ksize", ksize)
       attr("strides", strides)
       attr("padding", padding)
@@ -79,7 +81,7 @@ fun TF.maxPoolGradWithArgmax(input: Tensor,
                              ksize: LongArray, strides: LongArray,
                              padding: String,
                              name: String = "MaxPoolGradWithArgmax") =
-    naryOp("MaxPoolGradWithArgmax", input, grad, argmax, name = name) {
+    naryOp("MaxPoolGradWithArgmax", input.value(), grad.value(), argmax.value(), name = name) {
       attr("ksize", ksize)
       attr("strides", strides)
       attr("padding", padding)
@@ -88,24 +90,24 @@ fun TF.maxPoolGradWithArgmax(input: Tensor,
 fun TF.relu6Grad(gradients: Tensor,
                  features: Tensor,
                  name: String = "Relu6Grad") =
-    binaryOp("Relu6Grad", gradients, features, name = name)
+    binaryOp("Relu6Grad", gradients.value(), features.value(), name = name)
 
 fun TF.reluGrad(gradients: Tensor,
                 features: Tensor,
                 name: String = "ReluGrad") =
-    binaryOp("ReluGrad", gradients, features, name = name)
+    binaryOp("ReluGrad", gradients.value(), features.value(), name = name)
 
 fun TF.seluGrad(gradients: Tensor,
                 features: Tensor,
                 name: String = "SeluGrad") =
-    binaryOp("SeluGrad", gradients, features, name = name)
+    binaryOp("SeluGrad", gradients.value(), features.value(), name = name)
 
 fun TF.softplusGrad(gradients: Tensor,
                     features: Tensor,
                     name: String = "SoftplusGrad") =
-    binaryOp("SoftplusGrad", gradients, features, name = name)
+    binaryOp("SoftplusGrad", gradients.value(), features.value(), name = name)
 
 fun TF.softsignGrad(gradients: Tensor,
                     features: Tensor,
                     name: String = "SoftsignGrad") =
-    binaryOp("SoftsignGrad", gradients, features, name = name)
+    binaryOp("SoftsignGrad", gradients.value(), features.value(), name = name)
