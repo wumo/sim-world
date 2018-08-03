@@ -9,7 +9,7 @@ import wumo.sim.util.toByte
 val String.fullName
   get() = substring(2)
 
-inline fun TF.buildOp(op: String, vararg inputs: Tensor, name: String, setAttr: OperationBuilder.() -> Unit = {}): Operation {
+inline fun TF.buildOp(op: String, vararg inputs: Tensor, name: String, setAttr: OperationBuilder.() -> Unit = {}): Op {
   name_scope(name) {
     val builder = g.nodeBuilder(op, ctxNs.scopeName.fullName)
     for (input in inputs)
@@ -64,14 +64,14 @@ inline fun TF.ternaryOp(op: String, a: Tensor, b: Tensor, c: Tensor, name: Strin
 class OperationBuilder(val graph: Graph, val opType: String, val name: String) {
   private var c_opDesc: TF_OperationDescription = TF_NewOperation(graph.c_graph, opType, name)
   
-  fun build(): Operation {
+  fun build(): Op {
     controlInput()
     attr_scope()
     colocate()
     val status = newStatus()
     val nativeOp = TF_FinishOperation(c_opDesc, status)
     throwExceptionIfNotOk(status)
-    val op = Operation(graph, nativeOp)
+    val op = Op(graph, nativeOp)
     op.control_flow_context = tf.control_flow_context
     
     control_flow_post_processing(op)
@@ -108,7 +108,7 @@ class OperationBuilder(val graph: Graph, val opType: String, val name: String) {
     }
   }
   
-  private fun control_flow_post_processing(op: Operation) {
+  private fun control_flow_post_processing(op: Op) {
     op.control_flow_context?.addOp(op)
   }
   
@@ -137,7 +137,7 @@ class OperationBuilder(val graph: Graph, val opType: String, val name: String) {
     return this
   }
   
-  private val input_ops = mutableSetOf<Operation>()
+  private val input_ops = mutableSetOf<Op>()
   
   fun addInput(input: Tensor) = addInput(input.asTF_Output()).apply { input_ops += input.op!! }
   
@@ -152,7 +152,7 @@ class OperationBuilder(val graph: Graph, val opType: String, val name: String) {
     return this
   }
   
-  fun addControlInput(control: Operation): OperationBuilder {
+  fun addControlInput(control: Op): OperationBuilder {
     TF_AddControlInput(c_opDesc, control.c_op)
     return this
   }

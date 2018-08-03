@@ -93,7 +93,7 @@ class AdamOptimizer(val learningRate: Float = 0.001f,
     epsilon_t = tf.const(epsilon, name = "epsilon")
   }
   
-  override fun apply_dense(grad: Tensor, _v: Variable): Operation {
+  override fun apply_dense(grad: Tensor, _v: Variable): Op {
     val m = get_slot(_v, "m")
     val v = get_slot(_v, "v")
     val (beta1_power, beta2_power) = get_beta_accumulators()
@@ -107,7 +107,7 @@ class AdamOptimizer(val learningRate: Float = 0.001f,
                          grad, use_locking = use_locking).op!!
   }
   
-  override fun finish(update_ops: MutableList<Operation>, name: String): Operation {
+  override fun finish(update_ops: MutableList<Op>, name: String): Op {
     tf.control_dependencies(update_ops) {
       val (beta1_power, beta2_power) = get_beta_accumulators()
       tf.colocate_with(beta1_power) {

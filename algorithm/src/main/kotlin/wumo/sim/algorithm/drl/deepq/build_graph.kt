@@ -2,7 +2,7 @@ package wumo.sim.algorithm.drl.deepq
 
 import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.algorithm.tensorflow.*
-import wumo.sim.algorithm.tensorflow.Operation
+import wumo.sim.algorithm.tensorflow.Op
 import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.Variable
 import wumo.sim.algorithm.tensorflow.ops.*
@@ -93,7 +93,7 @@ fun build_train(make_obs_ph: (String) -> TfInput,
       optimizer.minimize(weighted_error, q_func_vars)
     //update_target_fn will be called periodically to copy Q network to target Q network
     val update_target_expr = run {
-      val update_target_expr = mutableListOf<Operation>()
+      val update_target_expr = mutableListOf<Op>()
       for ((v, v_target) in q_func_vars.sortedBy { it.name }
           .zip(target_q_func_vars.sortedBy { it.name }))
         update_target_expr += v_target.assign(v).op!!
@@ -142,16 +142,16 @@ fun build_act_with_param_noise(make_obs_ph: (String) -> TfInput,
                                name: String): tuple3<ActFunction, List<Variable>, ByteArray> {
   val param_noise_filter_func = _param_noise_filter_func ?: {
     when {
-    //We never perturb non -trainable vars .
+      //We never perturb non -trainable vars .
       it !in tf.trainables -> false
-    //We perturb fully-connected layers.
+      //We perturb fully-connected layers.
       "fully_connected" in it.name -> true
-    /*
-    The remaining layers are likely conv or layer norm layers, which we do not wish to
-    perturb (in the former case because they only extract features, in the latter case because
-    we use them for normalization purposes). If you change your network, you will likely want
-    to re-consider which layers to perturb and which to keep untouched.
-     */
+      /*
+      The remaining layers are likely conv or layer norm layers, which we do not wish to
+      perturb (in the former case because they only extract features, in the latter case because
+      we use them for normalization purposes). If you change your network, you will likely want
+      to re-consider which layers to perturb and which to keep untouched.
+       */
       else -> false
     }
   }
@@ -177,7 +177,7 @@ fun build_act_with_param_noise(make_obs_ph: (String) -> TfInput,
     //We have to wrap this code into a function due to the way tf.cond() works. See
     //https://stackoverflow.com/questions/37063952/confused-by-the-behavior-of-tf-cond for
     //a more detailed discussion.
-    fun perturb_vars(original_scope: String, perturbed_scope: String): Operation {
+    fun perturb_vars(original_scope: String, perturbed_scope: String): Op {
       val all_vars = tf.ctxVs.variable_subscopes[original_scope]!!.all_variables()
       val all_perturbed_vars = tf.ctxVs.variable_subscopes[perturbed_scope]!!.all_variables()
       assert(all_vars.size == all_perturbed_vars.size)
@@ -237,6 +237,8 @@ fun build_act_with_param_noise(make_obs_ph: (String) -> TfInput,
                         givens = givens,
                         updates = updates)
     val q_func_vars = tf.ctxVs.variable_subscopes["q_func"]!!.all_variables()
+//    val gradphDef = tf.g.toGraphDef()
+    dump("graphDef.pb", tf.g.toGraphDef())
     val act_graph_def =
         defaut(TF()) {
           val (_, _, act_graph_def) = build_act(make_obs_ph, q_func, num_actions, name)

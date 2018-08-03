@@ -1,9 +1,7 @@
 package wumo.sim.algorithm.tensorflow.ops
 
-import org.bytedeco.javacpp.BoolPointer
-import org.bytedeco.javacpp.BytePointer
 import org.bytedeco.javacpp.tensorflow.*
-import wumo.sim.algorithm.tensorflow.Operation
+import wumo.sim.algorithm.tensorflow.Op
 import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.ops.gradients.append
 import wumo.sim.algorithm.tensorflow.ops.gradients.noGradient
@@ -296,7 +294,7 @@ fun register_math_grad() {
     grad_outputs.add(dx)
   }
   
-  fun binaryGradCommon(op: Operation, grad_outputs: MutableList<Tensor>, gx_1: Tensor, gx_2: Tensor) {
+  fun binaryGradCommon(op: Op, grad_outputs: MutableList<Tensor>, gx_1: Tensor, gx_2: Tensor) {
     val sx_1 = tf.shape(op.inputs[0])
     val sx_2 = tf.shape(op.inputs[1])
     val (r0, r1) = tf.broadcastGradientArgs(sx_1, sx_2)
@@ -416,7 +414,7 @@ fun register_math_grad() {
    * MaximumMinimumGradCommon adds shared ops to calculate gradients for
    * the binary Maximum and Minimum ops.
    */
-  fun maximumMinimumGradCommon(op: Operation,
+  fun maximumMinimumGradCommon(op: Op,
                                grad_inputs: List<Tensor>,
                                grad_outputs: MutableList<Tensor>,
                                comparator: Tensor) {
@@ -548,7 +546,7 @@ fun register_math_grad() {
    * SumGradHelper returns the gradient for the Sum operator, and is used
    * by SumGrad and MeanGrad.
    */
-  fun sumGradHelper(op: Operation, grad_inputs: List<Tensor>): Tensor {
+  fun sumGradHelper(op: Op, grad_inputs: List<Tensor>): Tensor {
     // The partial derivative for any input along a "reduced" dimension
     // is just 1, so we only need replicate the output gradient on such a
     // dimension to its "expanded" shape.
@@ -629,7 +627,7 @@ fun register_math_grad() {
     }
   }
   
-  fun minOrMaxGrad(op: Operation, grad_inputs: List<Tensor>, grad_outputs: MutableList<Tensor>) {
+  fun minOrMaxGrad(op: Op, grad_inputs: List<Tensor>, grad_outputs: MutableList<Tensor>) {
     // The partial derivative for any input along a "reduced" dimension
     // is 1 when it is the min (or max) and 0 everywhere else. So the
     // gradient calculation is identical for both operators.
@@ -886,7 +884,7 @@ fun register_math_grad() {
    * proper MatMul products for gradients based on input matrix transposition
    * combinations.
    */
-  fun matMulGradCommon(op: Operation,
+  fun matMulGradCommon(op: Op,
                        is_batch: Boolean,
                        grad_inputs: List<Tensor>,
                        attr_adj_x: String, attr_adj_y: String,

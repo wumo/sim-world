@@ -23,9 +23,9 @@ class Session(val c_graph: TF_Graph) {
   }
   
   val feed_dict = mutableListOf<Pair<Tensor, NDArray<*>>>()
-  val run_list = mutableListOf<Operation>()
+  val run_list = mutableListOf<Op>()
   
-  fun Operation.run(vararg feeds: Pair<Tensor, NDArray<*>>) {
+  fun Op.run(vararg feeds: Pair<Tensor, NDArray<*>>) {
     feed_dict += feeds
     run_list += this
     _eval()
@@ -144,7 +144,7 @@ class Session(val c_graph: TF_Graph) {
     print(eval<Any>(this))
   }
   
-  fun Operation.eval() {
+  fun Op.eval() {
   
   }
   
@@ -157,7 +157,7 @@ class Session(val c_graph: TF_Graph) {
     feed_dict += feeds
   }
   
-  fun target(vararg target: Operation) {
+  fun target(vararg target: Op) {
     run_list += target
   }
   
@@ -223,7 +223,7 @@ class Session(val c_graph: TF_Graph) {
     for ((i, op) in updates.withIndex()) {
       val op = when (op) {
         is Tensor -> op.op
-        is Operation -> op
+        is Op -> op
         else -> throw Exception()
       }
       target_opers.position(i.toLong()).put(op!!.c_op)

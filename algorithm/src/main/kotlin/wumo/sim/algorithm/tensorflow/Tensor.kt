@@ -7,15 +7,15 @@ import wumo.sim.util.Dimension
 interface TensorLike
 
 /**
- * Represents one of the outputs of an `Operation`.
+ * Represents one of the outputs of an `Op`.
  *
  * `Tensor` is a symbolic handle to one of the outputs of an
- * `Operation`. It does not hold the values of that operation's output,
+ * `Op`. It does not hold the values of that findOp's output,
  * but instead provides a means of computing those values in a
  * TensorFlow [Session].
  *
  * This class has two primary purposes:
- * 1. A `Tensor` can be passed as an input to another `Operation`.
+ * 1. A `Tensor` can be passed as an input to another `Op`.
  * This builds a dataflow connection between operations, which
  * enables TensorFlow to execute an entire `Graph` that represents a
  * large, multi-step computation.
@@ -24,7 +24,7 @@ interface TensorLike
  * `Tensor` can be computed by passing it to@{tf.Session.run}.
  * `t.eval()` is a shortcut for calling`tf.get_default_session().run(t)`.
  */
-open class Tensor(val op: Operation?, val value_index: Int) : TensorLike {
+open class Tensor(val op: Op?, val value_index: Int) : TensorLike {
   val dtype: Int
     get() = if (op != null) {
       op.output_types[value_index]

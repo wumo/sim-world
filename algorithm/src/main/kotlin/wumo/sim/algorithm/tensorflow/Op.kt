@@ -8,14 +8,24 @@ import wumo.sim.algorithm.tensorflow.ops.ControlFlowContext
 import wumo.sim.algorithm.tensorflow.ops.gradients.iterate
 import wumo.sim.algorithm.tensorflow.ops.gradients.toTensor
 
-class Operation(val graph: Graph, val c_op: TF_Operation) {
+class Op(val graph: Graph, val c_op: TF_Operation) {
+  init {
+    graph.opsCache[c_op.address()] = this
+  }
+  
+  val name: String by lazy { TF_OperationName(c_op).string }
+  val device: String by lazy { TF_OperationDevice(c_op).string }
+  val opType: String by lazy { TF_OperationOpType(c_op).string }
+  val node: Node by lazy { c_op.node() }
+  val attrs: AttrSlice by lazy { node.attrs() }
+  
   var control_flow_context: ControlFlowContext? = null
   fun set_control_flow_context(condContext: CondContext) {
     this.control_flow_context = condContext
   }
   
   /**
-   * Update the input to this operation at the given index.
+   * Update the input to this findOp at the given index.
    * NOTE: This is for TF internal use only. Please don't use it.
    *
    * @param index the index of the input to update.
@@ -32,21 +42,20 @@ class Operation(val graph: Graph, val c_op: TF_Operation) {
     if (this === other) return true
     if (javaClass != other?.javaClass) return false
     
-    other as Operation
+    other as Op
     if (c_op != other.c_op) return false
     return true
   }
   
-  override fun hashCode(): Int {
-    val result = c_op.hashCode()
-    return result
-  }
+  override fun hashCode() = c_op.hashCode()
   
-  val name: String by lazy { TF_OperationName(c_op).string }
-  val device: String by lazy { TF_OperationDevice(c_op).string }
-  val opType: String by lazy { TF_OperationOpType(c_op).string }
-  val node: Node by lazy { c_op.node() }
-  val attrs: AttrSlice by lazy { node.attrs() }
+  private var _numInputs = TF_OperationNumInputs(c_op)
+  
+  val numInputs
+    get() = _numInputs
+  val numOutputs
+    get() = TF_OperationNumOutputs(c_op)
+  
   fun _inputs() = run {
     val node = c_op.node()
     val numInputs = node.num_inputs()
@@ -60,17 +69,15 @@ class Operation(val graph: Graph, val c_op: TF_Operation) {
   
   var inputs: List<Tensor> = _inputs()
   val outputs: List<Tensor> by lazy {
-    val numOutputs = TF_OperationNumOutputs(c_op)
-    
     List(numOutputs) {
-      Tensor(Operation(graph, c_op), it)
+      Tensor(Op(graph, c_op), it)
     }
   }
   
   /**
-   * Add a new control input to this operation.
+   * Add a new control input to this findOp.
    */
-  fun addControlInput(op: Operation) {
+  fun addControlInput(op: Op) {
     val g = tf.g.c_graph.graph()
     g.AddControlEdge(op.node, node)
   }
@@ -81,13 +88,13 @@ class Operation(val graph: Graph, val c_op: TF_Operation) {
     //TODO require attr's operator[]
   }
   
-  val control_inputs: List<Operation>
+  val control_inputs: List<Op>
     get() {
       val numControlOps = TF_OperationNumControlInputs(c_op)
       val control_ops = PointerPointer<TF_Operation>(numControlOps.toLong())
       TF_OperationGetControlInputs(c_op, control_ops, numControlOps)
       return List(numControlOps) {
-        Operation(graph, control_ops.get(TF_Operation::class.java, it.toLong()))
+        Op(graph, control_ops.get(TF_Operation::class.java, it.toLong()))
       }
     }
   val output_types: List<Int> by lazy {
@@ -156,6 +163,6 @@ class Operation(val graph: Graph, val c_op: TF_Operation) {
     }
   
   override fun toString(): String {
-    return """"Operation("$name", op=$opType, dev=$device, def=${c_op.node().DebugString().string})"""
+    return """"Op("$name", op=$opType, dev=$device, def=${c_op.node().DebugString().string})"""
   }
 }

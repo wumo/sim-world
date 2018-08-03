@@ -2,16 +2,17 @@ package wumo.sim.algorithm.tensorflow
 
 import org.bytedeco.javacpp.BytePointer
 import org.bytedeco.javacpp.Pointer
+import org.bytedeco.javacpp.SizeTPointer
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Graph.newGraph
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
 import org.bytedeco.javacpp.tensorflow.*
+import wumo.sim.algorithm.tensorflow.util.isNotNull
 import java.util.*
-import kotlin.collections.LinkedHashMap
 
 /**
  * A TensorFlow computation, represented as a dataflow graph.
  *
- * A `Graph` contains a set of [Operation] objects,
+ * A `Graph` contains a set of [Op] objects,
  * which represent units of computation; and
  * [Tensor] objects, which represent
  * the units of data that flow between operations.
@@ -19,26 +20,49 @@ import kotlin.collections.LinkedHashMap
 class Graph(val tf: TF) {
   val c_graph = newGraph()!!
   
+  val opsCache = hashMapOf<Long, Op>()
+  operator fun HashMap<Long, Op>.get(op: TF_Operation) =
+      opsCache.getOrPut(op.address()) { Op(this@Graph, op) }
+  
   /**Set of tensors that are dangerous to feed!*/
   private val unfeedable_tensors = mutableSetOf<Tensor>()
   /**Set of operations that are dangerous to fetch!*/
-  private val unfetchable_ops = mutableSetOf<Operation>()
+  private val unfetchable_ops = mutableSetOf<Op>()
   private val functions = LinkedHashSet<String>()
   fun num_node_ids() = c_graph.graph().num_node_ids()
-  
   fun nodeBuilder(opType: String, name: String) = OperationBuilder(this, opType, name)
-  fun operation(name: String): Operation {
-    val op = TF_GraphOperationByName(c_graph, name)
-    return Operation(this, op)
+  
+  fun isFetchable(op: Op) {
   }
   
+  fun findOp(name: String): Op? {
+    
+    val op = TF_GraphOperationByName(c_graph, name)
+    return if (op.isNull) null
+    else opsCache[op]
+  }
+  
+  fun ops(): List<Op> {
+    val pos = SizeTPointer(1)
+    val ops = arrayListOf<Op>()
+    do {
+      val op = TF_GraphNextOperation(c_graph, pos)
+      ops += opsCache[op]
+    } while (op.isNotNull)
+    return ops
+  }
+  
+//  fun getOp(name: String): Op {
+//
+//    findOp(name)
+//  }
+  
   fun getTensor(name: String): Tensor {
-    val idx = name.indexOf(':')
-    val valueIdx = if (idx == -1) 0
-    else name.substring(idx + 1).toInt()
-    val name = if (idx == -1) name
-    else name.substring(0, idx)
-    val op = wumo.sim.algorithm.tensorflow.tf.g.operation(name)
+    val (opName, idx) = name.split(':')
+    val valueIdx = idx.toInt()
+    val op = findOp(opName)!!
+    if(valueIdx>op.numOutputs-1)
+      throw IllegalArgumentException("valueIdx > op.numOutputs - 1")
     return Tensor(op, valueIdx)
   }
   
@@ -76,11 +100,11 @@ class Graph(val tf: TF) {
                 new_op_inputs: MutableList<Tensor>,
                 output_types: List<Int>,
                 name: String,
-                attrs: Map<String, Any>): Operation {
+                attrs: Map<String, Any>): Op {
     TODO("not implemented")
   }
   
-  fun prevent_fetching(op: Operation) {
+  fun prevent_fetching(op: Op) {
     unfetchable_ops += op
   }
 }

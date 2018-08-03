@@ -7,7 +7,7 @@ fun TF.biasAddGrad(out_backprop: Tensor, data_format: String = "NHWC", name: Str
       attr("data_format", data_format)
     }
 
-fun TF.noOpDep(dep: Iterable<Operation>, name: String = "NoOp") =
+fun TF.noOpDep(dep: Iterable<Op>, name: String = "NoOp") =
     buildOp("NoOp", name = name) {
       setDevice(device)
       for (op in dep)

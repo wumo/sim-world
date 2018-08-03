@@ -28,7 +28,7 @@ fun TF.gradients(ys: List<Tensor>, xs: Collection<Tensor>): List<Tensor> {
 //  return MutableList(xs.size) {
 //    val output = dy.position(it.toLong())
 //    val out_type = TF_OperationOutputType(output)
-//    Tensor(Operation(g, output.oper()), output.index())
+//    Tensor(Op(g, output.oper()), output.index())
 //  }
 //}
 
@@ -49,17 +49,17 @@ fun TF.gradients(ys: List<Tensor>, xs: Collection<Tensor>): List<Tensor> {
 //  throwExceptionIfNotOk(status)
 //  return MutableList(xs.size) {
 //    val output = dy.position(it.toLong())
-//    Tensor(Operation(g, output.oper()), output.index())
+//    Tensor(Op(g, output.oper()), output.index())
 //  }
 //}
 
 //fun TF.gradientDescentOptimizer(learningRate: Float,
 //                                loss: Tensor,
-//                                name: String = "GradientDescent"): Operation {
+//                                name: String = "GradientDescent"): Op {
 //  name_scope(name) {
 //    val dy = gradients(loss, trainables)
 //    val alpha = const(learningRate, "learning_rate")
-//    val applyGradient = mutableListOf<Operation>()
+//    val applyGradient = mutableListOf<Op>()
 //    for ((i, trainable) in trainables.withIndex())
 //      applyGradient += applyGradientDescent(trainable, alpha, dy[i])
 //    return noOpDep(applyGradient, scopeNameForOnce())

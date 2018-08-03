@@ -104,7 +104,7 @@ and centering parameters will have dimensions
 `begin_params_axis : rank(inputs)` and will be broadcast with the
 normalized inputs accordingly.
  
- * @return:A `Tensor` representing the output of the operation, having the same
+ * @return:A `Tensor` representing the output of the findOp, having the same
 shape and dtype as `inputs`.
  
  * @throws

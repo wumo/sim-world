@@ -32,7 +32,7 @@ fun BufferedSink.encode(act: ActFunction, prefix: String) {
     writeInt(updates.size)
     for (input in updates) {
       val name = "$prefix/" + when (input) {
-        is Operation -> input.name
+        is Op -> input.name
         is Tensor -> input.op!!.name
         else -> throw Exception()
       }
@@ -72,7 +72,7 @@ fun saveModel(model_file_path: String,
     val _tf = TF()
     _tf.g.import(act_graph_def, prefix)
     defaut(_tf) {
-      val init_ops = arrayListOf<Operation>()
+      val init_ops = arrayListOf<Op>()
       for ((v, value) in act_vars)
         init_ops += tf.assign(tf.g.getTensor("$prefix/$v"), tf.const(value.copy())).op!!
       tf.group(init_ops, name = "init")
@@ -83,13 +83,13 @@ fun saveModel(model_file_path: String,
   }
 }
 
-fun loadModel(model_file_path: String): tuple3<TF, Operation, ActFunction> {
+fun loadModel(model_file_path: String): tuple3<TF, Op, ActFunction> {
   File(model_file_path).source().buffer().use { source ->
     val def = source.decodeByteArray()
     val act = source.decodeActFunction()
     val tf = TF()
     tf.g.import(def)
-    val init = tf.g.operation("init")
+    val init = tf.g.findOp("init")!!
     return tuple3(tf, init, act)
   }
 }

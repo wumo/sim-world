@@ -36,7 +36,7 @@ class TF {
   val g = Graph(this)
   val trainables = mutableListOf<Variable>()
   val global_variables = mutableListOf<Variable>()
-  val train_ops = mutableListOf<Operation>()
+  val train_ops = mutableListOf<Op>()
   private val rootNs = NameScope("$", null)
   private val rootVs = VariableScope("$", rootNs)
   var ctxNs = rootNs
@@ -44,8 +44,8 @@ class TF {
   
   var control_flow_context: ControlFlowContext? = null
   var device: String = ""
-  var colocate_with = ArrayDeque<Operation>()
-  val control_ops = ArrayDeque<Operation>()
+  var colocate_with = ArrayDeque<Op>()
+  val control_ops = ArrayDeque<Op>()
   val attr_scope_map = hashMapOf<String, AttrValue>()
   
   lateinit var session: Session
@@ -175,7 +175,7 @@ class TF {
     block(session)
   }
   
-  fun global_variable_initializer(): Operation {
+  fun global_variable_initializer(): Op {
     return group(global_variables, name = "init")
   }
   
@@ -215,11 +215,11 @@ class TF {
   inline fun <R> colocate_with(op: Tensor, ignore_existing: Boolean = false, block: () -> R) =
       colocate_with(op.op!!, ignore_existing, block)
   
-  inline fun <R> colocate_with(op: Operation, ignore_existing: Boolean = false, block: () -> R) =
+  inline fun <R> colocate_with(op: Op, ignore_existing: Boolean = false, block: () -> R) =
       colocate_with(listOf(op), ignore_existing, block)
   
-  inline fun <R> colocate_with(op: List<Operation>, ignore_existing: Boolean = false, block: () -> R): R {
-    val current_stack: Collection<Operation> =
+  inline fun <R> colocate_with(op: List<Op>, ignore_existing: Boolean = false, block: () -> R): R {
+    val current_stack: Collection<Op> =
         if (ignore_existing) colocate_with.clone().apply { colocate_with.clear() }
         else Collections.emptyList()
     val size = op.size
@@ -239,7 +239,7 @@ class TF {
     return colocate_with(op.map { it.op!! }, ignore_existing, block)
   }
   
-  inline fun <R> control_dependencies(vararg control_inputs: Operation, block: () -> R): R {
+  inline fun <R> control_dependencies(vararg control_inputs: Op, block: () -> R): R {
     var tmpctx: ControlFlowContext? = null
     val tmp = if (control_inputs.isEmpty()) {
       tmpctx = tf.control_flow_context
@@ -264,7 +264,7 @@ class TF {
     }
   }
   
-  inline fun <R> control_dependencies(control_inputs: List<Operation>, block: () -> R): R {
+  inline fun <R> control_dependencies(control_inputs: List<Op>, block: () -> R): R {
     val tmp = if (control_inputs.isEmpty()) control_ops.clone() else null
     val size = control_inputs.size
     if (size == 0)

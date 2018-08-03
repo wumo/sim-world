@@ -22,7 +22,7 @@ value_2 = my_func([[1.0, 2.0], [3.0, 4.0]])
 value_3 = my_func(np.array([[1.0, 2.0], [3.0, 4.0]], dtype=np.float32))
 ```
 
-This function can be useful when composing a new operation in Python
+This function can be useful when composing a new findOp in Python
 (such as `my_func` in the example above). All standard Python op
 constructors apply this function to each of their Tensor-valued
 inputs, which allows those ops to accept numpy arrays, Python lists,

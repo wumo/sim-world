@@ -7,7 +7,7 @@ abstract class ControlFlowContext {
   var outer_context = tf.control_flow_context
   val values = hashSetOf<String>()
   val external_values = hashMapOf<String, Tensor>()
-  abstract fun addOp(op: Operation)
+  abstract fun addOp(op: Op)
 }
 
 class CondContext(val pred: Tensor,
@@ -23,7 +23,7 @@ class CondContext(val pred: Tensor,
     pivot.op!!.set_control_flow_context(this)
   }
   
-  override fun addOp(op: Operation) {
+  override fun addOp(op: Op) {
     if (op.inputs.isEmpty()) {
       _removeExternalControlEdges(op)
       op.addControlInput(pivot.op!!)
@@ -49,7 +49,7 @@ class CondContext(val pred: Tensor,
       op.graph.prevent_fetching(op)
   }
   
-  private fun _removeExternalControlEdges(op: Operation) {
+  private fun _removeExternalControlEdges(op: Op) {
     //TODO Remove any external control dependency on this op
   }
   
@@ -80,7 +80,7 @@ class CondContext(val pred: Tensor,
   
   fun buildCondTensor(v: Any): Tensor {
     return when (v) {
-      is Operation -> {//Use pivot as the proxy for this op.
+      is Op -> {//Use pivot as the proxy for this op.
         with_dependencies(v, output_tensor = pivot)
       }
       is IndexedSlices, is SparseTensor -> {
@@ -113,7 +113,7 @@ class CondContext(val pred: Tensor,
 }
 
 /**Return true if `op` is an Exit.*/
-fun isLoopExit(op: Operation) = op.opType == "Exit" || op.opType == "RefExit"
+fun isLoopExit(op: Op) = op.opType == "Exit" || op.opType == "RefExit"
 
 /**
 Produces the content of `output_tensor` only after `dependencies`.
@@ -135,7 +135,7 @@ Args:
 Returns:
 Same as `output_tensor`.
  */
-fun with_dependencies(vararg dependencies: Operation,
+fun with_dependencies(vararg dependencies: Op,
                       output_tensor: Tensor,
                       name: String = "control_dependency"): Tensor {
   with(tf) {
@@ -158,11 +158,11 @@ fun TF._identity(data: Tensor, name: String): Tensor {
   //TODO indexedSlice
 }
 
-fun TF.group(inputs: List<Any>, name: String = "group_deps"): Operation {
-  val ops_on_device = mutableMapOf<String, MutableList<Operation>>()
+fun TF.group(inputs: List<Any>, name: String = "group_deps"): Op {
+  val ops_on_device = mutableMapOf<String, MutableList<Op>>()
   for (input in inputs) {
     val op = when (input) {
-      is Operation -> input
+      is Op -> input
       is Variable -> input.initializer_op.op
       is Tensor -> input.op
       else -> throw IllegalArgumentException("unsupported ${input::class.java}")
@@ -180,7 +180,7 @@ fun TF.group(inputs: List<Any>, name: String = "group_deps"): Operation {
       return noOpDep(deps, name)
     }
   }
-  val all_deps = mutableListOf<Operation>()
+  val all_deps = mutableListOf<Op>()
   name_scope(name) {
     for ((dev, deps) in ops_on_device) {
       on_device(dev) {

@@ -1,6 +1,7 @@
 package wumo.sim.algorithm.tensorflow.ops.gradients
 
 import org.bytedeco.javacpp.tensorflow.*
+import wumo.sim.algorithm.tensorflow.Op
 import wumo.sim.algorithm.tensorflow.TF
 import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.ops.*
@@ -29,7 +30,7 @@ fun TF.addSymbolicGradients(outputs: List<Tensor>,
 /**A vector of output endpoints which represents backpropagated gradients.*/
 typealias BackproppedGradients = ArrayList<Tensor>
 
-typealias GradFunc = (wumo.sim.algorithm.tensorflow.Operation, List<Tensor>, MutableList<Tensor>) -> Unit
+typealias GradFunc = (Op, List<Tensor>, MutableList<Tensor>) -> Unit
 
 val nullGradFunc: GradFunc = { _, _, _ -> }
 
@@ -103,8 +104,8 @@ class SymbolicGradientBuilder(val tf: TF,
     for (input in inputs_)
       if (!reachable_nodes[input.node().id()])
         throw IllegalArgumentException("Cannot compute the partial derivative for node " +
-                                       "'${input.node().name().string}'" +
-                                       " as it's unreachable from the output node(s).")
+                                           "'${input.node().name().string}'" +
+                                           " as it's unreachable from the output node(s).")
 //    grad_outputs_.clear()
     
     val output_nodes = HashSet<Int>()
@@ -399,7 +400,8 @@ class SymbolicGradientBuilder(val tf: TF,
    * gradients to `src` (if there are more than one).
    */
   private fun sumGradients(src: Tensor): Tensor {
-    val grads = backprops_[src] ?: throw  Exception("Unable to find backprop list for node.id ${src.node().name().string}")
+    val grads = backprops_[src]
+        ?: throw  Exception("Unable to find backprop list for node.id ${src.node().name().string}")
     
     // Filter any backproped 'NoGradient' Outputs from 'grads' (if needed).
     // Return any valid backproped gradients that remain after filtering,
@@ -424,16 +426,15 @@ class SymbolicGradientBuilder(val tf: TF,
       }
     }
   }
-  
 }
 
 val noGradient = toTensor(null, -1)
 fun toTensor(n: Node?, v: Int) =
     if (n == null) Tensor(null, v)
     else
-      wumo.sim.algorithm.tensorflow.Tensor(n.toOperation(), v)
+      Tensor(n.toOperation(), v)
 
-fun Node.toOperation() = wumo.sim.algorithm.tensorflow.Operation(tf.g, TF_Operation(this))
+fun Node.toOperation() = Op(tf.g, TF_Operation(this))
 
 internal fun EdgeSet.iterate() = object : Iterator<Edge> {
   val iter = EdgeSetIterator(begin())

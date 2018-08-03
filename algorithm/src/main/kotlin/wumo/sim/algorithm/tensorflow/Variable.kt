@@ -6,7 +6,7 @@ import wumo.sim.algorithm.tensorflow.ops.identity
 import wumo.sim.algorithm.tensorflow.ops.is_variable_initialized
 import wumo.sim.util.a
 
-class Variable(op: Operation, value_index: Int) : Tensor(op, value_index) {
+class Variable(op: Op, value_index: Int) : Tensor(op, value_index) {
   lateinit var initial_value: Tensor
   lateinit var initializer_op: Tensor
   lateinit var snapshot: Tensor
@@ -59,7 +59,7 @@ class Variable(op: Operation, value_index: Int) : Tensor(op, value_index) {
    */
   fun try_guard_against_uninitialized_dependencies(initial_value: Tensor): Tensor {
     /**Detect cycles in the dependencies of [initial_value].*/
-    fun has_cycle(op: Operation, path: MutableSet<String>): Boolean {
+    fun has_cycle(op: Op, path: MutableSet<String>): Boolean {
       if (op.name in path) return true
       path += op.name
       for (op_input in op.inputs)
@@ -79,14 +79,14 @@ class Variable(op: Operation, value_index: Int) : Tensor(op, value_index) {
   /**
    * Replace dependencies on variables with their initialized values.
    * @param tensor A [Tensor]. The tensor to replace.
-   * @param op_cache A dict mapping operation names to [Operation]s. Used to memoize
+   * @param op_cache A dict mapping findOp names to [Op]s. Used to memoize
    * the results so as to avoid creating redundant operations.
    * @return A [Tensor] compatible with [tensor]. Any inputs that lead to variable
    * values will be replaced with a corresponding graph that uses the
    * variable's initialized values. This is done on a best-effort basis. If no
    * modifications need to be made then [tensor] will be returned unchanged.
    */
-  private fun safe_initial_value_from_tensor(tensor: Tensor, op_cache: MutableMap<String, Operation>): Tensor {
+  private fun safe_initial_value_from_tensor(tensor: Tensor, op_cache: MutableMap<String, Op>): Tensor {
     val op = tensor.op
     val new_op = op_cache.compute(op!!.name) { _, new_op ->
       new_op ?: safe_initial_value_from_op(op, op_cache)
@@ -96,15 +96,15 @@ class Variable(op: Operation, value_index: Int) : Tensor(op, value_index) {
   
   /**
    * Replace dependencies on variables with their initialized values.
-   * @param op A [Operation]. The tensor to replace.
-   * @param op_cache A dict mapping operation names to [Operation]s. Used to memoize
+   * @param op A [Op]. The tensor to replace.
+   * @param op_cache A dict mapping findOp names to [Op]s. Used to memoize
    * the results so as to avoid creating redundant operations.
    * @return A [Tensor] compatible with [op]. Any inputs that lead to variable
    * values will be replaced with a corresponding graph that uses the
    * variable's initialized values. This is done on a best-effort basis. If no
    * modifications need to be made then [op] will be returned unchanged.
    */
-  private fun safe_initial_value_from_op(op: Operation, op_cache: MutableMap<String, Operation>): Operation {
+  private fun safe_initial_value_from_op(op: Op, op_cache: MutableMap<String, Op>): Op {
     val op_type = op.opType
     if (op_type in a("IsVariableInitialized", "VarIsInitializedOp", "ReadVariableOp"))
       return op
@@ -141,7 +141,7 @@ class Variable(op: Operation, value_index: Int) : Tensor(op, value_index) {
    * @return A [Tensor] representing the initialized value for the variable or `null`
    * if the initialized value could not be found.
    */
-  private fun find_initialized_value_for_variable(variable_op: Operation): Tensor? {
+  private fun find_initialized_value_for_variable(variable_op: Op): Tensor? {
     val var_names = variable_op.name
     for (v in tf.global_variables)
       if (v.op!!.name == var_names)

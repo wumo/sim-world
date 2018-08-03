@@ -1,6 +1,6 @@
 package wumo.sim.algorithm.tensorflow.ops
 
-import wumo.sim.algorithm.tensorflow.Operation
+import wumo.sim.algorithm.tensorflow.Op
 import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.ops.gradients.noGradient
 import wumo.sim.algorithm.tensorflow.ops.gradients.register_gradient_op
@@ -153,7 +153,7 @@ fun register_array_grad() {
     grad_outputs.add(tf.gatherNd(grad, indices));
   }
   
-  fun padGrad(op: Operation, grad_inputs: List<Tensor>, grad_outputs: MutableList<Tensor>, isPadV2: Boolean) {
+  fun padGrad(op: Op, grad_inputs: List<Tensor>, grad_outputs: MutableList<Tensor>, isPadV2: Boolean) {
     val grad = grad_inputs[0]
     val x = op.inputs[0]
     val a = op.inputs[1]  // [Rank(x), 2]
