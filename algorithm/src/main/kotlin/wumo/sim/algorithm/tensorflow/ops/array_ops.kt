@@ -71,7 +71,7 @@ fun TF.padV2(input: Tensor, paddings: Tensor, constant_values: Tensor, name: Str
 
 fun TF.placeholder(dtype: Int = DT_FLOAT, name: String = "Placeholder") =
     naryOp("Placeholder", name = name) {
-      val tensor_shape_proto = TensorShapeProto()
+      val tensor_shape_proto = TensorShapeProto().apply { set_unknown_rank(true) }
       tensor_shape_proto.set_unknown_rank(true)
       attrType("dtype", dtype)
       attr("shape", tensor_shape_proto)

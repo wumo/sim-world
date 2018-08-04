@@ -21,7 +21,7 @@ inline fun <T : Number> dim(d: T) = Dimension(mutableListOf(d.toInt()))
 
 val scalarDimension = Dimension()
 
-class Dimension(val elements: MutableList<Int> = mutableListOf()) : Iterable<Int> {
+class Dimension(val elements: MutableList<Int> = mutableListOf(), unknow_rank: Boolean = false) : Iterable<Int> {
   constructor(elements: LongArray) : this(MutableList(elements.size) { elements[it].toInt() })
   constructor(elements: IntArray) : this(elements.toMutableList())
   

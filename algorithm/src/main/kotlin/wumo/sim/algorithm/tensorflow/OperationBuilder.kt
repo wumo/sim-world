@@ -9,6 +9,14 @@ import wumo.sim.util.toByte
 val String.fullName
   get() = substring(2)
 
+fun TF.buildOp(op: String, name: String, setAttr: OperationBuilder.() -> Unit = {}) = run {
+  name_scope(name) {
+    val builder = g.nodeBuilder(op, ctxNs.scopeName.fullName)
+    setAttr(builder)
+    builder.build()
+  }
+}
+
 inline fun TF.buildOp(op: String, vararg inputs: Tensor, name: String, setAttr: OperationBuilder.() -> Unit = {}): Op {
   name_scope(name) {
     val builder = g.nodeBuilder(op, ctxNs.scopeName.fullName)
@@ -152,6 +160,17 @@ class OperationBuilder(val graph: Graph, val opType: String, val name: String) {
     return this
   }
   
+  fun addInputList(input: Array<Tensor>): OperationBuilder {
+    val inputs = TF_Output(input.size.toLong())
+    for ((i, _input) in input.withIndex())
+      inputs.position(i.toLong()).oper(_input.op!!.c_op).index(_input.value_index)
+          .apply {
+            input_ops += _input.op
+          }
+    TF_AddInputList(c_opDesc, inputs.position(0L), input.size)
+    return this
+  }
+  
   fun addControlInput(control: Op): OperationBuilder {
     TF_AddControlInput(c_opDesc, control.c_op)
     return this
@@ -198,6 +217,11 @@ class OperationBuilder(val graph: Graph, val opType: String, val name: String) {
     return this
   }
   
+  fun attr(name: String, value: Array<Long>): OperationBuilder {
+    TF_SetAttrIntList(c_opDesc, name, value.toLongArray(), value.size)
+    return this
+  }
+  
   fun attr(name: String, value: Float): OperationBuilder {
     TF_SetAttrFloat(c_opDesc, name, value)
     return this
@@ -205,6 +229,11 @@ class OperationBuilder(val graph: Graph, val opType: String, val name: String) {
   
   fun attr(name: String, value: FloatArray): OperationBuilder {
     TF_SetAttrFloatList(c_opDesc, name, value, value.size)
+    return this
+  }
+  
+  fun attr(name: String, value: Array<Float>): OperationBuilder {
+    TF_SetAttrFloatList(c_opDesc, name, value.toFloatArray(), value.size)
     return this
   }
   
