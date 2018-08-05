@@ -3,7 +3,6 @@ package wumo.sim.algorithm.tensorflow.learn_lowlevel_api
 import com.google.protobuf.TextFormat
 import opGroups
 import org.tensorflow.framework.AttrValue
-import org.tensorflow.framework.DataType
 import org.tensorflow.framework.OpDef
 import org.tensorflow.framework.OpList
 import wumo.sim.algorithm.tensorflow.TF
@@ -43,10 +42,14 @@ fun generateGroupFiles(path: String, group: String, opDefs: List<OpDef>, kotlinP
         | */
         |package $kotlinPackage
         |
+        |import org.bytedeco.javacpp.tensorflow.NameAttrList
         |import wumo.sim.algorithm.tensorflow.Tensor
         |import wumo.sim.util.Dimension
         |import wumo.sim.algorithm.tensorflow.buildOp
+        |import wumo.sim.algorithm.tensorflow.buildOpTensor
+        |import wumo.sim.algorithm.tensorflow.buildOpTensors
         |import wumo.sim.algorithm.tensorflow.tf
+        |import wumo.sim.util.ndarray.NDArray
         |
         |object $group {
         |
@@ -61,6 +64,120 @@ fun generateGroupFiles(path: String, group: String, opDefs: List<OpDef>, kotlinP
 }
 
 class OpGenerator(val opDef: OpDef, val sb: StringBuilder) {
+  val name = processName(opDef.name)
+  val argumentTypes = hashMapOf<String, String>()
+  val inputs = mutableListOf<Pair<String, String>>()
+  val inputsRef = hashMapOf<String, Boolean>()
+  val parameters = mutableListOf<Pair<String, String>>()
+  val parameterDefaults = hashMapOf<String, AttrValue>()
+  val inferrableAttributes = hashMapOf<String, String>()
+  var numOutputs: Int = 0
+  
+  init {
+    initialize()
+  }
+  
+  fun generateOpFunction() {
+//    addInputs()
+//    addInferredAttributes()
+//    addParameters()
+    val arguments = inputs + parameters
+    
+    var kotlinArguments = arguments.joinToString(", ") { p ->
+      val paramName = p.second
+      val paramType = typeToKotlinType[argumentTypes[p.first]]!!
+      val defaultValue = if (paramName in parameterDefaults) {
+        val value = attrValueToKotlin(argumentTypes[paramName]!!, parameterDefaults[paramName]!!)
+        if (value != null) " = $value" else ""
+      } else ""
+      "$paramName: $paramType$defaultValue"
+    }.trim()
+    kotlinArguments += "${if (kotlinArguments.isNotBlank()) ", " else ""}name: String = \"${opDef.name}\""
+    val addInput = inputs.joinToString("\n") { p ->
+      "addInput(${p.second},${inputsRef[p.first]})"
+    }
+    val addAttr = parameters.joinToString("\n") { p ->
+      if (argumentTypes[p.first] == "type")
+        "attrType(\"${p.first}\", ${p.second})"
+      else
+        "attr(\"${p.first}\", ${p.second})"
+    }
+    val buildFunc = when (numOutputs) {
+      0 -> "buildOp"
+      1 -> "buildOpTensor"
+      else -> "buildOpTensors"
+    }
+    sb.append(
+        """
+      |    fun $name($kotlinArguments) = run {
+      |        tf.$buildFunc("${opDef.name}", name){
+      |           $addInput
+      |           $addAttr
+      |        }
+      |    }
+      |
+      """.trimMargin())
+  }
+  
+  fun initialize() {
+    // Process input arguments.
+    opDef.inputArgList.withIndex().forEach { (index, arg) ->
+      argumentTypes[arg.name] = if (arg.numberAttr.isNotEmpty()) "list(Tensor)" else "Tensor"
+      inputsRef[arg.name] = arg.isRef
+      val inferrableAttrs = mutableListOf<Pair<String, String>>()
+      inferrableAttrs += if (arg.typeAttr.isNotEmpty())
+        arg.typeAttr to "type"
+      else
+        arg.typeListAttr to "list(type)"
+      if (!arg.numberAttr.isEmpty())
+        inferrableAttrs += arg.numberAttr to "int"
+      inferrableAttrs.forEach { a ->
+        argumentTypes[a.first] = a.second
+        inferrableAttributes.getOrPut(a.first) { opDef.getInputArg(index).name }
+      }
+      inputs += arg.name to processName(arg.name)
+    }
+    
+    // Process attributes that have not been inferred. We do not want add inferred attributes to the Scala function
+    // signatures.
+    val attrsWithoutDefaults = mutableListOf<String>()
+    val attrsWithDefaults = mutableListOf<String>()
+    opDef.attrList.filter { it.name !in inferrableAttributes }
+        .forEach { attr ->
+          argumentTypes[attr.name] = attr.type
+          attrsWithDefaults += if (attr.hasDefaultValue()) {
+            parameterDefaults[attr.name] = attr.defaultValue
+            attr.name
+          } else
+            attr.name
+          
+        }
+    // Save the list of attribute parameters (i.e., attributes that won't be inferred). Those with defaults go at the
+    // end. Get the attributes in the order we want by taking the attributes without defaults from the end of
+    // argsWithoutDefaults, and then adding argsWithDefaults.
+    attrsWithoutDefaults.forEach { parameters += it to processName(it) }
+    attrsWithDefaults.forEach { parameters += it to processName(it) }
+    
+    // Create an expression that computes the number of outputs of this op.
+    // If output i is list output, outputSizes[i] will be set to a string with the Scala expression that will evaluate
+    // to its length. outputSizes[i] is empty for non-list outputs.
+    var numOutputs = 0
+    opDef.outputArgList.forEach { outputArg ->
+      when {
+        outputArg.numberAttr.isNotEmpty() -> {
+          numOutputs = 2//fake number, indicate multiple outputs
+        }
+        outputArg.typeListAttr.isNotEmpty() -> {
+          numOutputs = 2//fake number, indicate multiple outputs
+        }
+        else -> {
+          numOutputs++
+        }
+      }
+    }
+    this.numOutputs = numOutputs
+  }
+  
   companion object {
     val reservedKeywords = setOf(
         "package", "as", "type", "class", "this", "val", "var", "fun", "extension", "for",
@@ -77,22 +194,24 @@ class OpGenerator(val opDef: OpDef, val sb: StringBuilder) {
     }
     
     val typeToKotlinType = mapOf(
-        "func" to "Any",
-        "list(func)" to "Any",
+        "func" to "NameAttrList",
+        "list(func)" to "Array<NameAttrList>",
         "string" to "String",
         "int" to "Long",
         "float" to "Float",
         "bool" to "Boolean",
         "type" to "Int",
         "shape" to "Dimension",
-        "tensor" to "Tensor",
+        "Tensor" to "Tensor",
+        "tensor" to "NDArray<*>",
         "list(string)" to "Array<String>",
         "list(int)" to "Array<Long>",
         "list(float)" to "Array<Float>",
         "list(bool)" to "Array<Boolean>",
-        "list(type)" to "Array<Int>",
+        "list(type)" to "Array<Long>",
         "list(shape)" to "Array<Dimension>",
-        "list(tensor)" to "Array<Tensor>"
+        "list(tensor)" to "Array<NDArray<*>>",
+        "list(Tensor)" to "Array<Tensor>"
     )
     
     /**Converts the provided TensorFlow attribute
@@ -119,9 +238,9 @@ class OpGenerator(val opDef: OpDef, val sb: StringBuilder) {
         }
         "tensor" -> {
 //          "${"\"\"\""}${TextFormat.shortDebugString(value.tensor)}${"\"\"\""}"
-          null
+          null//TODO
         }
-        "func" -> "${'"'}${escapeString(value.func.name)}${'"'}"
+        "func" -> null//"${'"'}${escapeString(value.func.name)}${'"'}"
         else -> {
           if (attr_type.startsWith("list(")) {
             val content = when {
@@ -205,196 +324,5 @@ class OpGenerator(val opDef: OpDef, val sb: StringBuilder) {
       }
       writer.toString()
     }
-  }
-  
-  val name = processName(opDef.name)
-  val argumentTypes = hashMapOf<String, String>()
-  val inputs = mutableListOf<Pair<String, String>>()
-  val parameters = mutableListOf<Pair<String, String>>()
-  val parameterDefaults = hashMapOf<String, AttrValue>()
-  val inferrableAttributes = hashMapOf<String, String>()
-  val inferrableAttributeToInputs = hashMapOf<String, MutableList<Int>>()
-  val inferredAttributeExpressions = mutableListOf<String>()
-  val attributeExpressions = hashMapOf<String, String>()
-  lateinit var numOutputsExpression: String
-  
-  init {
-    initialize()
-  }
-  
-  fun generateOpFunction() {
-//    addInputs()
-//    addInferredAttributes()
-//    addParameters()
-    
-    val arguments = inputs + parameters
-    
-    val kotlinArguments = arguments.joinToString(", ") { p ->
-      val paramName = p.second
-      val paramType = typeToKotlinType[argumentTypes[p.first]]!!
-      val defaultValue = if (paramName in parameterDefaults) {
-        val value = attrValueToKotlin(argumentTypes[paramName]!!, parameterDefaults[paramName]!!)
-        if (value != null) " = $value" else ""
-      } else ""
-      "$paramName: $paramType$defaultValue"
-    }
-    
-    val addInput = inputs.joinToString("\n") { p ->
-      if (argumentTypes[p.first]!!.startsWith("list(")) {
-        "addInputList(${p.first})"
-      } else
-        "addInput(${p.second})"
-    }
-    val addAttr = parameters.joinToString("\n") { p ->
-      if (argumentTypes[p.first] == "type")
-        "attrType(\"${p.first}\", ${p.second})"
-      else
-        "attr(\"${p.first}\", ${p.second})"
-    }
-    val tmp = numOutputsExpression
-    val returnType = when (numOutputsExpression) {
-      "0" -> "Unit"
-      "1" -> "Tensor"
-      else -> "Array<Tensor>"
-    }
-    sb.append(
-        """
-      |    fun $name($kotlinArguments, name: String = "${opDef.name}") = run {
-      |        tf.buildOp("${opDef.name}", name){
-      |           $addInput
-      |           $addAttr
-      |        }
-      |    }
-      |
-      """.trimMargin())
-  }
-  
-  fun initialize() {
-    if (opDef.name == "MatMul") {
-      println()
-    }
-    // Process input arguments.
-    opDef.inputArgList.withIndex().forEach { (index, arg) ->
-      argumentTypes[arg.name] = if (arg.numberAttr.isNotEmpty()) "list(tensor)" else "tensor"
-      if (arg.type != DataType.DT_INVALID) {
-        println()
-      }
-      val inferrableAttrs = mutableListOf<Pair<String, String>>()
-      inferrableAttrs += if (arg.typeAttr.isNotEmpty())
-        arg.typeAttr to "type"
-      else
-        arg.typeListAttr to "list(type)"
-      if (!arg.numberAttr.isEmpty())
-        inferrableAttrs += arg.numberAttr to "int"
-      inferrableAttrs.forEach { a ->
-        argumentTypes[a.first] = a.second
-        inferrableAttributes.getOrPut(a.first) { opDef.getInputArg(index).name }
-        inferrableAttributeToInputs.getOrPut(a.first) { mutableListOf() } += index
-      }
-      inputs += arg.name to processName(arg.name)
-    }
-    
-    // Process attributes that have not been inferred. We do not want add inferred attributes to the Scala function
-    // signatures.
-    val attrsWithoutDefaults = mutableListOf<String>()
-    val attrsWithDefaults = mutableListOf<String>()
-    opDef.attrList.filter { it.name !in inferrableAttributes }
-        .forEach { attr ->
-          argumentTypes[attr.name] = attr.type
-          attrsWithDefaults += if (attr.hasDefaultValue()) {
-            parameterDefaults[attr.name] = attr.defaultValue
-            attr.name
-          } else
-            attr.name
-          
-        }
-    // Save the list of attribute parameters (i.e., attributes that won't be inferred). Those with defaults go at the
-    // end. Get the attributes in the order we want by taking the attributes without defaults from the end of
-    // argsWithoutDefaults, and then adding argsWithDefaults.
-    attrsWithoutDefaults.forEach { parameters += it to processName(it) }
-    attrsWithDefaults.forEach { parameters += it to processName(it) }
-    
-    // Infer attribute values and create the appropriate attribute expressions.
-    inferrableAttributeToInputs.forEach { attrName, inputIndices ->
-      when (argumentTypes[attrName]) {
-        "int" -> {
-          // Inferred int attributes are the lengths of input lists.
-          if (attrName !in attributeExpressions) {
-            val inputName = inputs[inputIndices.first()].second
-            val attrValueName = "attr_$attrName"
-            val attrValueExpression =
-                """
-                |
-                """.trimMargin()
-          }
-        }
-        "type" -> {
-          if (attrName !in attributeExpressions) {
-            val idx = inputIndices.first()
-            val inputName = inputs[idx].second
-            val inputType = argumentTypes[inputs[idx].first]
-            val attrValueName = "attr_$attrName"
-            when (inputType) {
-              "tensor" -> {
-              
-              }
-              "list(tensor)" -> {
-              
-              }
-            }
-          }
-        }
-        "list(type)" -> {
-        
-        }
-      }
-    }
-    
-    // Add attribute expressions for the non-inferrable attributes (i.e., the parameters).
-    parameters.forEach { p -> attributeExpressions[p.first] = p.second }
-    
-    // Create an expression that computes the number of outputs of this op.
-    // If output i is list output, outputSizes[i] will be set to a string with the Scala expression that will evaluate
-    // to its length. outputSizes[i] is empty for non-list outputs.
-    var numFixedOutputs = 0
-    val numOutputsExpression = StringBuilder()
-    opDef.outputArgList.forEach { outputArg ->
-      when {
-        outputArg.numberAttr.isNotEmpty() -> {
-          if (numOutputsExpression.isNotEmpty())
-            numOutputsExpression.append(" + ")
-          numOutputsExpression.append("attr->${outputArg.numberAttr}")
-        }
-        outputArg.typeListAttr.isNotEmpty() -> {
-          if (numOutputsExpression.isNotEmpty())
-            numOutputsExpression.append(" + ")
-          inferrableAttributes.getOrDefault(
-              outputArg.typeListAttr,
-              "attr->${outputArg.typeListAttr}")
-        }
-        else -> {
-          numFixedOutputs++
-        }
-      }
-    }
-    if (numFixedOutputs > 0) {
-      if (numOutputsExpression.isNotEmpty())
-        numOutputsExpression.append(" + ")
-      numOutputsExpression.append(numFixedOutputs)
-    } else if (numOutputsExpression.isEmpty()) {
-      numOutputsExpression.append("0")
-    }
-    this.numOutputsExpression = numOutputsExpression.toString()
-  }
-  
-  fun addInputs() {
-  }
-  
-  fun addInferredAttributes() {
-    TODO("not implemented")
-  }
-  
-  fun addParameters() {
-    TODO("not implemented")
   }
 }
