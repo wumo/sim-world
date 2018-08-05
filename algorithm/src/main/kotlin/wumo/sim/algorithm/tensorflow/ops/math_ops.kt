@@ -11,7 +11,7 @@ import wumo.sim.util.i
 fun TF.abs(x: Tensor, name: String = "Abs") = unaryOp("Abs", x.value(), name)
 fun TF.accumulateNV2(vararg input: Tensor, shape: Dimension, name: String = "AccumulateNV2") =
     naryOp("AccumulateNV2", name = name) {
-      addInputList(input.map { it.value() })
+      addInput(input.map { it.value() })
       attr("shape", shape)
     }
 
@@ -32,7 +32,7 @@ fun TF.addV2(a: Tensor, b: Tensor, name: String = "AddV2") =
 
 fun TF.addN(vararg a: Tensor, name: String = "AddN") =
     naryOp("AddN", name = name) {
-      addInputList(a.map { it.value() })
+      addInput(a.map { it.value() })
     }
 
 fun TF.all(input: Tensor, axis: Tensor, keep_dims: Boolean = false, name: String = "All") =
@@ -82,7 +82,8 @@ fun TF.atan2(x: Tensor, y: Tensor, name: String = "Atan2") = binaryOp("Atan2", x
 fun TF.atanh(x: Tensor, name: String = "Atanh") = unaryOp("Atanh", x.value(), name)
 fun TF.batchMatMul(a: Tensor, b: Tensor, adj_x: Boolean = false, adj_y: Boolean = false, name: String = "BatchMatMul") =
     naryOp("BatchMatMul", a.value(), b.value(), name = name) {
-      attr("adj_x", adj_x).attr("adj_y", adj_y)
+      attr("adj_x", adj_x)
+      attr("adj_y", adj_y)
     }
 
 fun TF.besselI0e(x: Tensor, name: String = "BesselI0e") = unaryOp("BesselI0e", x.value(), name)
@@ -140,12 +141,14 @@ fun TF.cross(a: Tensor, b: Tensor, name: String = "Cross") =
 
 fun TF.cumprod(x: Tensor, axis: Tensor, exclusive: Boolean = false, reverse: Boolean = false, name: String = "Cumprod") =
     naryOp("Cumprod", x.value(), axis.value(), name = name) {
-      attr("exclusive", exclusive).attr("reverse", reverse)
+      attr("exclusive", exclusive)
+      attr("reverse", reverse)
     }
 
 fun TF.cumsum(x: Tensor, axis: Tensor, exclusive: Boolean = false, reverse: Boolean = false, name: String = "Cumsum") =
     naryOp("Cumsum", x.value(), axis.value(), name = name) {
-      attr("exclusive", exclusive).attr("reverse", reverse)
+      attr("exclusive", exclusive)
+      attr("reverse", reverse)
     }
 
 fun TF.digamma(x: Tensor, name: String = "Digamma") = unaryOp("Digamma", x.value(), name)

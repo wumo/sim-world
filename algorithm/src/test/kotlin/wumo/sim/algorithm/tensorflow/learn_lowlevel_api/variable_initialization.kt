@@ -10,22 +10,25 @@ class variable_initialization : BaseTest() {
   @Test
   fun `variable depend on variable`() {
     val initial_value = tf.const(2f, "initial_value")
-    val v = tf.g.nodeBuilder("VariableV2", "v")
-        .attrType("dtype", initial_value.dtype.base_dtype)
-        .attr("shape", initial_value.shape)
-        .build()
+    val v = tf.g.nodeBuilder("VariableV2", "v").run {
+      attrType("dtype", initial_value.dtype.base_dtype)
+      attr("shape", initial_value.shape)
+      build()
+    }
     
     val vt = Tensor(v, 0)
-    val v_init = tf.g.nodeBuilder("Assign", "v/init")
-        .addInput(vt)
-        .addInput(initial_value)
-        .build()
+    val v_init = tf.g.nodeBuilder("Assign", "v/init").run {
+      addInput(vt)
+      addInput(initial_value)
+      build()
+    }
     val v_read = tf.identity(vt, name = "v/read")
     
-    val w = tf.g.nodeBuilder("VariableV2", "w")
-        .attrType("dtype", vt.dtype.base_dtype)
-        .attr("shape", vt.shape)
-        .build()
+    val w = tf.g.nodeBuilder("VariableV2", "w").run {
+      attrType("dtype", vt.dtype.base_dtype)
+      attr("shape", vt.shape)
+      build()
+    }
     
     val wt = Tensor(w, 0)
     
@@ -34,10 +37,11 @@ class variable_initialization : BaseTest() {
     val v_not_initialized = tf.switch(initial_value, v_is_initialized, "switch_v_not_initialized")[0]
     val v_initialized_value = tf.merge(v_initialized, v_not_initialized, name = "v_initialized_value")[0]
     
-    val w_init = tf.g.nodeBuilder("Assign", "w/init")
-        .addInput(wt)
-        .addInput(v_initialized_value)
-        .build()
+    val w_init = tf.g.nodeBuilder("Assign", "w/init").run {
+      addInput(wt)
+      addInput(v_initialized_value)
+      build()
+    }
     
     printGraph()
     tf.session {

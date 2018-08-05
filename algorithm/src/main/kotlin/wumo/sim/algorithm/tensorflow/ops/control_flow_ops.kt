@@ -272,7 +272,7 @@ fun TF.merge(vararg inputs: Tensor, name: String = "Merge"): Array<Tensor> {
  */
 private fun TF._merge(inputs: Array<Tensor>, name: String = "Merge") =
     naryOps("Merge", name = name) {
-      addInputList(inputs.map { it.value() })
+      addInput(inputs.map { it.value() })
     }
 
 /**
@@ -282,7 +282,7 @@ private fun TF.ref_merge(inputs: Array<Tensor>, name: String): Array<Tensor> {
   val inputs = inputs.map { it.asRef() }
   colocate_with_tensors(inputs) {
     return naryOps("RefMerge", name = name) {
-      addInputList(inputs)
+      addInput(inputs)
     }
   }
 }

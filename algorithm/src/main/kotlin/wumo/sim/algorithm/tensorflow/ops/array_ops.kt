@@ -20,13 +20,13 @@ fun TF.checkNumerics(tensor: Tensor, message: String, name: String = "CheckNumer
 
 fun TF.concat(values: Collection<Tensor>, axis: Tensor, name: String = "ConcatV2") =
     naryOp("ConcatV2", name = name) {
-      addInputList(values.map { it.value() })
+      addInput(values.map { it.value() })
       addInput(axis)
     }
 
 fun TF.concat(values: Array<Tensor>, axis: Tensor, name: String = "ConcatV2") =
     naryOp("ConcatV2", name = name) {
-      addInputList(values.map { it.value() })
+      addInput(values.map { it.value() })
       addInput(axis)
     }
 
@@ -416,13 +416,13 @@ fun TF.autopack(v: Array<Tensor>, name: String = "packed"): Tensor {
 
 fun TF.pack(value: Collection<Tensor>, axis: Int = 0, name: String = "Pack") =
     naryOp("Pack", name = name) {
-      addInputList(value.map { it.value() })
+      addInput(value.map { it.value() })
       attr("axis", axis)
     }
 
 fun TF.pack(value: Array<Tensor>, axis: Int = 0, name: String = "Pack") =
     naryOp("Pack", name = name) {
-      addInputList(value.map { it.value() })
+      addInput(value.map { it.value() })
       attr("axis", axis)
     }
 
