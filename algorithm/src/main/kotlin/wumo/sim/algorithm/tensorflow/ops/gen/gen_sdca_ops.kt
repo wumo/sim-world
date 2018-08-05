@@ -11,7 +11,7 @@ fun TF.sdcaFprint(input: Tensor, name: String = "SdcaFprint") = run {
   }
 }
 
-fun TF.sdcaOptimizer(sparse_example_indices: Array<Tensor>, sparse_feature_indices: Array<Tensor>, sparse_feature_values: Array<Tensor>, dense_features: Array<Tensor>, example_weights: Tensor, example_labels: Tensor, sparse_indices: Array<Tensor>, sparse_weights: Array<Tensor>, dense_weights: Array<Tensor>, example_state_data: Tensor, loss_type: String, adaptative: Boolean = false, l1: Float, l2: Float, num_loss_partitions: Long, num_inner_iterations: Long, name: String = "SdcaOptimizer") = run {
+fun TF.sdcaOptimizer(sparse_example_indices: Array<Tensor>, sparse_feature_indices: Array<Tensor>, sparse_feature_values: Array<Tensor>, dense_features: Array<Tensor>, example_weights: Tensor, example_labels: Tensor, sparse_indices: Array<Tensor>, sparse_weights: Array<Tensor>, dense_weights: Array<Tensor>, example_state_data: Tensor, loss_type: String, l1: Float, l2: Float, num_loss_partitions: Long, num_inner_iterations: Long, adaptative: Boolean = false, name: String = "SdcaOptimizer") = run {
   buildOpTensors("SdcaOptimizer", name) {
     addInput(sparse_example_indices, false)
     addInput(sparse_feature_indices, false)
@@ -24,11 +24,11 @@ fun TF.sdcaOptimizer(sparse_example_indices: Array<Tensor>, sparse_feature_indic
     addInput(dense_weights, false)
     addInput(example_state_data, false)
     attr("loss_type", loss_type)
-    attr("adaptative", adaptative)
     attr("l1", l1)
     attr("l2", l2)
     attr("num_loss_partitions", num_loss_partitions)
     attr("num_inner_iterations", num_inner_iterations)
+    attr("adaptative", adaptative)
   }
 }
 

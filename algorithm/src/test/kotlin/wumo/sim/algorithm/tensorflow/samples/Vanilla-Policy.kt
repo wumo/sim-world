@@ -7,6 +7,9 @@ import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.contrib.fully_connected
 import wumo.sim.algorithm.tensorflow.ops.*
 import wumo.sim.algorithm.tensorflow.ops.gen.log
+import wumo.sim.algorithm.tensorflow.ops.gen.relu
+import wumo.sim.algorithm.tensorflow.ops.gen.reshape
+import wumo.sim.algorithm.tensorflow.ops.gen.softmax
 import wumo.sim.algorithm.tensorflow.tf
 import wumo.sim.algorithm.tensorflow.training.AdamOptimizer
 import wumo.sim.envs.classic_control.CartPole

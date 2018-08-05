@@ -1,8 +1,12 @@
 package wumo.sim.algorithm.tensorflow.layers
 
 import wumo.sim.algorithm.tensorflow.Tensor
-import wumo.sim.algorithm.tensorflow.ops.*
+import wumo.sim.algorithm.tensorflow.ops.Initializer
+import wumo.sim.algorithm.tensorflow.ops.const
+import wumo.sim.algorithm.tensorflow.ops.gen.biasAdd
 import wumo.sim.algorithm.tensorflow.ops.gen.matMul
+import wumo.sim.algorithm.tensorflow.ops.tensordot
+import wumo.sim.algorithm.tensorflow.ops.zeros_initializer
 import wumo.sim.algorithm.tensorflow.tf
 import wumo.sim.util.Dimension
 import wumo.sim.util.dim

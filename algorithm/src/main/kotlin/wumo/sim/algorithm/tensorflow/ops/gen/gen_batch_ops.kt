@@ -9,22 +9,22 @@ import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.buildOpTensor
 import wumo.sim.algorithm.tensorflow.buildOpTensors
 
-fun TF.batch(in_tensors: Tensor, num_batch_threads: Long, max_batch_size: Long, max_enqueued_batches: Long = 10L, batch_timeout_micros: Long, allowed_batch_sizes: Array<Long> = arrayOf(), grad_timeout_micros: Long, container: String = "", shared_name: String = "", batching_queue: String = "", name: String = "Batch") = run {
+fun TF.batch(in_tensors: Tensor, num_batch_threads: Long, max_batch_size: Long, batch_timeout_micros: Long, grad_timeout_micros: Long, max_enqueued_batches: Long = 10L, allowed_batch_sizes: Array<Long> = arrayOf(), container: String = "", shared_name: String = "", batching_queue: String = "", name: String = "Batch") = run {
   buildOpTensors("Batch", name) {
     addInput(in_tensors, false)
     attr("num_batch_threads", num_batch_threads)
     attr("max_batch_size", max_batch_size)
-    attr("max_enqueued_batches", max_enqueued_batches)
     attr("batch_timeout_micros", batch_timeout_micros)
-    attr("allowed_batch_sizes", allowed_batch_sizes)
     attr("grad_timeout_micros", grad_timeout_micros)
+    attr("max_enqueued_batches", max_enqueued_batches)
+    attr("allowed_batch_sizes", allowed_batch_sizes)
     attr("container", container)
     attr("shared_name", shared_name)
     attr("batching_queue", batching_queue)
   }
 }
 
-fun TF.batchFunction(in_tensors: Tensor, captured_tensors: Tensor, f: NameAttrList, num_batch_threads: Long, max_batch_size: Long, batch_timeout_micros: Long, max_enqueued_batches: Long = 10L, allowed_batch_sizes: Array<Long> = arrayOf(), container: String = "", shared_name: String = "", batching_queue: String = "", tout: Array<Long>, name: String = "BatchFunction") = run {
+fun TF.batchFunction(in_tensors: Tensor, captured_tensors: Tensor, f: NameAttrList, num_batch_threads: Long, max_batch_size: Long, batch_timeout_micros: Long, tout: Array<Long>, max_enqueued_batches: Long = 10L, allowed_batch_sizes: Array<Long> = arrayOf(), container: String = "", shared_name: String = "", batching_queue: String = "", name: String = "BatchFunction") = run {
   buildOpTensors("BatchFunction", name) {
     addInput(in_tensors, false)
     addInput(captured_tensors, false)
@@ -32,12 +32,12 @@ fun TF.batchFunction(in_tensors: Tensor, captured_tensors: Tensor, f: NameAttrLi
     attr("num_batch_threads", num_batch_threads)
     attr("max_batch_size", max_batch_size)
     attr("batch_timeout_micros", batch_timeout_micros)
+    attr("Tout", tout)
     attr("max_enqueued_batches", max_enqueued_batches)
     attr("allowed_batch_sizes", allowed_batch_sizes)
     attr("container", container)
     attr("shared_name", shared_name)
     attr("batching_queue", batching_queue)
-    attr("Tout", tout)
   }
 }
 

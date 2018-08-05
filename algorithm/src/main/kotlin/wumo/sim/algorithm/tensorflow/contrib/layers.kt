@@ -9,6 +9,8 @@ import wumo.sim.algorithm.tensorflow.layers.Dense
 import wumo.sim.algorithm.tensorflow.layers.TensorFunction
 import wumo.sim.algorithm.tensorflow.layers.xavier_initializer
 import wumo.sim.algorithm.tensorflow.ops.*
+import wumo.sim.algorithm.tensorflow.ops.gen.oneHot
+import wumo.sim.algorithm.tensorflow.ops.gen.relu
 import wumo.sim.algorithm.tensorflow.tf
 
 @Suppress("NAME_SHADOWING")
@@ -20,7 +22,7 @@ fun TF.one_hot_encoding(labels: Tensor,
     val labels = if (labels.dtype == DT_INT32) cast(labels, DT_INT64) else labels
     return oneHot(labels, const(num_class, name = "depth"),
                   const(on_value, name = "on_value"),
-                  const(off_value, name = "off_value"), ctxNs.scopeName)
+                  const(off_value, name = "off_value"), name = ctxNs.scopeName)
   }
 }
 
@@ -141,7 +143,7 @@ fun TF.layer_norm(inputs: Tensor,
       tf.get_variable(params_shape, dtype, ones_initializer(), "gamma", trainable)
     else null
     //Calculate the moments on the last axis (layer activations).
-    val norm_axes = (begin_norm_axis until inputs_rank).toList().toIntArray()
+    val norm_axes = (begin_norm_axis until inputs_rank).map { it.toLong() }.toLongArray()
     val (mean, variance) = tf.moments(inputs, norm_axes, keep_dims = true)
     //Compute layer normalization using the batch_normalization function.
     var outputs = tf.batch_normalization(

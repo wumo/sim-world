@@ -3,7 +3,13 @@ package wumo.sim.algorithm.tensorflow.learn_lowlevel_api
 import org.junit.Test
 import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.base_dtype
-import wumo.sim.algorithm.tensorflow.ops.*
+import wumo.sim.algorithm.tensorflow.ops.BaseTest
+import wumo.sim.algorithm.tensorflow.ops.const
+import wumo.sim.algorithm.tensorflow.ops.gen.identity
+import wumo.sim.algorithm.tensorflow.ops.gen.refSwitch
+import wumo.sim.algorithm.tensorflow.ops.gen.switch
+import wumo.sim.algorithm.tensorflow.ops.is_variable_initialized
+import wumo.sim.algorithm.tensorflow.ops.merge
 import wumo.sim.algorithm.tensorflow.tf
 
 class variable_initialization : BaseTest() {
@@ -33,7 +39,7 @@ class variable_initialization : BaseTest() {
     val wt = Tensor(w, 0)
     
     val v_is_initialized = tf.is_variable_initialized(vt, "v_is_initialized")
-    val v_initialized = tf.ref_switch(vt, v_is_initialized, "switch_v_initialized")[1]
+    val v_initialized = tf.refSwitch(vt, v_is_initialized, "switch_v_initialized")[1]
     val v_not_initialized = tf.switch(initial_value, v_is_initialized, "switch_v_not_initialized")[0]
     val v_initialized_value = tf.merge(v_initialized, v_not_initialized, name = "v_initialized_value")[0]
     

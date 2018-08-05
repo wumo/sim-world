@@ -2,7 +2,7 @@ package wumo.sim.algorithm.tensorflow
 
 import wumo.sim.algorithm.tensorflow.ops.assign
 import wumo.sim.algorithm.tensorflow.ops.cond
-import wumo.sim.algorithm.tensorflow.ops.identity
+import wumo.sim.algorithm.tensorflow.ops.gen.identity
 import wumo.sim.algorithm.tensorflow.ops.is_variable_initialized
 import wumo.sim.util.a
 

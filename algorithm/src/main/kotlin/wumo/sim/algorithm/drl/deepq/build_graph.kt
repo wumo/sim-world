@@ -5,9 +5,7 @@ import wumo.sim.algorithm.tensorflow.*
 import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.Variable
 import wumo.sim.algorithm.tensorflow.ops.*
-import wumo.sim.algorithm.tensorflow.ops.gen.less
-import wumo.sim.algorithm.tensorflow.ops.gen.log
-import wumo.sim.algorithm.tensorflow.ops.gen.max
+import wumo.sim.algorithm.tensorflow.ops.gen.*
 import wumo.sim.algorithm.tensorflow.training.Optimizer
 import wumo.sim.util.*
 import wumo.sim.util.ndarray.NDArray
@@ -80,7 +78,7 @@ fun build_train(make_obs_ph: (String) -> TfInput,
     //compute RHS of bellman equation
     val q_t_selected_target = rew_t_ph + tf.const(gamma) * q_tp1_best_masked
     //compute the error (potentially clipped)
-    val td_error = q_t_selected - tf.stop_gradient(q_t_selected_target)
+    val td_error = q_t_selected - tf.stopGradient(q_t_selected_target)
     val errors = huber_loss(td_error)
     val weighted_error = tf.mean(importance_weights_ph * errors, name = "weighted_error")
     //compute optimization op (potentially with gradient clipping)

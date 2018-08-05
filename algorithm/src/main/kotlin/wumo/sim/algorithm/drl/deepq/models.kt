@@ -3,7 +3,7 @@ package wumo.sim.algorithm.drl.deepq
 import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.contrib.fully_connected
 import wumo.sim.algorithm.tensorflow.contrib.layer_norm
-import wumo.sim.algorithm.tensorflow.ops.relu
+import wumo.sim.algorithm.tensorflow.ops.gen.relu
 import wumo.sim.algorithm.tensorflow.tf
 
 typealias Q_func = (Tensor, Int, String, Boolean) -> Tensor

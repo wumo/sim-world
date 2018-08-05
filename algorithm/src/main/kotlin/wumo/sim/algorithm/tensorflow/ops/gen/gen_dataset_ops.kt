@@ -356,15 +356,15 @@ fun TF.shuffleAndRepeatDataset(input_dataset: Tensor, buffer_size: Tensor, seed:
   }
 }
 
-fun TF.shuffleDataset(input_dataset: Tensor, buffer_size: Tensor, seed: Tensor, seed2: Tensor, reshuffle_each_iteration: Boolean = true, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "ShuffleDataset") = run {
+fun TF.shuffleDataset(input_dataset: Tensor, buffer_size: Tensor, seed: Tensor, seed2: Tensor, output_types: Array<Long>, output_shapes: Array<Dimension>, reshuffle_each_iteration: Boolean = true, name: String = "ShuffleDataset") = run {
   buildOpTensor("ShuffleDataset", name) {
     addInput(input_dataset, false)
     addInput(buffer_size, false)
     addInput(seed, false)
     addInput(seed2, false)
-    attr("reshuffle_each_iteration", reshuffle_each_iteration)
     attr("output_types", output_types)
     attr("output_shapes", output_shapes)
+    attr("reshuffle_each_iteration", reshuffle_each_iteration)
   }
 }
 

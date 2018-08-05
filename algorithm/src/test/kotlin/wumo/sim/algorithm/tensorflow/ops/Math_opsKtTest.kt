@@ -3,6 +3,7 @@ package wumo.sim.algorithm.tensorflow.ops
 import org.bytedeco.javacpp.tensorflow
 import org.bytedeco.javacpp.tensorflow.DT_INT32
 import org.junit.Test
+import wumo.sim.algorithm.tensorflow.ops.gen.addN
 import wumo.sim.algorithm.tensorflow.ops.gen.matMul
 
 import wumo.sim.algorithm.tensorflow.tf
@@ -31,7 +32,7 @@ class Math_opsKtTest : BaseTest() {
     val a = tf.const(2 x 2, 1f, name = "a")
     val b = tf.const(2 x 2, 2f, name = "b")
     val c = tf.const(2 x 2, 3f, name = "c")
-    val d = tf.addN(a, b, c, name = "addn")
+    val d = tf.addN(arrayOf(a, b, c), name = "addn")
     printGraph()
     tf.session {
       d.eval()

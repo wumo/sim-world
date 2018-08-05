@@ -2,7 +2,7 @@ package wumo.sim.algorithm.tensorflow.ops
 
 import wumo.sim.algorithm.tensorflow.Op
 import wumo.sim.algorithm.tensorflow.Tensor
-import wumo.sim.algorithm.tensorflow.ops.gen.sub
+import wumo.sim.algorithm.tensorflow.ops.gen.*
 import wumo.sim.algorithm.tensorflow.ops.gradients.noGradient
 import wumo.sim.algorithm.tensorflow.ops.gradients.register_gradient_op
 import wumo.sim.algorithm.tensorflow.ops.gradients.register_no_gradient_op
@@ -28,14 +28,14 @@ fun register_array_grad() {
 //    val N = LongPointer(1)
     val axis = op.attrLong("axis")
     
-    val grad_op = tf.unstack(grad, N, axis = axis)
+    val grad_op = tf.unpack(grad, N, axis = axis)
     for (o in grad_op)
       grad_outputs.add(o)
   }
   register_gradient_op("Unpack") { op, grad_inputs, grad_outputs ->
     val grad = grad_inputs[0]
     val axis = op.attrLong("axis")
-    grad_outputs.add(tf.pack(grad_inputs, axis = axis.toInt()))
+    grad_outputs.add(tf.pack(grad_inputs.toTypedArray(), axis = axis))
   }
   register_gradient_op("Identity") { op, grad_inputs, grad_outputs ->
     val grad = grad_inputs[0]
@@ -65,7 +65,7 @@ fun register_array_grad() {
   register_gradient_op("Split") { op, grad_inputs, grad_outputs ->
     val grad = grad_inputs[0]
     grad_outputs.add(noGradient)
-    grad_outputs.add(tf.concat(grad_inputs, op.inputs[0]))
+    grad_outputs.add(tf.concatV2(grad_inputs.toTypedArray(), op.inputs[0]))
   }
   register_gradient_op("Diag") { op, grad_inputs, grad_outputs ->
     val grad = grad_inputs[0]
@@ -136,7 +136,7 @@ fun register_array_grad() {
   register_gradient_op("ReverseV2") { op, grad_inputs, grad_outputs ->
     val grad = grad_inputs[0]
     val reverse_dims = op.inputs[1]
-    grad_outputs.add(tf.reverse(grad, reverse_dims))
+    grad_outputs.add(tf.reverseV2(grad, reverse_dims))
     grad_outputs.add(noGradient)
   }
   register_gradient_op("ScatterNd") { op, grad_inputs, grad_outputs ->
@@ -294,7 +294,7 @@ fun register_array_grad() {
     //             [2 0]
     //             [1 0]]
     val paddings =
-        tf.concat(listOf(before_padding, after_padding), tf.const(1))
+        tf.concatV2(arrayOf(before_padding, after_padding), tf.const(1))
     grad_outputs.add(tf.pad(grad, paddings));
     // Nothing propagated for "begin" and "size" inputs
     grad_outputs.add(noGradient)

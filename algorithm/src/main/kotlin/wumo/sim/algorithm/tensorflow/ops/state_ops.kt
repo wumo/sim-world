@@ -4,11 +4,15 @@ package wumo.sim.algorithm.tensorflow.ops
 
 import org.bytedeco.javacpp.tensorflow
 import wumo.sim.algorithm.tensorflow.*
+import wumo.sim.algorithm.tensorflow.ops.gen.identity
+import wumo.sim.algorithm.tensorflow.ops.gen.variableV2
 import wumo.sim.algorithm.tensorflow.scope.NameScope
 import wumo.sim.util.Dimension
 import wumo.sim.util.SwitchType3
 import wumo.sim.util.dim
 import wumo.sim.util.scalarDimension
+import wumo.sim.algorithm.tensorflow.ops.gen.assign as _assign
+import wumo.sim.algorithm.tensorflow.ops.gen.isVariableInitialized as _isVariableInitialized
 
 private val variable_switch = SwitchType3<String, Boolean, Variable>().apply {
   case<Float> { tf.variable(_1, _2, _3) }
@@ -79,10 +83,7 @@ private fun TF._variable(initializer: (String) -> Tensor, name: String, trainabl
       }
       val t = attr_scope("_class" to attr) {
         val initial_value = initializer("Initializer")
-        val v = naryOp("VariableV2", name = ctxNs.scopeName) {
-          attrType("dtype", initial_value.dtype.base_dtype)
-          attr("shape", initial_value.shape)
-        }
+        val v = variableV2(initial_value.shape, initial_value.dtype.base_dtype, name = ctxNs.scopeName)
         Variable(v.op!!, 0).apply {
           this.initial_value = initial_value
         }
@@ -114,12 +115,12 @@ fun TF.assign(ref: Tensor, value: Tensor, name: String = "Assign") =
 //TODO NOTE(mrry): We add an explicit colocation constraint between
 //the newly created op and any of its reference-typed inputs.
     colocate_with(ref) {
-      naryOp("Assign", ref.asRef(), value.value(), name = name)
+      _assign(ref, value, name = name)
     }
 
 fun TF.is_variable_initialized(ref: Tensor, name: String = "IsVariableInitialized"): Tensor {
   if (ref.dtype.is_ref_dytpe) {
-    naryOp("IsVariableInitialized", ref.asRef(), name = name)
+    _isVariableInitialized(ref, name)
   }
   TODO("handle resource")
 }

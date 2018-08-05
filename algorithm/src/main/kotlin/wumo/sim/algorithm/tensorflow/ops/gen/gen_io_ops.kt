@@ -5,10 +5,10 @@ package wumo.sim.algorithm.tensorflow.ops.gen
 
 import wumo.sim.algorithm.tensorflow.*
 
-fun TF.fixedLengthRecordReaderV2(header_bytes: Long = 0L, record_bytes: Long, footer_bytes: Long = 0L, hop_bytes: Long = 0L, container: String = "", shared_name: String = "", encoding: String = "", name: String = "FixedLengthRecordReaderV2") = run {
+fun TF.fixedLengthRecordReaderV2(record_bytes: Long, header_bytes: Long = 0L, footer_bytes: Long = 0L, hop_bytes: Long = 0L, container: String = "", shared_name: String = "", encoding: String = "", name: String = "FixedLengthRecordReaderV2") = run {
   buildOpTensor("FixedLengthRecordReaderV2", name) {
-    attr("header_bytes", header_bytes)
     attr("record_bytes", record_bytes)
+    attr("header_bytes", header_bytes)
     attr("footer_bytes", footer_bytes)
     attr("hop_bytes", hop_bytes)
     attr("container", container)

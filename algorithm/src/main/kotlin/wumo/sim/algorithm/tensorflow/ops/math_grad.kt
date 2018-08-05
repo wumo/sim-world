@@ -11,6 +11,8 @@ import wumo.sim.algorithm.tensorflow.ops.gradients.register_no_gradient_op
 import wumo.sim.algorithm.tensorflow.tf
 import wumo.sim.util.a
 import wumo.sim.util.i
+import wumo.sim.algorithm.tensorflow.ops.gen.onesLike as _onesLike
+import wumo.sim.algorithm.tensorflow.ops.gen.zerosLike as _zerosLike
 
 fun register_math_grad() {
   register_no_gradient_op("Less",
@@ -765,7 +767,7 @@ fun register_math_grad() {
     val other = tf.listDiff(idx, reduced)[0]
     
     // [1, 0, 2]
-    val perm = tf.concat(a(reduced, other), tf.const(0))
+    val perm = tf.concatV2(a(reduced, other), tf.const(0))
     
     // 3 => [3]
     val reduced_num = tf.prod(tf.gather(input_shape, reduced), tf.const(0))

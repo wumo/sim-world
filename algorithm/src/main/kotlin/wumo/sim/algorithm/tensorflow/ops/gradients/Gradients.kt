@@ -4,11 +4,26 @@ import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.algorithm.tensorflow.Op
 import wumo.sim.algorithm.tensorflow.TF
 import wumo.sim.algorithm.tensorflow.Tensor
-import wumo.sim.algorithm.tensorflow.ops.*
+import wumo.sim.algorithm.tensorflow.ops.gen.addN
+import wumo.sim.algorithm.tensorflow.ops.register_array_grad
+import wumo.sim.algorithm.tensorflow.ops.register_math_grad
+import wumo.sim.algorithm.tensorflow.ops.register_nn_grad
 import wumo.sim.algorithm.tensorflow.tf
 import java.util.*
 import kotlin.collections.HashMap
 import kotlin.collections.HashSet
+import kotlin.collections.Iterator
+import kotlin.collections.List
+import kotlin.collections.MutableCollection
+import kotlin.collections.MutableList
+import kotlin.collections.contains
+import kotlin.collections.isNotEmpty
+import kotlin.collections.iterator
+import kotlin.collections.mutableListOf
+import kotlin.collections.set
+import kotlin.collections.toTypedArray
+import wumo.sim.algorithm.tensorflow.ops.gen.onesLike as _onesLike
+import wumo.sim.algorithm.tensorflow.ops.gen.zerosLike as _zerosLike
 
 fun TF.addSymbolicGradients(outputs: List<Tensor>,
                             inputs: List<Tensor>): MutableList<Tensor> {
@@ -422,7 +437,7 @@ class SymbolicGradientBuilder(val tf: TF,
       else -> {
         // Otherwise, adds backprop-ed gradients.
         // TODO(andydavis) Use a better accumulator here.
-        tf.addN(*grads_to_keep.toTypedArray())
+        tf.addN(grads_to_keep.toTypedArray())
       }
     }
   }

@@ -132,12 +132,11 @@ class OpGenerator(val opDef: OpDef, val sb: StringBuilder) {
     opDef.attrList.filter { it.name !in inferrableAttributes }
         .forEach { attr ->
           argumentTypes[attr.name] = attr.type
-          attrsWithDefaults += if (attr.hasDefaultValue()) {
+          if (attr.hasDefaultValue()) {
             parameterDefaults[attr.name] = attr.defaultValue
-            attr.name
+            attrsWithDefaults += attr.name
           } else
-            attr.name
-          
+            attrsWithoutDefaults += attr.name
         }
     // Save the list of attribute parameters (i.e., attributes that won't be inferred). Those with defaults go at the
     // end. Get the attributes in the order we want by taking the attributes without defaults from the end of

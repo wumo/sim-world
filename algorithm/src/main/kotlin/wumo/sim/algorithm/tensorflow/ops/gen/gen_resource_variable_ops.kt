@@ -64,12 +64,12 @@ fun TF.readVariableOp(resource: Tensor, dtype: Int, name: String = "ReadVariable
   }
 }
 
-fun TF.resourceGather(resource: Tensor, indices: Tensor, validate_indices: Boolean = true, dtype: Int, name: String = "ResourceGather") = run {
+fun TF.resourceGather(resource: Tensor, indices: Tensor, dtype: Int, validate_indices: Boolean = true, name: String = "ResourceGather") = run {
   buildOpTensor("ResourceGather", name) {
     addInput(resource, false)
     addInput(indices, false)
-    attr("validate_indices", validate_indices)
     attrType("dtype", dtype)
+    attr("validate_indices", validate_indices)
   }
 }
 
@@ -129,12 +129,12 @@ fun TF.resourceScatterUpdate(resource: Tensor, indices: Tensor, updates: Tensor,
   }
 }
 
-fun TF.varHandleOp(container: String = "", shared_name: String = "", dtype: Int, shape: Dimension, name: String = "VarHandleOp") = run {
+fun TF.varHandleOp(dtype: Int, shape: Dimension, container: String = "", shared_name: String = "", name: String = "VarHandleOp") = run {
   buildOpTensor("VarHandleOp", name) {
-    attr("container", container)
-    attr("shared_name", shared_name)
     attrType("dtype", dtype)
     attr("shape", shape)
+    attr("container", container)
+    attr("shared_name", shared_name)
   }
 }
 

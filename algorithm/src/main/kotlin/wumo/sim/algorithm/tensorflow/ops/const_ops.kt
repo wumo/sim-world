@@ -75,21 +75,21 @@ private fun TF.const(shape: Dimension, dtype: Int, name: String = "Const", set_v
     }
     set_value(this)
   }
-  return naryOp("Const", name = name) {
+  return buildOpTensor("Const", name = name) {
     attr("value", tensor_proto)
     attrType("dtype", dtype)
   }
 }
 
 fun <T : Any> TF.const(value: TensorBuffer<T>, name: String = "Const") =
-    naryOp("Const", name = name) {
+    buildOpTensor("Const", name = name) {
       attr("value", value)
       attrType("dtype", value.dtype.base_dtype)
     }
 
 fun <T : Any> TF.const(value: NDArray<T>, name: String = "Const"): Tensor {
   val dtype = dtypeFromClass(value.dtype)
-  return naryOp("Const", name = name) {
+  return buildOpTensor("Const", name = name) {
     attr("value", TensorBuffer.fromNDArray(value))
     attrType("dtype", dtype)
   }

@@ -37,61 +37,61 @@ fun TF.buildOpTensors(op: String, name: String, setAttr: OperationBuilder.() -> 
     Array(outputs) { Tensor(_op, it) }
   }
 }
-
-inline fun TF.buildOp(op: String, vararg inputs: Tensor, name: String, setAttr: OperationBuilder.() -> Unit = {}): Op {
-  name_scope(name) {
-    val builder = g.nodeBuilder(op, ctxNs.scopeName.fullName)
-    for (input in inputs)
-      builder.addInput(input)
-    setAttr(builder)
-    return builder.build()
-  }
-}
-
-inline fun TF.naryOp(op: String, vararg inputs: Tensor, name: String, setAttr: OperationBuilder.() -> Unit = {}): Tensor {
-  val _op = buildOp(op, *inputs, name = name, setAttr = setAttr)
-  assert(_op.c_op.node().num_outputs() == 1) { "${_op.c_op.node().DebugString()} outputs > 1, use naryOps instead." }
-  return Tensor(_op, 0)
-}
-
-inline fun TF.naryOps(op: String, vararg inputs: Tensor, name: String, setAttr: OperationBuilder.() -> Unit = {}): Array<Tensor> {
-  val _op = buildOp(op, *inputs, name = name, setAttr = setAttr)
-  val outputs = _op.c_op.node().num_outputs()
-  return Array(outputs) { Tensor(_op, it) }
-}
-
-inline fun TF.unaryOp(op: String, a: Tensor, name: String): Tensor {
-  name_scope(name) {
-    val op = g.nodeBuilder(op, ctxNs.scopeName.fullName).run {
-      addInput(a)
-      build()
-    }
-    return Tensor(op, 0)
-  }
-}
-
-inline fun TF.binaryOp(op: String, a: Tensor, b: Tensor, name: String): Tensor {
-  name_scope(name) {
-    val op = g.nodeBuilder(op, ctxNs.scopeName.fullName).run {
-      addInput(a)
-      addInput(b)
-      build()
-    }
-    return Tensor(op, 0)
-  }
-}
-
-inline fun TF.ternaryOp(op: String, a: Tensor, b: Tensor, c: Tensor, name: String): Tensor {
-  name_scope(name) {
-    val op = g.nodeBuilder(op, ctxNs.scopeName.fullName).run {
-      addInput(a)
-      addInput(b)
-      addInput(c)
-      build()
-    }
-    return Tensor(op, 0)
-  }
-}
+//
+//inline fun TF.buildOp(op: String, vararg inputs: Tensor, name: String, setAttr: OperationBuilder.() -> Unit = {}): Op {
+//  name_scope(name) {
+//    val builder = g.nodeBuilder(op, ctxNs.scopeName.fullName)
+//    for (input in inputs)
+//      builder.addInput(input)
+//    setAttr(builder)
+//    return builder.build()
+//  }
+//}
+//
+//inline fun TF.naryOp(op: String, vararg inputs: Tensor, name: String, setAttr: OperationBuilder.() -> Unit = {}): Tensor {
+//  val _op = buildOp(op, *inputs, name = name, setAttr = setAttr)
+//  assert(_op.c_op.node().num_outputs() == 1) { "${_op.c_op.node().DebugString()} outputs > 1, use naryOps instead." }
+//  return Tensor(_op, 0)
+//}
+//
+//inline fun TF.naryOps(op: String, vararg inputs: Tensor, name: String, setAttr: OperationBuilder.() -> Unit = {}): Array<Tensor> {
+//  val _op = buildOp(op, *inputs, name = name, setAttr = setAttr)
+//  val outputs = _op.c_op.node().num_outputs()
+//  return Array(outputs) { Tensor(_op, it) }
+//}
+//
+//inline fun TF.unaryOp(op: String, a: Tensor, name: String): Tensor {
+//  name_scope(name) {
+//    val op = g.nodeBuilder(op, ctxNs.scopeName.fullName).run {
+//      addInput(a)
+//      build()
+//    }
+//    return Tensor(op, 0)
+//  }
+//}
+//
+//inline fun TF.binaryOp(op: String, a: Tensor, b: Tensor, name: String): Tensor {
+//  name_scope(name) {
+//    val op = g.nodeBuilder(op, ctxNs.scopeName.fullName).run {
+//      addInput(a)
+//      addInput(b)
+//      build()
+//    }
+//    return Tensor(op, 0)
+//  }
+//}
+//
+//inline fun TF.ternaryOp(op: String, a: Tensor, b: Tensor, c: Tensor, name: String): Tensor {
+//  name_scope(name) {
+//    val op = g.nodeBuilder(op, ctxNs.scopeName.fullName).run {
+//      addInput(a)
+//      addInput(b)
+//      addInput(c)
+//      build()
+//    }
+//    return Tensor(op, 0)
+//  }
+//}
 
 class OperationBuilder(val graph: Graph, val opType: String, val name: String) {
   private var c_opDesc: TF_OperationDescription = TF_NewOperation(graph.c_graph, opType, name)

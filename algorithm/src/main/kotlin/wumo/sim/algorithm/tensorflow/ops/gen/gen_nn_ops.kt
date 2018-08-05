@@ -55,39 +55,39 @@ fun TF.biasAddGrad(out_backprop: Tensor, data_format: String = "NHWC", name: Str
   }
 }
 
-fun TF.conv2D(input: Tensor, filter: Tensor, strides: Array<Long>, use_cudnn_on_gpu: Boolean = true, padding: String, data_format: String = "NHWC", dilations: Array<Long> = arrayOf(1L, 1L, 1L, 1L), name: String = "Conv2D") = run {
+fun TF.conv2D(input: Tensor, filter: Tensor, strides: Array<Long>, padding: String, use_cudnn_on_gpu: Boolean = true, data_format: String = "NHWC", dilations: Array<Long> = arrayOf(1L, 1L, 1L, 1L), name: String = "Conv2D") = run {
   buildOpTensor("Conv2D", name) {
     addInput(input, false)
     addInput(filter, false)
     attr("strides", strides)
-    attr("use_cudnn_on_gpu", use_cudnn_on_gpu)
     attr("padding", padding)
+    attr("use_cudnn_on_gpu", use_cudnn_on_gpu)
     attr("data_format", data_format)
     attr("dilations", dilations)
   }
 }
 
-fun TF.conv2DBackpropFilter(input: Tensor, filter_sizes: Tensor, out_backprop: Tensor, strides: Array<Long>, use_cudnn_on_gpu: Boolean = true, padding: String, data_format: String = "NHWC", dilations: Array<Long> = arrayOf(1L, 1L, 1L, 1L), name: String = "Conv2DBackpropFilter") = run {
+fun TF.conv2DBackpropFilter(input: Tensor, filter_sizes: Tensor, out_backprop: Tensor, strides: Array<Long>, padding: String, use_cudnn_on_gpu: Boolean = true, data_format: String = "NHWC", dilations: Array<Long> = arrayOf(1L, 1L, 1L, 1L), name: String = "Conv2DBackpropFilter") = run {
   buildOpTensor("Conv2DBackpropFilter", name) {
     addInput(input, false)
     addInput(filter_sizes, false)
     addInput(out_backprop, false)
     attr("strides", strides)
-    attr("use_cudnn_on_gpu", use_cudnn_on_gpu)
     attr("padding", padding)
+    attr("use_cudnn_on_gpu", use_cudnn_on_gpu)
     attr("data_format", data_format)
     attr("dilations", dilations)
   }
 }
 
-fun TF.conv2DBackpropInput(input_sizes: Tensor, filter: Tensor, out_backprop: Tensor, strides: Array<Long>, use_cudnn_on_gpu: Boolean = true, padding: String, data_format: String = "NHWC", dilations: Array<Long> = arrayOf(1L, 1L, 1L, 1L), name: String = "Conv2DBackpropInput") = run {
+fun TF.conv2DBackpropInput(input_sizes: Tensor, filter: Tensor, out_backprop: Tensor, strides: Array<Long>, padding: String, use_cudnn_on_gpu: Boolean = true, data_format: String = "NHWC", dilations: Array<Long> = arrayOf(1L, 1L, 1L, 1L), name: String = "Conv2DBackpropInput") = run {
   buildOpTensor("Conv2DBackpropInput", name) {
     addInput(input_sizes, false)
     addInput(filter, false)
     addInput(out_backprop, false)
     attr("strides", strides)
-    attr("use_cudnn_on_gpu", use_cudnn_on_gpu)
     attr("padding", padding)
+    attr("use_cudnn_on_gpu", use_cudnn_on_gpu)
     attr("data_format", data_format)
     attr("dilations", dilations)
   }
@@ -304,16 +304,16 @@ fun TF.fusedPadConv2D(input: Tensor, paddings: Tensor, filter: Tensor, mode: Str
   }
 }
 
-fun TF.fusedResizeAndPadConv2D(input: Tensor, size: Tensor, paddings: Tensor, filter: Tensor, resize_align_corners: Boolean = false, mode: String, strides: Array<Long>, padding: String, name: String = "FusedResizeAndPadConv2D") = run {
+fun TF.fusedResizeAndPadConv2D(input: Tensor, size: Tensor, paddings: Tensor, filter: Tensor, mode: String, strides: Array<Long>, padding: String, resize_align_corners: Boolean = false, name: String = "FusedResizeAndPadConv2D") = run {
   buildOpTensor("FusedResizeAndPadConv2D", name) {
     addInput(input, false)
     addInput(size, false)
     addInput(paddings, false)
     addInput(filter, false)
-    attr("resize_align_corners", resize_align_corners)
     attr("mode", mode)
     attr("strides", strides)
     attr("padding", padding)
+    attr("resize_align_corners", resize_align_corners)
   }
 }
 
@@ -456,13 +456,13 @@ fun TF.maxPoolV2(input: Tensor, ksize: Tensor, strides: Tensor, padding: String,
   }
 }
 
-fun TF.maxPoolWithArgmax(input: Tensor, ksize: Array<Long>, strides: Array<Long>, targmax: Int = DT_INT64, padding: String, name: String = "MaxPoolWithArgmax") = run {
+fun TF.maxPoolWithArgmax(input: Tensor, ksize: Array<Long>, strides: Array<Long>, padding: String, targmax: Int = DT_INT64, name: String = "MaxPoolWithArgmax") = run {
   buildOpTensors("MaxPoolWithArgmax", name) {
     addInput(input, false)
     attr("ksize", ksize)
     attr("strides", strides)
-    attrType("Targmax", targmax)
     attr("padding", padding)
+    attrType("Targmax", targmax)
   }
 }
 
@@ -520,7 +520,7 @@ fun TF.quantizedBiasAdd(input: Tensor, bias: Tensor, min_input: Tensor, max_inpu
   }
 }
 
-fun TF.quantizedConv2D(input: Tensor, filter: Tensor, min_input: Tensor, max_input: Tensor, min_filter: Tensor, max_filter: Tensor, out_type: Int = DT_QINT32, strides: Array<Long>, padding: String, dilations: Array<Long> = arrayOf(1L, 1L, 1L, 1L), name: String = "QuantizedConv2D") = run {
+fun TF.quantizedConv2D(input: Tensor, filter: Tensor, min_input: Tensor, max_input: Tensor, min_filter: Tensor, max_filter: Tensor, strides: Array<Long>, padding: String, out_type: Int = DT_QINT32, dilations: Array<Long> = arrayOf(1L, 1L, 1L, 1L), name: String = "QuantizedConv2D") = run {
   buildOpTensors("QuantizedConv2D", name) {
     addInput(input, false)
     addInput(filter, false)
@@ -528,9 +528,9 @@ fun TF.quantizedConv2D(input: Tensor, filter: Tensor, min_input: Tensor, max_inp
     addInput(max_input, false)
     addInput(min_filter, false)
     addInput(max_filter, false)
-    attrType("out_type", out_type)
     attr("strides", strides)
     attr("padding", padding)
+    attrType("out_type", out_type)
     attr("dilations", dilations)
   }
 }

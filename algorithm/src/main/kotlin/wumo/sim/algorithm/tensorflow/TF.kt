@@ -235,6 +235,10 @@ class TF {
     }
   }
   
+  inline fun <R> colocate_with_tensors(op: Array<Tensor>, ignore_existing: Boolean = false, block: () -> R): R {
+    return colocate_with(op.map { it.op!! }, ignore_existing, block)
+  }
+  
   inline fun <R> colocate_with_tensors(op: List<Tensor>, ignore_existing: Boolean = false, block: () -> R): R {
     return colocate_with(op.map { it.op!! }, ignore_existing, block)
   }

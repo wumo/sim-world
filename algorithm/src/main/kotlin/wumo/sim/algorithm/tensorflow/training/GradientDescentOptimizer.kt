@@ -3,9 +3,9 @@ package wumo.sim.algorithm.tensorflow.training
 import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.Variable
 import wumo.sim.algorithm.tensorflow.base_dtype
-import wumo.sim.algorithm.tensorflow.ops.applyGradientDescent
 import wumo.sim.algorithm.tensorflow.ops.cast
 import wumo.sim.algorithm.tensorflow.ops.const
+import wumo.sim.algorithm.tensorflow.ops.gen.applyGradientDescent
 import wumo.sim.algorithm.tensorflow.tf
 
 class GradientDescentOptimizer(val learningRate: Float,

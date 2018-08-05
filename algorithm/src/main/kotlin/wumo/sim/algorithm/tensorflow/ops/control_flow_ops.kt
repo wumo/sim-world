@@ -1,7 +1,9 @@
 package wumo.sim.algorithm.tensorflow.ops
 
 import wumo.sim.algorithm.tensorflow.*
+import wumo.sim.algorithm.tensorflow.ops.gen.*
 import wumo.sim.util.a
+import wumo.sim.algorithm.tensorflow.ops.gen.merge as _merge
 
 abstract class ControlFlowContext {
   var outer_context = tf.control_flow_context
@@ -177,17 +179,23 @@ fun TF.group(inputs: List<Any>, name: String = "group_deps"): Op {
   if (ops_on_device.size == 1) {
     val (dev, deps) = ops_on_device.entries.first()
     on_device(dev) {
-      return noOpDep(deps, name)
+      return groupControlDeps(deps, name)
     }
   }
   val all_deps = mutableListOf<Op>()
   name_scope(name) {
     for ((dev, deps) in ops_on_device) {
       on_device(dev) {
-        all_deps += noOpDep(deps)
+        all_deps += groupControlDeps(deps)
       }
     }
-    return noOpDep(all_deps, ctxNs.scopeName)
+    return groupControlDeps(all_deps, ctxNs.scopeName)
+  }
+}
+
+private fun TF.groupControlDeps(deps: List<Op>, name: String = "noOp") = run {
+  control_dependencies(deps) {
+    noOp(name)
   }
 }
 
@@ -256,34 +264,11 @@ fun TF.merge(vararg inputs: Tensor, name: String = "Merge"): Array<Tensor> {
 }
 
 /**
- * Forwards the value of an available tensor from `inputs` to `output`.
- *
- * `Merge` waits for at least one of the tensors in `inputs` to become available.
- *
- * It is usually combined with `Switch` to implement branching.
- *
- * `Merge` forwards the first tensor to become available to `output`, and sets
- * `value_index` to its index in `inputs`.
- *
- * @param inputs A list of at least 1 `Tensor` objects with the same type.
- * The input tensors, exactly one of which will become available.
- * @param name A name for the operation (optional).
- * @return A tuple of `Tensor` objects (output, value_index).
- */
-private fun TF._merge(inputs: Array<Tensor>, name: String = "Merge") =
-    naryOps("Merge", name = name) {
-      addInput(inputs.map { it.value() })
-    }
-
-/**
  * @see [_merge]
  */
 private fun TF.ref_merge(inputs: Array<Tensor>, name: String): Array<Tensor> {
-  val inputs = inputs.map { it.asRef() }
   colocate_with_tensors(inputs) {
-    return naryOps("RefMerge", name = name) {
-      addInput(inputs)
-    }
+    return refMerge(inputs, name)
   }
 }
 
@@ -293,30 +278,9 @@ private fun TF.ref_merge(inputs: Array<Tensor>, name: String): Array<Tensor> {
 private fun TF._switchRefOrTensor(data: Tensor,
                                   pred: Tensor,
                                   name: String = "Switch"): Array<Tensor> {
-  tf.colocate_with(data, ignore_existing = true) {
+  colocate_with(data, ignore_existing = true) {
     if (data.dtype.is_ref_dytpe)
-      return ref_switch(data, pred, name)
+      return refSwitch(data, pred, name)
     return switch(data, pred, name)
   }
 }
-
-/**
- * Forwards [data] to an output determined by [pred].
- *
- * If `pred` is false, the `data` input is forwarded to the first output.
- * Otherwise, the data goes to the second output.
- 
- * This op handles `Tensor`s and `IndexedSlices`.
- * @param data The tensor to be forwarded to the appropriate output.
- * @param pred A scalar that specifies which output port will receive data.
- * @param dtype Optional element type for the returned tensor. If missing,
- * the type is inferred from the type of `value`.
- * @param name A name for this operation (optional).
- * @return `(output_false, output_true)`: If `pred` is true, data will be forwarded
- * to `output_true`, otherwise it goes to `output_false`.
- */
-fun TF.switch(data: Tensor, pred: Tensor, name: String = "Switch") =
-    naryOps("Switch", data.value(), pred.value(), name = name)//TODO handle IndexedSlices and SparseTensor
-
-fun TF.ref_switch(data: Tensor, pred: Tensor, name: String) =
-    naryOps("RefSwitch", data.asRef(), pred.value(), name = name)//TODO handle IndexedSlices and SparseTensor

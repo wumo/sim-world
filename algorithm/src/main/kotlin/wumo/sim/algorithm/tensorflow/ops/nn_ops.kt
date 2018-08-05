@@ -2,159 +2,14 @@ package wumo.sim.algorithm.tensorflow.ops
 
 import org.bytedeco.javacpp.tensorflow.DT_FLOAT
 import org.bytedeco.javacpp.tensorflow.DT_HALF
-import wumo.sim.algorithm.tensorflow.*
+import wumo.sim.algorithm.tensorflow.TF
+import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.ops.gen.rsqrt
 import wumo.sim.algorithm.tensorflow.ops.gen.squaredDifference
+import wumo.sim.algorithm.tensorflow.ops.gen.squeeze
+import wumo.sim.algorithm.tensorflow.ops.gen.stopGradient
+import wumo.sim.algorithm.tensorflow.tf
 import wumo.sim.util.a
-import wumo.sim.util.i
-
-fun TF.avgPool3DGrad(orig_input_shape: Tensor,
-                     grad: Tensor,
-                     ksize: LongArray,
-                     strides: LongArray,
-                     padding: String,
-                     data_format: String = "NHWC",
-                     name: String = "AvgPool3DGrad") =
-    naryOp("AvgPool3DGrad", orig_input_shape.value(), grad.value(), name = name) {
-      attr("ksize", ksize)
-      attr("strides", strides)
-      attr("padding", padding)
-      attr("data_format", data_format)
-    }
-
-fun TF.biasAdd(value: Tensor, bias: Tensor, name: String = "BiasAdd") =
-    naryOp("BiasAdd", value.value(), bias.value(), name = name) {
-      attr("data_format", "NHWC")
-    }
-
-fun TF.conv2D(input: Tensor,
-              filter: Tensor,
-              strides: LongArray,
-              padding: String,
-              use_cudnn_on_gpu: Boolean = true,
-              data_format: String = "NHWC",
-              dilations: IntArray = i(1, 1, 1, 1),
-              name: String = "Conv2D") =
-    naryOp("Conv2D", input.value(), filter.value(), name = name) {
-      attr("strides", strides)
-      attr("use_cudnn_on_gpu", use_cudnn_on_gpu)
-      attr("padding", padding)
-      attr("data_format", data_format)
-      attr("dilations", dilations)
-    }
-
-fun TF.conv2DBackpropFilter(input: Tensor,
-                            filter_sizes: Tensor,
-                            out_backprop: Tensor,
-                            strides: LongArray,
-                            padding: String,
-                            use_cudnn_on_gpu: Boolean = true,
-                            data_format: String = "NHWC",
-                            dilations: IntArray = i(1, 1, 1, 1),
-                            name: String = "Conv2DBackpropFilter") =
-    naryOp("Conv2DBackpropFilter", input.value(), filter_sizes.value(), out_backprop.value(), name = name) {
-      attr("strides", strides)
-      attr("use_cudnn_on_gpu", use_cudnn_on_gpu)
-      attr("padding", padding)
-      attr("data_format", data_format)
-      attr("dilations", dilations)
-    }
-
-fun TF.conv2DBackpropInput(input_sizes: Tensor,
-                           filter: Tensor,
-                           out_backprop: Tensor,
-                           strides: LongArray,
-                           padding: String,
-                           use_cudnn_on_gpu: Boolean = true,
-                           data_format: String = "NHWC",
-                           dilations: IntArray = i(1, 1, 1, 1),
-                           name: String = "Conv2DBackpropInput") =
-    naryOp("Conv2DBackpropInput", input_sizes.value(), filter.value(), out_backprop.value(), name = name) {
-      attr("strides", strides)
-      attr("use_cudnn_on_gpu", use_cudnn_on_gpu)
-      attr("padding", padding)
-      attr("data_format", data_format)
-      attr("dilations", dilations)
-    }
-
-fun TF.maxPool3DGrad(orig_input: Tensor,
-                     orig_output: Tensor,
-                     grad: Tensor,
-                     ksize: LongArray,
-                     strides: LongArray,
-                     padding: String,
-                     data_format: String = "NHWC",
-                     name: String = "MaxPool3DGrad") =
-    naryOp("MaxPool3DGrad", orig_input.value(), orig_output.value(), grad.value(), name = name) {
-      attr("ksize", ksize)
-      attr("strides", strides)
-      attr("padding", padding)
-      attr("data_format", data_format)
-    }
-
-fun TF.maxPool3DGradGrad(orig_input: Tensor,
-                         orig_output: Tensor,
-                         grad: Tensor,
-                         ksize: LongArray,
-                         strides: LongArray,
-                         padding: String,
-                         data_format: String = "NHWC",
-                         name: String = "MaxPool3DGradGrad") =
-    naryOp("MaxPool3DGradGrad", orig_input.value(), orig_output.value(), grad.value(), name = name) {
-      attr("ksize", ksize)
-      attr("strides", strides)
-      attr("padding", padding)
-      attr("data_format", data_format)
-    }
-
-fun TF.maxPoolGradGrad(orig_input: Tensor,
-                       orig_output: Tensor,
-                       grad: Tensor,
-                       ksize: LongArray,
-                       strides: LongArray,
-                       padding: String,
-                       data_format: String = "NHWC",
-                       name: String = "MaxPoolGradGrad") =
-    naryOp("MaxPoolGradGrad", orig_input.value(), orig_output.value(), grad.value(), name = name) {
-      attr("ksize", ksize)
-      attr("strides", strides)
-      attr("padding", padding)
-      attr("data_format", data_format)
-    }
-
-fun TF.maxPoolGradGradV2(orig_input: Tensor,
-                         orig_output: Tensor,
-                         grad: Tensor,
-                         ksize: Tensor,
-                         strides: Tensor,
-                         padding: String,
-                         data_format: String = "NHWC",
-                         name: String = "MaxPoolGradGradV2") =
-    naryOp("MaxPoolGradGradV2", orig_input.value(), orig_output.value(),
-           grad.value(), ksize.value(), strides.value(), name = name) {
-      attr("padding", padding)
-      attr("data_format", data_format)
-    }
-
-fun TF.maxPoolGradV2(orig_input: Tensor,
-                     orig_output: Tensor,
-                     grad: Tensor,
-                     ksize: Tensor,
-                     strides: Tensor,
-                     padding: String,
-                     data_format: String = "NHWC",
-                     name: String = "MaxPoolGradV2") =
-    naryOp("MaxPoolGradV2", orig_input.value(), orig_output.value(),
-           grad.value(), ksize.value(), strides.value(), name = name) {
-      attr("padding", padding)
-      attr("data_format", data_format)
-    }
-
-fun TF.relu(features: Tensor, name: String = "Relu") =
-    unaryOp("Relu", features.value(), name)
-
-fun TF.softmax(logits: Tensor, name: String = "Softmax") =
-    unaryOp("Softmax", logits.value(), name)
 
 /**
  * Calculate the mean and variance of `x`.
@@ -181,25 +36,25 @@ variance.
  * @return: Two `Tensor` objects: `mean` and `variance`.
  */
 fun TF.moments(x: Tensor,
-               axes: IntArray,
+               axes: LongArray,
                name: String = "moments",
                keep_dims: Boolean = false): Array<Tensor> {
   name_scope(name) {
     //The dynamic range of fp16 is too limited to support the collection of
     //sufficient statistics. As a workaround we simply perform the operations
     //on 32-bit floats before converting the mean and variance back to fp16
-    val y = if (x.dtype == DT_HALF) tf.cast(x, DT_FLOAT) else x
+    val y = if (x.dtype == DT_HALF) cast(x, DT_FLOAT) else x
     //Compute true mean while keeping the dims for proper broadcasting.
-    var mean = tf.mean(y, axes, keep_dims = true, name = "mean")
+    var mean = mean(y, axes, keep_dims = true, name = "mean")
     //sample variance, not unbiased variance
-    var variance = tf.mean(tf.squaredDifference(y, tf.stop_gradient(mean)),
-                           axes, keep_dims = true, name = "variance")
+    var variance = mean(tf.squaredDifference(y, tf.stopGradient(mean)),
+                        axes, keep_dims = true, name = "variance")
     if (!keep_dims) {
-      mean = tf.squeeze(mean, axes)
-      variance = tf.squeeze(variance, axes)
+      mean = squeeze(mean, axes.toTypedArray())
+      variance = squeeze(variance, axes.toTypedArray())
     }
     return if (x.dtype == DT_HALF)
-      a(tf.cast(mean, DT_HALF), tf.cast(variance, DT_HALF))
+      a(cast(mean, DT_HALF), cast(variance, DT_HALF))
     else a(mean, variance)
   }
 }
@@ -251,7 +106,7 @@ fun TF.batch_normalization(x: Tensor,
                            name: String = "batchnorm"): Tensor {
   name_scope(name) {
     //    val _variance_epsilon = tf.const(variance_epsilon)
-    var inv = tf.rsqrt(variance + variance_epsilon)
+    var inv = rsqrt(variance + variance_epsilon)
     if (scale != null)
       inv *= scale
     return x * inv + (if (offset != null) offset - mean * inv else -mean * inv)

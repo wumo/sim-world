@@ -143,157 +143,157 @@ fun TF.getSessionTensor(handle: Tensor, dtype: Int, name: String = "GetSessionTe
   }
 }
 
-fun TF.mapClear(capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "MapClear") = run {
+fun TF.mapClear(dtypes: Array<Long>, capacity: Long = 0L, memory_limit: Long = 0L, container: String = "", shared_name: String = "", name: String = "MapClear") = run {
   buildOp("MapClear", name) {
+    attr("dtypes", dtypes)
     attr("capacity", capacity)
     attr("memory_limit", memory_limit)
-    attr("dtypes", dtypes)
     attr("container", container)
     attr("shared_name", shared_name)
   }
 }
 
-fun TF.mapIncompleteSize(capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "MapIncompleteSize") = run {
+fun TF.mapIncompleteSize(dtypes: Array<Long>, capacity: Long = 0L, memory_limit: Long = 0L, container: String = "", shared_name: String = "", name: String = "MapIncompleteSize") = run {
   buildOpTensor("MapIncompleteSize", name) {
+    attr("dtypes", dtypes)
     attr("capacity", capacity)
     attr("memory_limit", memory_limit)
-    attr("dtypes", dtypes)
     attr("container", container)
     attr("shared_name", shared_name)
   }
 }
 
-fun TF.mapPeek(key: Tensor, indices: Tensor, capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "MapPeek") = run {
+fun TF.mapPeek(key: Tensor, indices: Tensor, dtypes: Array<Long>, capacity: Long = 0L, memory_limit: Long = 0L, container: String = "", shared_name: String = "", name: String = "MapPeek") = run {
   buildOpTensors("MapPeek", name) {
     addInput(key, false)
     addInput(indices, false)
+    attr("dtypes", dtypes)
     attr("capacity", capacity)
     attr("memory_limit", memory_limit)
-    attr("dtypes", dtypes)
     attr("container", container)
     attr("shared_name", shared_name)
   }
 }
 
-fun TF.mapSize(capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "MapSize") = run {
+fun TF.mapSize(dtypes: Array<Long>, capacity: Long = 0L, memory_limit: Long = 0L, container: String = "", shared_name: String = "", name: String = "MapSize") = run {
   buildOpTensor("MapSize", name) {
+    attr("dtypes", dtypes)
     attr("capacity", capacity)
     attr("memory_limit", memory_limit)
-    attr("dtypes", dtypes)
     attr("container", container)
     attr("shared_name", shared_name)
   }
 }
 
-fun TF.mapStage(key: Tensor, indices: Tensor, values: Tensor, capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "MapStage") = run {
+fun TF.mapStage(key: Tensor, indices: Tensor, values: Tensor, dtypes: Array<Long>, capacity: Long = 0L, memory_limit: Long = 0L, container: String = "", shared_name: String = "", name: String = "MapStage") = run {
   buildOp("MapStage", name) {
     addInput(key, false)
     addInput(indices, false)
     addInput(values, false)
+    attr("dtypes", dtypes)
     attr("capacity", capacity)
     attr("memory_limit", memory_limit)
-    attr("dtypes", dtypes)
     attr("container", container)
     attr("shared_name", shared_name)
   }
 }
 
-fun TF.mapUnstage(key: Tensor, indices: Tensor, capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "MapUnstage") = run {
+fun TF.mapUnstage(key: Tensor, indices: Tensor, dtypes: Array<Long>, capacity: Long = 0L, memory_limit: Long = 0L, container: String = "", shared_name: String = "", name: String = "MapUnstage") = run {
   buildOpTensors("MapUnstage", name) {
     addInput(key, false)
     addInput(indices, false)
+    attr("dtypes", dtypes)
     attr("capacity", capacity)
     attr("memory_limit", memory_limit)
-    attr("dtypes", dtypes)
     attr("container", container)
     attr("shared_name", shared_name)
   }
 }
 
-fun TF.mapUnstageNoKey(indices: Tensor, capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "MapUnstageNoKey") = run {
+fun TF.mapUnstageNoKey(indices: Tensor, dtypes: Array<Long>, capacity: Long = 0L, memory_limit: Long = 0L, container: String = "", shared_name: String = "", name: String = "MapUnstageNoKey") = run {
   buildOpTensors("MapUnstageNoKey", name) {
     addInput(indices, false)
+    attr("dtypes", dtypes)
     attr("capacity", capacity)
     attr("memory_limit", memory_limit)
-    attr("dtypes", dtypes)
     attr("container", container)
     attr("shared_name", shared_name)
   }
 }
 
-fun TF.orderedMapClear(capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "OrderedMapClear") = run {
+fun TF.orderedMapClear(dtypes: Array<Long>, capacity: Long = 0L, memory_limit: Long = 0L, container: String = "", shared_name: String = "", name: String = "OrderedMapClear") = run {
   buildOp("OrderedMapClear", name) {
+    attr("dtypes", dtypes)
     attr("capacity", capacity)
     attr("memory_limit", memory_limit)
-    attr("dtypes", dtypes)
     attr("container", container)
     attr("shared_name", shared_name)
   }
 }
 
-fun TF.orderedMapIncompleteSize(capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "OrderedMapIncompleteSize") = run {
+fun TF.orderedMapIncompleteSize(dtypes: Array<Long>, capacity: Long = 0L, memory_limit: Long = 0L, container: String = "", shared_name: String = "", name: String = "OrderedMapIncompleteSize") = run {
   buildOpTensor("OrderedMapIncompleteSize", name) {
+    attr("dtypes", dtypes)
     attr("capacity", capacity)
     attr("memory_limit", memory_limit)
-    attr("dtypes", dtypes)
     attr("container", container)
     attr("shared_name", shared_name)
   }
 }
 
-fun TF.orderedMapPeek(key: Tensor, indices: Tensor, capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "OrderedMapPeek") = run {
+fun TF.orderedMapPeek(key: Tensor, indices: Tensor, dtypes: Array<Long>, capacity: Long = 0L, memory_limit: Long = 0L, container: String = "", shared_name: String = "", name: String = "OrderedMapPeek") = run {
   buildOpTensors("OrderedMapPeek", name) {
     addInput(key, false)
     addInput(indices, false)
+    attr("dtypes", dtypes)
     attr("capacity", capacity)
     attr("memory_limit", memory_limit)
-    attr("dtypes", dtypes)
     attr("container", container)
     attr("shared_name", shared_name)
   }
 }
 
-fun TF.orderedMapSize(capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "OrderedMapSize") = run {
+fun TF.orderedMapSize(dtypes: Array<Long>, capacity: Long = 0L, memory_limit: Long = 0L, container: String = "", shared_name: String = "", name: String = "OrderedMapSize") = run {
   buildOpTensor("OrderedMapSize", name) {
+    attr("dtypes", dtypes)
     attr("capacity", capacity)
     attr("memory_limit", memory_limit)
-    attr("dtypes", dtypes)
     attr("container", container)
     attr("shared_name", shared_name)
   }
 }
 
-fun TF.orderedMapStage(key: Tensor, indices: Tensor, values: Tensor, capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "OrderedMapStage") = run {
+fun TF.orderedMapStage(key: Tensor, indices: Tensor, values: Tensor, dtypes: Array<Long>, capacity: Long = 0L, memory_limit: Long = 0L, container: String = "", shared_name: String = "", name: String = "OrderedMapStage") = run {
   buildOp("OrderedMapStage", name) {
     addInput(key, false)
     addInput(indices, false)
     addInput(values, false)
+    attr("dtypes", dtypes)
     attr("capacity", capacity)
     attr("memory_limit", memory_limit)
-    attr("dtypes", dtypes)
     attr("container", container)
     attr("shared_name", shared_name)
   }
 }
 
-fun TF.orderedMapUnstage(key: Tensor, indices: Tensor, capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "OrderedMapUnstage") = run {
+fun TF.orderedMapUnstage(key: Tensor, indices: Tensor, dtypes: Array<Long>, capacity: Long = 0L, memory_limit: Long = 0L, container: String = "", shared_name: String = "", name: String = "OrderedMapUnstage") = run {
   buildOpTensors("OrderedMapUnstage", name) {
     addInput(key, false)
     addInput(indices, false)
+    attr("dtypes", dtypes)
     attr("capacity", capacity)
     attr("memory_limit", memory_limit)
-    attr("dtypes", dtypes)
     attr("container", container)
     attr("shared_name", shared_name)
   }
 }
 
-fun TF.orderedMapUnstageNoKey(indices: Tensor, capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "OrderedMapUnstageNoKey") = run {
+fun TF.orderedMapUnstageNoKey(indices: Tensor, dtypes: Array<Long>, capacity: Long = 0L, memory_limit: Long = 0L, container: String = "", shared_name: String = "", name: String = "OrderedMapUnstageNoKey") = run {
   buildOpTensors("OrderedMapUnstageNoKey", name) {
     addInput(indices, false)
+    attr("dtypes", dtypes)
     attr("capacity", capacity)
     attr("memory_limit", memory_limit)
-    attr("dtypes", dtypes)
     attr("container", container)
     attr("shared_name", shared_name)
   }
@@ -316,10 +316,10 @@ fun TF.parallelDynamicStitch(indices: Array<Tensor>, data: Array<Tensor>, name: 
   }
 }
 
-fun TF.priorityQueueV2(component_types: Array<Long> = arrayOf(), shapes: Array<Dimension>, capacity: Long = -1L, container: String = "", shared_name: String = "", name: String = "PriorityQueueV2") = run {
+fun TF.priorityQueueV2(shapes: Array<Dimension>, component_types: Array<Long> = arrayOf(), capacity: Long = -1L, container: String = "", shared_name: String = "", name: String = "PriorityQueueV2") = run {
   buildOpTensor("PriorityQueueV2", name) {
-    attr("component_types", component_types)
     attr("shapes", shapes)
+    attr("component_types", component_types)
     attr("capacity", capacity)
     attr("container", container)
     attr("shared_name", shared_name)
@@ -456,32 +456,32 @@ fun TF.stage(values: Tensor, capacity: Long = 0L, memory_limit: Long = 0L, conta
   }
 }
 
-fun TF.stageClear(capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "StageClear") = run {
+fun TF.stageClear(dtypes: Array<Long>, capacity: Long = 0L, memory_limit: Long = 0L, container: String = "", shared_name: String = "", name: String = "StageClear") = run {
   buildOp("StageClear", name) {
+    attr("dtypes", dtypes)
     attr("capacity", capacity)
     attr("memory_limit", memory_limit)
-    attr("dtypes", dtypes)
     attr("container", container)
     attr("shared_name", shared_name)
   }
 }
 
-fun TF.stagePeek(index: Tensor, capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "StagePeek") = run {
+fun TF.stagePeek(index: Tensor, dtypes: Array<Long>, capacity: Long = 0L, memory_limit: Long = 0L, container: String = "", shared_name: String = "", name: String = "StagePeek") = run {
   buildOpTensors("StagePeek", name) {
     addInput(index, false)
+    attr("dtypes", dtypes)
     attr("capacity", capacity)
     attr("memory_limit", memory_limit)
-    attr("dtypes", dtypes)
     attr("container", container)
     attr("shared_name", shared_name)
   }
 }
 
-fun TF.stageSize(capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "StageSize") = run {
+fun TF.stageSize(dtypes: Array<Long>, capacity: Long = 0L, memory_limit: Long = 0L, container: String = "", shared_name: String = "", name: String = "StageSize") = run {
   buildOpTensor("StageSize", name) {
+    attr("dtypes", dtypes)
     attr("capacity", capacity)
     attr("memory_limit", memory_limit)
-    attr("dtypes", dtypes)
     attr("container", container)
     attr("shared_name", shared_name)
   }
@@ -584,11 +584,11 @@ fun TF.tensorArrayWriteV3(handle: Tensor, index: Tensor, value: Tensor, flow_in:
   }
 }
 
-fun TF.unstage(capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "Unstage") = run {
+fun TF.unstage(dtypes: Array<Long>, capacity: Long = 0L, memory_limit: Long = 0L, container: String = "", shared_name: String = "", name: String = "Unstage") = run {
   buildOpTensors("Unstage", name) {
+    attr("dtypes", dtypes)
     attr("capacity", capacity)
     attr("memory_limit", memory_limit)
-    attr("dtypes", dtypes)
     attr("container", container)
     attr("shared_name", shared_name)
   }

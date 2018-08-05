@@ -57,21 +57,21 @@ fun TF.randomShuffle(value: Tensor, seed: Long = 0L, seed2: Long = 0L, name: Str
   }
 }
 
-fun TF.randomStandardNormal(shape: Tensor, seed: Long = 0L, seed2: Long = 0L, dtype: Int, name: String = "RandomStandardNormal") = run {
+fun TF.randomStandardNormal(shape: Tensor, dtype: Int, seed: Long = 0L, seed2: Long = 0L, name: String = "RandomStandardNormal") = run {
   buildOpTensor("RandomStandardNormal", name) {
     addInput(shape, false)
+    attrType("dtype", dtype)
     attr("seed", seed)
     attr("seed2", seed2)
-    attrType("dtype", dtype)
   }
 }
 
-fun TF.randomUniform(shape: Tensor, seed: Long = 0L, seed2: Long = 0L, dtype: Int, name: String = "RandomUniform") = run {
+fun TF.randomUniform(shape: Tensor, dtype: Int, seed: Long = 0L, seed2: Long = 0L, name: String = "RandomUniform") = run {
   buildOpTensor("RandomUniform", name) {
     addInput(shape, false)
+    attrType("dtype", dtype)
     attr("seed", seed)
     attr("seed2", seed2)
-    attrType("dtype", dtype)
   }
 }
 
@@ -85,12 +85,12 @@ fun TF.randomUniformInt(shape: Tensor, minval: Tensor, maxval: Tensor, seed: Lon
   }
 }
 
-fun TF.truncatedNormal(shape: Tensor, seed: Long = 0L, seed2: Long = 0L, dtype: Int, name: String = "TruncatedNormal") = run {
+fun TF.truncatedNormal(shape: Tensor, dtype: Int, seed: Long = 0L, seed2: Long = 0L, name: String = "TruncatedNormal") = run {
   buildOpTensor("TruncatedNormal", name) {
     addInput(shape, false)
+    attrType("dtype", dtype)
     attr("seed", seed)
     attr("seed2", seed2)
-    attrType("dtype", dtype)
   }
 }
 

@@ -7,7 +7,9 @@ import wumo.sim.algorithm.tensorflow.contrib.fully_connected
 import wumo.sim.algorithm.tensorflow.contrib.one_hot_encoding
 import wumo.sim.algorithm.tensorflow.ops.*
 import wumo.sim.algorithm.tensorflow.ops.gen.log
+import wumo.sim.algorithm.tensorflow.ops.gen.reshape
 import wumo.sim.algorithm.tensorflow.ops.gen.sigmoid
+import wumo.sim.algorithm.tensorflow.ops.gen.slice
 import wumo.sim.algorithm.tensorflow.tf
 import wumo.sim.algorithm.tensorflow.training.GradientDescentOptimizer
 import wumo.sim.util.*

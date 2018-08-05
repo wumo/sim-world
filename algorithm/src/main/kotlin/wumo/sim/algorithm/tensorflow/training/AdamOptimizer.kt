@@ -1,7 +1,11 @@
 package wumo.sim.algorithm.tensorflow.training
 
 import wumo.sim.algorithm.tensorflow.*
-import wumo.sim.algorithm.tensorflow.ops.*
+import wumo.sim.algorithm.tensorflow.ops.cast
+import wumo.sim.algorithm.tensorflow.ops.const
+import wumo.sim.algorithm.tensorflow.ops.gen.applyAdam
+import wumo.sim.algorithm.tensorflow.ops.group
+import wumo.sim.algorithm.tensorflow.ops.times
 import wumo.sim.util.tuple2
 
 /**
@@ -97,7 +101,7 @@ class AdamOptimizer(val learningRate: Float = 0.001f,
     val m = get_slot(_v, "m")
     val v = get_slot(_v, "v")
     val (beta1_power, beta2_power) = get_beta_accumulators()
-    return tf.apply_adam(_v, m, v,
+    return tf.applyAdam(_v, m, v,
                          tf.cast(beta1_power, _v.dtype.base_dtype),
                          tf.cast(beta2_power, _v.dtype.base_dtype),
                          tf.cast(lr_t, _v.dtype.base_dtype),
