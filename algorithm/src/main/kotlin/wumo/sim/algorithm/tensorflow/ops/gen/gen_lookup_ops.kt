@@ -9,7 +9,6 @@ import wumo.sim.util.Dimension
 object gen_lookup_ops {
   fun hashTableV2(container: String = "", shared_name: String = "", use_node_name_sharing: Boolean = false, key_dtype: Int, value_dtype: Int, name: String = "HashTableV2") = run {
     tf.buildOpTensor("HashTableV2", name) {
-      
       attr("container", container)
       attr("shared_name", shared_name)
       attr("use_node_name_sharing", use_node_name_sharing)
@@ -34,7 +33,6 @@ object gen_lookup_ops {
       addInput(table_handle, false)
       addInput(keys, false)
       addInput(values, false)
-      
     }
   }
   
@@ -51,7 +49,6 @@ object gen_lookup_ops {
       addInput(table_handle, false)
       addInput(keys, false)
       addInput(default_value, false)
-      
     }
   }
   
@@ -60,7 +57,6 @@ object gen_lookup_ops {
       addInput(table_handle, false)
       addInput(keys, false)
       addInput(values, false)
-      
     }
   }
   
@@ -69,14 +65,12 @@ object gen_lookup_ops {
       addInput(table_handle, false)
       addInput(keys, false)
       addInput(values, false)
-      
     }
   }
   
   fun lookupTableSizeV2(table_handle: Tensor, name: String = "LookupTableSizeV2") = run {
     tf.buildOpTensor("LookupTableSizeV2", name) {
       addInput(table_handle, false)
-      
     }
   }
   
@@ -95,7 +89,6 @@ object gen_lookup_ops {
   
   fun mutableHashTableOfTensorsV2(container: String = "", shared_name: String = "", use_node_name_sharing: Boolean = false, key_dtype: Int, value_dtype: Int, value_shape: Dimension = Dimension(longArrayOf()), name: String = "MutableHashTableOfTensorsV2") = run {
     tf.buildOpTensor("MutableHashTableOfTensorsV2", name) {
-      
       attr("container", container)
       attr("shared_name", shared_name)
       attr("use_node_name_sharing", use_node_name_sharing)
@@ -107,7 +100,6 @@ object gen_lookup_ops {
   
   fun mutableHashTableV2(container: String = "", shared_name: String = "", use_node_name_sharing: Boolean = false, key_dtype: Int, value_dtype: Int, name: String = "MutableHashTableV2") = run {
     tf.buildOpTensor("MutableHashTableV2", name) {
-      
       attr("container", container)
       attr("shared_name", shared_name)
       attr("use_node_name_sharing", use_node_name_sharing)

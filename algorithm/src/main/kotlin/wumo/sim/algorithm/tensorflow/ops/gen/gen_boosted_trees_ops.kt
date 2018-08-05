@@ -25,7 +25,6 @@ object gen_boosted_trees_ops {
       addInput(mean_hessians, false)
       addInput(l1, false)
       addInput(l2, false)
-      
     }
   }
   
@@ -34,7 +33,6 @@ object gen_boosted_trees_ops {
       addInput(tree_ensemble_handle, false)
       addInput(stamp_token, false)
       addInput(tree_ensemble_serialized, false)
-      
     }
   }
   
@@ -43,13 +41,11 @@ object gen_boosted_trees_ops {
       addInput(tree_ensemble_handle, false)
       addInput(stamp_token, false)
       addInput(tree_ensemble_serialized, false)
-      
     }
   }
   
   fun boostedTreesEnsembleResourceHandleOp(container: String = "", shared_name: String = "", name: String = "BoostedTreesEnsembleResourceHandleOp") = run {
     tf.buildOpTensor("BoostedTreesEnsembleResourceHandleOp", name) {
-      
       attr("container", container)
       attr("shared_name", shared_name)
     }
@@ -66,7 +62,6 @@ object gen_boosted_trees_ops {
   fun boostedTreesGetEnsembleStates(tree_ensemble_handle: Tensor, name: String = "BoostedTreesGetEnsembleStates") = run {
     tf.buildOpTensors("BoostedTreesGetEnsembleStates", name) {
       addInput(tree_ensemble_handle, false)
-      
     }
   }
   
@@ -92,7 +87,6 @@ object gen_boosted_trees_ops {
   fun boostedTreesSerializeEnsemble(tree_ensemble_handle: Tensor, name: String = "BoostedTreesSerializeEnsemble") = run {
     tf.buildOpTensors("BoostedTreesSerializeEnsemble", name) {
       addInput(tree_ensemble_handle, false)
-      
     }
   }
   
@@ -124,7 +118,6 @@ object gen_boosted_trees_ops {
   fun isBoostedTreesEnsembleInitialized(tree_ensemble_handle: Tensor, name: String = "IsBoostedTreesEnsembleInitialized") = run {
     tf.buildOpTensor("IsBoostedTreesEnsembleInitialized", name) {
       addInput(tree_ensemble_handle, false)
-      
     }
   }
 }

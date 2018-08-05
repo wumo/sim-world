@@ -13,7 +13,6 @@ object gen_manip_ops {
       addInput(input, false)
       addInput(shift, false)
       addInput(axis, false)
-      
     }
   }
 }

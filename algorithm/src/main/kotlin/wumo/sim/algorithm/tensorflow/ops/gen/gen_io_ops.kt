@@ -8,7 +8,6 @@ import wumo.sim.algorithm.tensorflow.*
 object gen_io_ops {
   fun fixedLengthRecordReaderV2(header_bytes: Long = 0L, record_bytes: Long, footer_bytes: Long = 0L, hop_bytes: Long = 0L, container: String = "", shared_name: String = "", encoding: String = "", name: String = "FixedLengthRecordReaderV2") = run {
     tf.buildOpTensor("FixedLengthRecordReaderV2", name) {
-      
       attr("header_bytes", header_bytes)
       attr("record_bytes", record_bytes)
       attr("footer_bytes", footer_bytes)
@@ -21,7 +20,6 @@ object gen_io_ops {
   
   fun identityReaderV2(container: String = "", shared_name: String = "", name: String = "IdentityReaderV2") = run {
     tf.buildOpTensor("IdentityReaderV2", name) {
-      
       attr("container", container)
       attr("shared_name", shared_name)
     }
@@ -29,7 +27,6 @@ object gen_io_ops {
   
   fun lMDBReader(container: String = "", shared_name: String = "", name: String = "LMDBReader") = run {
     tf.buildOpTensor("LMDBReader", name) {
-      
       attr("container", container)
       attr("shared_name", shared_name)
     }
@@ -38,7 +35,6 @@ object gen_io_ops {
   fun matchingFiles(pattern: Tensor, name: String = "MatchingFiles") = run {
     tf.buildOpTensor("MatchingFiles", name) {
       addInput(pattern, false)
-      
     }
   }
   
@@ -53,21 +49,18 @@ object gen_io_ops {
   fun readFile(filename: Tensor, name: String = "ReadFile") = run {
     tf.buildOpTensor("ReadFile", name) {
       addInput(filename, false)
-      
     }
   }
   
   fun readerNumRecordsProducedV2(reader_handle: Tensor, name: String = "ReaderNumRecordsProducedV2") = run {
     tf.buildOpTensor("ReaderNumRecordsProducedV2", name) {
       addInput(reader_handle, false)
-      
     }
   }
   
   fun readerNumWorkUnitsCompletedV2(reader_handle: Tensor, name: String = "ReaderNumWorkUnitsCompletedV2") = run {
     tf.buildOpTensor("ReaderNumWorkUnitsCompletedV2", name) {
       addInput(reader_handle, false)
-      
     }
   }
   
@@ -76,7 +69,6 @@ object gen_io_ops {
       addInput(reader_handle, false)
       addInput(queue_handle, false)
       addInput(num_records, false)
-      
     }
   }
   
@@ -84,14 +76,12 @@ object gen_io_ops {
     tf.buildOpTensors("ReaderReadV2", name) {
       addInput(reader_handle, false)
       addInput(queue_handle, false)
-      
     }
   }
   
   fun readerResetV2(reader_handle: Tensor, name: String = "ReaderResetV2") = run {
     tf.buildOp("ReaderResetV2", name) {
       addInput(reader_handle, false)
-      
     }
   }
   
@@ -99,14 +89,12 @@ object gen_io_ops {
     tf.buildOp("ReaderRestoreStateV2", name) {
       addInput(reader_handle, false)
       addInput(state, false)
-      
     }
   }
   
   fun readerSerializeStateV2(reader_handle: Tensor, name: String = "ReaderSerializeStateV2") = run {
     tf.buildOpTensor("ReaderSerializeStateV2", name) {
       addInput(reader_handle, false)
-      
     }
   }
   
@@ -143,7 +131,6 @@ object gen_io_ops {
       addInput(filename, false)
       addInput(tensor_names, false)
       addInput(data, false)
-      
     }
   }
   
@@ -153,7 +140,6 @@ object gen_io_ops {
       addInput(tensor_names, false)
       addInput(shapes_and_slices, false)
       addInput(data, false)
-      
     }
   }
   
@@ -163,7 +149,6 @@ object gen_io_ops {
       addInput(tensor_names, false)
       addInput(shape_and_slices, false)
       addInput(tensors, false)
-      
     }
   }
   
@@ -172,7 +157,6 @@ object gen_io_ops {
       addInput(basename, false)
       addInput(shard, false)
       addInput(num_shards, false)
-      
     }
   }
   
@@ -180,13 +164,11 @@ object gen_io_ops {
     tf.buildOpTensor("ShardedFilespec", name) {
       addInput(basename, false)
       addInput(num_shards, false)
-      
     }
   }
   
   fun tFRecordReaderV2(container: String = "", shared_name: String = "", compression_type: String = "", name: String = "TFRecordReaderV2") = run {
     tf.buildOpTensor("TFRecordReaderV2", name) {
-      
       attr("container", container)
       attr("shared_name", shared_name)
       attr("compression_type", compression_type)
@@ -195,7 +177,6 @@ object gen_io_ops {
   
   fun textLineReaderV2(skip_header_lines: Long = 0L, container: String = "", shared_name: String = "", name: String = "TextLineReaderV2") = run {
     tf.buildOpTensor("TextLineReaderV2", name) {
-      
       attr("skip_header_lines", skip_header_lines)
       attr("container", container)
       attr("shared_name", shared_name)
@@ -204,7 +185,6 @@ object gen_io_ops {
   
   fun wholeFileReaderV2(container: String = "", shared_name: String = "", name: String = "WholeFileReaderV2") = run {
     tf.buildOpTensor("WholeFileReaderV2", name) {
-      
       attr("container", container)
       attr("shared_name", shared_name)
     }
@@ -214,7 +194,6 @@ object gen_io_ops {
     tf.buildOp("WriteFile", name) {
       addInput(filename, false)
       addInput(contents, false)
-      
     }
   }
 }

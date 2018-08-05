@@ -4,11 +4,12 @@ import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.algorithm.tensorflow.*
 import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.Variable
+import wumo.sim.algorithm.tensorflow.ops.gen.gen_math_ops
 import wumo.sim.util.Dimension
 import wumo.sim.util.arange
 import wumo.sim.util.i
 
-fun TF.abs(x: Tensor, name: String = "Abs") = unaryOp("Abs", x.value(), name)
+fun TF.abs(x: Tensor, name: String = "Abs") = gen_math_ops.abs(x.value(), name)
 fun TF.accumulateNV2(vararg input: Tensor, shape: Dimension, name: String = "AccumulateNV2") =
     naryOp("AccumulateNV2", name = name) {
       addInput(input.map { it.value() })

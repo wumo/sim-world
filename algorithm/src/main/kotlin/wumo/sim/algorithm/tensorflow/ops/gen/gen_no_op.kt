@@ -9,7 +9,6 @@ import wumo.sim.algorithm.tensorflow.tf
 object gen_no_op {
   fun noOp(name: String = "NoOp") = run {
     tf.buildOp("NoOp", name) {
-    
     }
   }
 }

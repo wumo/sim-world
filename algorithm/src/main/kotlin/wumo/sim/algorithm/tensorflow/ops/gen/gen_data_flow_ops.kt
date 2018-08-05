@@ -12,14 +12,12 @@ object gen_data_flow_ops {
       addInput(handle, true)
       addInput(local_step, false)
       addInput(gradient, false)
-      
     }
   }
   
   fun accumulatorNumAccumulated(handle: Tensor, name: String = "AccumulatorNumAccumulated") = run {
     tf.buildOpTensor("AccumulatorNumAccumulated", name) {
       addInput(handle, true)
-      
     }
   }
   
@@ -27,7 +25,6 @@ object gen_data_flow_ops {
     tf.buildOp("AccumulatorSetGlobalStep", name) {
       addInput(handle, true)
       addInput(new_global_step, false)
-      
     }
   }
   
@@ -41,7 +38,6 @@ object gen_data_flow_ops {
   
   fun barrier(component_types: Array<Long>, shapes: Array<Dimension> = arrayOf(), capacity: Long = -1L, container: String = "", shared_name: String = "", name: String = "Barrier") = run {
     tf.buildOpTensor("Barrier", name) {
-      
       attr("component_types", component_types)
       attr("shapes", shapes)
       attr("capacity", capacity)
@@ -60,7 +56,6 @@ object gen_data_flow_ops {
   fun barrierIncompleteSize(handle: Tensor, name: String = "BarrierIncompleteSize") = run {
     tf.buildOpTensor("BarrierIncompleteSize", name) {
       addInput(handle, true)
-      
     }
   }
   
@@ -76,7 +71,6 @@ object gen_data_flow_ops {
   fun barrierReadySize(handle: Tensor, name: String = "BarrierReadySize") = run {
     tf.buildOpTensor("BarrierReadySize", name) {
       addInput(handle, true)
-      
     }
   }
   
@@ -93,7 +87,6 @@ object gen_data_flow_ops {
   
   fun conditionalAccumulator(dtype: Int, shape: Dimension, container: String = "", shared_name: String = "", name: String = "ConditionalAccumulator") = run {
     tf.buildOpTensor("ConditionalAccumulator", name) {
-      
       attrType("dtype", dtype)
       attr("shape", shape)
       attr("container", container)
@@ -104,7 +97,6 @@ object gen_data_flow_ops {
   fun deleteSessionTensor(handle: Tensor, name: String = "DeleteSessionTensor") = run {
     tf.buildOp("DeleteSessionTensor", name) {
       addInput(handle, false)
-      
     }
   }
   
@@ -120,13 +112,11 @@ object gen_data_flow_ops {
     tf.buildOpTensor("DynamicStitch", name) {
       addInput(indices, false)
       addInput(data, false)
-      
     }
   }
   
   fun fIFOQueueV2(component_types: Array<Long>, shapes: Array<Dimension> = arrayOf(), capacity: Long = -1L, container: String = "", shared_name: String = "", name: String = "FIFOQueueV2") = run {
     tf.buildOpTensor("FIFOQueueV2", name) {
-      
       attr("component_types", component_types)
       attr("shapes", shapes)
       attr("capacity", capacity)
@@ -138,14 +128,12 @@ object gen_data_flow_ops {
   fun getSessionHandle(value: Tensor, name: String = "GetSessionHandle") = run {
     tf.buildOpTensor("GetSessionHandle", name) {
       addInput(value, false)
-      
     }
   }
   
   fun getSessionHandleV2(value: Tensor, name: String = "GetSessionHandleV2") = run {
     tf.buildOpTensor("GetSessionHandleV2", name) {
       addInput(value, false)
-      
     }
   }
   
@@ -158,7 +146,6 @@ object gen_data_flow_ops {
   
   fun mapClear(capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "MapClear") = run {
     tf.buildOp("MapClear", name) {
-      
       attr("capacity", capacity)
       attr("memory_limit", memory_limit)
       attr("dtypes", dtypes)
@@ -169,7 +156,6 @@ object gen_data_flow_ops {
   
   fun mapIncompleteSize(capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "MapIncompleteSize") = run {
     tf.buildOpTensor("MapIncompleteSize", name) {
-      
       attr("capacity", capacity)
       attr("memory_limit", memory_limit)
       attr("dtypes", dtypes)
@@ -192,7 +178,6 @@ object gen_data_flow_ops {
   
   fun mapSize(capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "MapSize") = run {
     tf.buildOpTensor("MapSize", name) {
-      
       attr("capacity", capacity)
       attr("memory_limit", memory_limit)
       attr("dtypes", dtypes)
@@ -239,7 +224,6 @@ object gen_data_flow_ops {
   
   fun orderedMapClear(capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "OrderedMapClear") = run {
     tf.buildOp("OrderedMapClear", name) {
-      
       attr("capacity", capacity)
       attr("memory_limit", memory_limit)
       attr("dtypes", dtypes)
@@ -250,7 +234,6 @@ object gen_data_flow_ops {
   
   fun orderedMapIncompleteSize(capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "OrderedMapIncompleteSize") = run {
     tf.buildOpTensor("OrderedMapIncompleteSize", name) {
-      
       attr("capacity", capacity)
       attr("memory_limit", memory_limit)
       attr("dtypes", dtypes)
@@ -273,7 +256,6 @@ object gen_data_flow_ops {
   
   fun orderedMapSize(capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "OrderedMapSize") = run {
     tf.buildOpTensor("OrderedMapSize", name) {
-      
       attr("capacity", capacity)
       attr("memory_limit", memory_limit)
       attr("dtypes", dtypes)
@@ -320,7 +302,6 @@ object gen_data_flow_ops {
   
   fun paddingFIFOQueueV2(component_types: Array<Long>, shapes: Array<Dimension> = arrayOf(), capacity: Long = -1L, container: String = "", shared_name: String = "", name: String = "PaddingFIFOQueueV2") = run {
     tf.buildOpTensor("PaddingFIFOQueueV2", name) {
-      
       attr("component_types", component_types)
       attr("shapes", shapes)
       attr("capacity", capacity)
@@ -333,13 +314,11 @@ object gen_data_flow_ops {
     tf.buildOpTensor("ParallelDynamicStitch", name) {
       addInput(indices, false)
       addInput(data, false)
-      
     }
   }
   
   fun priorityQueueV2(component_types: Array<Long> = arrayOf(), shapes: Array<Dimension>, capacity: Long = -1L, container: String = "", shared_name: String = "", name: String = "PriorityQueueV2") = run {
     tf.buildOpTensor("PriorityQueueV2", name) {
-      
       attr("component_types", component_types)
       attr("shapes", shapes)
       attr("capacity", capacity)
@@ -400,27 +379,23 @@ object gen_data_flow_ops {
   fun queueIsClosed(handle: Tensor, name: String = "QueueIsClosed") = run {
     tf.buildOpTensor("QueueIsClosed", name) {
       addInput(handle, true)
-      
     }
   }
   
   fun queueIsClosedV2(handle: Tensor, name: String = "QueueIsClosedV2") = run {
     tf.buildOpTensor("QueueIsClosedV2", name) {
       addInput(handle, false)
-      
     }
   }
   
   fun queueSizeV2(handle: Tensor, name: String = "QueueSizeV2") = run {
     tf.buildOpTensor("QueueSizeV2", name) {
       addInput(handle, false)
-      
     }
   }
   
   fun randomShuffleQueueV2(component_types: Array<Long>, shapes: Array<Dimension> = arrayOf(), capacity: Long = -1L, min_after_dequeue: Long = 0L, seed: Long = 0L, seed2: Long = 0L, container: String = "", shared_name: String = "", name: String = "RandomShuffleQueueV2") = run {
     tf.buildOpTensor("RandomShuffleQueueV2", name) {
-      
       attr("component_types", component_types)
       attr("shapes", shapes)
       attr("capacity", capacity)
@@ -434,7 +409,6 @@ object gen_data_flow_ops {
   
   fun recordInput(file_pattern: String, file_random_seed: Long = 301L, file_shuffle_shift_ratio: Float = 0.0f, file_buffer_size: Long = 10000L, file_parallelism: Long = 16L, batch_size: Long = 32L, compression_type: String = "", name: String = "RecordInput") = run {
     tf.buildOpTensor("RecordInput", name) {
-      
       attr("file_pattern", file_pattern)
       attr("file_random_seed", file_random_seed)
       attr("file_shuffle_shift_ratio", file_shuffle_shift_ratio)
@@ -466,7 +440,6 @@ object gen_data_flow_ops {
   
   fun sparseConditionalAccumulator(dtype: Int, shape: Dimension, container: String = "", shared_name: String = "", name: String = "SparseConditionalAccumulator") = run {
     tf.buildOpTensor("SparseConditionalAccumulator", name) {
-      
       attrType("dtype", dtype)
       attr("shape", shape)
       attr("container", container)
@@ -486,7 +459,6 @@ object gen_data_flow_ops {
   
   fun stageClear(capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "StageClear") = run {
     tf.buildOp("StageClear", name) {
-      
       attr("capacity", capacity)
       attr("memory_limit", memory_limit)
       attr("dtypes", dtypes)
@@ -508,7 +480,6 @@ object gen_data_flow_ops {
   
   fun stageSize(capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "StageSize") = run {
     tf.buildOpTensor("StageSize", name) {
-      
       attr("capacity", capacity)
       attr("memory_limit", memory_limit)
       attr("dtypes", dtypes)
@@ -520,7 +491,6 @@ object gen_data_flow_ops {
   fun tensorArrayCloseV3(handle: Tensor, name: String = "TensorArrayCloseV3") = run {
     tf.buildOp("TensorArrayCloseV3", name) {
       addInput(handle, false)
-      
     }
   }
   
@@ -575,7 +545,6 @@ object gen_data_flow_ops {
       addInput(indices, false)
       addInput(value, false)
       addInput(flow_in, false)
-      
     }
   }
   
@@ -583,7 +552,6 @@ object gen_data_flow_ops {
     tf.buildOpTensor("TensorArraySizeV3", name) {
       addInput(handle, false)
       addInput(flow_in, false)
-      
     }
   }
   
@@ -593,7 +561,6 @@ object gen_data_flow_ops {
       addInput(value, false)
       addInput(lengths, false)
       addInput(flow_in, false)
-      
     }
   }
   
@@ -615,13 +582,11 @@ object gen_data_flow_ops {
       addInput(index, false)
       addInput(value, false)
       addInput(flow_in, false)
-      
     }
   }
   
   fun unstage(capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "Unstage") = run {
     tf.buildOpTensors("Unstage", name) {
-      
       attr("capacity", capacity)
       attr("memory_limit", memory_limit)
       attr("dtypes", dtypes)

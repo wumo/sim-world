@@ -8,7 +8,6 @@ import wumo.sim.algorithm.tensorflow.*
 object gen_control_flow_ops {
   fun abort(error_msg: String = "", exit_without_error: Boolean = false, name: String = "Abort") = run {
     tf.buildOp("Abort", name) {
-      
       attr("error_msg", error_msg)
       attr("exit_without_error", exit_without_error)
     }
@@ -16,35 +15,30 @@ object gen_control_flow_ops {
   
   fun controlTrigger(name: String = "ControlTrigger") = run {
     tf.buildOp("ControlTrigger", name) {
-    
     }
   }
   
   fun loopCond(input: Tensor, name: String = "LoopCond") = run {
     tf.buildOpTensor("LoopCond", name) {
       addInput(input, false)
-      
     }
   }
   
   fun merge(inputs: Array<Tensor>, name: String = "Merge") = run {
     tf.buildOpTensors("Merge", name) {
       addInput(inputs, false)
-      
     }
   }
   
   fun nextIteration(data: Tensor, name: String = "NextIteration") = run {
     tf.buildOpTensor("NextIteration", name) {
       addInput(data, false)
-      
     }
   }
   
   fun refNextIteration(data: Tensor, name: String = "RefNextIteration") = run {
     tf.buildOpTensor("RefNextIteration", name) {
       addInput(data, true)
-      
     }
   }
   
@@ -52,7 +46,6 @@ object gen_control_flow_ops {
     tf.buildOpTensor("RefSelect", name) {
       addInput(index, false)
       addInput(inputs, true)
-      
     }
   }
   
@@ -60,7 +53,6 @@ object gen_control_flow_ops {
     tf.buildOpTensors("RefSwitch", name) {
       addInput(data, true)
       addInput(pred, false)
-      
     }
   }
   
@@ -68,7 +60,6 @@ object gen_control_flow_ops {
     tf.buildOpTensors("Switch", name) {
       addInput(data, false)
       addInput(pred, false)
-      
     }
   }
   
@@ -84,7 +75,6 @@ object gen_control_flow_ops {
   fun exit(data: Tensor, name: String = "Exit") = run {
     tf.buildOpTensor("Exit", name) {
       addInput(data, false)
-      
     }
   }
   
@@ -100,14 +90,12 @@ object gen_control_flow_ops {
   fun refExit(data: Tensor, name: String = "RefExit") = run {
     tf.buildOpTensor("RefExit", name) {
       addInput(data, true)
-      
     }
   }
   
   fun refMerge(inputs: Array<Tensor>, name: String = "RefMerge") = run {
     tf.buildOpTensors("RefMerge", name) {
       addInput(inputs, true)
-      
     }
   }
 }

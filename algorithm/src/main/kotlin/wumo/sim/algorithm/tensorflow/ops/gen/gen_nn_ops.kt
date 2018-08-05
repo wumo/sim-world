@@ -214,7 +214,6 @@ object gen_nn_ops {
   fun elu(features: Tensor, name: String = "Elu") = run {
     tf.buildOpTensor("Elu", name) {
       addInput(features, false)
-      
     }
   }
   
@@ -331,14 +330,12 @@ object gen_nn_ops {
       addInput(predictions, false)
       addInput(targets, false)
       addInput(k, false)
-      
     }
   }
   
   fun l2Loss(t: Tensor, name: String = "L2Loss") = run {
     tf.buildOpTensor("L2Loss", name) {
       addInput(t, false)
-      
     }
   }
   
@@ -355,7 +352,6 @@ object gen_nn_ops {
   fun logSoftmax(logits: Tensor, name: String = "LogSoftmax") = run {
     tf.buildOpTensor("LogSoftmax", name) {
       addInput(logits, false)
-      
     }
   }
   
@@ -581,28 +577,24 @@ object gen_nn_ops {
   fun relu(features: Tensor, name: String = "Relu") = run {
     tf.buildOpTensor("Relu", name) {
       addInput(features, false)
-      
     }
   }
   
   fun relu6(features: Tensor, name: String = "Relu6") = run {
     tf.buildOpTensor("Relu6", name) {
       addInput(features, false)
-      
     }
   }
   
   fun selu(features: Tensor, name: String = "Selu") = run {
     tf.buildOpTensor("Selu", name) {
       addInput(features, false)
-      
     }
   }
   
   fun softmax(logits: Tensor, name: String = "Softmax") = run {
     tf.buildOpTensor("Softmax", name) {
       addInput(logits, false)
-      
     }
   }
   
@@ -610,21 +602,18 @@ object gen_nn_ops {
     tf.buildOpTensors("SoftmaxCrossEntropyWithLogits", name) {
       addInput(features, false)
       addInput(labels, false)
-      
     }
   }
   
   fun softplus(features: Tensor, name: String = "Softplus") = run {
     tf.buildOpTensor("Softplus", name) {
       addInput(features, false)
-      
     }
   }
   
   fun softsign(features: Tensor, name: String = "Softsign") = run {
     tf.buildOpTensor("Softsign", name) {
       addInput(features, false)
-      
     }
   }
   
@@ -632,7 +621,6 @@ object gen_nn_ops {
     tf.buildOpTensors("SparseSoftmaxCrossEntropyWithLogits", name) {
       addInput(features, false)
       addInput(labels, false)
-      
     }
   }
   
@@ -659,7 +647,6 @@ object gen_nn_ops {
     tf.buildOpTensor("EluGrad", name) {
       addInput(gradients, false)
       addInput(outputs, false)
-      
     }
   }
   
@@ -723,7 +710,6 @@ object gen_nn_ops {
     tf.buildOpTensor("Relu6Grad", name) {
       addInput(gradients, false)
       addInput(features, false)
-      
     }
   }
   
@@ -731,7 +717,6 @@ object gen_nn_ops {
     tf.buildOpTensor("ReluGrad", name) {
       addInput(gradients, false)
       addInput(features, false)
-      
     }
   }
   
@@ -739,7 +724,6 @@ object gen_nn_ops {
     tf.buildOpTensor("SeluGrad", name) {
       addInput(gradients, false)
       addInput(outputs, false)
-      
     }
   }
   
@@ -747,7 +731,6 @@ object gen_nn_ops {
     tf.buildOpTensor("SoftplusGrad", name) {
       addInput(gradients, false)
       addInput(features, false)
-      
     }
   }
   
@@ -755,7 +738,6 @@ object gen_nn_ops {
     tf.buildOpTensor("SoftsignGrad", name) {
       addInput(gradients, false)
       addInput(features, false)
-      
     }
   }
 }

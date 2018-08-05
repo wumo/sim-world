@@ -12,7 +12,6 @@ object gen_linalg_ops {
   fun cholesky(input: Tensor, name: String = "Cholesky") = run {
     tf.buildOpTensor("Cholesky", name) {
       addInput(input, false)
-      
     }
   }
   
@@ -20,28 +19,24 @@ object gen_linalg_ops {
     tf.buildOpTensor("CholeskyGrad", name) {
       addInput(l, false)
       addInput(grad, false)
-      
     }
   }
   
   fun logMatrixDeterminant(input: Tensor, name: String = "LogMatrixDeterminant") = run {
     tf.buildOpTensors("LogMatrixDeterminant", name) {
       addInput(input, false)
-      
     }
   }
   
   fun matrixDeterminant(input: Tensor, name: String = "MatrixDeterminant") = run {
     tf.buildOpTensor("MatrixDeterminant", name) {
       addInput(input, false)
-      
     }
   }
   
   fun matrixExponential(input: Tensor, name: String = "MatrixExponential") = run {
     tf.buildOpTensor("MatrixExponential", name) {
       addInput(input, false)
-      
     }
   }
   
@@ -103,7 +98,6 @@ object gen_linalg_ops {
   fun matrixLogarithm(input: Tensor, name: String = "MatrixLogarithm") = run {
     tf.buildOpTensor("MatrixLogarithm", name) {
       addInput(input, false)
-      
     }
   }
 }

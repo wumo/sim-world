@@ -52,7 +52,6 @@ object gen_state_ops {
   fun isVariableInitialized(_ref: Tensor, name: String = "IsVariableInitialized") = run {
     tf.buildOpTensor("IsVariableInitialized", name) {
       addInput(_ref, true)
-      
     }
   }
   
@@ -174,7 +173,6 @@ object gen_state_ops {
   
   fun temporaryVariable(shape: Dimension, dtype: Int, var_name: String = "", name: String = "TemporaryVariable") = run {
     tf.buildOpTensor("TemporaryVariable", name) {
-      
       attr("shape", shape)
       attrType("dtype", dtype)
       attr("var_name", var_name)
@@ -183,7 +181,6 @@ object gen_state_ops {
   
   fun variableV2(shape: Dimension, dtype: Int, container: String = "", shared_name: String = "", name: String = "VariableV2") = run {
     tf.buildOpTensor("VariableV2", name) {
-      
       attr("shape", shape)
       attrType("dtype", dtype)
       attr("container", container)

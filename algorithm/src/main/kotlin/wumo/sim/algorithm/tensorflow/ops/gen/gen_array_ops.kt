@@ -20,7 +20,6 @@ object gen_array_ops {
       addInput(input, false)
       addInput(block_shape, false)
       addInput(crops, false)
-      
     }
   }
   
@@ -35,7 +34,6 @@ object gen_array_ops {
     tf.buildOpTensor("BroadcastArgs", name) {
       addInput(s0, false)
       addInput(s1, false)
-      
     }
   }
   
@@ -43,7 +41,6 @@ object gen_array_ops {
     tf.buildOpTensor("BroadcastTo", name) {
       addInput(input, false)
       addInput(shape, false)
-      
     }
   }
   
@@ -58,7 +55,6 @@ object gen_array_ops {
     tf.buildOpTensor("ConcatV2", name) {
       addInput(values, false)
       addInput(axis, false)
-      
     }
   }
   
@@ -66,28 +62,24 @@ object gen_array_ops {
     tf.buildOpTensor("ConjugateTranspose", name) {
       addInput(x, false)
       addInput(perm, false)
-      
     }
   }
   
   fun debugGradientIdentity(input: Tensor, name: String = "DebugGradientIdentity") = run {
     tf.buildOpTensor("DebugGradientIdentity", name) {
       addInput(input, false)
-      
     }
   }
   
   fun debugGradientRefIdentity(input: Tensor, name: String = "DebugGradientRefIdentity") = run {
     tf.buildOpTensor("DebugGradientRefIdentity", name) {
       addInput(input, true)
-      
     }
   }
   
   fun deepCopy(x: Tensor, name: String = "DeepCopy") = run {
     tf.buildOpTensor("DeepCopy", name) {
       addInput(x, false)
-      
     }
   }
   
@@ -111,14 +103,12 @@ object gen_array_ops {
   fun diag(diagonal: Tensor, name: String = "Diag") = run {
     tf.buildOpTensor("Diag", name) {
       addInput(diagonal, false)
-      
     }
   }
   
   fun diagPart(input: Tensor, name: String = "DiagPart") = run {
     tf.buildOpTensor("DiagPart", name) {
       addInput(input, false)
-      
     }
   }
   
@@ -146,7 +136,6 @@ object gen_array_ops {
     tf.buildOpTensor("ExpandDims", name) {
       addInput(input, false)
       addInput(dim, false)
-      
     }
   }
   
@@ -227,7 +216,6 @@ object gen_array_ops {
     tf.buildOpTensor("Fill", name) {
       addInput(dims, false)
       addInput(value, false)
-      
     }
   }
   
@@ -243,7 +231,6 @@ object gen_array_ops {
     tf.buildOpTensor("GatherNd", name) {
       addInput(params, false)
       addInput(indices, false)
-      
     }
   }
   
@@ -252,34 +239,29 @@ object gen_array_ops {
       addInput(params, false)
       addInput(indices, false)
       addInput(axis, false)
-      
     }
   }
   
   fun guaranteeConst(input: Tensor, name: String = "GuaranteeConst") = run {
     tf.buildOpTensor("GuaranteeConst", name) {
       addInput(input, false)
-      
     }
   }
   
   fun identity(input: Tensor, name: String = "Identity") = run {
     tf.buildOpTensor("Identity", name) {
       addInput(input, false)
-      
     }
   }
   
   fun identityN(input: Tensor, name: String = "IdentityN") = run {
     tf.buildOpTensors("IdentityN", name) {
       addInput(input, false)
-      
     }
   }
   
   fun immutableConst(dtype: Int, shape: Dimension, memory_region_name: String, name: String = "ImmutableConst") = run {
     tf.buildOpTensor("ImmutableConst", name) {
-      
       attrType("dtype", dtype)
       attr("shape", shape)
       attr("memory_region_name", memory_region_name)
@@ -291,7 +273,6 @@ object gen_array_ops {
       addInput(x, false)
       addInput(i, false)
       addInput(v, false)
-      
     }
   }
   
@@ -300,7 +281,6 @@ object gen_array_ops {
       addInput(x, false)
       addInput(i, false)
       addInput(v, false)
-      
     }
   }
   
@@ -309,14 +289,12 @@ object gen_array_ops {
       addInput(x, false)
       addInput(i, false)
       addInput(v, false)
-      
     }
   }
   
   fun invertPermutation(x: Tensor, name: String = "InvertPermutation") = run {
     tf.buildOpTensor("InvertPermutation", name) {
       addInput(x, false)
-      
     }
   }
   
@@ -333,21 +311,18 @@ object gen_array_ops {
       addInput(input, false)
       addInput(num_lower, false)
       addInput(num_upper, false)
-      
     }
   }
   
   fun matrixDiag(diagonal: Tensor, name: String = "MatrixDiag") = run {
     tf.buildOpTensor("MatrixDiag", name) {
       addInput(diagonal, false)
-      
     }
   }
   
   fun matrixDiagPart(input: Tensor, name: String = "MatrixDiagPart") = run {
     tf.buildOpTensor("MatrixDiagPart", name) {
       addInput(input, false)
-      
     }
   }
   
@@ -355,7 +330,6 @@ object gen_array_ops {
     tf.buildOpTensor("MatrixSetDiag", name) {
       addInput(input, false)
       addInput(diagonal, false)
-      
     }
   }
   
@@ -380,7 +354,6 @@ object gen_array_ops {
   fun onesLike(x: Tensor, name: String = "OnesLike") = run {
     tf.buildOpTensor("OnesLike", name) {
       addInput(x, false)
-      
     }
   }
   
@@ -395,7 +368,6 @@ object gen_array_ops {
     tf.buildOpTensor("Pad", name) {
       addInput(input, false)
       addInput(paddings, false)
-      
     }
   }
   
@@ -404,7 +376,6 @@ object gen_array_ops {
       addInput(input, false)
       addInput(paddings, false)
       addInput(constant_values, false)
-      
     }
   }
   
@@ -417,7 +388,6 @@ object gen_array_ops {
   
   fun placeholder(dtype: Int, shape: Dimension = Dimension(unknow_rank = true), name: String = "Placeholder") = run {
     tf.buildOpTensor("Placeholder", name) {
-      
       attrType("dtype", dtype)
       attr("shape", shape)
     }
@@ -476,7 +446,6 @@ object gen_array_ops {
       addInput(values, false)
       addInput(input_mins, false)
       addInput(input_maxes, false)
-      
     }
   }
   
@@ -499,14 +468,12 @@ object gen_array_ops {
       addInput(shape, false)
       addInput(input_min, false)
       addInput(input_max, false)
-      
     }
   }
   
   fun rank(input: Tensor, name: String = "Rank") = run {
     tf.buildOpTensor("Rank", name) {
       addInput(input, false)
-      
     }
   }
   
@@ -514,7 +481,6 @@ object gen_array_ops {
     tf.buildOpTensor("Reshape", name) {
       addInput(tensor, false)
       addInput(shape, false)
-      
     }
   }
   
@@ -546,7 +512,6 @@ object gen_array_ops {
     tf.buildOpTensor("ReverseV2", name) {
       addInput(tensor, false)
       addInput(axis, false)
-      
     }
   }
   
@@ -555,7 +520,6 @@ object gen_array_ops {
       addInput(indices, false)
       addInput(updates, false)
       addInput(shape, false)
-      
     }
   }
   
@@ -564,7 +528,6 @@ object gen_array_ops {
       addInput(input, false)
       addInput(indices, false)
       addInput(updates, false)
-      
     }
   }
   
@@ -594,14 +557,12 @@ object gen_array_ops {
       addInput(input, false)
       addInput(begin, false)
       addInput(size, false)
-      
     }
   }
   
   fun snapshot(input: Tensor, name: String = "Snapshot") = run {
     tf.buildOpTensor("Snapshot", name) {
       addInput(input, false)
-      
     }
   }
   
@@ -618,7 +579,6 @@ object gen_array_ops {
       addInput(input, false)
       addInput(block_shape, false)
       addInput(paddings, false)
-      
     }
   }
   
@@ -657,7 +617,6 @@ object gen_array_ops {
   fun stopGradient(input: Tensor, name: String = "StopGradient") = run {
     tf.buildOpTensor("StopGradient", name) {
       addInput(input, false)
-      
     }
   }
   
@@ -709,7 +668,6 @@ object gen_array_ops {
     tf.buildOpTensor("Tile", name) {
       addInput(input, false)
       addInput(multiples, false)
-      
     }
   }
   
@@ -717,7 +675,6 @@ object gen_array_ops {
     tf.buildOpTensor("Transpose", name) {
       addInput(x, false)
       addInput(perm, false)
-      
     }
   }
   
@@ -763,21 +720,18 @@ object gen_array_ops {
     tf.buildOpTensor("UnravelIndex", name) {
       addInput(indices, false)
       addInput(dims, false)
-      
     }
   }
   
   fun _where(input: Tensor, name: String = "Where") = run {
     tf.buildOpTensor("Where", name) {
       addInput(input, false)
-      
     }
   }
   
   fun zerosLike(x: Tensor, name: String = "ZerosLike") = run {
     tf.buildOpTensor("ZerosLike", name) {
       addInput(x, false)
-      
     }
   }
   
@@ -785,7 +739,6 @@ object gen_array_ops {
     tf.buildOpTensors("BroadcastGradientArgs", name) {
       addInput(s0, false)
       addInput(s1, false)
-      
     }
   }
   
@@ -800,7 +753,6 @@ object gen_array_ops {
   fun refIdentity(input: Tensor, name: String = "RefIdentity") = run {
     tf.buildOpTensor("RefIdentity", name) {
       addInput(input, true)
-      
     }
   }
 }

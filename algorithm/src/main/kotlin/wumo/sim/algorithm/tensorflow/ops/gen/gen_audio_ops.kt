@@ -30,7 +30,6 @@ object gen_audio_ops {
     tf.buildOpTensor("EncodeWav", name) {
       addInput(audio, false)
       addInput(sample_rate, false)
-      
     }
   }
   

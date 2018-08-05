@@ -13,7 +13,6 @@ object gen_math_ops {
   fun abs(x: Tensor, name: String = "Abs") = run {
     tf.buildOpTensor("Abs", name) {
       addInput(x, false)
-      
     }
   }
   
@@ -27,14 +26,12 @@ object gen_math_ops {
   fun acos(x: Tensor, name: String = "Acos") = run {
     tf.buildOpTensor("Acos", name) {
       addInput(x, false)
-      
     }
   }
   
   fun acosh(x: Tensor, name: String = "Acosh") = run {
     tf.buildOpTensor("Acosh", name) {
       addInput(x, false)
-      
     }
   }
   
@@ -42,14 +39,12 @@ object gen_math_ops {
     tf.buildOpTensor("Add", name) {
       addInput(x, false)
       addInput(y, false)
-      
     }
   }
   
   fun addN(inputs: Array<Tensor>, name: String = "AddN") = run {
     tf.buildOpTensor("AddN", name) {
       addInput(inputs, false)
-      
     }
   }
   
@@ -57,7 +52,6 @@ object gen_math_ops {
     tf.buildOpTensor("AddV2", name) {
       addInput(x, false)
       addInput(y, false)
-      
     }
   }
   
@@ -111,21 +105,18 @@ object gen_math_ops {
   fun asin(x: Tensor, name: String = "Asin") = run {
     tf.buildOpTensor("Asin", name) {
       addInput(x, false)
-      
     }
   }
   
   fun asinh(x: Tensor, name: String = "Asinh") = run {
     tf.buildOpTensor("Asinh", name) {
       addInput(x, false)
-      
     }
   }
   
   fun atan(x: Tensor, name: String = "Atan") = run {
     tf.buildOpTensor("Atan", name) {
       addInput(x, false)
-      
     }
   }
   
@@ -133,14 +124,12 @@ object gen_math_ops {
     tf.buildOpTensor("Atan2", name) {
       addInput(y, false)
       addInput(x, false)
-      
     }
   }
   
   fun atanh(x: Tensor, name: String = "Atanh") = run {
     tf.buildOpTensor("Atanh", name) {
       addInput(x, false)
-      
     }
   }
   
@@ -156,14 +145,12 @@ object gen_math_ops {
   fun besselI0e(x: Tensor, name: String = "BesselI0e") = run {
     tf.buildOpTensor("BesselI0e", name) {
       addInput(x, false)
-      
     }
   }
   
   fun besselI1e(x: Tensor, name: String = "BesselI1e") = run {
     tf.buildOpTensor("BesselI1e", name) {
       addInput(x, false)
-      
     }
   }
   
@@ -172,7 +159,6 @@ object gen_math_ops {
       addInput(a, false)
       addInput(b, false)
       addInput(x, false)
-      
     }
   }
   
@@ -181,7 +167,6 @@ object gen_math_ops {
       addInput(arr, false)
       addInput(size, false)
       addInput(weights, false)
-      
     }
   }
   
@@ -202,7 +187,6 @@ object gen_math_ops {
   fun ceil(x: Tensor, name: String = "Ceil") = run {
     tf.buildOpTensor("Ceil", name) {
       addInput(x, false)
-      
     }
   }
   
@@ -211,7 +195,6 @@ object gen_math_ops {
       addInput(t, false)
       addInput(clip_value_min, false)
       addInput(clip_value_max, false)
-      
     }
   }
   
@@ -219,7 +202,6 @@ object gen_math_ops {
     tf.buildOpTensor("CompareAndBitpack", name) {
       addInput(input, false)
       addInput(threshold, false)
-      
     }
   }
   
@@ -241,21 +223,18 @@ object gen_math_ops {
   fun conj(input: Tensor, name: String = "Conj") = run {
     tf.buildOpTensor("Conj", name) {
       addInput(input, false)
-      
     }
   }
   
   fun cos(x: Tensor, name: String = "Cos") = run {
     tf.buildOpTensor("Cos", name) {
       addInput(x, false)
-      
     }
   }
   
   fun cosh(x: Tensor, name: String = "Cosh") = run {
     tf.buildOpTensor("Cosh", name) {
       addInput(x, false)
-      
     }
   }
   
@@ -263,7 +242,6 @@ object gen_math_ops {
     tf.buildOpTensor("Cross", name) {
       addInput(a, false)
       addInput(b, false)
-      
     }
   }
   
@@ -288,7 +266,6 @@ object gen_math_ops {
   fun digamma(x: Tensor, name: String = "Digamma") = run {
     tf.buildOpTensor("Digamma", name) {
       addInput(x, false)
-      
     }
   }
   
@@ -296,7 +273,6 @@ object gen_math_ops {
     tf.buildOpTensor("Div", name) {
       addInput(x, false)
       addInput(y, false)
-      
     }
   }
   
@@ -304,42 +280,36 @@ object gen_math_ops {
     tf.buildOpTensor("Equal", name) {
       addInput(x, false)
       addInput(y, false)
-      
     }
   }
   
   fun erf(x: Tensor, name: String = "Erf") = run {
     tf.buildOpTensor("Erf", name) {
       addInput(x, false)
-      
     }
   }
   
   fun erfc(x: Tensor, name: String = "Erfc") = run {
     tf.buildOpTensor("Erfc", name) {
       addInput(x, false)
-      
     }
   }
   
   fun exp(x: Tensor, name: String = "Exp") = run {
     tf.buildOpTensor("Exp", name) {
       addInput(x, false)
-      
     }
   }
   
   fun expm1(x: Tensor, name: String = "Expm1") = run {
     tf.buildOpTensor("Expm1", name) {
       addInput(x, false)
-      
     }
   }
   
   fun floor(x: Tensor, name: String = "Floor") = run {
     tf.buildOpTensor("Floor", name) {
       addInput(x, false)
-      
     }
   }
   
@@ -347,7 +317,6 @@ object gen_math_ops {
     tf.buildOpTensor("FloorDiv", name) {
       addInput(x, false)
       addInput(y, false)
-      
     }
   }
   
@@ -355,7 +324,6 @@ object gen_math_ops {
     tf.buildOpTensor("FloorMod", name) {
       addInput(x, false)
       addInput(y, false)
-      
     }
   }
   
@@ -363,7 +331,6 @@ object gen_math_ops {
     tf.buildOpTensor("Greater", name) {
       addInput(x, false)
       addInput(y, false)
-      
     }
   }
   
@@ -371,7 +338,6 @@ object gen_math_ops {
     tf.buildOpTensor("GreaterEqual", name) {
       addInput(x, false)
       addInput(y, false)
-      
     }
   }
   
@@ -388,7 +354,6 @@ object gen_math_ops {
     tf.buildOpTensor("Igamma", name) {
       addInput(a, false)
       addInput(x, false)
-      
     }
   }
   
@@ -396,7 +361,6 @@ object gen_math_ops {
     tf.buildOpTensor("Igammac", name) {
       addInput(a, false)
       addInput(x, false)
-      
     }
   }
   
@@ -410,28 +374,24 @@ object gen_math_ops {
   fun inv(x: Tensor, name: String = "Inv") = run {
     tf.buildOpTensor("Inv", name) {
       addInput(x, false)
-      
     }
   }
   
   fun isFinite(x: Tensor, name: String = "IsFinite") = run {
     tf.buildOpTensor("IsFinite", name) {
       addInput(x, false)
-      
     }
   }
   
   fun isInf(x: Tensor, name: String = "IsInf") = run {
     tf.buildOpTensor("IsInf", name) {
       addInput(x, false)
-      
     }
   }
   
   fun isNan(x: Tensor, name: String = "IsNan") = run {
     tf.buildOpTensor("IsNan", name) {
       addInput(x, false)
-      
     }
   }
   
@@ -439,7 +399,6 @@ object gen_math_ops {
     tf.buildOpTensor("Less", name) {
       addInput(x, false)
       addInput(y, false)
-      
     }
   }
   
@@ -447,14 +406,12 @@ object gen_math_ops {
     tf.buildOpTensor("LessEqual", name) {
       addInput(x, false)
       addInput(y, false)
-      
     }
   }
   
   fun lgamma(x: Tensor, name: String = "Lgamma") = run {
     tf.buildOpTensor("Lgamma", name) {
       addInput(x, false)
-      
     }
   }
   
@@ -463,21 +420,18 @@ object gen_math_ops {
       addInput(start, false)
       addInput(stop, false)
       addInput(num, false)
-      
     }
   }
   
   fun log(x: Tensor, name: String = "Log") = run {
     tf.buildOpTensor("Log", name) {
       addInput(x, false)
-      
     }
   }
   
   fun log1p(x: Tensor, name: String = "Log1p") = run {
     tf.buildOpTensor("Log1p", name) {
       addInput(x, false)
-      
     }
   }
   
@@ -485,14 +439,12 @@ object gen_math_ops {
     tf.buildOpTensor("LogicalAnd", name) {
       addInput(x, false)
       addInput(y, false)
-      
     }
   }
   
   fun logicalNot(x: Tensor, name: String = "LogicalNot") = run {
     tf.buildOpTensor("LogicalNot", name) {
       addInput(x, false)
-      
     }
   }
   
@@ -500,7 +452,6 @@ object gen_math_ops {
     tf.buildOpTensor("LogicalOr", name) {
       addInput(x, false)
       addInput(y, false)
-      
     }
   }
   
@@ -525,7 +476,6 @@ object gen_math_ops {
     tf.buildOpTensor("Maximum", name) {
       addInput(x, false)
       addInput(y, false)
-      
     }
   }
   
@@ -549,7 +499,6 @@ object gen_math_ops {
     tf.buildOpTensor("Minimum", name) {
       addInput(x, false)
       addInput(y, false)
-      
     }
   }
   
@@ -557,7 +506,6 @@ object gen_math_ops {
     tf.buildOpTensor("Mod", name) {
       addInput(x, false)
       addInput(y, false)
-      
     }
   }
   
@@ -565,14 +513,12 @@ object gen_math_ops {
     tf.buildOpTensor("Mul", name) {
       addInput(x, false)
       addInput(y, false)
-      
     }
   }
   
   fun neg(x: Tensor, name: String = "Neg") = run {
     tf.buildOpTensor("Neg", name) {
       addInput(x, false)
-      
     }
   }
   
@@ -580,7 +526,6 @@ object gen_math_ops {
     tf.buildOpTensor("NotEqual", name) {
       addInput(x, false)
       addInput(y, false)
-      
     }
   }
   
@@ -588,7 +533,6 @@ object gen_math_ops {
     tf.buildOpTensor("Polygamma", name) {
       addInput(a, false)
       addInput(x, false)
-      
     }
   }
   
@@ -596,7 +540,6 @@ object gen_math_ops {
     tf.buildOpTensor("Pow", name) {
       addInput(x, false)
       addInput(y, false)
-      
     }
   }
   
@@ -661,7 +604,6 @@ object gen_math_ops {
       addInput(start, false)
       addInput(limit, false)
       addInput(delta, false)
-      
     }
   }
   
@@ -676,14 +618,12 @@ object gen_math_ops {
     tf.buildOpTensor("RealDiv", name) {
       addInput(x, false)
       addInput(y, false)
-      
     }
   }
   
   fun reciprocal(x: Tensor, name: String = "Reciprocal") = run {
     tf.buildOpTensor("Reciprocal", name) {
       addInput(x, false)
-      
     }
   }
   
@@ -692,7 +632,6 @@ object gen_math_ops {
       addInput(input, false)
       addInput(input_min, false)
       addInput(input_max, false)
-      
     }
   }
   
@@ -710,21 +649,18 @@ object gen_math_ops {
   fun rint(x: Tensor, name: String = "Rint") = run {
     tf.buildOpTensor("Rint", name) {
       addInput(x, false)
-      
     }
   }
   
   fun round(x: Tensor, name: String = "Round") = run {
     tf.buildOpTensor("Round", name) {
       addInput(x, false)
-      
     }
   }
   
   fun rsqrt(x: Tensor, name: String = "Rsqrt") = run {
     tf.buildOpTensor("Rsqrt", name) {
       addInput(x, false)
-      
     }
   }
   
@@ -732,7 +668,6 @@ object gen_math_ops {
     tf.buildOpTensor("SegmentMax", name) {
       addInput(data, false)
       addInput(segment_ids, false)
-      
     }
   }
   
@@ -740,7 +675,6 @@ object gen_math_ops {
     tf.buildOpTensor("SegmentMean", name) {
       addInput(data, false)
       addInput(segment_ids, false)
-      
     }
   }
   
@@ -748,7 +682,6 @@ object gen_math_ops {
     tf.buildOpTensor("SegmentMin", name) {
       addInput(data, false)
       addInput(segment_ids, false)
-      
     }
   }
   
@@ -756,7 +689,6 @@ object gen_math_ops {
     tf.buildOpTensor("SegmentProd", name) {
       addInput(data, false)
       addInput(segment_ids, false)
-      
     }
   }
   
@@ -764,7 +696,6 @@ object gen_math_ops {
     tf.buildOpTensor("SegmentSum", name) {
       addInput(data, false)
       addInput(segment_ids, false)
-      
     }
   }
   
@@ -773,35 +704,30 @@ object gen_math_ops {
       addInput(condition, false)
       addInput(t, false)
       addInput(e, false)
-      
     }
   }
   
   fun sigmoid(x: Tensor, name: String = "Sigmoid") = run {
     tf.buildOpTensor("Sigmoid", name) {
       addInput(x, false)
-      
     }
   }
   
   fun sign(x: Tensor, name: String = "Sign") = run {
     tf.buildOpTensor("Sign", name) {
       addInput(x, false)
-      
     }
   }
   
   fun sin(x: Tensor, name: String = "Sin") = run {
     tf.buildOpTensor("Sin", name) {
       addInput(x, false)
-      
     }
   }
   
   fun sinh(x: Tensor, name: String = "Sinh") = run {
     tf.buildOpTensor("Sinh", name) {
       addInput(x, false)
-      
     }
   }
   
@@ -821,7 +747,6 @@ object gen_math_ops {
       addInput(data, false)
       addInput(indices, false)
       addInput(segment_ids, false)
-      
     }
   }
   
@@ -831,7 +756,6 @@ object gen_math_ops {
       addInput(indices, false)
       addInput(segment_ids, false)
       addInput(output_dim0, false)
-      
     }
   }
   
@@ -841,7 +765,6 @@ object gen_math_ops {
       addInput(indices, false)
       addInput(segment_ids, false)
       addInput(num_segments, false)
-      
     }
   }
   
@@ -850,7 +773,6 @@ object gen_math_ops {
       addInput(data, false)
       addInput(indices, false)
       addInput(segment_ids, false)
-      
     }
   }
   
@@ -860,7 +782,6 @@ object gen_math_ops {
       addInput(indices, false)
       addInput(segment_ids, false)
       addInput(output_dim0, false)
-      
     }
   }
   
@@ -870,7 +791,6 @@ object gen_math_ops {
       addInput(indices, false)
       addInput(segment_ids, false)
       addInput(num_segments, false)
-      
     }
   }
   
@@ -879,7 +799,6 @@ object gen_math_ops {
       addInput(data, false)
       addInput(indices, false)
       addInput(segment_ids, false)
-      
     }
   }
   
@@ -889,21 +808,18 @@ object gen_math_ops {
       addInput(indices, false)
       addInput(segment_ids, false)
       addInput(num_segments, false)
-      
     }
   }
   
   fun sqrt(x: Tensor, name: String = "Sqrt") = run {
     tf.buildOpTensor("Sqrt", name) {
       addInput(x, false)
-      
     }
   }
   
   fun square(x: Tensor, name: String = "Square") = run {
     tf.buildOpTensor("Square", name) {
       addInput(x, false)
-      
     }
   }
   
@@ -911,7 +827,6 @@ object gen_math_ops {
     tf.buildOpTensor("SquaredDifference", name) {
       addInput(x, false)
       addInput(y, false)
-      
     }
   }
   
@@ -919,7 +834,6 @@ object gen_math_ops {
     tf.buildOpTensor("Sub", name) {
       addInput(x, false)
       addInput(y, false)
-      
     }
   }
   
@@ -934,14 +848,12 @@ object gen_math_ops {
   fun tan(x: Tensor, name: String = "Tan") = run {
     tf.buildOpTensor("Tan", name) {
       addInput(x, false)
-      
     }
   }
   
   fun tanh(x: Tensor, name: String = "Tanh") = run {
     tf.buildOpTensor("Tanh", name) {
       addInput(x, false)
-      
     }
   }
   
@@ -949,7 +861,6 @@ object gen_math_ops {
     tf.buildOpTensor("TruncateDiv", name) {
       addInput(x, false)
       addInput(y, false)
-      
     }
   }
   
@@ -957,7 +868,6 @@ object gen_math_ops {
     tf.buildOpTensor("TruncateMod", name) {
       addInput(x, false)
       addInput(y, false)
-      
     }
   }
   
@@ -966,7 +876,6 @@ object gen_math_ops {
       addInput(data, false)
       addInput(segment_ids, false)
       addInput(num_segments, false)
-      
     }
   }
   
@@ -975,7 +884,6 @@ object gen_math_ops {
       addInput(data, false)
       addInput(segment_ids, false)
       addInput(num_segments, false)
-      
     }
   }
   
@@ -984,7 +892,6 @@ object gen_math_ops {
       addInput(data, false)
       addInput(segment_ids, false)
       addInput(num_segments, false)
-      
     }
   }
   
@@ -993,7 +900,6 @@ object gen_math_ops {
       addInput(data, false)
       addInput(segment_ids, false)
       addInput(num_segments, false)
-      
     }
   }
   
@@ -1001,7 +907,6 @@ object gen_math_ops {
     tf.buildOpTensor("Zeta", name) {
       addInput(x, false)
       addInput(q, false)
-      
     }
   }
   
@@ -1009,7 +914,6 @@ object gen_math_ops {
     tf.buildOpTensor("IgammaGradA", name) {
       addInput(a, false)
       addInput(x, false)
-      
     }
   }
   
@@ -1017,7 +921,6 @@ object gen_math_ops {
     tf.buildOpTensor("InvGrad", name) {
       addInput(y, false)
       addInput(dy, false)
-      
     }
   }
   
@@ -1025,7 +928,6 @@ object gen_math_ops {
     tf.buildOpTensor("ReciprocalGrad", name) {
       addInput(y, false)
       addInput(dy, false)
-      
     }
   }
   
@@ -1033,7 +935,6 @@ object gen_math_ops {
     tf.buildOpTensor("RsqrtGrad", name) {
       addInput(y, false)
       addInput(dy, false)
-      
     }
   }
   
@@ -1041,7 +942,6 @@ object gen_math_ops {
     tf.buildOpTensor("SigmoidGrad", name) {
       addInput(y, false)
       addInput(dy, false)
-      
     }
   }
   
@@ -1049,7 +949,6 @@ object gen_math_ops {
     tf.buildOpTensor("SqrtGrad", name) {
       addInput(y, false)
       addInput(dy, false)
-      
     }
   }
   
@@ -1057,7 +956,6 @@ object gen_math_ops {
     tf.buildOpTensor("TanhGrad", name) {
       addInput(y, false)
       addInput(dy, false)
-      
     }
   }
 }

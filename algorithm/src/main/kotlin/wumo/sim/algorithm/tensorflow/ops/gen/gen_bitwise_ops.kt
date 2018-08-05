@@ -12,7 +12,6 @@ object gen_bitwise_ops {
     tf.buildOpTensor("BitwiseAnd", name) {
       addInput(x, false)
       addInput(y, false)
-      
     }
   }
   
@@ -20,7 +19,6 @@ object gen_bitwise_ops {
     tf.buildOpTensor("BitwiseOr", name) {
       addInput(x, false)
       addInput(y, false)
-      
     }
   }
   
@@ -28,14 +26,12 @@ object gen_bitwise_ops {
     tf.buildOpTensor("BitwiseXor", name) {
       addInput(x, false)
       addInput(y, false)
-      
     }
   }
   
   fun invert(x: Tensor, name: String = "Invert") = run {
     tf.buildOpTensor("Invert", name) {
       addInput(x, false)
-      
     }
   }
   
@@ -43,14 +39,12 @@ object gen_bitwise_ops {
     tf.buildOpTensor("LeftShift", name) {
       addInput(x, false)
       addInput(y, false)
-      
     }
   }
   
   fun populationCount(x: Tensor, name: String = "PopulationCount") = run {
     tf.buildOpTensor("PopulationCount", name) {
       addInput(x, false)
-      
     }
   }
   
@@ -58,7 +52,6 @@ object gen_bitwise_ops {
     tf.buildOpTensor("RightShift", name) {
       addInput(x, false)
       addInput(y, false)
-      
     }
   }
 }

@@ -31,7 +31,6 @@ object gen_parsing_ops {
   fun decodeJSONExample(json_examples: Tensor, name: String = "DecodeJSONExample") = run {
     tf.buildOpTensor("DecodeJSONExample", name) {
       addInput(json_examples, false)
-      
     }
   }
   
@@ -95,7 +94,6 @@ object gen_parsing_ops {
   fun serializeTensor(tensor: Tensor, name: String = "SerializeTensor") = run {
     tf.buildOpTensor("SerializeTensor", name) {
       addInput(tensor, false)
-      
     }
   }
   

@@ -70,7 +70,6 @@ object gen_sparse_ops {
       addInput(b_values, false)
       addInput(b_shape, false)
       addInput(thresh, false)
-      
     }
   }
   
@@ -80,7 +79,6 @@ object gen_sparse_ops {
       addInput(a_indices, false)
       addInput(b_indices, false)
       addInput(sum_indices, false)
-      
     }
   }
   
@@ -113,7 +111,6 @@ object gen_sparse_ops {
       addInput(sp_values, false)
       addInput(sp_shape, false)
       addInput(dense, false)
-      
     }
   }
   
@@ -123,7 +120,6 @@ object gen_sparse_ops {
       addInput(sp_values, false)
       addInput(sp_shape, false)
       addInput(dense, false)
-      
     }
   }
   
@@ -133,7 +129,6 @@ object gen_sparse_ops {
       addInput(sp_values, false)
       addInput(sp_shape, false)
       addInput(dense, false)
-      
     }
   }
   
@@ -143,7 +138,6 @@ object gen_sparse_ops {
       addInput(values, false)
       addInput(dense_shape, false)
       addInput(default_value, false)
-      
     }
   }
   
@@ -151,7 +145,6 @@ object gen_sparse_ops {
     tf.buildOpTensors("SparseFillEmptyRowsGrad", name) {
       addInput(reverse_index_map, false)
       addInput(grad_values, false)
-      
     }
   }
   
@@ -200,7 +193,6 @@ object gen_sparse_ops {
       addInput(input_indices, false)
       addInput(input_values, false)
       addInput(input_shape, false)
-      
     }
   }
   
@@ -209,7 +201,6 @@ object gen_sparse_ops {
       addInput(input_indices, false)
       addInput(input_shape, false)
       addInput(new_shape, false)
-      
     }
   }
   
@@ -220,7 +211,6 @@ object gen_sparse_ops {
       addInput(shape, false)
       addInput(start, false)
       addInput(size, false)
-      
     }
   }
   
@@ -230,7 +220,6 @@ object gen_sparse_ops {
       addInput(input_indices, false)
       addInput(input_start, false)
       addInput(output_indices, false)
-      
     }
   }
   
@@ -239,7 +228,6 @@ object gen_sparse_ops {
       addInput(sp_indices, false)
       addInput(sp_values, false)
       addInput(sp_shape, false)
-      
     }
   }
   
@@ -251,7 +239,6 @@ object gen_sparse_ops {
       addInput(b_indices, false)
       addInput(b_values, false)
       addInput(b_shape, false)
-      
     }
   }
   
@@ -263,7 +250,6 @@ object gen_sparse_ops {
       addInput(b_indices, false)
       addInput(b_values, false)
       addInput(b_shape, false)
-      
     }
   }
   
@@ -283,7 +269,6 @@ object gen_sparse_ops {
       addInput(a_values, false)
       addInput(a_shape, false)
       addInput(b, false)
-      
     }
   }
   

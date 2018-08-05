@@ -31,7 +31,6 @@ object gen_logging_ops {
     tf.buildOpTensor("HistogramSummary", name) {
       addInput(tag, false)
       addInput(values, false)
-      
     }
   }
   
@@ -47,7 +46,6 @@ object gen_logging_ops {
   fun mergeSummary(inputs: Array<Tensor>, name: String = "MergeSummary") = run {
     tf.buildOpTensor("MergeSummary", name) {
       addInput(inputs, false)
-      
     }
   }
   
@@ -65,7 +63,6 @@ object gen_logging_ops {
     tf.buildOpTensor("ScalarSummary", name) {
       addInput(tags, false)
       addInput(values, false)
-      
     }
   }
   
@@ -83,13 +80,11 @@ object gen_logging_ops {
       addInput(tag, false)
       addInput(tensor, false)
       addInput(serialized_summary_metadata, false)
-      
     }
   }
   
   fun timestamp(name: String = "Timestamp") = run {
     tf.buildOpTensor("Timestamp", name) {
-    
     }
   }
 }

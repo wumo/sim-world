@@ -12,7 +12,6 @@ object gen_summary_ops {
   fun closeSummaryWriter(writer: Tensor, name: String = "CloseSummaryWriter") = run {
     tf.buildOp("CloseSummaryWriter", name) {
       addInput(writer, false)
-      
     }
   }
   
@@ -23,7 +22,6 @@ object gen_summary_ops {
       addInput(experiment_name, false)
       addInput(run_name, false)
       addInput(user_name, false)
-      
     }
   }
   
@@ -34,14 +32,12 @@ object gen_summary_ops {
       addInput(max_queue, false)
       addInput(flush_millis, false)
       addInput(filename_suffix, false)
-      
     }
   }
   
   fun flushSummaryWriter(writer: Tensor, name: String = "FlushSummaryWriter") = run {
     tf.buildOp("FlushSummaryWriter", name) {
       addInput(writer, false)
-      
     }
   }
   
@@ -49,13 +45,11 @@ object gen_summary_ops {
     tf.buildOp("ImportEvent", name) {
       addInput(writer, false)
       addInput(event, false)
-      
     }
   }
   
   fun summaryWriter(shared_name: String = "", container: String = "", name: String = "SummaryWriter") = run {
     tf.buildOpTensor("SummaryWriter", name) {
-      
       attr("shared_name", shared_name)
       attr("container", container)
     }
@@ -77,7 +71,6 @@ object gen_summary_ops {
       addInput(writer, false)
       addInput(step, false)
       addInput(tensor, false)
-      
     }
   }
   
@@ -87,7 +80,6 @@ object gen_summary_ops {
       addInput(step, false)
       addInput(tag, false)
       addInput(values, false)
-      
     }
   }
   
@@ -108,7 +100,6 @@ object gen_summary_ops {
       addInput(step, false)
       addInput(tag, false)
       addInput(value, false)
-      
     }
   }
   
@@ -119,7 +110,6 @@ object gen_summary_ops {
       addInput(tensor, false)
       addInput(tag, false)
       addInput(summary_metadata, false)
-      
     }
   }
 }

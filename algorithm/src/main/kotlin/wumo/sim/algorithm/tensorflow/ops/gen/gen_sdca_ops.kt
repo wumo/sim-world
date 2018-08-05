@@ -9,7 +9,6 @@ object gen_sdca_ops {
   fun sdcaFprint(input: Tensor, name: String = "SdcaFprint") = run {
     tf.buildOpTensor("SdcaFprint", name) {
       addInput(input, false)
-      
     }
   }
   

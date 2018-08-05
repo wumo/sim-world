@@ -14,7 +14,6 @@ object gen_resource_variable_ops {
     tf.buildOp("AssignAddVariableOp", name) {
       addInput(resource, false)
       addInput(value, false)
-      
     }
   }
   
@@ -22,7 +21,6 @@ object gen_resource_variable_ops {
     tf.buildOp("AssignSubVariableOp", name) {
       addInput(resource, false)
       addInput(value, false)
-      
     }
   }
   
@@ -30,14 +28,12 @@ object gen_resource_variable_ops {
     tf.buildOp("AssignVariableOp", name) {
       addInput(resource, false)
       addInput(value, false)
-      
     }
   }
   
   fun consumeMutexLock(mutex_lock: Tensor, name: String = "ConsumeMutexLock") = run {
     tf.buildOp("ConsumeMutexLock", name) {
       addInput(mutex_lock, false)
-      
     }
   }
   
@@ -51,13 +47,11 @@ object gen_resource_variable_ops {
   fun mutexLock(mutex: Tensor, name: String = "MutexLock") = run {
     tf.buildOpTensor("MutexLock", name) {
       addInput(mutex, false)
-      
     }
   }
   
   fun mutexV2(container: String = "", shared_name: String = "", name: String = "MutexV2") = run {
     tf.buildOpTensor("MutexV2", name) {
-      
       attr("container", container)
       attr("shared_name", shared_name)
     }
@@ -84,7 +78,6 @@ object gen_resource_variable_ops {
       addInput(resource, false)
       addInput(indices, false)
       addInput(updates, false)
-      
     }
   }
   
@@ -93,7 +86,6 @@ object gen_resource_variable_ops {
       addInput(resource, false)
       addInput(indices, false)
       addInput(updates, false)
-      
     }
   }
   
@@ -102,7 +94,6 @@ object gen_resource_variable_ops {
       addInput(resource, false)
       addInput(indices, false)
       addInput(updates, false)
-      
     }
   }
   
@@ -111,7 +102,6 @@ object gen_resource_variable_ops {
       addInput(resource, false)
       addInput(indices, false)
       addInput(updates, false)
-      
     }
   }
   
@@ -120,7 +110,6 @@ object gen_resource_variable_ops {
       addInput(resource, false)
       addInput(indices, false)
       addInput(updates, false)
-      
     }
   }
   
@@ -129,7 +118,6 @@ object gen_resource_variable_ops {
       addInput(resource, false)
       addInput(indices, false)
       addInput(updates, false)
-      
     }
   }
   
@@ -138,13 +126,11 @@ object gen_resource_variable_ops {
       addInput(resource, false)
       addInput(indices, false)
       addInput(updates, false)
-      
     }
   }
   
   fun varHandleOp(container: String = "", shared_name: String = "", dtype: Int, shape: Dimension, name: String = "VarHandleOp") = run {
     tf.buildOpTensor("VarHandleOp", name) {
-      
       attr("container", container)
       attr("shared_name", shared_name)
       attrType("dtype", dtype)
@@ -155,7 +141,6 @@ object gen_resource_variable_ops {
   fun varIsInitializedOp(resource: Tensor, name: String = "VarIsInitializedOp") = run {
     tf.buildOpTensor("VarIsInitializedOp", name) {
       addInput(resource, false)
-      
     }
   }
   

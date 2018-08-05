@@ -98,7 +98,6 @@ object gen_random_ops {
     tf.buildOpTensor("RandomGammaGrad", name) {
       addInput(alpha, false)
       addInput(sample, false)
-      
     }
   }
 }

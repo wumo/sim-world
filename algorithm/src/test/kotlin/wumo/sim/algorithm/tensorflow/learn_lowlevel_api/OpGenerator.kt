@@ -78,9 +78,6 @@ class OpGenerator(val opDef: OpDef, val sb: StringBuilder) {
   }
   
   fun generateOpFunction() {
-//    addInputs()
-//    addInferredAttributes()
-//    addParameters()
     val arguments = inputs + parameters
     
     var kotlinArguments = arguments.joinToString(", ") { p ->
@@ -107,16 +104,13 @@ class OpGenerator(val opDef: OpDef, val sb: StringBuilder) {
       1 -> "buildOpTensor"
       else -> "buildOpTensors"
     }
-    sb.append(
-        """
-      |    fun $name($kotlinArguments) = run {
-      |        tf.$buildFunc("${opDef.name}", name){
-      |           $addInput
-      |           $addAttr
-      |        }
-      |    }
-      |
-      """.trimMargin())
+    with(sb) {
+      append("fun $name($kotlinArguments) = run {\n")
+      append("tf.$buildFunc(\"${opDef.name}\", name){\n")
+      if (addInput.isNotBlank()) append(addInput).append('\n')
+      if (addAttr.isNotBlank()) append(addAttr).append('\n')
+      append("}\n}\n")
+    }
   }
   
   fun initialize() {

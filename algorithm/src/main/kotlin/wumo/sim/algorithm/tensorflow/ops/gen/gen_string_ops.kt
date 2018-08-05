@@ -23,7 +23,6 @@ object gen_string_ops {
   fun decodeBase64(input: Tensor, name: String = "DecodeBase64") = run {
     tf.buildOpTensor("DecodeBase64", name) {
       addInput(input, false)
-      
     }
   }
   
@@ -47,7 +46,6 @@ object gen_string_ops {
     tf.buildOpTensor("RegexFullMatch", name) {
       addInput(input, false)
       addInput(pattern, false)
-      
     }
   }
   
@@ -86,7 +84,6 @@ object gen_string_ops {
   fun stringStrip(input: Tensor, name: String = "StringStrip") = run {
     tf.buildOpTensor("StringStrip", name) {
       addInput(input, false)
-      
     }
   }
   
@@ -117,7 +114,6 @@ object gen_string_ops {
       addInput(input, false)
       addInput(pos, false)
       addInput(len, false)
-      
     }
   }
 }

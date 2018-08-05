@@ -10,7 +10,6 @@ import wumo.sim.util.Dimension
 object gen_dataset_ops {
   fun anonymousIterator(output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "AnonymousIterator") = run {
     tf.buildOpTensor("AnonymousIterator", name) {
-      
       attr("output_types", output_types)
       attr("output_shapes", output_shapes)
     }
@@ -74,7 +73,6 @@ object gen_dataset_ops {
     tf.buildOp("DeserializeIterator", name) {
       addInput(resource_handle, false)
       addInput(serialized, false)
-      
     }
   }
   
@@ -82,7 +80,6 @@ object gen_dataset_ops {
     tf.buildOp("EnqueueInQueueDataset", name) {
       addInput(queue, false)
       addInput(components, false)
-      
     }
   }
   
@@ -112,7 +109,6 @@ object gen_dataset_ops {
       addInput(record_bytes, false)
       addInput(footer_bytes, false)
       addInput(buffer_size, false)
-      
     }
   }
   
@@ -167,7 +163,6 @@ object gen_dataset_ops {
   
   fun iterator(shared_name: String, container: String, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "Iterator") = run {
     tf.buildOpTensor("Iterator", name) {
-      
       attr("shared_name", shared_name)
       attr("container", container)
       attr("output_types", output_types)
@@ -202,7 +197,6 @@ object gen_dataset_ops {
   fun iteratorToStringHandle(resource_handle: Tensor, name: String = "IteratorToStringHandle") = run {
     tf.buildOpTensor("IteratorToStringHandle", name) {
       addInput(resource_handle, false)
-      
     }
   }
   
@@ -219,7 +213,6 @@ object gen_dataset_ops {
     tf.buildOp("MakeIterator", name) {
       addInput(dataset, false)
       addInput(iterator, false)
-      
     }
   }
   
@@ -235,7 +228,6 @@ object gen_dataset_ops {
   
   fun oneShotIterator(dataset_factory: NameAttrList, output_types: Array<Long>, output_shapes: Array<Dimension>, container: String = "", shared_name: String = "", name: String = "OneShotIterator") = run {
     tf.buildOpTensor("OneShotIterator", name) {
-      
       attr("dataset_factory", dataset_factory)
       attr("output_types", output_types)
       attr("output_shapes", output_shapes)
@@ -341,7 +333,6 @@ object gen_dataset_ops {
   fun serializeIterator(resource_handle: Tensor, name: String = "SerializeIterator") = run {
     tf.buildOpTensor("SerializeIterator", name) {
       addInput(resource_handle, false)
-      
     }
   }
   
@@ -403,7 +394,6 @@ object gen_dataset_ops {
       addInput(indices, false)
       addInput(values, false)
       addInput(dense_shape, false)
-      
     }
   }
   
@@ -419,7 +409,6 @@ object gen_dataset_ops {
   
   fun statsAggregatorHandle(container: String = "", shared_name: String = "", name: String = "StatsAggregatorHandle") = run {
     tf.buildOpTensor("StatsAggregatorHandle", name) {
-      
       attr("container", container)
       attr("shared_name", shared_name)
     }
@@ -428,7 +417,6 @@ object gen_dataset_ops {
   fun statsAggregatorSummary(iterator: Tensor, name: String = "StatsAggregatorSummary") = run {
     tf.buildOpTensor("StatsAggregatorSummary", name) {
       addInput(iterator, false)
-      
     }
   }
   
@@ -437,7 +425,6 @@ object gen_dataset_ops {
       addInput(filenames, false)
       addInput(compression_type, false)
       addInput(buffer_size, false)
-      
     }
   }
   
@@ -469,7 +456,6 @@ object gen_dataset_ops {
       addInput(filenames, false)
       addInput(compression_type, false)
       addInput(buffer_size, false)
-      
     }
   }
   
@@ -502,7 +488,6 @@ object gen_dataset_ops {
   fun datasetToGraph(input_dataset: Tensor, name: String = "DatasetToGraph") = run {
     tf.buildOpTensor("DatasetToGraph", name) {
       addInput(input_dataset, false)
-      
     }
   }
   
@@ -511,7 +496,6 @@ object gen_dataset_ops {
       addInput(input_dataset, false)
       addInput(filename, false)
       addInput(compression_type, false)
-      
     }
   }
   
@@ -541,7 +525,6 @@ object gen_dataset_ops {
   
   fun iteratorV2(shared_name: String, container: String, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "IteratorV2") = run {
     tf.buildOpTensor("IteratorV2", name) {
-      
       attr("shared_name", shared_name)
       attr("container", container)
       attr("output_types", output_types)
@@ -598,7 +581,6 @@ object gen_dataset_ops {
   fun sinkDataset(input_dataset: Tensor, name: String = "SinkDataset") = run {
     tf.buildOpTensor("SinkDataset", name) {
       addInput(input_dataset, false)
-      
     }
   }
   

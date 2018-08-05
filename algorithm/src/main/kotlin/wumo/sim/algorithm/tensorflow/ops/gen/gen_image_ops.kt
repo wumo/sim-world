@@ -13,7 +13,6 @@ object gen_image_ops {
     tf.buildOpTensor("AdjustContrastv2", name) {
       addInput(images, false)
       addInput(contrast_factor, false)
-      
     }
   }
   
@@ -21,7 +20,6 @@ object gen_image_ops {
     tf.buildOpTensor("AdjustHue", name) {
       addInput(images, false)
       addInput(delta, false)
-      
     }
   }
   
@@ -29,7 +27,6 @@ object gen_image_ops {
     tf.buildOpTensor("AdjustSaturation", name) {
       addInput(images, false)
       addInput(scale, false)
-      
     }
   }
   
@@ -88,7 +85,6 @@ object gen_image_ops {
   fun decodeGif(contents: Tensor, name: String = "DecodeGif") = run {
     tf.buildOpTensor("DecodeGif", name) {
       addInput(contents, false)
-      
     }
   }
   
@@ -116,7 +112,6 @@ object gen_image_ops {
     tf.buildOpTensor("DrawBoundingBoxes", name) {
       addInput(images, false)
       addInput(boxes, false)
-      
     }
   }
   
@@ -163,7 +158,6 @@ object gen_image_ops {
   fun hSVToRGB(images: Tensor, name: String = "HSVToRGB") = run {
     tf.buildOpTensor("HSVToRGB", name) {
       addInput(images, false)
-      
     }
   }
   
@@ -182,7 +176,6 @@ object gen_image_ops {
       addInput(scores, false)
       addInput(max_output_size, false)
       addInput(iou_threshold, false)
-      
     }
   }
   
@@ -193,7 +186,6 @@ object gen_image_ops {
       addInput(max_output_size, false)
       addInput(iou_threshold, false)
       addInput(score_threshold, false)
-      
     }
   }
   
@@ -204,7 +196,6 @@ object gen_image_ops {
       addInput(max_output_size, false)
       addInput(overlap_threshold, false)
       addInput(score_threshold, false)
-      
     }
   }
   
@@ -221,7 +212,6 @@ object gen_image_ops {
   fun rGBToHSV(images: Tensor, name: String = "RGBToHSV") = run {
     tf.buildOpTensor("RGBToHSV", name) {
       addInput(images, false)
-      
     }
   }
   

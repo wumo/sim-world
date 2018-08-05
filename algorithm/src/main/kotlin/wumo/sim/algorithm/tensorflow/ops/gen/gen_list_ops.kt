@@ -35,7 +35,6 @@ object gen_list_ops {
     tf.buildOpTensor("TensorListFromTensor", name) {
       addInput(tensor, false)
       addInput(element_shape, false)
-      
     }
   }
   
@@ -50,7 +49,6 @@ object gen_list_ops {
   fun tensorListLength(input_handle: Tensor, name: String = "TensorListLength") = run {
     tf.buildOpTensor("TensorListLength", name) {
       addInput(input_handle, false)
-      
     }
   }
   
@@ -65,7 +63,6 @@ object gen_list_ops {
     tf.buildOpTensor("TensorListPushBack", name) {
       addInput(input_handle, false)
       addInput(tensor, false)
-      
     }
   }
   
@@ -73,7 +70,6 @@ object gen_list_ops {
     tf.buildOpTensor("TensorListPushBackBatch", name) {
       addInput(input_handles, false)
       addInput(tensor, false)
-      
     }
   }
   
@@ -90,7 +86,6 @@ object gen_list_ops {
       addInput(input_handle, false)
       addInput(index, false)
       addInput(item, false)
-      
     }
   }
   

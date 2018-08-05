@@ -11,42 +11,36 @@ object gen_spectral_ops {
   fun fFT(input: Tensor, name: String = "FFT") = run {
     tf.buildOpTensor("FFT", name) {
       addInput(input, false)
-      
     }
   }
   
   fun fFT2D(input: Tensor, name: String = "FFT2D") = run {
     tf.buildOpTensor("FFT2D", name) {
       addInput(input, false)
-      
     }
   }
   
   fun fFT3D(input: Tensor, name: String = "FFT3D") = run {
     tf.buildOpTensor("FFT3D", name) {
       addInput(input, false)
-      
     }
   }
   
   fun iFFT(input: Tensor, name: String = "IFFT") = run {
     tf.buildOpTensor("IFFT", name) {
       addInput(input, false)
-      
     }
   }
   
   fun iFFT2D(input: Tensor, name: String = "IFFT2D") = run {
     tf.buildOpTensor("IFFT2D", name) {
       addInput(input, false)
-      
     }
   }
   
   fun iFFT3D(input: Tensor, name: String = "IFFT3D") = run {
     tf.buildOpTensor("IFFT3D", name) {
       addInput(input, false)
-      
     }
   }
   
@@ -54,7 +48,6 @@ object gen_spectral_ops {
     tf.buildOpTensor("IRFFT", name) {
       addInput(input, false)
       addInput(fft_length, false)
-      
     }
   }
   
@@ -62,7 +55,6 @@ object gen_spectral_ops {
     tf.buildOpTensor("IRFFT2D", name) {
       addInput(input, false)
       addInput(fft_length, false)
-      
     }
   }
   
@@ -70,7 +62,6 @@ object gen_spectral_ops {
     tf.buildOpTensor("IRFFT3D", name) {
       addInput(input, false)
       addInput(fft_length, false)
-      
     }
   }
   
@@ -78,7 +69,6 @@ object gen_spectral_ops {
     tf.buildOpTensor("RFFT", name) {
       addInput(input, false)
       addInput(fft_length, false)
-      
     }
   }
   
@@ -86,7 +76,6 @@ object gen_spectral_ops {
     tf.buildOpTensor("RFFT2D", name) {
       addInput(input, false)
       addInput(fft_length, false)
-      
     }
   }
   
@@ -94,7 +83,6 @@ object gen_spectral_ops {
     tf.buildOpTensor("RFFT3D", name) {
       addInput(input, false)
       addInput(fft_length, false)
-      
     }
   }
 }
