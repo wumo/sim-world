@@ -3,134 +3,132 @@
  */
 package wumo.sim.algorithm.tensorflow.ops.gen
 
+import wumo.sim.algorithm.tensorflow.TF
 import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.buildOpTensor
 import wumo.sim.algorithm.tensorflow.buildOpTensors
-import wumo.sim.algorithm.tensorflow.tf
 
-object gen_cudnn_rnn_ops {
-  fun cudnnRNN(input: Tensor, input_h: Tensor, input_c: Tensor, params: Tensor, rnn_mode: String = "lstm", input_mode: String = "linear_input", direction: String = "unidirectional", dropout: Float = 0.0f, seed: Long = 0L, seed2: Long = 0L, is_training: Boolean = true, name: String = "CudnnRNN") = run {
-    tf.buildOpTensors("CudnnRNN", name) {
-      addInput(input, false)
-      addInput(input_h, false)
-      addInput(input_c, false)
-      addInput(params, false)
-      attr("rnn_mode", rnn_mode)
-      attr("input_mode", input_mode)
-      attr("direction", direction)
-      attr("dropout", dropout)
-      attr("seed", seed)
-      attr("seed2", seed2)
-      attr("is_training", is_training)
-    }
+fun TF.cudnnRNN(input: Tensor, input_h: Tensor, input_c: Tensor, params: Tensor, rnn_mode: String = "lstm", input_mode: String = "linear_input", direction: String = "unidirectional", dropout: Float = 0.0f, seed: Long = 0L, seed2: Long = 0L, is_training: Boolean = true, name: String = "CudnnRNN") = run {
+  buildOpTensors("CudnnRNN", name) {
+    addInput(input, false)
+    addInput(input_h, false)
+    addInput(input_c, false)
+    addInput(params, false)
+    attr("rnn_mode", rnn_mode)
+    attr("input_mode", input_mode)
+    attr("direction", direction)
+    attr("dropout", dropout)
+    attr("seed", seed)
+    attr("seed2", seed2)
+    attr("is_training", is_training)
   }
-  
-  fun cudnnRNNBackprop(input: Tensor, input_h: Tensor, input_c: Tensor, params: Tensor, output: Tensor, output_h: Tensor, output_c: Tensor, output_backprop: Tensor, output_h_backprop: Tensor, output_c_backprop: Tensor, reserve_space: Tensor, rnn_mode: String = "lstm", input_mode: String = "linear_input", direction: String = "unidirectional", dropout: Float = 0.0f, seed: Long = 0L, seed2: Long = 0L, name: String = "CudnnRNNBackprop") = run {
-    tf.buildOpTensors("CudnnRNNBackprop", name) {
-      addInput(input, false)
-      addInput(input_h, false)
-      addInput(input_c, false)
-      addInput(params, false)
-      addInput(output, false)
-      addInput(output_h, false)
-      addInput(output_c, false)
-      addInput(output_backprop, false)
-      addInput(output_h_backprop, false)
-      addInput(output_c_backprop, false)
-      addInput(reserve_space, false)
-      attr("rnn_mode", rnn_mode)
-      attr("input_mode", input_mode)
-      attr("direction", direction)
-      attr("dropout", dropout)
-      attr("seed", seed)
-      attr("seed2", seed2)
-    }
+}
+
+fun TF.cudnnRNNBackprop(input: Tensor, input_h: Tensor, input_c: Tensor, params: Tensor, output: Tensor, output_h: Tensor, output_c: Tensor, output_backprop: Tensor, output_h_backprop: Tensor, output_c_backprop: Tensor, reserve_space: Tensor, rnn_mode: String = "lstm", input_mode: String = "linear_input", direction: String = "unidirectional", dropout: Float = 0.0f, seed: Long = 0L, seed2: Long = 0L, name: String = "CudnnRNNBackprop") = run {
+  buildOpTensors("CudnnRNNBackprop", name) {
+    addInput(input, false)
+    addInput(input_h, false)
+    addInput(input_c, false)
+    addInput(params, false)
+    addInput(output, false)
+    addInput(output_h, false)
+    addInput(output_c, false)
+    addInput(output_backprop, false)
+    addInput(output_h_backprop, false)
+    addInput(output_c_backprop, false)
+    addInput(reserve_space, false)
+    attr("rnn_mode", rnn_mode)
+    attr("input_mode", input_mode)
+    attr("direction", direction)
+    attr("dropout", dropout)
+    attr("seed", seed)
+    attr("seed2", seed2)
   }
-  
-  fun cudnnRNNCanonicalToParams(num_layers: Tensor, num_units: Tensor, input_size: Tensor, weights: Array<Tensor>, biases: Array<Tensor>, rnn_mode: String = "lstm", input_mode: String = "linear_input", direction: String = "unidirectional", dropout: Float = 0.0f, seed: Long = 0L, seed2: Long = 0L, name: String = "CudnnRNNCanonicalToParams") = run {
-    tf.buildOpTensor("CudnnRNNCanonicalToParams", name) {
-      addInput(num_layers, false)
-      addInput(num_units, false)
-      addInput(input_size, false)
-      addInput(weights, false)
-      addInput(biases, false)
-      attr("rnn_mode", rnn_mode)
-      attr("input_mode", input_mode)
-      attr("direction", direction)
-      attr("dropout", dropout)
-      attr("seed", seed)
-      attr("seed2", seed2)
-    }
+}
+
+fun TF.cudnnRNNCanonicalToParams(num_layers: Tensor, num_units: Tensor, input_size: Tensor, weights: Array<Tensor>, biases: Array<Tensor>, rnn_mode: String = "lstm", input_mode: String = "linear_input", direction: String = "unidirectional", dropout: Float = 0.0f, seed: Long = 0L, seed2: Long = 0L, name: String = "CudnnRNNCanonicalToParams") = run {
+  buildOpTensor("CudnnRNNCanonicalToParams", name) {
+    addInput(num_layers, false)
+    addInput(num_units, false)
+    addInput(input_size, false)
+    addInput(weights, false)
+    addInput(biases, false)
+    attr("rnn_mode", rnn_mode)
+    attr("input_mode", input_mode)
+    attr("direction", direction)
+    attr("dropout", dropout)
+    attr("seed", seed)
+    attr("seed2", seed2)
   }
-  
-  fun cudnnRNNParamsSize(num_layers: Tensor, num_units: Tensor, input_size: Tensor, t: Int, s: Int, rnn_mode: String = "lstm", input_mode: String = "linear_input", direction: String = "unidirectional", dropout: Float = 0.0f, seed: Long = 0L, seed2: Long = 0L, name: String = "CudnnRNNParamsSize") = run {
-    tf.buildOpTensor("CudnnRNNParamsSize", name) {
-      addInput(num_layers, false)
-      addInput(num_units, false)
-      addInput(input_size, false)
-      attrType("T", t)
-      attrType("S", s)
-      attr("rnn_mode", rnn_mode)
-      attr("input_mode", input_mode)
-      attr("direction", direction)
-      attr("dropout", dropout)
-      attr("seed", seed)
-      attr("seed2", seed2)
-    }
+}
+
+fun TF.cudnnRNNParamsSize(num_layers: Tensor, num_units: Tensor, input_size: Tensor, t: Int, s: Int, rnn_mode: String = "lstm", input_mode: String = "linear_input", direction: String = "unidirectional", dropout: Float = 0.0f, seed: Long = 0L, seed2: Long = 0L, name: String = "CudnnRNNParamsSize") = run {
+  buildOpTensor("CudnnRNNParamsSize", name) {
+    addInput(num_layers, false)
+    addInput(num_units, false)
+    addInput(input_size, false)
+    attrType("T", t)
+    attrType("S", s)
+    attr("rnn_mode", rnn_mode)
+    attr("input_mode", input_mode)
+    attr("direction", direction)
+    attr("dropout", dropout)
+    attr("seed", seed)
+    attr("seed2", seed2)
   }
-  
-  fun cudnnRNNParamsToCanonical(num_layers: Tensor, num_units: Tensor, input_size: Tensor, params: Tensor, num_params: Long, rnn_mode: String = "lstm", input_mode: String = "linear_input", direction: String = "unidirectional", dropout: Float = 0.0f, seed: Long = 0L, seed2: Long = 0L, name: String = "CudnnRNNParamsToCanonical") = run {
-    tf.buildOpTensors("CudnnRNNParamsToCanonical", name) {
-      addInput(num_layers, false)
-      addInput(num_units, false)
-      addInput(input_size, false)
-      addInput(params, false)
-      attr("num_params", num_params)
-      attr("rnn_mode", rnn_mode)
-      attr("input_mode", input_mode)
-      attr("direction", direction)
-      attr("dropout", dropout)
-      attr("seed", seed)
-      attr("seed2", seed2)
-    }
+}
+
+fun TF.cudnnRNNParamsToCanonical(num_layers: Tensor, num_units: Tensor, input_size: Tensor, params: Tensor, num_params: Long, rnn_mode: String = "lstm", input_mode: String = "linear_input", direction: String = "unidirectional", dropout: Float = 0.0f, seed: Long = 0L, seed2: Long = 0L, name: String = "CudnnRNNParamsToCanonical") = run {
+  buildOpTensors("CudnnRNNParamsToCanonical", name) {
+    addInput(num_layers, false)
+    addInput(num_units, false)
+    addInput(input_size, false)
+    addInput(params, false)
+    attr("num_params", num_params)
+    attr("rnn_mode", rnn_mode)
+    attr("input_mode", input_mode)
+    attr("direction", direction)
+    attr("dropout", dropout)
+    attr("seed", seed)
+    attr("seed2", seed2)
   }
-  
-  fun cudnnRNNBackpropV2(input: Tensor, input_h: Tensor, input_c: Tensor, params: Tensor, output: Tensor, output_h: Tensor, output_c: Tensor, output_backprop: Tensor, output_h_backprop: Tensor, output_c_backprop: Tensor, reserve_space: Tensor, host_reserved: Tensor, rnn_mode: String = "lstm", input_mode: String = "linear_input", direction: String = "unidirectional", dropout: Float = 0.0f, seed: Long = 0L, seed2: Long = 0L, name: String = "CudnnRNNBackpropV2") = run {
-    tf.buildOpTensors("CudnnRNNBackpropV2", name) {
-      addInput(input, false)
-      addInput(input_h, false)
-      addInput(input_c, false)
-      addInput(params, false)
-      addInput(output, false)
-      addInput(output_h, false)
-      addInput(output_c, false)
-      addInput(output_backprop, false)
-      addInput(output_h_backprop, false)
-      addInput(output_c_backprop, false)
-      addInput(reserve_space, false)
-      addInput(host_reserved, false)
-      attr("rnn_mode", rnn_mode)
-      attr("input_mode", input_mode)
-      attr("direction", direction)
-      attr("dropout", dropout)
-      attr("seed", seed)
-      attr("seed2", seed2)
-    }
+}
+
+fun TF.cudnnRNNBackpropV2(input: Tensor, input_h: Tensor, input_c: Tensor, params: Tensor, output: Tensor, output_h: Tensor, output_c: Tensor, output_backprop: Tensor, output_h_backprop: Tensor, output_c_backprop: Tensor, reserve_space: Tensor, host_reserved: Tensor, rnn_mode: String = "lstm", input_mode: String = "linear_input", direction: String = "unidirectional", dropout: Float = 0.0f, seed: Long = 0L, seed2: Long = 0L, name: String = "CudnnRNNBackpropV2") = run {
+  buildOpTensors("CudnnRNNBackpropV2", name) {
+    addInput(input, false)
+    addInput(input_h, false)
+    addInput(input_c, false)
+    addInput(params, false)
+    addInput(output, false)
+    addInput(output_h, false)
+    addInput(output_c, false)
+    addInput(output_backprop, false)
+    addInput(output_h_backprop, false)
+    addInput(output_c_backprop, false)
+    addInput(reserve_space, false)
+    addInput(host_reserved, false)
+    attr("rnn_mode", rnn_mode)
+    attr("input_mode", input_mode)
+    attr("direction", direction)
+    attr("dropout", dropout)
+    attr("seed", seed)
+    attr("seed2", seed2)
   }
-  
-  fun cudnnRNNV2(input: Tensor, input_h: Tensor, input_c: Tensor, params: Tensor, rnn_mode: String = "lstm", input_mode: String = "linear_input", direction: String = "unidirectional", dropout: Float = 0.0f, seed: Long = 0L, seed2: Long = 0L, is_training: Boolean = true, name: String = "CudnnRNNV2") = run {
-    tf.buildOpTensors("CudnnRNNV2", name) {
-      addInput(input, false)
-      addInput(input_h, false)
-      addInput(input_c, false)
-      addInput(params, false)
-      attr("rnn_mode", rnn_mode)
-      attr("input_mode", input_mode)
-      attr("direction", direction)
-      attr("dropout", dropout)
-      attr("seed", seed)
-      attr("seed2", seed2)
-      attr("is_training", is_training)
-    }
+}
+
+fun TF.cudnnRNNV2(input: Tensor, input_h: Tensor, input_c: Tensor, params: Tensor, rnn_mode: String = "lstm", input_mode: String = "linear_input", direction: String = "unidirectional", dropout: Float = 0.0f, seed: Long = 0L, seed2: Long = 0L, is_training: Boolean = true, name: String = "CudnnRNNV2") = run {
+  buildOpTensors("CudnnRNNV2", name) {
+    addInput(input, false)
+    addInput(input_h, false)
+    addInput(input_c, false)
+    addInput(params, false)
+    attr("rnn_mode", rnn_mode)
+    attr("input_mode", input_mode)
+    attr("direction", direction)
+    attr("dropout", dropout)
+    attr("seed", seed)
+    attr("seed2", seed2)
+    attr("is_training", is_training)
   }
 }

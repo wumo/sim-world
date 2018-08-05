@@ -3,959 +3,958 @@
  */
 package wumo.sim.algorithm.tensorflow.ops.gen
 
+import org.bytedeco.javacpp.tensorflow.*
+import wumo.sim.algorithm.tensorflow.TF
 import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.buildOpTensor
 import wumo.sim.algorithm.tensorflow.buildOpTensors
-import wumo.sim.algorithm.tensorflow.tf
 import wumo.sim.util.Dimension
 
-object gen_math_ops {
-  fun abs(x: Tensor, name: String = "Abs") = run {
-    tf.buildOpTensor("Abs", name) {
-      addInput(x, false)
-    }
-  }
-  
-  fun accumulateNV2(inputs: Array<Tensor>, shape: Dimension, name: String = "AccumulateNV2") = run {
-    tf.buildOpTensor("AccumulateNV2", name) {
-      addInput(inputs, false)
-      attr("shape", shape)
-    }
-  }
-  
-  fun acos(x: Tensor, name: String = "Acos") = run {
-    tf.buildOpTensor("Acos", name) {
-      addInput(x, false)
-    }
-  }
-  
-  fun acosh(x: Tensor, name: String = "Acosh") = run {
-    tf.buildOpTensor("Acosh", name) {
-      addInput(x, false)
-    }
-  }
-  
-  fun add(x: Tensor, y: Tensor, name: String = "Add") = run {
-    tf.buildOpTensor("Add", name) {
-      addInput(x, false)
-      addInput(y, false)
-    }
-  }
-  
-  fun addN(inputs: Array<Tensor>, name: String = "AddN") = run {
-    tf.buildOpTensor("AddN", name) {
-      addInput(inputs, false)
-    }
-  }
-  
-  fun addV2(x: Tensor, y: Tensor, name: String = "AddV2") = run {
-    tf.buildOpTensor("AddV2", name) {
-      addInput(x, false)
-      addInput(y, false)
-    }
-  }
-  
-  fun all(input: Tensor, reduction_indices: Tensor, keep_dims: Boolean = false, name: String = "All") = run {
-    tf.buildOpTensor("All", name) {
-      addInput(input, false)
-      addInput(reduction_indices, false)
-      attr("keep_dims", keep_dims)
-    }
-  }
-  
-  fun angle(input: Tensor, tout: Int, name: String = "Angle") = run {
-    tf.buildOpTensor("Angle", name) {
-      addInput(input, false)
-      attrType("Tout", tout)
-    }
-  }
-  
-  fun any(input: Tensor, reduction_indices: Tensor, keep_dims: Boolean = false, name: String = "Any") = run {
-    tf.buildOpTensor("Any", name) {
-      addInput(input, false)
-      addInput(reduction_indices, false)
-      attr("keep_dims", keep_dims)
-    }
-  }
-  
-  fun approximateEqual(x: Tensor, y: Tensor, tolerance: Float = 1.0E-5f, name: String = "ApproximateEqual") = run {
-    tf.buildOpTensor("ApproximateEqual", name) {
-      addInput(x, false)
-      addInput(y, false)
-      attr("tolerance", tolerance)
-    }
-  }
-  
-  fun argMax(input: Tensor, dimension: Tensor, output_type: Int = 9, name: String = "ArgMax") = run {
-    tf.buildOpTensor("ArgMax", name) {
-      addInput(input, false)
-      addInput(dimension, false)
-      attrType("output_type", output_type)
-    }
-  }
-  
-  fun argMin(input: Tensor, dimension: Tensor, output_type: Int = 9, name: String = "ArgMin") = run {
-    tf.buildOpTensor("ArgMin", name) {
-      addInput(input, false)
-      addInput(dimension, false)
-      attrType("output_type", output_type)
-    }
-  }
-  
-  fun asin(x: Tensor, name: String = "Asin") = run {
-    tf.buildOpTensor("Asin", name) {
-      addInput(x, false)
-    }
-  }
-  
-  fun asinh(x: Tensor, name: String = "Asinh") = run {
-    tf.buildOpTensor("Asinh", name) {
-      addInput(x, false)
-    }
-  }
-  
-  fun atan(x: Tensor, name: String = "Atan") = run {
-    tf.buildOpTensor("Atan", name) {
-      addInput(x, false)
-    }
-  }
-  
-  fun atan2(y: Tensor, x: Tensor, name: String = "Atan2") = run {
-    tf.buildOpTensor("Atan2", name) {
-      addInput(y, false)
-      addInput(x, false)
-    }
-  }
-  
-  fun atanh(x: Tensor, name: String = "Atanh") = run {
-    tf.buildOpTensor("Atanh", name) {
-      addInput(x, false)
-    }
-  }
-  
-  fun batchMatMul(x: Tensor, y: Tensor, adj_x: Boolean = false, adj_y: Boolean = false, name: String = "BatchMatMul") = run {
-    tf.buildOpTensor("BatchMatMul", name) {
-      addInput(x, false)
-      addInput(y, false)
-      attr("adj_x", adj_x)
-      attr("adj_y", adj_y)
-    }
-  }
-  
-  fun besselI0e(x: Tensor, name: String = "BesselI0e") = run {
-    tf.buildOpTensor("BesselI0e", name) {
-      addInput(x, false)
-    }
-  }
-  
-  fun besselI1e(x: Tensor, name: String = "BesselI1e") = run {
-    tf.buildOpTensor("BesselI1e", name) {
-      addInput(x, false)
-    }
-  }
-  
-  fun betainc(a: Tensor, b: Tensor, x: Tensor, name: String = "Betainc") = run {
-    tf.buildOpTensor("Betainc", name) {
-      addInput(a, false)
-      addInput(b, false)
-      addInput(x, false)
-    }
-  }
-  
-  fun bincount(arr: Tensor, size: Tensor, weights: Tensor, name: String = "Bincount") = run {
-    tf.buildOpTensor("Bincount", name) {
-      addInput(arr, false)
-      addInput(size, false)
-      addInput(weights, false)
-    }
-  }
-  
-  fun bucketize(input: Tensor, boundaries: Array<Float>, name: String = "Bucketize") = run {
-    tf.buildOpTensor("Bucketize", name) {
-      addInput(input, false)
-      attr("boundaries", boundaries)
-    }
-  }
-  
-  fun cast(x: Tensor, dstT: Int, name: String = "Cast") = run {
-    tf.buildOpTensor("Cast", name) {
-      addInput(x, false)
-      attrType("DstT", dstT)
-    }
-  }
-  
-  fun ceil(x: Tensor, name: String = "Ceil") = run {
-    tf.buildOpTensor("Ceil", name) {
-      addInput(x, false)
-    }
-  }
-  
-  fun clipByValue(t: Tensor, clip_value_min: Tensor, clip_value_max: Tensor, name: String = "ClipByValue") = run {
-    tf.buildOpTensor("ClipByValue", name) {
-      addInput(t, false)
-      addInput(clip_value_min, false)
-      addInput(clip_value_max, false)
-    }
-  }
-  
-  fun compareAndBitpack(input: Tensor, threshold: Tensor, name: String = "CompareAndBitpack") = run {
-    tf.buildOpTensor("CompareAndBitpack", name) {
-      addInput(input, false)
-      addInput(threshold, false)
-    }
-  }
-  
-  fun complex(real: Tensor, imag: Tensor, tout: Int, name: String = "Complex") = run {
-    tf.buildOpTensor("Complex", name) {
-      addInput(real, false)
-      addInput(imag, false)
-      attrType("Tout", tout)
-    }
-  }
-  
-  fun complexAbs(x: Tensor, tout: Int, name: String = "ComplexAbs") = run {
-    tf.buildOpTensor("ComplexAbs", name) {
-      addInput(x, false)
-      attrType("Tout", tout)
-    }
-  }
-  
-  fun conj(input: Tensor, name: String = "Conj") = run {
-    tf.buildOpTensor("Conj", name) {
-      addInput(input, false)
-    }
-  }
-  
-  fun cos(x: Tensor, name: String = "Cos") = run {
-    tf.buildOpTensor("Cos", name) {
-      addInput(x, false)
-    }
-  }
-  
-  fun cosh(x: Tensor, name: String = "Cosh") = run {
-    tf.buildOpTensor("Cosh", name) {
-      addInput(x, false)
-    }
-  }
-  
-  fun cross(a: Tensor, b: Tensor, name: String = "Cross") = run {
-    tf.buildOpTensor("Cross", name) {
-      addInput(a, false)
-      addInput(b, false)
-    }
-  }
-  
-  fun cumprod(x: Tensor, axis: Tensor, exclusive: Boolean = false, reverse: Boolean = false, name: String = "Cumprod") = run {
-    tf.buildOpTensor("Cumprod", name) {
-      addInput(x, false)
-      addInput(axis, false)
-      attr("exclusive", exclusive)
-      attr("reverse", reverse)
-    }
-  }
-  
-  fun cumsum(x: Tensor, axis: Tensor, exclusive: Boolean = false, reverse: Boolean = false, name: String = "Cumsum") = run {
-    tf.buildOpTensor("Cumsum", name) {
-      addInput(x, false)
-      addInput(axis, false)
-      attr("exclusive", exclusive)
-      attr("reverse", reverse)
-    }
-  }
-  
-  fun digamma(x: Tensor, name: String = "Digamma") = run {
-    tf.buildOpTensor("Digamma", name) {
-      addInput(x, false)
-    }
-  }
-  
-  fun div(x: Tensor, y: Tensor, name: String = "Div") = run {
-    tf.buildOpTensor("Div", name) {
-      addInput(x, false)
-      addInput(y, false)
-    }
-  }
-  
-  fun equal(x: Tensor, y: Tensor, name: String = "Equal") = run {
-    tf.buildOpTensor("Equal", name) {
-      addInput(x, false)
-      addInput(y, false)
-    }
-  }
-  
-  fun erf(x: Tensor, name: String = "Erf") = run {
-    tf.buildOpTensor("Erf", name) {
-      addInput(x, false)
-    }
-  }
-  
-  fun erfc(x: Tensor, name: String = "Erfc") = run {
-    tf.buildOpTensor("Erfc", name) {
-      addInput(x, false)
-    }
-  }
-  
-  fun exp(x: Tensor, name: String = "Exp") = run {
-    tf.buildOpTensor("Exp", name) {
-      addInput(x, false)
-    }
-  }
-  
-  fun expm1(x: Tensor, name: String = "Expm1") = run {
-    tf.buildOpTensor("Expm1", name) {
-      addInput(x, false)
-    }
-  }
-  
-  fun floor(x: Tensor, name: String = "Floor") = run {
-    tf.buildOpTensor("Floor", name) {
-      addInput(x, false)
-    }
-  }
-  
-  fun floorDiv(x: Tensor, y: Tensor, name: String = "FloorDiv") = run {
-    tf.buildOpTensor("FloorDiv", name) {
-      addInput(x, false)
-      addInput(y, false)
-    }
-  }
-  
-  fun floorMod(x: Tensor, y: Tensor, name: String = "FloorMod") = run {
-    tf.buildOpTensor("FloorMod", name) {
-      addInput(x, false)
-      addInput(y, false)
-    }
-  }
-  
-  fun greater(x: Tensor, y: Tensor, name: String = "Greater") = run {
-    tf.buildOpTensor("Greater", name) {
-      addInput(x, false)
-      addInput(y, false)
-    }
-  }
-  
-  fun greaterEqual(x: Tensor, y: Tensor, name: String = "GreaterEqual") = run {
-    tf.buildOpTensor("GreaterEqual", name) {
-      addInput(x, false)
-      addInput(y, false)
-    }
-  }
-  
-  fun histogramFixedWidth(values: Tensor, value_range: Tensor, nbins: Tensor, dtype: Int = 3, name: String = "HistogramFixedWidth") = run {
-    tf.buildOpTensor("HistogramFixedWidth", name) {
-      addInput(values, false)
-      addInput(value_range, false)
-      addInput(nbins, false)
-      attrType("dtype", dtype)
-    }
-  }
-  
-  fun igamma(a: Tensor, x: Tensor, name: String = "Igamma") = run {
-    tf.buildOpTensor("Igamma", name) {
-      addInput(a, false)
-      addInput(x, false)
-    }
-  }
-  
-  fun igammac(a: Tensor, x: Tensor, name: String = "Igammac") = run {
-    tf.buildOpTensor("Igammac", name) {
-      addInput(a, false)
-      addInput(x, false)
-    }
-  }
-  
-  fun imag(input: Tensor, tout: Int, name: String = "Imag") = run {
-    tf.buildOpTensor("Imag", name) {
-      addInput(input, false)
-      attrType("Tout", tout)
-    }
-  }
-  
-  fun inv(x: Tensor, name: String = "Inv") = run {
-    tf.buildOpTensor("Inv", name) {
-      addInput(x, false)
-    }
-  }
-  
-  fun isFinite(x: Tensor, name: String = "IsFinite") = run {
-    tf.buildOpTensor("IsFinite", name) {
-      addInput(x, false)
-    }
-  }
-  
-  fun isInf(x: Tensor, name: String = "IsInf") = run {
-    tf.buildOpTensor("IsInf", name) {
-      addInput(x, false)
-    }
-  }
-  
-  fun isNan(x: Tensor, name: String = "IsNan") = run {
-    tf.buildOpTensor("IsNan", name) {
-      addInput(x, false)
-    }
-  }
-  
-  fun less(x: Tensor, y: Tensor, name: String = "Less") = run {
-    tf.buildOpTensor("Less", name) {
-      addInput(x, false)
-      addInput(y, false)
-    }
-  }
-  
-  fun lessEqual(x: Tensor, y: Tensor, name: String = "LessEqual") = run {
-    tf.buildOpTensor("LessEqual", name) {
-      addInput(x, false)
-      addInput(y, false)
-    }
-  }
-  
-  fun lgamma(x: Tensor, name: String = "Lgamma") = run {
-    tf.buildOpTensor("Lgamma", name) {
-      addInput(x, false)
-    }
-  }
-  
-  fun linSpace(start: Tensor, stop: Tensor, num: Tensor, name: String = "LinSpace") = run {
-    tf.buildOpTensor("LinSpace", name) {
-      addInput(start, false)
-      addInput(stop, false)
-      addInput(num, false)
-    }
-  }
-  
-  fun log(x: Tensor, name: String = "Log") = run {
-    tf.buildOpTensor("Log", name) {
-      addInput(x, false)
-    }
-  }
-  
-  fun log1p(x: Tensor, name: String = "Log1p") = run {
-    tf.buildOpTensor("Log1p", name) {
-      addInput(x, false)
-    }
-  }
-  
-  fun logicalAnd(x: Tensor, y: Tensor, name: String = "LogicalAnd") = run {
-    tf.buildOpTensor("LogicalAnd", name) {
-      addInput(x, false)
-      addInput(y, false)
-    }
-  }
-  
-  fun logicalNot(x: Tensor, name: String = "LogicalNot") = run {
-    tf.buildOpTensor("LogicalNot", name) {
-      addInput(x, false)
-    }
-  }
-  
-  fun logicalOr(x: Tensor, y: Tensor, name: String = "LogicalOr") = run {
-    tf.buildOpTensor("LogicalOr", name) {
-      addInput(x, false)
-      addInput(y, false)
-    }
-  }
-  
-  fun matMul(a: Tensor, b: Tensor, transpose_a: Boolean = false, transpose_b: Boolean = false, name: String = "MatMul") = run {
-    tf.buildOpTensor("MatMul", name) {
-      addInput(a, false)
-      addInput(b, false)
-      attr("transpose_a", transpose_a)
-      attr("transpose_b", transpose_b)
-    }
-  }
-  
-  fun max(input: Tensor, reduction_indices: Tensor, keep_dims: Boolean = false, name: String = "Max") = run {
-    tf.buildOpTensor("Max", name) {
-      addInput(input, false)
-      addInput(reduction_indices, false)
-      attr("keep_dims", keep_dims)
-    }
-  }
-  
-  fun maximum(x: Tensor, y: Tensor, name: String = "Maximum") = run {
-    tf.buildOpTensor("Maximum", name) {
-      addInput(x, false)
-      addInput(y, false)
-    }
-  }
-  
-  fun mean(input: Tensor, reduction_indices: Tensor, keep_dims: Boolean = false, name: String = "Mean") = run {
-    tf.buildOpTensor("Mean", name) {
-      addInput(input, false)
-      addInput(reduction_indices, false)
-      attr("keep_dims", keep_dims)
-    }
-  }
-  
-  fun min(input: Tensor, reduction_indices: Tensor, keep_dims: Boolean = false, name: String = "Min") = run {
-    tf.buildOpTensor("Min", name) {
-      addInput(input, false)
-      addInput(reduction_indices, false)
-      attr("keep_dims", keep_dims)
-    }
-  }
-  
-  fun minimum(x: Tensor, y: Tensor, name: String = "Minimum") = run {
-    tf.buildOpTensor("Minimum", name) {
-      addInput(x, false)
-      addInput(y, false)
-    }
-  }
-  
-  fun mod(x: Tensor, y: Tensor, name: String = "Mod") = run {
-    tf.buildOpTensor("Mod", name) {
-      addInput(x, false)
-      addInput(y, false)
-    }
-  }
-  
-  fun mul(x: Tensor, y: Tensor, name: String = "Mul") = run {
-    tf.buildOpTensor("Mul", name) {
-      addInput(x, false)
-      addInput(y, false)
-    }
-  }
-  
-  fun neg(x: Tensor, name: String = "Neg") = run {
-    tf.buildOpTensor("Neg", name) {
-      addInput(x, false)
-    }
-  }
-  
-  fun notEqual(x: Tensor, y: Tensor, name: String = "NotEqual") = run {
-    tf.buildOpTensor("NotEqual", name) {
-      addInput(x, false)
-      addInput(y, false)
-    }
-  }
-  
-  fun polygamma(a: Tensor, x: Tensor, name: String = "Polygamma") = run {
-    tf.buildOpTensor("Polygamma", name) {
-      addInput(a, false)
-      addInput(x, false)
-    }
-  }
-  
-  fun pow(x: Tensor, y: Tensor, name: String = "Pow") = run {
-    tf.buildOpTensor("Pow", name) {
-      addInput(x, false)
-      addInput(y, false)
-    }
-  }
-  
-  fun prod(input: Tensor, reduction_indices: Tensor, keep_dims: Boolean = false, name: String = "Prod") = run {
-    tf.buildOpTensor("Prod", name) {
-      addInput(input, false)
-      addInput(reduction_indices, false)
-      attr("keep_dims", keep_dims)
-    }
-  }
-  
-  fun quantizeDownAndShrinkRange(input: Tensor, input_min: Tensor, input_max: Tensor, out_type: Int, name: String = "QuantizeDownAndShrinkRange") = run {
-    tf.buildOpTensors("QuantizeDownAndShrinkRange", name) {
-      addInput(input, false)
-      addInput(input_min, false)
-      addInput(input_max, false)
-      attrType("out_type", out_type)
-    }
-  }
-  
-  fun quantizedAdd(x: Tensor, y: Tensor, min_x: Tensor, max_x: Tensor, min_y: Tensor, max_y: Tensor, toutput: Int, name: String = "QuantizedAdd") = run {
-    tf.buildOpTensors("QuantizedAdd", name) {
-      addInput(x, false)
-      addInput(y, false)
-      addInput(min_x, false)
-      addInput(max_x, false)
-      addInput(min_y, false)
-      addInput(max_y, false)
-      attrType("Toutput", toutput)
-    }
-  }
-  
-  fun quantizedMatMul(a: Tensor, b: Tensor, min_a: Tensor, max_a: Tensor, min_b: Tensor, max_b: Tensor, toutput: Int, transpose_a: Boolean = false, transpose_b: Boolean = false, tactivation: Int, name: String = "QuantizedMatMul") = run {
-    tf.buildOpTensors("QuantizedMatMul", name) {
-      addInput(a, false)
-      addInput(b, false)
-      addInput(min_a, false)
-      addInput(max_a, false)
-      addInput(min_b, false)
-      addInput(max_b, false)
-      attrType("Toutput", toutput)
-      attr("transpose_a", transpose_a)
-      attr("transpose_b", transpose_b)
-      attrType("Tactivation", tactivation)
-    }
-  }
-  
-  fun quantizedMul(x: Tensor, y: Tensor, min_x: Tensor, max_x: Tensor, min_y: Tensor, max_y: Tensor, toutput: Int, name: String = "QuantizedMul") = run {
-    tf.buildOpTensors("QuantizedMul", name) {
-      addInput(x, false)
-      addInput(y, false)
-      addInput(min_x, false)
-      addInput(max_x, false)
-      addInput(min_y, false)
-      addInput(max_y, false)
-      attrType("Toutput", toutput)
-    }
-  }
-  
-  fun range(start: Tensor, limit: Tensor, delta: Tensor, name: String = "Range") = run {
-    tf.buildOpTensor("Range", name) {
-      addInput(start, false)
-      addInput(limit, false)
-      addInput(delta, false)
-    }
-  }
-  
-  fun real(input: Tensor, tout: Int, name: String = "Real") = run {
-    tf.buildOpTensor("Real", name) {
-      addInput(input, false)
-      attrType("Tout", tout)
-    }
-  }
-  
-  fun realDiv(x: Tensor, y: Tensor, name: String = "RealDiv") = run {
-    tf.buildOpTensor("RealDiv", name) {
-      addInput(x, false)
-      addInput(y, false)
-    }
-  }
-  
-  fun reciprocal(x: Tensor, name: String = "Reciprocal") = run {
-    tf.buildOpTensor("Reciprocal", name) {
-      addInput(x, false)
-    }
-  }
-  
-  fun requantizationRange(input: Tensor, input_min: Tensor, input_max: Tensor, name: String = "RequantizationRange") = run {
-    tf.buildOpTensors("RequantizationRange", name) {
-      addInput(input, false)
-      addInput(input_min, false)
-      addInput(input_max, false)
-    }
-  }
-  
-  fun requantize(input: Tensor, input_min: Tensor, input_max: Tensor, requested_output_min: Tensor, requested_output_max: Tensor, out_type: Int, name: String = "Requantize") = run {
-    tf.buildOpTensors("Requantize", name) {
-      addInput(input, false)
-      addInput(input_min, false)
-      addInput(input_max, false)
-      addInput(requested_output_min, false)
-      addInput(requested_output_max, false)
-      attrType("out_type", out_type)
-    }
-  }
-  
-  fun rint(x: Tensor, name: String = "Rint") = run {
-    tf.buildOpTensor("Rint", name) {
-      addInput(x, false)
-    }
-  }
-  
-  fun round(x: Tensor, name: String = "Round") = run {
-    tf.buildOpTensor("Round", name) {
-      addInput(x, false)
-    }
-  }
-  
-  fun rsqrt(x: Tensor, name: String = "Rsqrt") = run {
-    tf.buildOpTensor("Rsqrt", name) {
-      addInput(x, false)
-    }
-  }
-  
-  fun segmentMax(data: Tensor, segment_ids: Tensor, name: String = "SegmentMax") = run {
-    tf.buildOpTensor("SegmentMax", name) {
-      addInput(data, false)
-      addInput(segment_ids, false)
-    }
-  }
-  
-  fun segmentMean(data: Tensor, segment_ids: Tensor, name: String = "SegmentMean") = run {
-    tf.buildOpTensor("SegmentMean", name) {
-      addInput(data, false)
-      addInput(segment_ids, false)
-    }
-  }
-  
-  fun segmentMin(data: Tensor, segment_ids: Tensor, name: String = "SegmentMin") = run {
-    tf.buildOpTensor("SegmentMin", name) {
-      addInput(data, false)
-      addInput(segment_ids, false)
-    }
-  }
-  
-  fun segmentProd(data: Tensor, segment_ids: Tensor, name: String = "SegmentProd") = run {
-    tf.buildOpTensor("SegmentProd", name) {
-      addInput(data, false)
-      addInput(segment_ids, false)
-    }
-  }
-  
-  fun segmentSum(data: Tensor, segment_ids: Tensor, name: String = "SegmentSum") = run {
-    tf.buildOpTensor("SegmentSum", name) {
-      addInput(data, false)
-      addInput(segment_ids, false)
-    }
-  }
-  
-  fun select(condition: Tensor, t: Tensor, e: Tensor, name: String = "Select") = run {
-    tf.buildOpTensor("Select", name) {
-      addInput(condition, false)
-      addInput(t, false)
-      addInput(e, false)
-    }
-  }
-  
-  fun sigmoid(x: Tensor, name: String = "Sigmoid") = run {
-    tf.buildOpTensor("Sigmoid", name) {
-      addInput(x, false)
-    }
-  }
-  
-  fun sign(x: Tensor, name: String = "Sign") = run {
-    tf.buildOpTensor("Sign", name) {
-      addInput(x, false)
-    }
-  }
-  
-  fun sin(x: Tensor, name: String = "Sin") = run {
-    tf.buildOpTensor("Sin", name) {
-      addInput(x, false)
-    }
-  }
-  
-  fun sinh(x: Tensor, name: String = "Sinh") = run {
-    tf.buildOpTensor("Sinh", name) {
-      addInput(x, false)
-    }
-  }
-  
-  fun sparseMatMul(a: Tensor, b: Tensor, transpose_a: Boolean = false, transpose_b: Boolean = false, a_is_sparse: Boolean = false, b_is_sparse: Boolean = false, name: String = "SparseMatMul") = run {
-    tf.buildOpTensor("SparseMatMul", name) {
-      addInput(a, false)
-      addInput(b, false)
-      attr("transpose_a", transpose_a)
-      attr("transpose_b", transpose_b)
-      attr("a_is_sparse", a_is_sparse)
-      attr("b_is_sparse", b_is_sparse)
-    }
-  }
-  
-  fun sparseSegmentMean(data: Tensor, indices: Tensor, segment_ids: Tensor, name: String = "SparseSegmentMean") = run {
-    tf.buildOpTensor("SparseSegmentMean", name) {
-      addInput(data, false)
-      addInput(indices, false)
-      addInput(segment_ids, false)
-    }
-  }
-  
-  fun sparseSegmentMeanGrad(grad: Tensor, indices: Tensor, segment_ids: Tensor, output_dim0: Tensor, name: String = "SparseSegmentMeanGrad") = run {
-    tf.buildOpTensor("SparseSegmentMeanGrad", name) {
-      addInput(grad, false)
-      addInput(indices, false)
-      addInput(segment_ids, false)
-      addInput(output_dim0, false)
-    }
-  }
-  
-  fun sparseSegmentMeanWithNumSegments(data: Tensor, indices: Tensor, segment_ids: Tensor, num_segments: Tensor, name: String = "SparseSegmentMeanWithNumSegments") = run {
-    tf.buildOpTensor("SparseSegmentMeanWithNumSegments", name) {
-      addInput(data, false)
-      addInput(indices, false)
-      addInput(segment_ids, false)
-      addInput(num_segments, false)
-    }
-  }
-  
-  fun sparseSegmentSqrtN(data: Tensor, indices: Tensor, segment_ids: Tensor, name: String = "SparseSegmentSqrtN") = run {
-    tf.buildOpTensor("SparseSegmentSqrtN", name) {
-      addInput(data, false)
-      addInput(indices, false)
-      addInput(segment_ids, false)
-    }
-  }
-  
-  fun sparseSegmentSqrtNGrad(grad: Tensor, indices: Tensor, segment_ids: Tensor, output_dim0: Tensor, name: String = "SparseSegmentSqrtNGrad") = run {
-    tf.buildOpTensor("SparseSegmentSqrtNGrad", name) {
-      addInput(grad, false)
-      addInput(indices, false)
-      addInput(segment_ids, false)
-      addInput(output_dim0, false)
-    }
-  }
-  
-  fun sparseSegmentSqrtNWithNumSegments(data: Tensor, indices: Tensor, segment_ids: Tensor, num_segments: Tensor, name: String = "SparseSegmentSqrtNWithNumSegments") = run {
-    tf.buildOpTensor("SparseSegmentSqrtNWithNumSegments", name) {
-      addInput(data, false)
-      addInput(indices, false)
-      addInput(segment_ids, false)
-      addInput(num_segments, false)
-    }
-  }
-  
-  fun sparseSegmentSum(data: Tensor, indices: Tensor, segment_ids: Tensor, name: String = "SparseSegmentSum") = run {
-    tf.buildOpTensor("SparseSegmentSum", name) {
-      addInput(data, false)
-      addInput(indices, false)
-      addInput(segment_ids, false)
-    }
-  }
-  
-  fun sparseSegmentSumWithNumSegments(data: Tensor, indices: Tensor, segment_ids: Tensor, num_segments: Tensor, name: String = "SparseSegmentSumWithNumSegments") = run {
-    tf.buildOpTensor("SparseSegmentSumWithNumSegments", name) {
-      addInput(data, false)
-      addInput(indices, false)
-      addInput(segment_ids, false)
-      addInput(num_segments, false)
-    }
-  }
-  
-  fun sqrt(x: Tensor, name: String = "Sqrt") = run {
-    tf.buildOpTensor("Sqrt", name) {
-      addInput(x, false)
-    }
-  }
-  
-  fun square(x: Tensor, name: String = "Square") = run {
-    tf.buildOpTensor("Square", name) {
-      addInput(x, false)
-    }
-  }
-  
-  fun squaredDifference(x: Tensor, y: Tensor, name: String = "SquaredDifference") = run {
-    tf.buildOpTensor("SquaredDifference", name) {
-      addInput(x, false)
-      addInput(y, false)
-    }
-  }
-  
-  fun sub(x: Tensor, y: Tensor, name: String = "Sub") = run {
-    tf.buildOpTensor("Sub", name) {
-      addInput(x, false)
-      addInput(y, false)
-    }
-  }
-  
-  fun sum(input: Tensor, reduction_indices: Tensor, keep_dims: Boolean = false, name: String = "Sum") = run {
-    tf.buildOpTensor("Sum", name) {
-      addInput(input, false)
-      addInput(reduction_indices, false)
-      attr("keep_dims", keep_dims)
-    }
-  }
-  
-  fun tan(x: Tensor, name: String = "Tan") = run {
-    tf.buildOpTensor("Tan", name) {
-      addInput(x, false)
-    }
-  }
-  
-  fun tanh(x: Tensor, name: String = "Tanh") = run {
-    tf.buildOpTensor("Tanh", name) {
-      addInput(x, false)
-    }
-  }
-  
-  fun truncateDiv(x: Tensor, y: Tensor, name: String = "TruncateDiv") = run {
-    tf.buildOpTensor("TruncateDiv", name) {
-      addInput(x, false)
-      addInput(y, false)
-    }
-  }
-  
-  fun truncateMod(x: Tensor, y: Tensor, name: String = "TruncateMod") = run {
-    tf.buildOpTensor("TruncateMod", name) {
-      addInput(x, false)
-      addInput(y, false)
-    }
-  }
-  
-  fun unsortedSegmentMax(data: Tensor, segment_ids: Tensor, num_segments: Tensor, name: String = "UnsortedSegmentMax") = run {
-    tf.buildOpTensor("UnsortedSegmentMax", name) {
-      addInput(data, false)
-      addInput(segment_ids, false)
-      addInput(num_segments, false)
-    }
-  }
-  
-  fun unsortedSegmentMin(data: Tensor, segment_ids: Tensor, num_segments: Tensor, name: String = "UnsortedSegmentMin") = run {
-    tf.buildOpTensor("UnsortedSegmentMin", name) {
-      addInput(data, false)
-      addInput(segment_ids, false)
-      addInput(num_segments, false)
-    }
-  }
-  
-  fun unsortedSegmentProd(data: Tensor, segment_ids: Tensor, num_segments: Tensor, name: String = "UnsortedSegmentProd") = run {
-    tf.buildOpTensor("UnsortedSegmentProd", name) {
-      addInput(data, false)
-      addInput(segment_ids, false)
-      addInput(num_segments, false)
-    }
-  }
-  
-  fun unsortedSegmentSum(data: Tensor, segment_ids: Tensor, num_segments: Tensor, name: String = "UnsortedSegmentSum") = run {
-    tf.buildOpTensor("UnsortedSegmentSum", name) {
-      addInput(data, false)
-      addInput(segment_ids, false)
-      addInput(num_segments, false)
-    }
-  }
-  
-  fun zeta(x: Tensor, q: Tensor, name: String = "Zeta") = run {
-    tf.buildOpTensor("Zeta", name) {
-      addInput(x, false)
-      addInput(q, false)
-    }
-  }
-  
-  fun igammaGradA(a: Tensor, x: Tensor, name: String = "IgammaGradA") = run {
-    tf.buildOpTensor("IgammaGradA", name) {
-      addInput(a, false)
-      addInput(x, false)
-    }
-  }
-  
-  fun invGrad(y: Tensor, dy: Tensor, name: String = "InvGrad") = run {
-    tf.buildOpTensor("InvGrad", name) {
-      addInput(y, false)
-      addInput(dy, false)
-    }
-  }
-  
-  fun reciprocalGrad(y: Tensor, dy: Tensor, name: String = "ReciprocalGrad") = run {
-    tf.buildOpTensor("ReciprocalGrad", name) {
-      addInput(y, false)
-      addInput(dy, false)
-    }
-  }
-  
-  fun rsqrtGrad(y: Tensor, dy: Tensor, name: String = "RsqrtGrad") = run {
-    tf.buildOpTensor("RsqrtGrad", name) {
-      addInput(y, false)
-      addInput(dy, false)
-    }
-  }
-  
-  fun sigmoidGrad(y: Tensor, dy: Tensor, name: String = "SigmoidGrad") = run {
-    tf.buildOpTensor("SigmoidGrad", name) {
-      addInput(y, false)
-      addInput(dy, false)
-    }
-  }
-  
-  fun sqrtGrad(y: Tensor, dy: Tensor, name: String = "SqrtGrad") = run {
-    tf.buildOpTensor("SqrtGrad", name) {
-      addInput(y, false)
-      addInput(dy, false)
-    }
-  }
-  
-  fun tanhGrad(y: Tensor, dy: Tensor, name: String = "TanhGrad") = run {
-    tf.buildOpTensor("TanhGrad", name) {
-      addInput(y, false)
-      addInput(dy, false)
-    }
+fun TF.abs(x: Tensor, name: String = "Abs") = run {
+  buildOpTensor("Abs", name) {
+    addInput(x, false)
+  }
+}
+
+fun TF.accumulateNV2(inputs: Array<Tensor>, shape: Dimension, name: String = "AccumulateNV2") = run {
+  buildOpTensor("AccumulateNV2", name) {
+    addInput(inputs, false)
+    attr("shape", shape)
+  }
+}
+
+fun TF.acos(x: Tensor, name: String = "Acos") = run {
+  buildOpTensor("Acos", name) {
+    addInput(x, false)
+  }
+}
+
+fun TF.acosh(x: Tensor, name: String = "Acosh") = run {
+  buildOpTensor("Acosh", name) {
+    addInput(x, false)
+  }
+}
+
+fun TF.add(x: Tensor, y: Tensor, name: String = "Add") = run {
+  buildOpTensor("Add", name) {
+    addInput(x, false)
+    addInput(y, false)
+  }
+}
+
+fun TF.addN(inputs: Array<Tensor>, name: String = "AddN") = run {
+  buildOpTensor("AddN", name) {
+    addInput(inputs, false)
+  }
+}
+
+fun TF.addV2(x: Tensor, y: Tensor, name: String = "AddV2") = run {
+  buildOpTensor("AddV2", name) {
+    addInput(x, false)
+    addInput(y, false)
+  }
+}
+
+fun TF.all(input: Tensor, reduction_indices: Tensor, keep_dims: Boolean = false, name: String = "All") = run {
+  buildOpTensor("All", name) {
+    addInput(input, false)
+    addInput(reduction_indices, false)
+    attr("keep_dims", keep_dims)
+  }
+}
+
+fun TF.angle(input: Tensor, tout: Int = DT_FLOAT, name: String = "Angle") = run {
+  buildOpTensor("Angle", name) {
+    addInput(input, false)
+    attrType("Tout", tout)
+  }
+}
+
+fun TF.any(input: Tensor, reduction_indices: Tensor, keep_dims: Boolean = false, name: String = "Any") = run {
+  buildOpTensor("Any", name) {
+    addInput(input, false)
+    addInput(reduction_indices, false)
+    attr("keep_dims", keep_dims)
+  }
+}
+
+fun TF.approximateEqual(x: Tensor, y: Tensor, tolerance: Float = 1.0E-5f, name: String = "ApproximateEqual") = run {
+  buildOpTensor("ApproximateEqual", name) {
+    addInput(x, false)
+    addInput(y, false)
+    attr("tolerance", tolerance)
+  }
+}
+
+fun TF.argMax(input: Tensor, dimension: Tensor, output_type: Int = DT_INT64, name: String = "ArgMax") = run {
+  buildOpTensor("ArgMax", name) {
+    addInput(input, false)
+    addInput(dimension, false)
+    attrType("output_type", output_type)
+  }
+}
+
+fun TF.argMin(input: Tensor, dimension: Tensor, output_type: Int = DT_INT64, name: String = "ArgMin") = run {
+  buildOpTensor("ArgMin", name) {
+    addInput(input, false)
+    addInput(dimension, false)
+    attrType("output_type", output_type)
+  }
+}
+
+fun TF.asin(x: Tensor, name: String = "Asin") = run {
+  buildOpTensor("Asin", name) {
+    addInput(x, false)
+  }
+}
+
+fun TF.asinh(x: Tensor, name: String = "Asinh") = run {
+  buildOpTensor("Asinh", name) {
+    addInput(x, false)
+  }
+}
+
+fun TF.atan(x: Tensor, name: String = "Atan") = run {
+  buildOpTensor("Atan", name) {
+    addInput(x, false)
+  }
+}
+
+fun TF.atan2(y: Tensor, x: Tensor, name: String = "Atan2") = run {
+  buildOpTensor("Atan2", name) {
+    addInput(y, false)
+    addInput(x, false)
+  }
+}
+
+fun TF.atanh(x: Tensor, name: String = "Atanh") = run {
+  buildOpTensor("Atanh", name) {
+    addInput(x, false)
+  }
+}
+
+fun TF.batchMatMul(x: Tensor, y: Tensor, adj_x: Boolean = false, adj_y: Boolean = false, name: String = "BatchMatMul") = run {
+  buildOpTensor("BatchMatMul", name) {
+    addInput(x, false)
+    addInput(y, false)
+    attr("adj_x", adj_x)
+    attr("adj_y", adj_y)
+  }
+}
+
+fun TF.besselI0e(x: Tensor, name: String = "BesselI0e") = run {
+  buildOpTensor("BesselI0e", name) {
+    addInput(x, false)
+  }
+}
+
+fun TF.besselI1e(x: Tensor, name: String = "BesselI1e") = run {
+  buildOpTensor("BesselI1e", name) {
+    addInput(x, false)
+  }
+}
+
+fun TF.betainc(a: Tensor, b: Tensor, x: Tensor, name: String = "Betainc") = run {
+  buildOpTensor("Betainc", name) {
+    addInput(a, false)
+    addInput(b, false)
+    addInput(x, false)
+  }
+}
+
+fun TF.bincount(arr: Tensor, size: Tensor, weights: Tensor, name: String = "Bincount") = run {
+  buildOpTensor("Bincount", name) {
+    addInput(arr, false)
+    addInput(size, false)
+    addInput(weights, false)
+  }
+}
+
+fun TF.bucketize(input: Tensor, boundaries: Array<Float>, name: String = "Bucketize") = run {
+  buildOpTensor("Bucketize", name) {
+    addInput(input, false)
+    attr("boundaries", boundaries)
+  }
+}
+
+fun TF.cast(x: Tensor, dstT: Int, name: String = "Cast") = run {
+  buildOpTensor("Cast", name) {
+    addInput(x, false)
+    attrType("DstT", dstT)
+  }
+}
+
+fun TF.ceil(x: Tensor, name: String = "Ceil") = run {
+  buildOpTensor("Ceil", name) {
+    addInput(x, false)
+  }
+}
+
+fun TF.clipByValue(t: Tensor, clip_value_min: Tensor, clip_value_max: Tensor, name: String = "ClipByValue") = run {
+  buildOpTensor("ClipByValue", name) {
+    addInput(t, false)
+    addInput(clip_value_min, false)
+    addInput(clip_value_max, false)
+  }
+}
+
+fun TF.compareAndBitpack(input: Tensor, threshold: Tensor, name: String = "CompareAndBitpack") = run {
+  buildOpTensor("CompareAndBitpack", name) {
+    addInput(input, false)
+    addInput(threshold, false)
+  }
+}
+
+fun TF.complex(real: Tensor, imag: Tensor, tout: Int = DT_COMPLEX64, name: String = "Complex") = run {
+  buildOpTensor("Complex", name) {
+    addInput(real, false)
+    addInput(imag, false)
+    attrType("Tout", tout)
+  }
+}
+
+fun TF.complexAbs(x: Tensor, tout: Int = DT_FLOAT, name: String = "ComplexAbs") = run {
+  buildOpTensor("ComplexAbs", name) {
+    addInput(x, false)
+    attrType("Tout", tout)
+  }
+}
+
+fun TF.conj(input: Tensor, name: String = "Conj") = run {
+  buildOpTensor("Conj", name) {
+    addInput(input, false)
+  }
+}
+
+fun TF.cos(x: Tensor, name: String = "Cos") = run {
+  buildOpTensor("Cos", name) {
+    addInput(x, false)
+  }
+}
+
+fun TF.cosh(x: Tensor, name: String = "Cosh") = run {
+  buildOpTensor("Cosh", name) {
+    addInput(x, false)
+  }
+}
+
+fun TF.cross(a: Tensor, b: Tensor, name: String = "Cross") = run {
+  buildOpTensor("Cross", name) {
+    addInput(a, false)
+    addInput(b, false)
+  }
+}
+
+fun TF.cumprod(x: Tensor, axis: Tensor, exclusive: Boolean = false, reverse: Boolean = false, name: String = "Cumprod") = run {
+  buildOpTensor("Cumprod", name) {
+    addInput(x, false)
+    addInput(axis, false)
+    attr("exclusive", exclusive)
+    attr("reverse", reverse)
+  }
+}
+
+fun TF.cumsum(x: Tensor, axis: Tensor, exclusive: Boolean = false, reverse: Boolean = false, name: String = "Cumsum") = run {
+  buildOpTensor("Cumsum", name) {
+    addInput(x, false)
+    addInput(axis, false)
+    attr("exclusive", exclusive)
+    attr("reverse", reverse)
+  }
+}
+
+fun TF.digamma(x: Tensor, name: String = "Digamma") = run {
+  buildOpTensor("Digamma", name) {
+    addInput(x, false)
+  }
+}
+
+fun TF.div(x: Tensor, y: Tensor, name: String = "Div") = run {
+  buildOpTensor("Div", name) {
+    addInput(x, false)
+    addInput(y, false)
+  }
+}
+
+fun TF.equal(x: Tensor, y: Tensor, name: String = "Equal") = run {
+  buildOpTensor("Equal", name) {
+    addInput(x, false)
+    addInput(y, false)
+  }
+}
+
+fun TF.erf(x: Tensor, name: String = "Erf") = run {
+  buildOpTensor("Erf", name) {
+    addInput(x, false)
+  }
+}
+
+fun TF.erfc(x: Tensor, name: String = "Erfc") = run {
+  buildOpTensor("Erfc", name) {
+    addInput(x, false)
+  }
+}
+
+fun TF.exp(x: Tensor, name: String = "Exp") = run {
+  buildOpTensor("Exp", name) {
+    addInput(x, false)
+  }
+}
+
+fun TF.expm1(x: Tensor, name: String = "Expm1") = run {
+  buildOpTensor("Expm1", name) {
+    addInput(x, false)
+  }
+}
+
+fun TF.floor(x: Tensor, name: String = "Floor") = run {
+  buildOpTensor("Floor", name) {
+    addInput(x, false)
+  }
+}
+
+fun TF.floorDiv(x: Tensor, y: Tensor, name: String = "FloorDiv") = run {
+  buildOpTensor("FloorDiv", name) {
+    addInput(x, false)
+    addInput(y, false)
+  }
+}
+
+fun TF.floorMod(x: Tensor, y: Tensor, name: String = "FloorMod") = run {
+  buildOpTensor("FloorMod", name) {
+    addInput(x, false)
+    addInput(y, false)
+  }
+}
+
+fun TF.greater(x: Tensor, y: Tensor, name: String = "Greater") = run {
+  buildOpTensor("Greater", name) {
+    addInput(x, false)
+    addInput(y, false)
+  }
+}
+
+fun TF.greaterEqual(x: Tensor, y: Tensor, name: String = "GreaterEqual") = run {
+  buildOpTensor("GreaterEqual", name) {
+    addInput(x, false)
+    addInput(y, false)
+  }
+}
+
+fun TF.histogramFixedWidth(values: Tensor, value_range: Tensor, nbins: Tensor, dtype: Int = DT_INT32, name: String = "HistogramFixedWidth") = run {
+  buildOpTensor("HistogramFixedWidth", name) {
+    addInput(values, false)
+    addInput(value_range, false)
+    addInput(nbins, false)
+    attrType("dtype", dtype)
+  }
+}
+
+fun TF.igamma(a: Tensor, x: Tensor, name: String = "Igamma") = run {
+  buildOpTensor("Igamma", name) {
+    addInput(a, false)
+    addInput(x, false)
+  }
+}
+
+fun TF.igammac(a: Tensor, x: Tensor, name: String = "Igammac") = run {
+  buildOpTensor("Igammac", name) {
+    addInput(a, false)
+    addInput(x, false)
+  }
+}
+
+fun TF.imag(input: Tensor, tout: Int = DT_FLOAT, name: String = "Imag") = run {
+  buildOpTensor("Imag", name) {
+    addInput(input, false)
+    attrType("Tout", tout)
+  }
+}
+
+fun TF.inv(x: Tensor, name: String = "Inv") = run {
+  buildOpTensor("Inv", name) {
+    addInput(x, false)
+  }
+}
+
+fun TF.isFinite(x: Tensor, name: String = "IsFinite") = run {
+  buildOpTensor("IsFinite", name) {
+    addInput(x, false)
+  }
+}
+
+fun TF.isInf(x: Tensor, name: String = "IsInf") = run {
+  buildOpTensor("IsInf", name) {
+    addInput(x, false)
+  }
+}
+
+fun TF.isNan(x: Tensor, name: String = "IsNan") = run {
+  buildOpTensor("IsNan", name) {
+    addInput(x, false)
+  }
+}
+
+fun TF.less(x: Tensor, y: Tensor, name: String = "Less") = run {
+  buildOpTensor("Less", name) {
+    addInput(x, false)
+    addInput(y, false)
+  }
+}
+
+fun TF.lessEqual(x: Tensor, y: Tensor, name: String = "LessEqual") = run {
+  buildOpTensor("LessEqual", name) {
+    addInput(x, false)
+    addInput(y, false)
+  }
+}
+
+fun TF.lgamma(x: Tensor, name: String = "Lgamma") = run {
+  buildOpTensor("Lgamma", name) {
+    addInput(x, false)
+  }
+}
+
+fun TF.linSpace(start: Tensor, stop: Tensor, num: Tensor, name: String = "LinSpace") = run {
+  buildOpTensor("LinSpace", name) {
+    addInput(start, false)
+    addInput(stop, false)
+    addInput(num, false)
+  }
+}
+
+fun TF.log(x: Tensor, name: String = "Log") = run {
+  buildOpTensor("Log", name) {
+    addInput(x, false)
+  }
+}
+
+fun TF.log1p(x: Tensor, name: String = "Log1p") = run {
+  buildOpTensor("Log1p", name) {
+    addInput(x, false)
+  }
+}
+
+fun TF.logicalAnd(x: Tensor, y: Tensor, name: String = "LogicalAnd") = run {
+  buildOpTensor("LogicalAnd", name) {
+    addInput(x, false)
+    addInput(y, false)
+  }
+}
+
+fun TF.logicalNot(x: Tensor, name: String = "LogicalNot") = run {
+  buildOpTensor("LogicalNot", name) {
+    addInput(x, false)
+  }
+}
+
+fun TF.logicalOr(x: Tensor, y: Tensor, name: String = "LogicalOr") = run {
+  buildOpTensor("LogicalOr", name) {
+    addInput(x, false)
+    addInput(y, false)
+  }
+}
+
+fun TF.matMul(a: Tensor, b: Tensor, transpose_a: Boolean = false, transpose_b: Boolean = false, name: String = "MatMul") = run {
+  buildOpTensor("MatMul", name) {
+    addInput(a, false)
+    addInput(b, false)
+    attr("transpose_a", transpose_a)
+    attr("transpose_b", transpose_b)
+  }
+}
+
+fun TF.max(input: Tensor, reduction_indices: Tensor, keep_dims: Boolean = false, name: String = "Max") = run {
+  buildOpTensor("Max", name) {
+    addInput(input, false)
+    addInput(reduction_indices, false)
+    attr("keep_dims", keep_dims)
+  }
+}
+
+fun TF.maximum(x: Tensor, y: Tensor, name: String = "Maximum") = run {
+  buildOpTensor("Maximum", name) {
+    addInput(x, false)
+    addInput(y, false)
+  }
+}
+
+fun TF.mean(input: Tensor, reduction_indices: Tensor, keep_dims: Boolean = false, name: String = "Mean") = run {
+  buildOpTensor("Mean", name) {
+    addInput(input, false)
+    addInput(reduction_indices, false)
+    attr("keep_dims", keep_dims)
+  }
+}
+
+fun TF.min(input: Tensor, reduction_indices: Tensor, keep_dims: Boolean = false, name: String = "Min") = run {
+  buildOpTensor("Min", name) {
+    addInput(input, false)
+    addInput(reduction_indices, false)
+    attr("keep_dims", keep_dims)
+  }
+}
+
+fun TF.minimum(x: Tensor, y: Tensor, name: String = "Minimum") = run {
+  buildOpTensor("Minimum", name) {
+    addInput(x, false)
+    addInput(y, false)
+  }
+}
+
+fun TF.mod(x: Tensor, y: Tensor, name: String = "Mod") = run {
+  buildOpTensor("Mod", name) {
+    addInput(x, false)
+    addInput(y, false)
+  }
+}
+
+fun TF.mul(x: Tensor, y: Tensor, name: String = "Mul") = run {
+  buildOpTensor("Mul", name) {
+    addInput(x, false)
+    addInput(y, false)
+  }
+}
+
+fun TF.neg(x: Tensor, name: String = "Neg") = run {
+  buildOpTensor("Neg", name) {
+    addInput(x, false)
+  }
+}
+
+fun TF.notEqual(x: Tensor, y: Tensor, name: String = "NotEqual") = run {
+  buildOpTensor("NotEqual", name) {
+    addInput(x, false)
+    addInput(y, false)
+  }
+}
+
+fun TF.polygamma(a: Tensor, x: Tensor, name: String = "Polygamma") = run {
+  buildOpTensor("Polygamma", name) {
+    addInput(a, false)
+    addInput(x, false)
+  }
+}
+
+fun TF.pow(x: Tensor, y: Tensor, name: String = "Pow") = run {
+  buildOpTensor("Pow", name) {
+    addInput(x, false)
+    addInput(y, false)
+  }
+}
+
+fun TF.prod(input: Tensor, reduction_indices: Tensor, keep_dims: Boolean = false, name: String = "Prod") = run {
+  buildOpTensor("Prod", name) {
+    addInput(input, false)
+    addInput(reduction_indices, false)
+    attr("keep_dims", keep_dims)
+  }
+}
+
+fun TF.quantizeDownAndShrinkRange(input: Tensor, input_min: Tensor, input_max: Tensor, out_type: Int, name: String = "QuantizeDownAndShrinkRange") = run {
+  buildOpTensors("QuantizeDownAndShrinkRange", name) {
+    addInput(input, false)
+    addInput(input_min, false)
+    addInput(input_max, false)
+    attrType("out_type", out_type)
+  }
+}
+
+fun TF.quantizedAdd(x: Tensor, y: Tensor, min_x: Tensor, max_x: Tensor, min_y: Tensor, max_y: Tensor, toutput: Int = DT_QINT32, name: String = "QuantizedAdd") = run {
+  buildOpTensors("QuantizedAdd", name) {
+    addInput(x, false)
+    addInput(y, false)
+    addInput(min_x, false)
+    addInput(max_x, false)
+    addInput(min_y, false)
+    addInput(max_y, false)
+    attrType("Toutput", toutput)
+  }
+}
+
+fun TF.quantizedMatMul(a: Tensor, b: Tensor, min_a: Tensor, max_a: Tensor, min_b: Tensor, max_b: Tensor, toutput: Int = DT_QINT32, transpose_a: Boolean = false, transpose_b: Boolean = false, tactivation: Int = DT_QUINT8, name: String = "QuantizedMatMul") = run {
+  buildOpTensors("QuantizedMatMul", name) {
+    addInput(a, false)
+    addInput(b, false)
+    addInput(min_a, false)
+    addInput(max_a, false)
+    addInput(min_b, false)
+    addInput(max_b, false)
+    attrType("Toutput", toutput)
+    attr("transpose_a", transpose_a)
+    attr("transpose_b", transpose_b)
+    attrType("Tactivation", tactivation)
+  }
+}
+
+fun TF.quantizedMul(x: Tensor, y: Tensor, min_x: Tensor, max_x: Tensor, min_y: Tensor, max_y: Tensor, toutput: Int = DT_QINT32, name: String = "QuantizedMul") = run {
+  buildOpTensors("QuantizedMul", name) {
+    addInput(x, false)
+    addInput(y, false)
+    addInput(min_x, false)
+    addInput(max_x, false)
+    addInput(min_y, false)
+    addInput(max_y, false)
+    attrType("Toutput", toutput)
+  }
+}
+
+fun TF.range(start: Tensor, limit: Tensor, delta: Tensor, name: String = "Range") = run {
+  buildOpTensor("Range", name) {
+    addInput(start, false)
+    addInput(limit, false)
+    addInput(delta, false)
+  }
+}
+
+fun TF.real(input: Tensor, tout: Int = DT_FLOAT, name: String = "Real") = run {
+  buildOpTensor("Real", name) {
+    addInput(input, false)
+    attrType("Tout", tout)
+  }
+}
+
+fun TF.realDiv(x: Tensor, y: Tensor, name: String = "RealDiv") = run {
+  buildOpTensor("RealDiv", name) {
+    addInput(x, false)
+    addInput(y, false)
+  }
+}
+
+fun TF.reciprocal(x: Tensor, name: String = "Reciprocal") = run {
+  buildOpTensor("Reciprocal", name) {
+    addInput(x, false)
+  }
+}
+
+fun TF.requantizationRange(input: Tensor, input_min: Tensor, input_max: Tensor, name: String = "RequantizationRange") = run {
+  buildOpTensors("RequantizationRange", name) {
+    addInput(input, false)
+    addInput(input_min, false)
+    addInput(input_max, false)
+  }
+}
+
+fun TF.requantize(input: Tensor, input_min: Tensor, input_max: Tensor, requested_output_min: Tensor, requested_output_max: Tensor, out_type: Int, name: String = "Requantize") = run {
+  buildOpTensors("Requantize", name) {
+    addInput(input, false)
+    addInput(input_min, false)
+    addInput(input_max, false)
+    addInput(requested_output_min, false)
+    addInput(requested_output_max, false)
+    attrType("out_type", out_type)
+  }
+}
+
+fun TF.rint(x: Tensor, name: String = "Rint") = run {
+  buildOpTensor("Rint", name) {
+    addInput(x, false)
+  }
+}
+
+fun TF.round(x: Tensor, name: String = "Round") = run {
+  buildOpTensor("Round", name) {
+    addInput(x, false)
+  }
+}
+
+fun TF.rsqrt(x: Tensor, name: String = "Rsqrt") = run {
+  buildOpTensor("Rsqrt", name) {
+    addInput(x, false)
+  }
+}
+
+fun TF.segmentMax(data: Tensor, segment_ids: Tensor, name: String = "SegmentMax") = run {
+  buildOpTensor("SegmentMax", name) {
+    addInput(data, false)
+    addInput(segment_ids, false)
+  }
+}
+
+fun TF.segmentMean(data: Tensor, segment_ids: Tensor, name: String = "SegmentMean") = run {
+  buildOpTensor("SegmentMean", name) {
+    addInput(data, false)
+    addInput(segment_ids, false)
+  }
+}
+
+fun TF.segmentMin(data: Tensor, segment_ids: Tensor, name: String = "SegmentMin") = run {
+  buildOpTensor("SegmentMin", name) {
+    addInput(data, false)
+    addInput(segment_ids, false)
+  }
+}
+
+fun TF.segmentProd(data: Tensor, segment_ids: Tensor, name: String = "SegmentProd") = run {
+  buildOpTensor("SegmentProd", name) {
+    addInput(data, false)
+    addInput(segment_ids, false)
+  }
+}
+
+fun TF.segmentSum(data: Tensor, segment_ids: Tensor, name: String = "SegmentSum") = run {
+  buildOpTensor("SegmentSum", name) {
+    addInput(data, false)
+    addInput(segment_ids, false)
+  }
+}
+
+fun TF.select(condition: Tensor, t: Tensor, e: Tensor, name: String = "Select") = run {
+  buildOpTensor("Select", name) {
+    addInput(condition, false)
+    addInput(t, false)
+    addInput(e, false)
+  }
+}
+
+fun TF.sigmoid(x: Tensor, name: String = "Sigmoid") = run {
+  buildOpTensor("Sigmoid", name) {
+    addInput(x, false)
+  }
+}
+
+fun TF.sign(x: Tensor, name: String = "Sign") = run {
+  buildOpTensor("Sign", name) {
+    addInput(x, false)
+  }
+}
+
+fun TF.sin(x: Tensor, name: String = "Sin") = run {
+  buildOpTensor("Sin", name) {
+    addInput(x, false)
+  }
+}
+
+fun TF.sinh(x: Tensor, name: String = "Sinh") = run {
+  buildOpTensor("Sinh", name) {
+    addInput(x, false)
+  }
+}
+
+fun TF.sparseMatMul(a: Tensor, b: Tensor, transpose_a: Boolean = false, transpose_b: Boolean = false, a_is_sparse: Boolean = false, b_is_sparse: Boolean = false, name: String = "SparseMatMul") = run {
+  buildOpTensor("SparseMatMul", name) {
+    addInput(a, false)
+    addInput(b, false)
+    attr("transpose_a", transpose_a)
+    attr("transpose_b", transpose_b)
+    attr("a_is_sparse", a_is_sparse)
+    attr("b_is_sparse", b_is_sparse)
+  }
+}
+
+fun TF.sparseSegmentMean(data: Tensor, indices: Tensor, segment_ids: Tensor, name: String = "SparseSegmentMean") = run {
+  buildOpTensor("SparseSegmentMean", name) {
+    addInput(data, false)
+    addInput(indices, false)
+    addInput(segment_ids, false)
+  }
+}
+
+fun TF.sparseSegmentMeanGrad(grad: Tensor, indices: Tensor, segment_ids: Tensor, output_dim0: Tensor, name: String = "SparseSegmentMeanGrad") = run {
+  buildOpTensor("SparseSegmentMeanGrad", name) {
+    addInput(grad, false)
+    addInput(indices, false)
+    addInput(segment_ids, false)
+    addInput(output_dim0, false)
+  }
+}
+
+fun TF.sparseSegmentMeanWithNumSegments(data: Tensor, indices: Tensor, segment_ids: Tensor, num_segments: Tensor, name: String = "SparseSegmentMeanWithNumSegments") = run {
+  buildOpTensor("SparseSegmentMeanWithNumSegments", name) {
+    addInput(data, false)
+    addInput(indices, false)
+    addInput(segment_ids, false)
+    addInput(num_segments, false)
+  }
+}
+
+fun TF.sparseSegmentSqrtN(data: Tensor, indices: Tensor, segment_ids: Tensor, name: String = "SparseSegmentSqrtN") = run {
+  buildOpTensor("SparseSegmentSqrtN", name) {
+    addInput(data, false)
+    addInput(indices, false)
+    addInput(segment_ids, false)
+  }
+}
+
+fun TF.sparseSegmentSqrtNGrad(grad: Tensor, indices: Tensor, segment_ids: Tensor, output_dim0: Tensor, name: String = "SparseSegmentSqrtNGrad") = run {
+  buildOpTensor("SparseSegmentSqrtNGrad", name) {
+    addInput(grad, false)
+    addInput(indices, false)
+    addInput(segment_ids, false)
+    addInput(output_dim0, false)
+  }
+}
+
+fun TF.sparseSegmentSqrtNWithNumSegments(data: Tensor, indices: Tensor, segment_ids: Tensor, num_segments: Tensor, name: String = "SparseSegmentSqrtNWithNumSegments") = run {
+  buildOpTensor("SparseSegmentSqrtNWithNumSegments", name) {
+    addInput(data, false)
+    addInput(indices, false)
+    addInput(segment_ids, false)
+    addInput(num_segments, false)
+  }
+}
+
+fun TF.sparseSegmentSum(data: Tensor, indices: Tensor, segment_ids: Tensor, name: String = "SparseSegmentSum") = run {
+  buildOpTensor("SparseSegmentSum", name) {
+    addInput(data, false)
+    addInput(indices, false)
+    addInput(segment_ids, false)
+  }
+}
+
+fun TF.sparseSegmentSumWithNumSegments(data: Tensor, indices: Tensor, segment_ids: Tensor, num_segments: Tensor, name: String = "SparseSegmentSumWithNumSegments") = run {
+  buildOpTensor("SparseSegmentSumWithNumSegments", name) {
+    addInput(data, false)
+    addInput(indices, false)
+    addInput(segment_ids, false)
+    addInput(num_segments, false)
+  }
+}
+
+fun TF.sqrt(x: Tensor, name: String = "Sqrt") = run {
+  buildOpTensor("Sqrt", name) {
+    addInput(x, false)
+  }
+}
+
+fun TF.square(x: Tensor, name: String = "Square") = run {
+  buildOpTensor("Square", name) {
+    addInput(x, false)
+  }
+}
+
+fun TF.squaredDifference(x: Tensor, y: Tensor, name: String = "SquaredDifference") = run {
+  buildOpTensor("SquaredDifference", name) {
+    addInput(x, false)
+    addInput(y, false)
+  }
+}
+
+fun TF.sub(x: Tensor, y: Tensor, name: String = "Sub") = run {
+  buildOpTensor("Sub", name) {
+    addInput(x, false)
+    addInput(y, false)
+  }
+}
+
+fun TF.sum(input: Tensor, reduction_indices: Tensor, keep_dims: Boolean = false, name: String = "Sum") = run {
+  buildOpTensor("Sum", name) {
+    addInput(input, false)
+    addInput(reduction_indices, false)
+    attr("keep_dims", keep_dims)
+  }
+}
+
+fun TF.tan(x: Tensor, name: String = "Tan") = run {
+  buildOpTensor("Tan", name) {
+    addInput(x, false)
+  }
+}
+
+fun TF.tanh(x: Tensor, name: String = "Tanh") = run {
+  buildOpTensor("Tanh", name) {
+    addInput(x, false)
+  }
+}
+
+fun TF.truncateDiv(x: Tensor, y: Tensor, name: String = "TruncateDiv") = run {
+  buildOpTensor("TruncateDiv", name) {
+    addInput(x, false)
+    addInput(y, false)
+  }
+}
+
+fun TF.truncateMod(x: Tensor, y: Tensor, name: String = "TruncateMod") = run {
+  buildOpTensor("TruncateMod", name) {
+    addInput(x, false)
+    addInput(y, false)
+  }
+}
+
+fun TF.unsortedSegmentMax(data: Tensor, segment_ids: Tensor, num_segments: Tensor, name: String = "UnsortedSegmentMax") = run {
+  buildOpTensor("UnsortedSegmentMax", name) {
+    addInput(data, false)
+    addInput(segment_ids, false)
+    addInput(num_segments, false)
+  }
+}
+
+fun TF.unsortedSegmentMin(data: Tensor, segment_ids: Tensor, num_segments: Tensor, name: String = "UnsortedSegmentMin") = run {
+  buildOpTensor("UnsortedSegmentMin", name) {
+    addInput(data, false)
+    addInput(segment_ids, false)
+    addInput(num_segments, false)
+  }
+}
+
+fun TF.unsortedSegmentProd(data: Tensor, segment_ids: Tensor, num_segments: Tensor, name: String = "UnsortedSegmentProd") = run {
+  buildOpTensor("UnsortedSegmentProd", name) {
+    addInput(data, false)
+    addInput(segment_ids, false)
+    addInput(num_segments, false)
+  }
+}
+
+fun TF.unsortedSegmentSum(data: Tensor, segment_ids: Tensor, num_segments: Tensor, name: String = "UnsortedSegmentSum") = run {
+  buildOpTensor("UnsortedSegmentSum", name) {
+    addInput(data, false)
+    addInput(segment_ids, false)
+    addInput(num_segments, false)
+  }
+}
+
+fun TF.zeta(x: Tensor, q: Tensor, name: String = "Zeta") = run {
+  buildOpTensor("Zeta", name) {
+    addInput(x, false)
+    addInput(q, false)
+  }
+}
+
+fun TF.igammaGradA(a: Tensor, x: Tensor, name: String = "IgammaGradA") = run {
+  buildOpTensor("IgammaGradA", name) {
+    addInput(a, false)
+    addInput(x, false)
+  }
+}
+
+fun TF.invGrad(y: Tensor, dy: Tensor, name: String = "InvGrad") = run {
+  buildOpTensor("InvGrad", name) {
+    addInput(y, false)
+    addInput(dy, false)
+  }
+}
+
+fun TF.reciprocalGrad(y: Tensor, dy: Tensor, name: String = "ReciprocalGrad") = run {
+  buildOpTensor("ReciprocalGrad", name) {
+    addInput(y, false)
+    addInput(dy, false)
+  }
+}
+
+fun TF.rsqrtGrad(y: Tensor, dy: Tensor, name: String = "RsqrtGrad") = run {
+  buildOpTensor("RsqrtGrad", name) {
+    addInput(y, false)
+    addInput(dy, false)
+  }
+}
+
+fun TF.sigmoidGrad(y: Tensor, dy: Tensor, name: String = "SigmoidGrad") = run {
+  buildOpTensor("SigmoidGrad", name) {
+    addInput(y, false)
+    addInput(dy, false)
+  }
+}
+
+fun TF.sqrtGrad(y: Tensor, dy: Tensor, name: String = "SqrtGrad") = run {
+  buildOpTensor("SqrtGrad", name) {
+    addInput(y, false)
+    addInput(dy, false)
+  }
+}
+
+fun TF.tanhGrad(y: Tensor, dy: Tensor, name: String = "TanhGrad") = run {
+  buildOpTensor("TanhGrad", name) {
+    addInput(y, false)
+    addInput(dy, false)
   }
 }

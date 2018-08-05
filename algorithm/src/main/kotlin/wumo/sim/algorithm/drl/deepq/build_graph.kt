@@ -2,10 +2,12 @@ package wumo.sim.algorithm.drl.deepq
 
 import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.algorithm.tensorflow.*
-import wumo.sim.algorithm.tensorflow.Op
 import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.Variable
 import wumo.sim.algorithm.tensorflow.ops.*
+import wumo.sim.algorithm.tensorflow.ops.gen.less
+import wumo.sim.algorithm.tensorflow.ops.gen.log
+import wumo.sim.algorithm.tensorflow.ops.gen.max
 import wumo.sim.algorithm.tensorflow.training.Optimizer
 import wumo.sim.util.*
 import wumo.sim.util.ndarray.NDArray

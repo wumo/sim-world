@@ -1,13 +1,11 @@
 package wumo.sim.algorithm.tensorflow.ops
 
-import org.bytedeco.javacpp.BoolPointer
-import org.bytedeco.javacpp.BytePointer
-import org.bytedeco.javacpp.IntPointer
-import org.bytedeco.javacpp.tensorflow.*
+import org.bytedeco.javacpp.tensorflow.DT_INT64
+import wumo.sim.algorithm.tensorflow.ops.gen.exp
+import wumo.sim.algorithm.tensorflow.ops.gen.sub
 import wumo.sim.algorithm.tensorflow.ops.gradients.noGradient
 import wumo.sim.algorithm.tensorflow.ops.gradients.register_gradient_op
 import wumo.sim.algorithm.tensorflow.tf
-import wumo.sim.algorithm.tensorflow.util.toArray
 import wumo.sim.util.i
 
 fun register_nn_grad() {

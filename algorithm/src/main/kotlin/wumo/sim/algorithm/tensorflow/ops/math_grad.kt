@@ -3,6 +3,7 @@ package wumo.sim.algorithm.tensorflow.ops
 import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.algorithm.tensorflow.Op
 import wumo.sim.algorithm.tensorflow.Tensor
+import wumo.sim.algorithm.tensorflow.ops.gen.*
 import wumo.sim.algorithm.tensorflow.ops.gradients.append
 import wumo.sim.algorithm.tensorflow.ops.gradients.noGradient
 import wumo.sim.algorithm.tensorflow.ops.gradients.register_gradient_op
@@ -867,8 +868,8 @@ fun register_math_grad() {
                        y1: Tensor, adj_y1: Boolean,
                        grad_outputs: MutableList<Tensor>) {
     if (!is_batch) {
-      val dx = tf.matmul(x0, x1, transpose_a = adj_x0, transpose_b = adj_x1)
-      val dy = tf.matmul(y0, y1, transpose_a = adj_y0, transpose_b = adj_y1)
+      val dx = tf.matMul(x0, x1, transpose_a = adj_x0, transpose_b = adj_x1)
+      val dy = tf.matMul(y0, y1, transpose_a = adj_y0, transpose_b = adj_y1)
       grad_outputs.add(dx)
       grad_outputs.add(dy)
     } else {

@@ -6,6 +6,7 @@ import org.junit.Test
 import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.contrib.fully_connected
 import wumo.sim.algorithm.tensorflow.ops.*
+import wumo.sim.algorithm.tensorflow.ops.gen.log
 import wumo.sim.algorithm.tensorflow.tf
 import wumo.sim.algorithm.tensorflow.training.AdamOptimizer
 import wumo.sim.envs.classic_control.CartPole
@@ -20,7 +21,6 @@ class VanillaPolicyTest : BaseTest() {
     val env = CartPole()
     val gamma = 0.99
     fun discount_reward(r: Float) {
-    
     }
     
     val lr = 1e-2f

@@ -3,16 +3,14 @@
  */
 package wumo.sim.algorithm.tensorflow.ops.gen
 
+import wumo.sim.algorithm.tensorflow.TF
 import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.buildOpTensor
-import wumo.sim.algorithm.tensorflow.tf
 
-object gen_manip_ops {
-  fun roll(input: Tensor, shift: Tensor, axis: Tensor, name: String = "Roll") = run {
-    tf.buildOpTensor("Roll", name) {
-      addInput(input, false)
-      addInput(shift, false)
-      addInput(axis, false)
-    }
+fun TF.roll(input: Tensor, shift: Tensor, axis: Tensor, name: String = "Roll") = run {
+  buildOpTensor("Roll", name) {
+    addInput(input, false)
+    addInput(shift, false)
+    addInput(axis, false)
   }
 }

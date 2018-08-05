@@ -3,88 +3,86 @@
  */
 package wumo.sim.algorithm.tensorflow.ops.gen
 
+import wumo.sim.algorithm.tensorflow.TF
 import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.buildOp
 import wumo.sim.algorithm.tensorflow.buildOpTensor
-import wumo.sim.algorithm.tensorflow.tf
 import wumo.sim.util.ndarray.NDArray
 
-object gen_logging_ops {
-  fun assert(condition: Tensor, data: Tensor, summarize: Long = 3L, name: String = "Assert") = run {
-    tf.buildOp("Assert", name) {
-      addInput(condition, false)
-      addInput(data, false)
-      attr("summarize", summarize)
-    }
+fun TF.assert(condition: Tensor, data: Tensor, summarize: Long = 3L, name: String = "Assert") = run {
+  buildOp("Assert", name) {
+    addInput(condition, false)
+    addInput(data, false)
+    attr("summarize", summarize)
   }
-  
-  fun audioSummaryV2(tag: Tensor, tensor: Tensor, sample_rate: Tensor, max_outputs: Long = 3L, name: String = "AudioSummaryV2") = run {
-    tf.buildOpTensor("AudioSummaryV2", name) {
-      addInput(tag, false)
-      addInput(tensor, false)
-      addInput(sample_rate, false)
-      attr("max_outputs", max_outputs)
-    }
+}
+
+fun TF.audioSummaryV2(tag: Tensor, tensor: Tensor, sample_rate: Tensor, max_outputs: Long = 3L, name: String = "AudioSummaryV2") = run {
+  buildOpTensor("AudioSummaryV2", name) {
+    addInput(tag, false)
+    addInput(tensor, false)
+    addInput(sample_rate, false)
+    attr("max_outputs", max_outputs)
   }
-  
-  fun histogramSummary(tag: Tensor, values: Tensor, name: String = "HistogramSummary") = run {
-    tf.buildOpTensor("HistogramSummary", name) {
-      addInput(tag, false)
-      addInput(values, false)
-    }
+}
+
+fun TF.histogramSummary(tag: Tensor, values: Tensor, name: String = "HistogramSummary") = run {
+  buildOpTensor("HistogramSummary", name) {
+    addInput(tag, false)
+    addInput(values, false)
   }
-  
-  fun imageSummary(tag: Tensor, tensor: Tensor, max_images: Long = 3L, bad_color: NDArray<*>, name: String = "ImageSummary") = run {
-    tf.buildOpTensor("ImageSummary", name) {
-      addInput(tag, false)
-      addInput(tensor, false)
-      attr("max_images", max_images)
-      attr("bad_color", bad_color)
-    }
+}
+
+fun TF.imageSummary(tag: Tensor, tensor: Tensor, max_images: Long = 3L, bad_color: NDArray<*>, name: String = "ImageSummary") = run {
+  buildOpTensor("ImageSummary", name) {
+    addInput(tag, false)
+    addInput(tensor, false)
+    attr("max_images", max_images)
+    attr("bad_color", bad_color)
   }
-  
-  fun mergeSummary(inputs: Array<Tensor>, name: String = "MergeSummary") = run {
-    tf.buildOpTensor("MergeSummary", name) {
-      addInput(inputs, false)
-    }
+}
+
+fun TF.mergeSummary(inputs: Array<Tensor>, name: String = "MergeSummary") = run {
+  buildOpTensor("MergeSummary", name) {
+    addInput(inputs, false)
   }
-  
-  fun print(input: Tensor, data: Tensor, message: String = "", first_n: Long = -1L, summarize: Long = 3L, name: String = "Print") = run {
-    tf.buildOpTensor("Print", name) {
-      addInput(input, false)
-      addInput(data, false)
-      attr("message", message)
-      attr("first_n", first_n)
-      attr("summarize", summarize)
-    }
+}
+
+fun TF.print(input: Tensor, data: Tensor, message: String = "", first_n: Long = -1L, summarize: Long = 3L, name: String = "Print") = run {
+  buildOpTensor("Print", name) {
+    addInput(input, false)
+    addInput(data, false)
+    attr("message", message)
+    attr("first_n", first_n)
+    attr("summarize", summarize)
   }
-  
-  fun scalarSummary(tags: Tensor, values: Tensor, name: String = "ScalarSummary") = run {
-    tf.buildOpTensor("ScalarSummary", name) {
-      addInput(tags, false)
-      addInput(values, false)
-    }
+}
+
+fun TF.scalarSummary(tags: Tensor, values: Tensor, name: String = "ScalarSummary") = run {
+  buildOpTensor("ScalarSummary", name) {
+    addInput(tags, false)
+    addInput(values, false)
   }
-  
-  fun tensorSummary(tensor: Tensor, description: String = "", labels: Array<String> = arrayOf(), display_name: String = "", name: String = "TensorSummary") = run {
-    tf.buildOpTensor("TensorSummary", name) {
-      addInput(tensor, false)
-      attr("description", description)
-      attr("labels", labels)
-      attr("display_name", display_name)
-    }
+}
+
+fun TF.tensorSummary(tensor: Tensor, description: String = "", labels: Array<String> = arrayOf(), display_name: String = "", name: String = "TensorSummary") = run {
+  buildOpTensor("TensorSummary", name) {
+    addInput(tensor, false)
+    attr("description", description)
+    attr("labels", labels)
+    attr("display_name", display_name)
   }
-  
-  fun tensorSummaryV2(tag: Tensor, tensor: Tensor, serialized_summary_metadata: Tensor, name: String = "TensorSummaryV2") = run {
-    tf.buildOpTensor("TensorSummaryV2", name) {
-      addInput(tag, false)
-      addInput(tensor, false)
-      addInput(serialized_summary_metadata, false)
-    }
+}
+
+fun TF.tensorSummaryV2(tag: Tensor, tensor: Tensor, serialized_summary_metadata: Tensor, name: String = "TensorSummaryV2") = run {
+  buildOpTensor("TensorSummaryV2", name) {
+    addInput(tag, false)
+    addInput(tensor, false)
+    addInput(serialized_summary_metadata, false)
   }
-  
-  fun timestamp(name: String = "Timestamp") = run {
-    tf.buildOpTensor("Timestamp", name) {
-    }
+}
+
+fun TF.timestamp(name: String = "Timestamp") = run {
+  buildOpTensor("Timestamp", name) {
   }
 }

@@ -2,6 +2,7 @@ package wumo.sim.algorithm.tensorflow.ops
 
 import wumo.sim.algorithm.tensorflow.Op
 import wumo.sim.algorithm.tensorflow.Tensor
+import wumo.sim.algorithm.tensorflow.ops.gen.sub
 import wumo.sim.algorithm.tensorflow.ops.gradients.noGradient
 import wumo.sim.algorithm.tensorflow.ops.gradients.register_gradient_op
 import wumo.sim.algorithm.tensorflow.ops.gradients.register_no_gradient_op
@@ -235,7 +236,7 @@ fun register_array_grad() {
     val end = op.inputs[2]
     val strides = op.inputs[3]
     val begin_mask = op.attrLong("begin_mask")
-    val end_mask =op.attrLong("end_mask")
+    val end_mask = op.attrLong("end_mask")
     val ellipsis_mask = op.attrLong("ellipsis_mask")
     val new_axis_mask = op.attrLong("new_axis_mask")
     val shrink_axis_mask = op.attrLong("shrink_axis_mask")

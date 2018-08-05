@@ -3,101 +3,100 @@
  */
 package wumo.sim.algorithm.tensorflow.ops.gen
 
+import org.bytedeco.javacpp.tensorflow.DT_INT64
+import wumo.sim.algorithm.tensorflow.TF
 import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.buildOpTensor
-import wumo.sim.algorithm.tensorflow.tf
 
-object gen_random_ops {
-  fun multinomial(logits: Tensor, num_samples: Tensor, seed: Long = 0L, seed2: Long = 0L, output_dtype: Int = 9, name: String = "Multinomial") = run {
-    tf.buildOpTensor("Multinomial", name) {
-      addInput(logits, false)
-      addInput(num_samples, false)
-      attr("seed", seed)
-      attr("seed2", seed2)
-      attrType("output_dtype", output_dtype)
-    }
+fun TF.multinomial(logits: Tensor, num_samples: Tensor, seed: Long = 0L, seed2: Long = 0L, output_dtype: Int = DT_INT64, name: String = "Multinomial") = run {
+  buildOpTensor("Multinomial", name) {
+    addInput(logits, false)
+    addInput(num_samples, false)
+    attr("seed", seed)
+    attr("seed2", seed2)
+    attrType("output_dtype", output_dtype)
   }
-  
-  fun parameterizedTruncatedNormal(shape: Tensor, means: Tensor, stdevs: Tensor, minvals: Tensor, maxvals: Tensor, seed: Long = 0L, seed2: Long = 0L, name: String = "ParameterizedTruncatedNormal") = run {
-    tf.buildOpTensor("ParameterizedTruncatedNormal", name) {
-      addInput(shape, false)
-      addInput(means, false)
-      addInput(stdevs, false)
-      addInput(minvals, false)
-      addInput(maxvals, false)
-      attr("seed", seed)
-      attr("seed2", seed2)
-    }
+}
+
+fun TF.parameterizedTruncatedNormal(shape: Tensor, means: Tensor, stdevs: Tensor, minvals: Tensor, maxvals: Tensor, seed: Long = 0L, seed2: Long = 0L, name: String = "ParameterizedTruncatedNormal") = run {
+  buildOpTensor("ParameterizedTruncatedNormal", name) {
+    addInput(shape, false)
+    addInput(means, false)
+    addInput(stdevs, false)
+    addInput(minvals, false)
+    addInput(maxvals, false)
+    attr("seed", seed)
+    attr("seed2", seed2)
   }
-  
-  fun randomGamma(shape: Tensor, alpha: Tensor, seed: Long = 0L, seed2: Long = 0L, name: String = "RandomGamma") = run {
-    tf.buildOpTensor("RandomGamma", name) {
-      addInput(shape, false)
-      addInput(alpha, false)
-      attr("seed", seed)
-      attr("seed2", seed2)
-    }
+}
+
+fun TF.randomGamma(shape: Tensor, alpha: Tensor, seed: Long = 0L, seed2: Long = 0L, name: String = "RandomGamma") = run {
+  buildOpTensor("RandomGamma", name) {
+    addInput(shape, false)
+    addInput(alpha, false)
+    attr("seed", seed)
+    attr("seed2", seed2)
   }
-  
-  fun randomPoissonV2(shape: Tensor, rate: Tensor, seed: Long = 0L, seed2: Long = 0L, dtype: Int = 9, name: String = "RandomPoissonV2") = run {
-    tf.buildOpTensor("RandomPoissonV2", name) {
-      addInput(shape, false)
-      addInput(rate, false)
-      attr("seed", seed)
-      attr("seed2", seed2)
-      attrType("dtype", dtype)
-    }
+}
+
+fun TF.randomPoissonV2(shape: Tensor, rate: Tensor, seed: Long = 0L, seed2: Long = 0L, dtype: Int = DT_INT64, name: String = "RandomPoissonV2") = run {
+  buildOpTensor("RandomPoissonV2", name) {
+    addInput(shape, false)
+    addInput(rate, false)
+    attr("seed", seed)
+    attr("seed2", seed2)
+    attrType("dtype", dtype)
   }
-  
-  fun randomShuffle(value: Tensor, seed: Long = 0L, seed2: Long = 0L, name: String = "RandomShuffle") = run {
-    tf.buildOpTensor("RandomShuffle", name) {
-      addInput(value, false)
-      attr("seed", seed)
-      attr("seed2", seed2)
-    }
+}
+
+fun TF.randomShuffle(value: Tensor, seed: Long = 0L, seed2: Long = 0L, name: String = "RandomShuffle") = run {
+  buildOpTensor("RandomShuffle", name) {
+    addInput(value, false)
+    attr("seed", seed)
+    attr("seed2", seed2)
   }
-  
-  fun randomStandardNormal(shape: Tensor, seed: Long = 0L, seed2: Long = 0L, dtype: Int, name: String = "RandomStandardNormal") = run {
-    tf.buildOpTensor("RandomStandardNormal", name) {
-      addInput(shape, false)
-      attr("seed", seed)
-      attr("seed2", seed2)
-      attrType("dtype", dtype)
-    }
+}
+
+fun TF.randomStandardNormal(shape: Tensor, seed: Long = 0L, seed2: Long = 0L, dtype: Int, name: String = "RandomStandardNormal") = run {
+  buildOpTensor("RandomStandardNormal", name) {
+    addInput(shape, false)
+    attr("seed", seed)
+    attr("seed2", seed2)
+    attrType("dtype", dtype)
   }
-  
-  fun randomUniform(shape: Tensor, seed: Long = 0L, seed2: Long = 0L, dtype: Int, name: String = "RandomUniform") = run {
-    tf.buildOpTensor("RandomUniform", name) {
-      addInput(shape, false)
-      attr("seed", seed)
-      attr("seed2", seed2)
-      attrType("dtype", dtype)
-    }
+}
+
+fun TF.randomUniform(shape: Tensor, seed: Long = 0L, seed2: Long = 0L, dtype: Int, name: String = "RandomUniform") = run {
+  buildOpTensor("RandomUniform", name) {
+    addInput(shape, false)
+    attr("seed", seed)
+    attr("seed2", seed2)
+    attrType("dtype", dtype)
   }
-  
-  fun randomUniformInt(shape: Tensor, minval: Tensor, maxval: Tensor, seed: Long = 0L, seed2: Long = 0L, name: String = "RandomUniformInt") = run {
-    tf.buildOpTensor("RandomUniformInt", name) {
-      addInput(shape, false)
-      addInput(minval, false)
-      addInput(maxval, false)
-      attr("seed", seed)
-      attr("seed2", seed2)
-    }
+}
+
+fun TF.randomUniformInt(shape: Tensor, minval: Tensor, maxval: Tensor, seed: Long = 0L, seed2: Long = 0L, name: String = "RandomUniformInt") = run {
+  buildOpTensor("RandomUniformInt", name) {
+    addInput(shape, false)
+    addInput(minval, false)
+    addInput(maxval, false)
+    attr("seed", seed)
+    attr("seed2", seed2)
   }
-  
-  fun truncatedNormal(shape: Tensor, seed: Long = 0L, seed2: Long = 0L, dtype: Int, name: String = "TruncatedNormal") = run {
-    tf.buildOpTensor("TruncatedNormal", name) {
-      addInput(shape, false)
-      attr("seed", seed)
-      attr("seed2", seed2)
-      attrType("dtype", dtype)
-    }
+}
+
+fun TF.truncatedNormal(shape: Tensor, seed: Long = 0L, seed2: Long = 0L, dtype: Int, name: String = "TruncatedNormal") = run {
+  buildOpTensor("TruncatedNormal", name) {
+    addInput(shape, false)
+    attr("seed", seed)
+    attr("seed2", seed2)
+    attrType("dtype", dtype)
   }
-  
-  fun randomGammaGrad(alpha: Tensor, sample: Tensor, name: String = "RandomGammaGrad") = run {
-    tf.buildOpTensor("RandomGammaGrad", name) {
-      addInput(alpha, false)
-      addInput(sample, false)
-    }
+}
+
+fun TF.randomGammaGrad(alpha: Tensor, sample: Tensor, name: String = "RandomGammaGrad") = run {
+  buildOpTensor("RandomGammaGrad", name) {
+    addInput(alpha, false)
+    addInput(sample, false)
   }
 }

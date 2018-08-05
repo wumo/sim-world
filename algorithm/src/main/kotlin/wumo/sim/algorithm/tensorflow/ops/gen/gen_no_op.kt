@@ -3,12 +3,10 @@
  */
 package wumo.sim.algorithm.tensorflow.ops.gen
 
+import wumo.sim.algorithm.tensorflow.TF
 import wumo.sim.algorithm.tensorflow.buildOp
-import wumo.sim.algorithm.tensorflow.tf
 
-object gen_no_op {
-  fun noOp(name: String = "NoOp") = run {
-    tf.buildOp("NoOp", name) {
-    }
+fun TF.noOp(name: String = "NoOp") = run {
+  buildOp("NoOp", name) {
   }
 }

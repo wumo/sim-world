@@ -6,592 +6,590 @@ package wumo.sim.algorithm.tensorflow.ops.gen
 import wumo.sim.algorithm.tensorflow.*
 import wumo.sim.util.Dimension
 
-object gen_data_flow_ops {
-  fun accumulatorApplyGradient(handle: Tensor, local_step: Tensor, gradient: Tensor, name: String = "AccumulatorApplyGradient") = run {
-    tf.buildOp("AccumulatorApplyGradient", name) {
-      addInput(handle, true)
-      addInput(local_step, false)
-      addInput(gradient, false)
-    }
-  }
-  
-  fun accumulatorNumAccumulated(handle: Tensor, name: String = "AccumulatorNumAccumulated") = run {
-    tf.buildOpTensor("AccumulatorNumAccumulated", name) {
-      addInput(handle, true)
-    }
-  }
-  
-  fun accumulatorSetGlobalStep(handle: Tensor, new_global_step: Tensor, name: String = "AccumulatorSetGlobalStep") = run {
-    tf.buildOp("AccumulatorSetGlobalStep", name) {
-      addInput(handle, true)
-      addInput(new_global_step, false)
-    }
-  }
-  
-  fun accumulatorTakeGradient(handle: Tensor, num_required: Tensor, dtype: Int, name: String = "AccumulatorTakeGradient") = run {
-    tf.buildOpTensor("AccumulatorTakeGradient", name) {
-      addInput(handle, true)
-      addInput(num_required, false)
-      attrType("dtype", dtype)
-    }
-  }
-  
-  fun barrier(component_types: Array<Long>, shapes: Array<Dimension> = arrayOf(), capacity: Long = -1L, container: String = "", shared_name: String = "", name: String = "Barrier") = run {
-    tf.buildOpTensor("Barrier", name) {
-      attr("component_types", component_types)
-      attr("shapes", shapes)
-      attr("capacity", capacity)
-      attr("container", container)
-      attr("shared_name", shared_name)
-    }
-  }
-  
-  fun barrierClose(handle: Tensor, cancel_pending_enqueues: Boolean = false, name: String = "BarrierClose") = run {
-    tf.buildOp("BarrierClose", name) {
-      addInput(handle, true)
-      attr("cancel_pending_enqueues", cancel_pending_enqueues)
-    }
-  }
-  
-  fun barrierIncompleteSize(handle: Tensor, name: String = "BarrierIncompleteSize") = run {
-    tf.buildOpTensor("BarrierIncompleteSize", name) {
-      addInput(handle, true)
-    }
-  }
-  
-  fun barrierInsertMany(handle: Tensor, keys: Tensor, values: Tensor, component_index: Long, name: String = "BarrierInsertMany") = run {
-    tf.buildOp("BarrierInsertMany", name) {
-      addInput(handle, true)
-      addInput(keys, false)
-      addInput(values, false)
-      attr("component_index", component_index)
-    }
-  }
-  
-  fun barrierReadySize(handle: Tensor, name: String = "BarrierReadySize") = run {
-    tf.buildOpTensor("BarrierReadySize", name) {
-      addInput(handle, true)
-    }
-  }
-  
-  fun barrierTakeMany(handle: Tensor, num_elements: Tensor, component_types: Array<Long>, allow_small_batch: Boolean = false, wait_for_incomplete: Boolean = false, timeout_ms: Long = -1L, name: String = "BarrierTakeMany") = run {
-    tf.buildOpTensors("BarrierTakeMany", name) {
-      addInput(handle, true)
-      addInput(num_elements, false)
-      attr("component_types", component_types)
-      attr("allow_small_batch", allow_small_batch)
-      attr("wait_for_incomplete", wait_for_incomplete)
-      attr("timeout_ms", timeout_ms)
-    }
-  }
-  
-  fun conditionalAccumulator(dtype: Int, shape: Dimension, container: String = "", shared_name: String = "", name: String = "ConditionalAccumulator") = run {
-    tf.buildOpTensor("ConditionalAccumulator", name) {
-      attrType("dtype", dtype)
-      attr("shape", shape)
-      attr("container", container)
-      attr("shared_name", shared_name)
-    }
-  }
-  
-  fun deleteSessionTensor(handle: Tensor, name: String = "DeleteSessionTensor") = run {
-    tf.buildOp("DeleteSessionTensor", name) {
-      addInput(handle, false)
-    }
-  }
-  
-  fun dynamicPartition(data: Tensor, partitions: Tensor, num_partitions: Long, name: String = "DynamicPartition") = run {
-    tf.buildOpTensors("DynamicPartition", name) {
-      addInput(data, false)
-      addInput(partitions, false)
-      attr("num_partitions", num_partitions)
-    }
-  }
-  
-  fun dynamicStitch(indices: Array<Tensor>, data: Array<Tensor>, name: String = "DynamicStitch") = run {
-    tf.buildOpTensor("DynamicStitch", name) {
-      addInput(indices, false)
-      addInput(data, false)
-    }
-  }
-  
-  fun fIFOQueueV2(component_types: Array<Long>, shapes: Array<Dimension> = arrayOf(), capacity: Long = -1L, container: String = "", shared_name: String = "", name: String = "FIFOQueueV2") = run {
-    tf.buildOpTensor("FIFOQueueV2", name) {
-      attr("component_types", component_types)
-      attr("shapes", shapes)
-      attr("capacity", capacity)
-      attr("container", container)
-      attr("shared_name", shared_name)
-    }
-  }
-  
-  fun getSessionHandle(value: Tensor, name: String = "GetSessionHandle") = run {
-    tf.buildOpTensor("GetSessionHandle", name) {
-      addInput(value, false)
-    }
-  }
-  
-  fun getSessionHandleV2(value: Tensor, name: String = "GetSessionHandleV2") = run {
-    tf.buildOpTensor("GetSessionHandleV2", name) {
-      addInput(value, false)
-    }
-  }
-  
-  fun getSessionTensor(handle: Tensor, dtype: Int, name: String = "GetSessionTensor") = run {
-    tf.buildOpTensor("GetSessionTensor", name) {
-      addInput(handle, false)
-      attrType("dtype", dtype)
-    }
-  }
-  
-  fun mapClear(capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "MapClear") = run {
-    tf.buildOp("MapClear", name) {
-      attr("capacity", capacity)
-      attr("memory_limit", memory_limit)
-      attr("dtypes", dtypes)
-      attr("container", container)
-      attr("shared_name", shared_name)
-    }
-  }
-  
-  fun mapIncompleteSize(capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "MapIncompleteSize") = run {
-    tf.buildOpTensor("MapIncompleteSize", name) {
-      attr("capacity", capacity)
-      attr("memory_limit", memory_limit)
-      attr("dtypes", dtypes)
-      attr("container", container)
-      attr("shared_name", shared_name)
-    }
-  }
-  
-  fun mapPeek(key: Tensor, indices: Tensor, capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "MapPeek") = run {
-    tf.buildOpTensors("MapPeek", name) {
-      addInput(key, false)
-      addInput(indices, false)
-      attr("capacity", capacity)
-      attr("memory_limit", memory_limit)
-      attr("dtypes", dtypes)
-      attr("container", container)
-      attr("shared_name", shared_name)
-    }
-  }
-  
-  fun mapSize(capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "MapSize") = run {
-    tf.buildOpTensor("MapSize", name) {
-      attr("capacity", capacity)
-      attr("memory_limit", memory_limit)
-      attr("dtypes", dtypes)
-      attr("container", container)
-      attr("shared_name", shared_name)
-    }
-  }
-  
-  fun mapStage(key: Tensor, indices: Tensor, values: Tensor, capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "MapStage") = run {
-    tf.buildOp("MapStage", name) {
-      addInput(key, false)
-      addInput(indices, false)
-      addInput(values, false)
-      attr("capacity", capacity)
-      attr("memory_limit", memory_limit)
-      attr("dtypes", dtypes)
-      attr("container", container)
-      attr("shared_name", shared_name)
-    }
-  }
-  
-  fun mapUnstage(key: Tensor, indices: Tensor, capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "MapUnstage") = run {
-    tf.buildOpTensors("MapUnstage", name) {
-      addInput(key, false)
-      addInput(indices, false)
-      attr("capacity", capacity)
-      attr("memory_limit", memory_limit)
-      attr("dtypes", dtypes)
-      attr("container", container)
-      attr("shared_name", shared_name)
-    }
-  }
-  
-  fun mapUnstageNoKey(indices: Tensor, capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "MapUnstageNoKey") = run {
-    tf.buildOpTensors("MapUnstageNoKey", name) {
-      addInput(indices, false)
-      attr("capacity", capacity)
-      attr("memory_limit", memory_limit)
-      attr("dtypes", dtypes)
-      attr("container", container)
-      attr("shared_name", shared_name)
-    }
-  }
-  
-  fun orderedMapClear(capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "OrderedMapClear") = run {
-    tf.buildOp("OrderedMapClear", name) {
-      attr("capacity", capacity)
-      attr("memory_limit", memory_limit)
-      attr("dtypes", dtypes)
-      attr("container", container)
-      attr("shared_name", shared_name)
-    }
-  }
-  
-  fun orderedMapIncompleteSize(capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "OrderedMapIncompleteSize") = run {
-    tf.buildOpTensor("OrderedMapIncompleteSize", name) {
-      attr("capacity", capacity)
-      attr("memory_limit", memory_limit)
-      attr("dtypes", dtypes)
-      attr("container", container)
-      attr("shared_name", shared_name)
-    }
-  }
-  
-  fun orderedMapPeek(key: Tensor, indices: Tensor, capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "OrderedMapPeek") = run {
-    tf.buildOpTensors("OrderedMapPeek", name) {
-      addInput(key, false)
-      addInput(indices, false)
-      attr("capacity", capacity)
-      attr("memory_limit", memory_limit)
-      attr("dtypes", dtypes)
-      attr("container", container)
-      attr("shared_name", shared_name)
-    }
-  }
-  
-  fun orderedMapSize(capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "OrderedMapSize") = run {
-    tf.buildOpTensor("OrderedMapSize", name) {
-      attr("capacity", capacity)
-      attr("memory_limit", memory_limit)
-      attr("dtypes", dtypes)
-      attr("container", container)
-      attr("shared_name", shared_name)
-    }
-  }
-  
-  fun orderedMapStage(key: Tensor, indices: Tensor, values: Tensor, capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "OrderedMapStage") = run {
-    tf.buildOp("OrderedMapStage", name) {
-      addInput(key, false)
-      addInput(indices, false)
-      addInput(values, false)
-      attr("capacity", capacity)
-      attr("memory_limit", memory_limit)
-      attr("dtypes", dtypes)
-      attr("container", container)
-      attr("shared_name", shared_name)
-    }
-  }
-  
-  fun orderedMapUnstage(key: Tensor, indices: Tensor, capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "OrderedMapUnstage") = run {
-    tf.buildOpTensors("OrderedMapUnstage", name) {
-      addInput(key, false)
-      addInput(indices, false)
-      attr("capacity", capacity)
-      attr("memory_limit", memory_limit)
-      attr("dtypes", dtypes)
-      attr("container", container)
-      attr("shared_name", shared_name)
-    }
-  }
-  
-  fun orderedMapUnstageNoKey(indices: Tensor, capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "OrderedMapUnstageNoKey") = run {
-    tf.buildOpTensors("OrderedMapUnstageNoKey", name) {
-      addInput(indices, false)
-      attr("capacity", capacity)
-      attr("memory_limit", memory_limit)
-      attr("dtypes", dtypes)
-      attr("container", container)
-      attr("shared_name", shared_name)
-    }
-  }
-  
-  fun paddingFIFOQueueV2(component_types: Array<Long>, shapes: Array<Dimension> = arrayOf(), capacity: Long = -1L, container: String = "", shared_name: String = "", name: String = "PaddingFIFOQueueV2") = run {
-    tf.buildOpTensor("PaddingFIFOQueueV2", name) {
-      attr("component_types", component_types)
-      attr("shapes", shapes)
-      attr("capacity", capacity)
-      attr("container", container)
-      attr("shared_name", shared_name)
-    }
-  }
-  
-  fun parallelDynamicStitch(indices: Array<Tensor>, data: Array<Tensor>, name: String = "ParallelDynamicStitch") = run {
-    tf.buildOpTensor("ParallelDynamicStitch", name) {
-      addInput(indices, false)
-      addInput(data, false)
-    }
-  }
-  
-  fun priorityQueueV2(component_types: Array<Long> = arrayOf(), shapes: Array<Dimension>, capacity: Long = -1L, container: String = "", shared_name: String = "", name: String = "PriorityQueueV2") = run {
-    tf.buildOpTensor("PriorityQueueV2", name) {
-      attr("component_types", component_types)
-      attr("shapes", shapes)
-      attr("capacity", capacity)
-      attr("container", container)
-      attr("shared_name", shared_name)
-    }
-  }
-  
-  fun queueCloseV2(handle: Tensor, cancel_pending_enqueues: Boolean = false, name: String = "QueueCloseV2") = run {
-    tf.buildOp("QueueCloseV2", name) {
-      addInput(handle, false)
-      attr("cancel_pending_enqueues", cancel_pending_enqueues)
-    }
-  }
-  
-  fun queueDequeueManyV2(handle: Tensor, n: Tensor, component_types: Array<Long>, timeout_ms: Long = -1L, name: String = "QueueDequeueManyV2") = run {
-    tf.buildOpTensors("QueueDequeueManyV2", name) {
-      addInput(handle, false)
-      addInput(n, false)
-      attr("component_types", component_types)
-      attr("timeout_ms", timeout_ms)
-    }
-  }
-  
-  fun queueDequeueUpToV2(handle: Tensor, n: Tensor, component_types: Array<Long>, timeout_ms: Long = -1L, name: String = "QueueDequeueUpToV2") = run {
-    tf.buildOpTensors("QueueDequeueUpToV2", name) {
-      addInput(handle, false)
-      addInput(n, false)
-      attr("component_types", component_types)
-      attr("timeout_ms", timeout_ms)
-    }
-  }
-  
-  fun queueDequeueV2(handle: Tensor, component_types: Array<Long>, timeout_ms: Long = -1L, name: String = "QueueDequeueV2") = run {
-    tf.buildOpTensors("QueueDequeueV2", name) {
-      addInput(handle, false)
-      attr("component_types", component_types)
-      attr("timeout_ms", timeout_ms)
-    }
-  }
-  
-  fun queueEnqueueManyV2(handle: Tensor, components: Tensor, timeout_ms: Long = -1L, name: String = "QueueEnqueueManyV2") = run {
-    tf.buildOp("QueueEnqueueManyV2", name) {
-      addInput(handle, false)
-      addInput(components, false)
-      attr("timeout_ms", timeout_ms)
-    }
-  }
-  
-  fun queueEnqueueV2(handle: Tensor, components: Tensor, timeout_ms: Long = -1L, name: String = "QueueEnqueueV2") = run {
-    tf.buildOp("QueueEnqueueV2", name) {
-      addInput(handle, false)
-      addInput(components, false)
-      attr("timeout_ms", timeout_ms)
-    }
-  }
-  
-  fun queueIsClosed(handle: Tensor, name: String = "QueueIsClosed") = run {
-    tf.buildOpTensor("QueueIsClosed", name) {
-      addInput(handle, true)
-    }
-  }
-  
-  fun queueIsClosedV2(handle: Tensor, name: String = "QueueIsClosedV2") = run {
-    tf.buildOpTensor("QueueIsClosedV2", name) {
-      addInput(handle, false)
-    }
-  }
-  
-  fun queueSizeV2(handle: Tensor, name: String = "QueueSizeV2") = run {
-    tf.buildOpTensor("QueueSizeV2", name) {
-      addInput(handle, false)
-    }
-  }
-  
-  fun randomShuffleQueueV2(component_types: Array<Long>, shapes: Array<Dimension> = arrayOf(), capacity: Long = -1L, min_after_dequeue: Long = 0L, seed: Long = 0L, seed2: Long = 0L, container: String = "", shared_name: String = "", name: String = "RandomShuffleQueueV2") = run {
-    tf.buildOpTensor("RandomShuffleQueueV2", name) {
-      attr("component_types", component_types)
-      attr("shapes", shapes)
-      attr("capacity", capacity)
-      attr("min_after_dequeue", min_after_dequeue)
-      attr("seed", seed)
-      attr("seed2", seed2)
-      attr("container", container)
-      attr("shared_name", shared_name)
-    }
-  }
-  
-  fun recordInput(file_pattern: String, file_random_seed: Long = 301L, file_shuffle_shift_ratio: Float = 0.0f, file_buffer_size: Long = 10000L, file_parallelism: Long = 16L, batch_size: Long = 32L, compression_type: String = "", name: String = "RecordInput") = run {
-    tf.buildOpTensor("RecordInput", name) {
-      attr("file_pattern", file_pattern)
-      attr("file_random_seed", file_random_seed)
-      attr("file_shuffle_shift_ratio", file_shuffle_shift_ratio)
-      attr("file_buffer_size", file_buffer_size)
-      attr("file_parallelism", file_parallelism)
-      attr("batch_size", batch_size)
-      attr("compression_type", compression_type)
-    }
-  }
-  
-  fun sparseAccumulatorApplyGradient(handle: Tensor, local_step: Tensor, gradient_indices: Tensor, gradient_values: Tensor, gradient_shape: Tensor, has_known_shape: Boolean, name: String = "SparseAccumulatorApplyGradient") = run {
-    tf.buildOp("SparseAccumulatorApplyGradient", name) {
-      addInput(handle, true)
-      addInput(local_step, false)
-      addInput(gradient_indices, false)
-      addInput(gradient_values, false)
-      addInput(gradient_shape, false)
-      attr("has_known_shape", has_known_shape)
-    }
-  }
-  
-  fun sparseAccumulatorTakeGradient(handle: Tensor, num_required: Tensor, dtype: Int, name: String = "SparseAccumulatorTakeGradient") = run {
-    tf.buildOpTensors("SparseAccumulatorTakeGradient", name) {
-      addInput(handle, true)
-      addInput(num_required, false)
-      attrType("dtype", dtype)
-    }
-  }
-  
-  fun sparseConditionalAccumulator(dtype: Int, shape: Dimension, container: String = "", shared_name: String = "", name: String = "SparseConditionalAccumulator") = run {
-    tf.buildOpTensor("SparseConditionalAccumulator", name) {
-      attrType("dtype", dtype)
-      attr("shape", shape)
-      attr("container", container)
-      attr("shared_name", shared_name)
-    }
-  }
-  
-  fun stage(values: Tensor, capacity: Long = 0L, memory_limit: Long = 0L, container: String = "", shared_name: String = "", name: String = "Stage") = run {
-    tf.buildOp("Stage", name) {
-      addInput(values, false)
-      attr("capacity", capacity)
-      attr("memory_limit", memory_limit)
-      attr("container", container)
-      attr("shared_name", shared_name)
-    }
-  }
-  
-  fun stageClear(capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "StageClear") = run {
-    tf.buildOp("StageClear", name) {
-      attr("capacity", capacity)
-      attr("memory_limit", memory_limit)
-      attr("dtypes", dtypes)
-      attr("container", container)
-      attr("shared_name", shared_name)
-    }
-  }
-  
-  fun stagePeek(index: Tensor, capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "StagePeek") = run {
-    tf.buildOpTensors("StagePeek", name) {
-      addInput(index, false)
-      attr("capacity", capacity)
-      attr("memory_limit", memory_limit)
-      attr("dtypes", dtypes)
-      attr("container", container)
-      attr("shared_name", shared_name)
-    }
-  }
-  
-  fun stageSize(capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "StageSize") = run {
-    tf.buildOpTensor("StageSize", name) {
-      attr("capacity", capacity)
-      attr("memory_limit", memory_limit)
-      attr("dtypes", dtypes)
-      attr("container", container)
-      attr("shared_name", shared_name)
-    }
-  }
-  
-  fun tensorArrayCloseV3(handle: Tensor, name: String = "TensorArrayCloseV3") = run {
-    tf.buildOp("TensorArrayCloseV3", name) {
-      addInput(handle, false)
-    }
-  }
-  
-  fun tensorArrayConcatV3(handle: Tensor, flow_in: Tensor, dtype: Int, element_shape_except0: Dimension = Dimension(unknow_rank = true), name: String = "TensorArrayConcatV3") = run {
-    tf.buildOpTensors("TensorArrayConcatV3", name) {
-      addInput(handle, false)
-      addInput(flow_in, false)
-      attrType("dtype", dtype)
-      attr("element_shape_except0", element_shape_except0)
-    }
-  }
-  
-  fun tensorArrayGatherV3(handle: Tensor, indices: Tensor, flow_in: Tensor, dtype: Int, element_shape: Dimension = Dimension(unknow_rank = true), name: String = "TensorArrayGatherV3") = run {
-    tf.buildOpTensor("TensorArrayGatherV3", name) {
-      addInput(handle, false)
-      addInput(indices, false)
-      addInput(flow_in, false)
-      attrType("dtype", dtype)
-      attr("element_shape", element_shape)
-    }
-  }
-  
-  fun tensorArrayGradV3(handle: Tensor, flow_in: Tensor, source: String, name: String = "TensorArrayGradV3") = run {
-    tf.buildOpTensors("TensorArrayGradV3", name) {
-      addInput(handle, false)
-      addInput(flow_in, false)
-      attr("source", source)
-    }
-  }
-  
-  fun tensorArrayGradWithShape(handle: Tensor, flow_in: Tensor, shape_to_prepend: Tensor, source: String, name: String = "TensorArrayGradWithShape") = run {
-    tf.buildOpTensors("TensorArrayGradWithShape", name) {
-      addInput(handle, false)
-      addInput(flow_in, false)
-      addInput(shape_to_prepend, false)
-      attr("source", source)
-    }
-  }
-  
-  fun tensorArrayReadV3(handle: Tensor, index: Tensor, flow_in: Tensor, dtype: Int, name: String = "TensorArrayReadV3") = run {
-    tf.buildOpTensor("TensorArrayReadV3", name) {
-      addInput(handle, false)
-      addInput(index, false)
-      addInput(flow_in, false)
-      attrType("dtype", dtype)
-    }
-  }
-  
-  fun tensorArrayScatterV3(handle: Tensor, indices: Tensor, value: Tensor, flow_in: Tensor, name: String = "TensorArrayScatterV3") = run {
-    tf.buildOpTensor("TensorArrayScatterV3", name) {
-      addInput(handle, false)
-      addInput(indices, false)
-      addInput(value, false)
-      addInput(flow_in, false)
-    }
-  }
-  
-  fun tensorArraySizeV3(handle: Tensor, flow_in: Tensor, name: String = "TensorArraySizeV3") = run {
-    tf.buildOpTensor("TensorArraySizeV3", name) {
-      addInput(handle, false)
-      addInput(flow_in, false)
-    }
-  }
-  
-  fun tensorArraySplitV3(handle: Tensor, value: Tensor, lengths: Tensor, flow_in: Tensor, name: String = "TensorArraySplitV3") = run {
-    tf.buildOpTensor("TensorArraySplitV3", name) {
-      addInput(handle, false)
-      addInput(value, false)
-      addInput(lengths, false)
-      addInput(flow_in, false)
-    }
-  }
-  
-  fun tensorArrayV3(size: Tensor, dtype: Int, element_shape: Dimension = Dimension(unknow_rank = true), dynamic_size: Boolean = false, clear_after_read: Boolean = true, identical_element_shapes: Boolean = false, tensor_array_name: String = "", name: String = "TensorArrayV3") = run {
-    tf.buildOpTensors("TensorArrayV3", name) {
-      addInput(size, false)
-      attrType("dtype", dtype)
-      attr("element_shape", element_shape)
-      attr("dynamic_size", dynamic_size)
-      attr("clear_after_read", clear_after_read)
-      attr("identical_element_shapes", identical_element_shapes)
-      attr("tensor_array_name", tensor_array_name)
-    }
-  }
-  
-  fun tensorArrayWriteV3(handle: Tensor, index: Tensor, value: Tensor, flow_in: Tensor, name: String = "TensorArrayWriteV3") = run {
-    tf.buildOpTensor("TensorArrayWriteV3", name) {
-      addInput(handle, false)
-      addInput(index, false)
-      addInput(value, false)
-      addInput(flow_in, false)
-    }
-  }
-  
-  fun unstage(capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "Unstage") = run {
-    tf.buildOpTensors("Unstage", name) {
-      attr("capacity", capacity)
-      attr("memory_limit", memory_limit)
-      attr("dtypes", dtypes)
-      attr("container", container)
-      attr("shared_name", shared_name)
-    }
+fun TF.accumulatorApplyGradient(handle: Tensor, local_step: Tensor, gradient: Tensor, name: String = "AccumulatorApplyGradient") = run {
+  buildOp("AccumulatorApplyGradient", name) {
+    addInput(handle, true)
+    addInput(local_step, false)
+    addInput(gradient, false)
+  }
+}
+
+fun TF.accumulatorNumAccumulated(handle: Tensor, name: String = "AccumulatorNumAccumulated") = run {
+  buildOpTensor("AccumulatorNumAccumulated", name) {
+    addInput(handle, true)
+  }
+}
+
+fun TF.accumulatorSetGlobalStep(handle: Tensor, new_global_step: Tensor, name: String = "AccumulatorSetGlobalStep") = run {
+  buildOp("AccumulatorSetGlobalStep", name) {
+    addInput(handle, true)
+    addInput(new_global_step, false)
+  }
+}
+
+fun TF.accumulatorTakeGradient(handle: Tensor, num_required: Tensor, dtype: Int, name: String = "AccumulatorTakeGradient") = run {
+  buildOpTensor("AccumulatorTakeGradient", name) {
+    addInput(handle, true)
+    addInput(num_required, false)
+    attrType("dtype", dtype)
+  }
+}
+
+fun TF.barrier(component_types: Array<Long>, shapes: Array<Dimension> = arrayOf(), capacity: Long = -1L, container: String = "", shared_name: String = "", name: String = "Barrier") = run {
+  buildOpTensor("Barrier", name) {
+    attr("component_types", component_types)
+    attr("shapes", shapes)
+    attr("capacity", capacity)
+    attr("container", container)
+    attr("shared_name", shared_name)
+  }
+}
+
+fun TF.barrierClose(handle: Tensor, cancel_pending_enqueues: Boolean = false, name: String = "BarrierClose") = run {
+  buildOp("BarrierClose", name) {
+    addInput(handle, true)
+    attr("cancel_pending_enqueues", cancel_pending_enqueues)
+  }
+}
+
+fun TF.barrierIncompleteSize(handle: Tensor, name: String = "BarrierIncompleteSize") = run {
+  buildOpTensor("BarrierIncompleteSize", name) {
+    addInput(handle, true)
+  }
+}
+
+fun TF.barrierInsertMany(handle: Tensor, keys: Tensor, values: Tensor, component_index: Long, name: String = "BarrierInsertMany") = run {
+  buildOp("BarrierInsertMany", name) {
+    addInput(handle, true)
+    addInput(keys, false)
+    addInput(values, false)
+    attr("component_index", component_index)
+  }
+}
+
+fun TF.barrierReadySize(handle: Tensor, name: String = "BarrierReadySize") = run {
+  buildOpTensor("BarrierReadySize", name) {
+    addInput(handle, true)
+  }
+}
+
+fun TF.barrierTakeMany(handle: Tensor, num_elements: Tensor, component_types: Array<Long>, allow_small_batch: Boolean = false, wait_for_incomplete: Boolean = false, timeout_ms: Long = -1L, name: String = "BarrierTakeMany") = run {
+  buildOpTensors("BarrierTakeMany", name) {
+    addInput(handle, true)
+    addInput(num_elements, false)
+    attr("component_types", component_types)
+    attr("allow_small_batch", allow_small_batch)
+    attr("wait_for_incomplete", wait_for_incomplete)
+    attr("timeout_ms", timeout_ms)
+  }
+}
+
+fun TF.conditionalAccumulator(dtype: Int, shape: Dimension, container: String = "", shared_name: String = "", name: String = "ConditionalAccumulator") = run {
+  buildOpTensor("ConditionalAccumulator", name) {
+    attrType("dtype", dtype)
+    attr("shape", shape)
+    attr("container", container)
+    attr("shared_name", shared_name)
+  }
+}
+
+fun TF.deleteSessionTensor(handle: Tensor, name: String = "DeleteSessionTensor") = run {
+  buildOp("DeleteSessionTensor", name) {
+    addInput(handle, false)
+  }
+}
+
+fun TF.dynamicPartition(data: Tensor, partitions: Tensor, num_partitions: Long, name: String = "DynamicPartition") = run {
+  buildOpTensors("DynamicPartition", name) {
+    addInput(data, false)
+    addInput(partitions, false)
+    attr("num_partitions", num_partitions)
+  }
+}
+
+fun TF.dynamicStitch(indices: Array<Tensor>, data: Array<Tensor>, name: String = "DynamicStitch") = run {
+  buildOpTensor("DynamicStitch", name) {
+    addInput(indices, false)
+    addInput(data, false)
+  }
+}
+
+fun TF.fIFOQueueV2(component_types: Array<Long>, shapes: Array<Dimension> = arrayOf(), capacity: Long = -1L, container: String = "", shared_name: String = "", name: String = "FIFOQueueV2") = run {
+  buildOpTensor("FIFOQueueV2", name) {
+    attr("component_types", component_types)
+    attr("shapes", shapes)
+    attr("capacity", capacity)
+    attr("container", container)
+    attr("shared_name", shared_name)
+  }
+}
+
+fun TF.getSessionHandle(value: Tensor, name: String = "GetSessionHandle") = run {
+  buildOpTensor("GetSessionHandle", name) {
+    addInput(value, false)
+  }
+}
+
+fun TF.getSessionHandleV2(value: Tensor, name: String = "GetSessionHandleV2") = run {
+  buildOpTensor("GetSessionHandleV2", name) {
+    addInput(value, false)
+  }
+}
+
+fun TF.getSessionTensor(handle: Tensor, dtype: Int, name: String = "GetSessionTensor") = run {
+  buildOpTensor("GetSessionTensor", name) {
+    addInput(handle, false)
+    attrType("dtype", dtype)
+  }
+}
+
+fun TF.mapClear(capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "MapClear") = run {
+  buildOp("MapClear", name) {
+    attr("capacity", capacity)
+    attr("memory_limit", memory_limit)
+    attr("dtypes", dtypes)
+    attr("container", container)
+    attr("shared_name", shared_name)
+  }
+}
+
+fun TF.mapIncompleteSize(capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "MapIncompleteSize") = run {
+  buildOpTensor("MapIncompleteSize", name) {
+    attr("capacity", capacity)
+    attr("memory_limit", memory_limit)
+    attr("dtypes", dtypes)
+    attr("container", container)
+    attr("shared_name", shared_name)
+  }
+}
+
+fun TF.mapPeek(key: Tensor, indices: Tensor, capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "MapPeek") = run {
+  buildOpTensors("MapPeek", name) {
+    addInput(key, false)
+    addInput(indices, false)
+    attr("capacity", capacity)
+    attr("memory_limit", memory_limit)
+    attr("dtypes", dtypes)
+    attr("container", container)
+    attr("shared_name", shared_name)
+  }
+}
+
+fun TF.mapSize(capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "MapSize") = run {
+  buildOpTensor("MapSize", name) {
+    attr("capacity", capacity)
+    attr("memory_limit", memory_limit)
+    attr("dtypes", dtypes)
+    attr("container", container)
+    attr("shared_name", shared_name)
+  }
+}
+
+fun TF.mapStage(key: Tensor, indices: Tensor, values: Tensor, capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "MapStage") = run {
+  buildOp("MapStage", name) {
+    addInput(key, false)
+    addInput(indices, false)
+    addInput(values, false)
+    attr("capacity", capacity)
+    attr("memory_limit", memory_limit)
+    attr("dtypes", dtypes)
+    attr("container", container)
+    attr("shared_name", shared_name)
+  }
+}
+
+fun TF.mapUnstage(key: Tensor, indices: Tensor, capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "MapUnstage") = run {
+  buildOpTensors("MapUnstage", name) {
+    addInput(key, false)
+    addInput(indices, false)
+    attr("capacity", capacity)
+    attr("memory_limit", memory_limit)
+    attr("dtypes", dtypes)
+    attr("container", container)
+    attr("shared_name", shared_name)
+  }
+}
+
+fun TF.mapUnstageNoKey(indices: Tensor, capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "MapUnstageNoKey") = run {
+  buildOpTensors("MapUnstageNoKey", name) {
+    addInput(indices, false)
+    attr("capacity", capacity)
+    attr("memory_limit", memory_limit)
+    attr("dtypes", dtypes)
+    attr("container", container)
+    attr("shared_name", shared_name)
+  }
+}
+
+fun TF.orderedMapClear(capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "OrderedMapClear") = run {
+  buildOp("OrderedMapClear", name) {
+    attr("capacity", capacity)
+    attr("memory_limit", memory_limit)
+    attr("dtypes", dtypes)
+    attr("container", container)
+    attr("shared_name", shared_name)
+  }
+}
+
+fun TF.orderedMapIncompleteSize(capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "OrderedMapIncompleteSize") = run {
+  buildOpTensor("OrderedMapIncompleteSize", name) {
+    attr("capacity", capacity)
+    attr("memory_limit", memory_limit)
+    attr("dtypes", dtypes)
+    attr("container", container)
+    attr("shared_name", shared_name)
+  }
+}
+
+fun TF.orderedMapPeek(key: Tensor, indices: Tensor, capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "OrderedMapPeek") = run {
+  buildOpTensors("OrderedMapPeek", name) {
+    addInput(key, false)
+    addInput(indices, false)
+    attr("capacity", capacity)
+    attr("memory_limit", memory_limit)
+    attr("dtypes", dtypes)
+    attr("container", container)
+    attr("shared_name", shared_name)
+  }
+}
+
+fun TF.orderedMapSize(capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "OrderedMapSize") = run {
+  buildOpTensor("OrderedMapSize", name) {
+    attr("capacity", capacity)
+    attr("memory_limit", memory_limit)
+    attr("dtypes", dtypes)
+    attr("container", container)
+    attr("shared_name", shared_name)
+  }
+}
+
+fun TF.orderedMapStage(key: Tensor, indices: Tensor, values: Tensor, capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "OrderedMapStage") = run {
+  buildOp("OrderedMapStage", name) {
+    addInput(key, false)
+    addInput(indices, false)
+    addInput(values, false)
+    attr("capacity", capacity)
+    attr("memory_limit", memory_limit)
+    attr("dtypes", dtypes)
+    attr("container", container)
+    attr("shared_name", shared_name)
+  }
+}
+
+fun TF.orderedMapUnstage(key: Tensor, indices: Tensor, capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "OrderedMapUnstage") = run {
+  buildOpTensors("OrderedMapUnstage", name) {
+    addInput(key, false)
+    addInput(indices, false)
+    attr("capacity", capacity)
+    attr("memory_limit", memory_limit)
+    attr("dtypes", dtypes)
+    attr("container", container)
+    attr("shared_name", shared_name)
+  }
+}
+
+fun TF.orderedMapUnstageNoKey(indices: Tensor, capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "OrderedMapUnstageNoKey") = run {
+  buildOpTensors("OrderedMapUnstageNoKey", name) {
+    addInput(indices, false)
+    attr("capacity", capacity)
+    attr("memory_limit", memory_limit)
+    attr("dtypes", dtypes)
+    attr("container", container)
+    attr("shared_name", shared_name)
+  }
+}
+
+fun TF.paddingFIFOQueueV2(component_types: Array<Long>, shapes: Array<Dimension> = arrayOf(), capacity: Long = -1L, container: String = "", shared_name: String = "", name: String = "PaddingFIFOQueueV2") = run {
+  buildOpTensor("PaddingFIFOQueueV2", name) {
+    attr("component_types", component_types)
+    attr("shapes", shapes)
+    attr("capacity", capacity)
+    attr("container", container)
+    attr("shared_name", shared_name)
+  }
+}
+
+fun TF.parallelDynamicStitch(indices: Array<Tensor>, data: Array<Tensor>, name: String = "ParallelDynamicStitch") = run {
+  buildOpTensor("ParallelDynamicStitch", name) {
+    addInput(indices, false)
+    addInput(data, false)
+  }
+}
+
+fun TF.priorityQueueV2(component_types: Array<Long> = arrayOf(), shapes: Array<Dimension>, capacity: Long = -1L, container: String = "", shared_name: String = "", name: String = "PriorityQueueV2") = run {
+  buildOpTensor("PriorityQueueV2", name) {
+    attr("component_types", component_types)
+    attr("shapes", shapes)
+    attr("capacity", capacity)
+    attr("container", container)
+    attr("shared_name", shared_name)
+  }
+}
+
+fun TF.queueCloseV2(handle: Tensor, cancel_pending_enqueues: Boolean = false, name: String = "QueueCloseV2") = run {
+  buildOp("QueueCloseV2", name) {
+    addInput(handle, false)
+    attr("cancel_pending_enqueues", cancel_pending_enqueues)
+  }
+}
+
+fun TF.queueDequeueManyV2(handle: Tensor, n: Tensor, component_types: Array<Long>, timeout_ms: Long = -1L, name: String = "QueueDequeueManyV2") = run {
+  buildOpTensors("QueueDequeueManyV2", name) {
+    addInput(handle, false)
+    addInput(n, false)
+    attr("component_types", component_types)
+    attr("timeout_ms", timeout_ms)
+  }
+}
+
+fun TF.queueDequeueUpToV2(handle: Tensor, n: Tensor, component_types: Array<Long>, timeout_ms: Long = -1L, name: String = "QueueDequeueUpToV2") = run {
+  buildOpTensors("QueueDequeueUpToV2", name) {
+    addInput(handle, false)
+    addInput(n, false)
+    attr("component_types", component_types)
+    attr("timeout_ms", timeout_ms)
+  }
+}
+
+fun TF.queueDequeueV2(handle: Tensor, component_types: Array<Long>, timeout_ms: Long = -1L, name: String = "QueueDequeueV2") = run {
+  buildOpTensors("QueueDequeueV2", name) {
+    addInput(handle, false)
+    attr("component_types", component_types)
+    attr("timeout_ms", timeout_ms)
+  }
+}
+
+fun TF.queueEnqueueManyV2(handle: Tensor, components: Tensor, timeout_ms: Long = -1L, name: String = "QueueEnqueueManyV2") = run {
+  buildOp("QueueEnqueueManyV2", name) {
+    addInput(handle, false)
+    addInput(components, false)
+    attr("timeout_ms", timeout_ms)
+  }
+}
+
+fun TF.queueEnqueueV2(handle: Tensor, components: Tensor, timeout_ms: Long = -1L, name: String = "QueueEnqueueV2") = run {
+  buildOp("QueueEnqueueV2", name) {
+    addInput(handle, false)
+    addInput(components, false)
+    attr("timeout_ms", timeout_ms)
+  }
+}
+
+fun TF.queueIsClosed(handle: Tensor, name: String = "QueueIsClosed") = run {
+  buildOpTensor("QueueIsClosed", name) {
+    addInput(handle, true)
+  }
+}
+
+fun TF.queueIsClosedV2(handle: Tensor, name: String = "QueueIsClosedV2") = run {
+  buildOpTensor("QueueIsClosedV2", name) {
+    addInput(handle, false)
+  }
+}
+
+fun TF.queueSizeV2(handle: Tensor, name: String = "QueueSizeV2") = run {
+  buildOpTensor("QueueSizeV2", name) {
+    addInput(handle, false)
+  }
+}
+
+fun TF.randomShuffleQueueV2(component_types: Array<Long>, shapes: Array<Dimension> = arrayOf(), capacity: Long = -1L, min_after_dequeue: Long = 0L, seed: Long = 0L, seed2: Long = 0L, container: String = "", shared_name: String = "", name: String = "RandomShuffleQueueV2") = run {
+  buildOpTensor("RandomShuffleQueueV2", name) {
+    attr("component_types", component_types)
+    attr("shapes", shapes)
+    attr("capacity", capacity)
+    attr("min_after_dequeue", min_after_dequeue)
+    attr("seed", seed)
+    attr("seed2", seed2)
+    attr("container", container)
+    attr("shared_name", shared_name)
+  }
+}
+
+fun TF.recordInput(file_pattern: String, file_random_seed: Long = 301L, file_shuffle_shift_ratio: Float = 0.0f, file_buffer_size: Long = 10000L, file_parallelism: Long = 16L, batch_size: Long = 32L, compression_type: String = "", name: String = "RecordInput") = run {
+  buildOpTensor("RecordInput", name) {
+    attr("file_pattern", file_pattern)
+    attr("file_random_seed", file_random_seed)
+    attr("file_shuffle_shift_ratio", file_shuffle_shift_ratio)
+    attr("file_buffer_size", file_buffer_size)
+    attr("file_parallelism", file_parallelism)
+    attr("batch_size", batch_size)
+    attr("compression_type", compression_type)
+  }
+}
+
+fun TF.sparseAccumulatorApplyGradient(handle: Tensor, local_step: Tensor, gradient_indices: Tensor, gradient_values: Tensor, gradient_shape: Tensor, has_known_shape: Boolean, name: String = "SparseAccumulatorApplyGradient") = run {
+  buildOp("SparseAccumulatorApplyGradient", name) {
+    addInput(handle, true)
+    addInput(local_step, false)
+    addInput(gradient_indices, false)
+    addInput(gradient_values, false)
+    addInput(gradient_shape, false)
+    attr("has_known_shape", has_known_shape)
+  }
+}
+
+fun TF.sparseAccumulatorTakeGradient(handle: Tensor, num_required: Tensor, dtype: Int, name: String = "SparseAccumulatorTakeGradient") = run {
+  buildOpTensors("SparseAccumulatorTakeGradient", name) {
+    addInput(handle, true)
+    addInput(num_required, false)
+    attrType("dtype", dtype)
+  }
+}
+
+fun TF.sparseConditionalAccumulator(dtype: Int, shape: Dimension, container: String = "", shared_name: String = "", name: String = "SparseConditionalAccumulator") = run {
+  buildOpTensor("SparseConditionalAccumulator", name) {
+    attrType("dtype", dtype)
+    attr("shape", shape)
+    attr("container", container)
+    attr("shared_name", shared_name)
+  }
+}
+
+fun TF.stage(values: Tensor, capacity: Long = 0L, memory_limit: Long = 0L, container: String = "", shared_name: String = "", name: String = "Stage") = run {
+  buildOp("Stage", name) {
+    addInput(values, false)
+    attr("capacity", capacity)
+    attr("memory_limit", memory_limit)
+    attr("container", container)
+    attr("shared_name", shared_name)
+  }
+}
+
+fun TF.stageClear(capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "StageClear") = run {
+  buildOp("StageClear", name) {
+    attr("capacity", capacity)
+    attr("memory_limit", memory_limit)
+    attr("dtypes", dtypes)
+    attr("container", container)
+    attr("shared_name", shared_name)
+  }
+}
+
+fun TF.stagePeek(index: Tensor, capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "StagePeek") = run {
+  buildOpTensors("StagePeek", name) {
+    addInput(index, false)
+    attr("capacity", capacity)
+    attr("memory_limit", memory_limit)
+    attr("dtypes", dtypes)
+    attr("container", container)
+    attr("shared_name", shared_name)
+  }
+}
+
+fun TF.stageSize(capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "StageSize") = run {
+  buildOpTensor("StageSize", name) {
+    attr("capacity", capacity)
+    attr("memory_limit", memory_limit)
+    attr("dtypes", dtypes)
+    attr("container", container)
+    attr("shared_name", shared_name)
+  }
+}
+
+fun TF.tensorArrayCloseV3(handle: Tensor, name: String = "TensorArrayCloseV3") = run {
+  buildOp("TensorArrayCloseV3", name) {
+    addInput(handle, false)
+  }
+}
+
+fun TF.tensorArrayConcatV3(handle: Tensor, flow_in: Tensor, dtype: Int, element_shape_except0: Dimension = Dimension(unknow_rank = true), name: String = "TensorArrayConcatV3") = run {
+  buildOpTensors("TensorArrayConcatV3", name) {
+    addInput(handle, false)
+    addInput(flow_in, false)
+    attrType("dtype", dtype)
+    attr("element_shape_except0", element_shape_except0)
+  }
+}
+
+fun TF.tensorArrayGatherV3(handle: Tensor, indices: Tensor, flow_in: Tensor, dtype: Int, element_shape: Dimension = Dimension(unknow_rank = true), name: String = "TensorArrayGatherV3") = run {
+  buildOpTensor("TensorArrayGatherV3", name) {
+    addInput(handle, false)
+    addInput(indices, false)
+    addInput(flow_in, false)
+    attrType("dtype", dtype)
+    attr("element_shape", element_shape)
+  }
+}
+
+fun TF.tensorArrayGradV3(handle: Tensor, flow_in: Tensor, source: String, name: String = "TensorArrayGradV3") = run {
+  buildOpTensors("TensorArrayGradV3", name) {
+    addInput(handle, false)
+    addInput(flow_in, false)
+    attr("source", source)
+  }
+}
+
+fun TF.tensorArrayGradWithShape(handle: Tensor, flow_in: Tensor, shape_to_prepend: Tensor, source: String, name: String = "TensorArrayGradWithShape") = run {
+  buildOpTensors("TensorArrayGradWithShape", name) {
+    addInput(handle, false)
+    addInput(flow_in, false)
+    addInput(shape_to_prepend, false)
+    attr("source", source)
+  }
+}
+
+fun TF.tensorArrayReadV3(handle: Tensor, index: Tensor, flow_in: Tensor, dtype: Int, name: String = "TensorArrayReadV3") = run {
+  buildOpTensor("TensorArrayReadV3", name) {
+    addInput(handle, false)
+    addInput(index, false)
+    addInput(flow_in, false)
+    attrType("dtype", dtype)
+  }
+}
+
+fun TF.tensorArrayScatterV3(handle: Tensor, indices: Tensor, value: Tensor, flow_in: Tensor, name: String = "TensorArrayScatterV3") = run {
+  buildOpTensor("TensorArrayScatterV3", name) {
+    addInput(handle, false)
+    addInput(indices, false)
+    addInput(value, false)
+    addInput(flow_in, false)
+  }
+}
+
+fun TF.tensorArraySizeV3(handle: Tensor, flow_in: Tensor, name: String = "TensorArraySizeV3") = run {
+  buildOpTensor("TensorArraySizeV3", name) {
+    addInput(handle, false)
+    addInput(flow_in, false)
+  }
+}
+
+fun TF.tensorArraySplitV3(handle: Tensor, value: Tensor, lengths: Tensor, flow_in: Tensor, name: String = "TensorArraySplitV3") = run {
+  buildOpTensor("TensorArraySplitV3", name) {
+    addInput(handle, false)
+    addInput(value, false)
+    addInput(lengths, false)
+    addInput(flow_in, false)
+  }
+}
+
+fun TF.tensorArrayV3(size: Tensor, dtype: Int, element_shape: Dimension = Dimension(unknow_rank = true), dynamic_size: Boolean = false, clear_after_read: Boolean = true, identical_element_shapes: Boolean = false, tensor_array_name: String = "", name: String = "TensorArrayV3") = run {
+  buildOpTensors("TensorArrayV3", name) {
+    addInput(size, false)
+    attrType("dtype", dtype)
+    attr("element_shape", element_shape)
+    attr("dynamic_size", dynamic_size)
+    attr("clear_after_read", clear_after_read)
+    attr("identical_element_shapes", identical_element_shapes)
+    attr("tensor_array_name", tensor_array_name)
+  }
+}
+
+fun TF.tensorArrayWriteV3(handle: Tensor, index: Tensor, value: Tensor, flow_in: Tensor, name: String = "TensorArrayWriteV3") = run {
+  buildOpTensor("TensorArrayWriteV3", name) {
+    addInput(handle, false)
+    addInput(index, false)
+    addInput(value, false)
+    addInput(flow_in, false)
+  }
+}
+
+fun TF.unstage(capacity: Long = 0L, memory_limit: Long = 0L, dtypes: Array<Long>, container: String = "", shared_name: String = "", name: String = "Unstage") = run {
+  buildOpTensors("Unstage", name) {
+    attr("capacity", capacity)
+    attr("memory_limit", memory_limit)
+    attr("dtypes", dtypes)
+    attr("container", container)
+    attr("shared_name", shared_name)
   }
 }

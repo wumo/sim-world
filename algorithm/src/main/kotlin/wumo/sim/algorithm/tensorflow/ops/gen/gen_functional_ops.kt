@@ -4,69 +4,67 @@
 package wumo.sim.algorithm.tensorflow.ops.gen
 
 import org.bytedeco.javacpp.tensorflow.NameAttrList
+import wumo.sim.algorithm.tensorflow.TF
 import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.buildOpTensors
-import wumo.sim.algorithm.tensorflow.tf
 
-object gen_functional_ops {
-  fun _for(start: Tensor, limit: Tensor, delta: Tensor, input: Tensor, body: NameAttrList, name: String = "For") = run {
-    tf.buildOpTensors("For", name) {
-      addInput(start, false)
-      addInput(limit, false)
-      addInput(delta, false)
-      addInput(input, false)
-      attr("body", body)
-    }
+fun TF._for(start: Tensor, limit: Tensor, delta: Tensor, input: Tensor, body: NameAttrList, name: String = "For") = run {
+  buildOpTensors("For", name) {
+    addInput(start, false)
+    addInput(limit, false)
+    addInput(delta, false)
+    addInput(input, false)
+    attr("body", body)
   }
-  
-  fun _if(cond: Tensor, input: Tensor, tout: Array<Long>, then_branch: NameAttrList, else_branch: NameAttrList, name: String = "If") = run {
-    tf.buildOpTensors("If", name) {
-      addInput(cond, false)
-      addInput(input, false)
-      attr("Tout", tout)
-      attr("then_branch", then_branch)
-      attr("else_branch", else_branch)
-    }
+}
+
+fun TF._if(cond: Tensor, input: Tensor, tout: Array<Long>, then_branch: NameAttrList, else_branch: NameAttrList, name: String = "If") = run {
+  buildOpTensors("If", name) {
+    addInput(cond, false)
+    addInput(input, false)
+    attr("Tout", tout)
+    attr("then_branch", then_branch)
+    attr("else_branch", else_branch)
   }
-  
-  fun partitionedCall(args: Tensor, tout: Array<Long>, f: NameAttrList, name: String = "PartitionedCall") = run {
-    tf.buildOpTensors("PartitionedCall", name) {
-      addInput(args, false)
-      attr("Tout", tout)
-      attr("f", f)
-    }
+}
+
+fun TF.partitionedCall(args: Tensor, tout: Array<Long>, f: NameAttrList, name: String = "PartitionedCall") = run {
+  buildOpTensors("PartitionedCall", name) {
+    addInput(args, false)
+    attr("Tout", tout)
+    attr("f", f)
   }
-  
-  fun remoteCall(target: Tensor, args: Tensor, tout: Array<Long>, f: NameAttrList, name: String = "RemoteCall") = run {
-    tf.buildOpTensors("RemoteCall", name) {
-      addInput(target, false)
-      addInput(args, false)
-      attr("Tout", tout)
-      attr("f", f)
-    }
+}
+
+fun TF.remoteCall(target: Tensor, args: Tensor, tout: Array<Long>, f: NameAttrList, name: String = "RemoteCall") = run {
+  buildOpTensors("RemoteCall", name) {
+    addInput(target, false)
+    addInput(args, false)
+    attr("Tout", tout)
+    attr("f", f)
   }
-  
-  fun statefulPartitionedCall(args: Tensor, tout: Array<Long>, f: NameAttrList, name: String = "StatefulPartitionedCall") = run {
-    tf.buildOpTensors("StatefulPartitionedCall", name) {
-      addInput(args, false)
-      attr("Tout", tout)
-      attr("f", f)
-    }
+}
+
+fun TF.statefulPartitionedCall(args: Tensor, tout: Array<Long>, f: NameAttrList, name: String = "StatefulPartitionedCall") = run {
+  buildOpTensors("StatefulPartitionedCall", name) {
+    addInput(args, false)
+    attr("Tout", tout)
+    attr("f", f)
   }
-  
-  fun symbolicGradient(input: Tensor, tout: Array<Long>, f: NameAttrList, name: String = "SymbolicGradient") = run {
-    tf.buildOpTensors("SymbolicGradient", name) {
-      addInput(input, false)
-      attr("Tout", tout)
-      attr("f", f)
-    }
+}
+
+fun TF.symbolicGradient(input: Tensor, tout: Array<Long>, f: NameAttrList, name: String = "SymbolicGradient") = run {
+  buildOpTensors("SymbolicGradient", name) {
+    addInput(input, false)
+    attr("Tout", tout)
+    attr("f", f)
   }
-  
-  fun _while(input: Tensor, cond: NameAttrList, body: NameAttrList, name: String = "While") = run {
-    tf.buildOpTensors("While", name) {
-      addInput(input, false)
-      attr("cond", cond)
-      attr("body", body)
-    }
+}
+
+fun TF._while(input: Tensor, cond: NameAttrList, body: NameAttrList, name: String = "While") = run {
+  buildOpTensors("While", name) {
+    addInput(input, false)
+    attr("cond", cond)
+    attr("body", body)
   }
 }

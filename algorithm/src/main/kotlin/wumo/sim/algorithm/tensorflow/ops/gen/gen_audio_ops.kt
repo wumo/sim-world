@@ -3,44 +3,42 @@
  */
 package wumo.sim.algorithm.tensorflow.ops.gen
 
+import wumo.sim.algorithm.tensorflow.TF
 import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.buildOpTensor
 import wumo.sim.algorithm.tensorflow.buildOpTensors
-import wumo.sim.algorithm.tensorflow.tf
 
-object gen_audio_ops {
-  fun audioSpectrogram(input: Tensor, window_size: Long, stride: Long, magnitude_squared: Boolean = false, name: String = "AudioSpectrogram") = run {
-    tf.buildOpTensor("AudioSpectrogram", name) {
-      addInput(input, false)
-      attr("window_size", window_size)
-      attr("stride", stride)
-      attr("magnitude_squared", magnitude_squared)
-    }
+fun TF.audioSpectrogram(input: Tensor, window_size: Long, stride: Long, magnitude_squared: Boolean = false, name: String = "AudioSpectrogram") = run {
+  buildOpTensor("AudioSpectrogram", name) {
+    addInput(input, false)
+    attr("window_size", window_size)
+    attr("stride", stride)
+    attr("magnitude_squared", magnitude_squared)
   }
-  
-  fun decodeWav(contents: Tensor, desired_channels: Long = -1L, desired_samples: Long = -1L, name: String = "DecodeWav") = run {
-    tf.buildOpTensors("DecodeWav", name) {
-      addInput(contents, false)
-      attr("desired_channels", desired_channels)
-      attr("desired_samples", desired_samples)
-    }
+}
+
+fun TF.decodeWav(contents: Tensor, desired_channels: Long = -1L, desired_samples: Long = -1L, name: String = "DecodeWav") = run {
+  buildOpTensors("DecodeWav", name) {
+    addInput(contents, false)
+    attr("desired_channels", desired_channels)
+    attr("desired_samples", desired_samples)
   }
-  
-  fun encodeWav(audio: Tensor, sample_rate: Tensor, name: String = "EncodeWav") = run {
-    tf.buildOpTensor("EncodeWav", name) {
-      addInput(audio, false)
-      addInput(sample_rate, false)
-    }
+}
+
+fun TF.encodeWav(audio: Tensor, sample_rate: Tensor, name: String = "EncodeWav") = run {
+  buildOpTensor("EncodeWav", name) {
+    addInput(audio, false)
+    addInput(sample_rate, false)
   }
-  
-  fun mfcc(spectrogram: Tensor, sample_rate: Tensor, upper_frequency_limit: Float = 4000.0f, lower_frequency_limit: Float = 20.0f, filterbank_channel_count: Long = 40L, dct_coefficient_count: Long = 13L, name: String = "Mfcc") = run {
-    tf.buildOpTensor("Mfcc", name) {
-      addInput(spectrogram, false)
-      addInput(sample_rate, false)
-      attr("upper_frequency_limit", upper_frequency_limit)
-      attr("lower_frequency_limit", lower_frequency_limit)
-      attr("filterbank_channel_count", filterbank_channel_count)
-      attr("dct_coefficient_count", dct_coefficient_count)
-    }
+}
+
+fun TF.mfcc(spectrogram: Tensor, sample_rate: Tensor, upper_frequency_limit: Float = 4000.0f, lower_frequency_limit: Float = 20.0f, filterbank_channel_count: Long = 40L, dct_coefficient_count: Long = 13L, name: String = "Mfcc") = run {
+  buildOpTensor("Mfcc", name) {
+    addInput(spectrogram, false)
+    addInput(sample_rate, false)
+    attr("upper_frequency_limit", upper_frequency_limit)
+    attr("lower_frequency_limit", lower_frequency_limit)
+    attr("filterbank_channel_count", filterbank_channel_count)
+    attr("dct_coefficient_count", dct_coefficient_count)
   }
 }

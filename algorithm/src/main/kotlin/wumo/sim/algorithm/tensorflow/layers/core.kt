@@ -2,6 +2,7 @@ package wumo.sim.algorithm.tensorflow.layers
 
 import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.ops.*
+import wumo.sim.algorithm.tensorflow.ops.gen.matMul
 import wumo.sim.algorithm.tensorflow.tf
 import wumo.sim.util.Dimension
 import wumo.sim.util.dim
@@ -49,7 +50,7 @@ class Dense(val units: Int,
     var output = if (shape.rank() > 2) {
       tf.tensordot(input, kernel, tf.const(2 x 1, i(shape.rank() - 1, 0)))
     } else
-      tf.matmul(input, kernel)
+      tf.matMul(input, kernel)
     if (use_bias)
       output = tf.biasAdd(output, bias!!)
     if (activation != null)

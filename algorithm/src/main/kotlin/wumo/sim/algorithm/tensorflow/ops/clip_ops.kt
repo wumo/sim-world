@@ -2,6 +2,8 @@ package wumo.sim.algorithm.tensorflow.ops
 
 import wumo.sim.algorithm.tensorflow.TF
 import wumo.sim.algorithm.tensorflow.Tensor
+import wumo.sim.algorithm.tensorflow.ops.gen.maximum
+import wumo.sim.algorithm.tensorflow.ops.gen.sqrt
 import wumo.sim.algorithm.tensorflow.tf
 
 /**

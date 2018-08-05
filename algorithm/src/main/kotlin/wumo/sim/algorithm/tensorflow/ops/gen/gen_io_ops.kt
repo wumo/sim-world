@@ -5,195 +5,193 @@ package wumo.sim.algorithm.tensorflow.ops.gen
 
 import wumo.sim.algorithm.tensorflow.*
 
-object gen_io_ops {
-  fun fixedLengthRecordReaderV2(header_bytes: Long = 0L, record_bytes: Long, footer_bytes: Long = 0L, hop_bytes: Long = 0L, container: String = "", shared_name: String = "", encoding: String = "", name: String = "FixedLengthRecordReaderV2") = run {
-    tf.buildOpTensor("FixedLengthRecordReaderV2", name) {
-      attr("header_bytes", header_bytes)
-      attr("record_bytes", record_bytes)
-      attr("footer_bytes", footer_bytes)
-      attr("hop_bytes", hop_bytes)
-      attr("container", container)
-      attr("shared_name", shared_name)
-      attr("encoding", encoding)
-    }
+fun TF.fixedLengthRecordReaderV2(header_bytes: Long = 0L, record_bytes: Long, footer_bytes: Long = 0L, hop_bytes: Long = 0L, container: String = "", shared_name: String = "", encoding: String = "", name: String = "FixedLengthRecordReaderV2") = run {
+  buildOpTensor("FixedLengthRecordReaderV2", name) {
+    attr("header_bytes", header_bytes)
+    attr("record_bytes", record_bytes)
+    attr("footer_bytes", footer_bytes)
+    attr("hop_bytes", hop_bytes)
+    attr("container", container)
+    attr("shared_name", shared_name)
+    attr("encoding", encoding)
   }
-  
-  fun identityReaderV2(container: String = "", shared_name: String = "", name: String = "IdentityReaderV2") = run {
-    tf.buildOpTensor("IdentityReaderV2", name) {
-      attr("container", container)
-      attr("shared_name", shared_name)
-    }
+}
+
+fun TF.identityReaderV2(container: String = "", shared_name: String = "", name: String = "IdentityReaderV2") = run {
+  buildOpTensor("IdentityReaderV2", name) {
+    attr("container", container)
+    attr("shared_name", shared_name)
   }
-  
-  fun lMDBReader(container: String = "", shared_name: String = "", name: String = "LMDBReader") = run {
-    tf.buildOpTensor("LMDBReader", name) {
-      attr("container", container)
-      attr("shared_name", shared_name)
-    }
+}
+
+fun TF.lMDBReader(container: String = "", shared_name: String = "", name: String = "LMDBReader") = run {
+  buildOpTensor("LMDBReader", name) {
+    attr("container", container)
+    attr("shared_name", shared_name)
   }
-  
-  fun matchingFiles(pattern: Tensor, name: String = "MatchingFiles") = run {
-    tf.buildOpTensor("MatchingFiles", name) {
-      addInput(pattern, false)
-    }
+}
+
+fun TF.matchingFiles(pattern: Tensor, name: String = "MatchingFiles") = run {
+  buildOpTensor("MatchingFiles", name) {
+    addInput(pattern, false)
   }
-  
-  fun mergeV2Checkpoints(checkpoint_prefixes: Tensor, destination_prefix: Tensor, delete_old_dirs: Boolean = true, name: String = "MergeV2Checkpoints") = run {
-    tf.buildOp("MergeV2Checkpoints", name) {
-      addInput(checkpoint_prefixes, false)
-      addInput(destination_prefix, false)
-      attr("delete_old_dirs", delete_old_dirs)
-    }
+}
+
+fun TF.mergeV2Checkpoints(checkpoint_prefixes: Tensor, destination_prefix: Tensor, delete_old_dirs: Boolean = true, name: String = "MergeV2Checkpoints") = run {
+  buildOp("MergeV2Checkpoints", name) {
+    addInput(checkpoint_prefixes, false)
+    addInput(destination_prefix, false)
+    attr("delete_old_dirs", delete_old_dirs)
   }
-  
-  fun readFile(filename: Tensor, name: String = "ReadFile") = run {
-    tf.buildOpTensor("ReadFile", name) {
-      addInput(filename, false)
-    }
+}
+
+fun TF.readFile(filename: Tensor, name: String = "ReadFile") = run {
+  buildOpTensor("ReadFile", name) {
+    addInput(filename, false)
   }
-  
-  fun readerNumRecordsProducedV2(reader_handle: Tensor, name: String = "ReaderNumRecordsProducedV2") = run {
-    tf.buildOpTensor("ReaderNumRecordsProducedV2", name) {
-      addInput(reader_handle, false)
-    }
+}
+
+fun TF.readerNumRecordsProducedV2(reader_handle: Tensor, name: String = "ReaderNumRecordsProducedV2") = run {
+  buildOpTensor("ReaderNumRecordsProducedV2", name) {
+    addInput(reader_handle, false)
   }
-  
-  fun readerNumWorkUnitsCompletedV2(reader_handle: Tensor, name: String = "ReaderNumWorkUnitsCompletedV2") = run {
-    tf.buildOpTensor("ReaderNumWorkUnitsCompletedV2", name) {
-      addInput(reader_handle, false)
-    }
+}
+
+fun TF.readerNumWorkUnitsCompletedV2(reader_handle: Tensor, name: String = "ReaderNumWorkUnitsCompletedV2") = run {
+  buildOpTensor("ReaderNumWorkUnitsCompletedV2", name) {
+    addInput(reader_handle, false)
   }
-  
-  fun readerReadUpToV2(reader_handle: Tensor, queue_handle: Tensor, num_records: Tensor, name: String = "ReaderReadUpToV2") = run {
-    tf.buildOpTensors("ReaderReadUpToV2", name) {
-      addInput(reader_handle, false)
-      addInput(queue_handle, false)
-      addInput(num_records, false)
-    }
+}
+
+fun TF.readerReadUpToV2(reader_handle: Tensor, queue_handle: Tensor, num_records: Tensor, name: String = "ReaderReadUpToV2") = run {
+  buildOpTensors("ReaderReadUpToV2", name) {
+    addInput(reader_handle, false)
+    addInput(queue_handle, false)
+    addInput(num_records, false)
   }
-  
-  fun readerReadV2(reader_handle: Tensor, queue_handle: Tensor, name: String = "ReaderReadV2") = run {
-    tf.buildOpTensors("ReaderReadV2", name) {
-      addInput(reader_handle, false)
-      addInput(queue_handle, false)
-    }
+}
+
+fun TF.readerReadV2(reader_handle: Tensor, queue_handle: Tensor, name: String = "ReaderReadV2") = run {
+  buildOpTensors("ReaderReadV2", name) {
+    addInput(reader_handle, false)
+    addInput(queue_handle, false)
   }
-  
-  fun readerResetV2(reader_handle: Tensor, name: String = "ReaderResetV2") = run {
-    tf.buildOp("ReaderResetV2", name) {
-      addInput(reader_handle, false)
-    }
+}
+
+fun TF.readerResetV2(reader_handle: Tensor, name: String = "ReaderResetV2") = run {
+  buildOp("ReaderResetV2", name) {
+    addInput(reader_handle, false)
   }
-  
-  fun readerRestoreStateV2(reader_handle: Tensor, state: Tensor, name: String = "ReaderRestoreStateV2") = run {
-    tf.buildOp("ReaderRestoreStateV2", name) {
-      addInput(reader_handle, false)
-      addInput(state, false)
-    }
+}
+
+fun TF.readerRestoreStateV2(reader_handle: Tensor, state: Tensor, name: String = "ReaderRestoreStateV2") = run {
+  buildOp("ReaderRestoreStateV2", name) {
+    addInput(reader_handle, false)
+    addInput(state, false)
   }
-  
-  fun readerSerializeStateV2(reader_handle: Tensor, name: String = "ReaderSerializeStateV2") = run {
-    tf.buildOpTensor("ReaderSerializeStateV2", name) {
-      addInput(reader_handle, false)
-    }
+}
+
+fun TF.readerSerializeStateV2(reader_handle: Tensor, name: String = "ReaderSerializeStateV2") = run {
+  buildOpTensor("ReaderSerializeStateV2", name) {
+    addInput(reader_handle, false)
   }
-  
-  fun restore(file_pattern: Tensor, tensor_name: Tensor, dt: Int, preferred_shard: Long = -1L, name: String = "Restore") = run {
-    tf.buildOpTensor("Restore", name) {
-      addInput(file_pattern, false)
-      addInput(tensor_name, false)
-      attrType("dt", dt)
-      attr("preferred_shard", preferred_shard)
-    }
+}
+
+fun TF.restore(file_pattern: Tensor, tensor_name: Tensor, dt: Int, preferred_shard: Long = -1L, name: String = "Restore") = run {
+  buildOpTensor("Restore", name) {
+    addInput(file_pattern, false)
+    addInput(tensor_name, false)
+    attrType("dt", dt)
+    attr("preferred_shard", preferred_shard)
   }
-  
-  fun restoreSlice(file_pattern: Tensor, tensor_name: Tensor, shape_and_slice: Tensor, dt: Int, preferred_shard: Long = -1L, name: String = "RestoreSlice") = run {
-    tf.buildOpTensor("RestoreSlice", name) {
-      addInput(file_pattern, false)
-      addInput(tensor_name, false)
-      addInput(shape_and_slice, false)
-      attrType("dt", dt)
-      attr("preferred_shard", preferred_shard)
-    }
+}
+
+fun TF.restoreSlice(file_pattern: Tensor, tensor_name: Tensor, shape_and_slice: Tensor, dt: Int, preferred_shard: Long = -1L, name: String = "RestoreSlice") = run {
+  buildOpTensor("RestoreSlice", name) {
+    addInput(file_pattern, false)
+    addInput(tensor_name, false)
+    addInput(shape_and_slice, false)
+    attrType("dt", dt)
+    attr("preferred_shard", preferred_shard)
   }
-  
-  fun restoreV2(prefix: Tensor, tensor_names: Tensor, shape_and_slices: Tensor, dtypes: Array<Long>, name: String = "RestoreV2") = run {
-    tf.buildOpTensors("RestoreV2", name) {
-      addInput(prefix, false)
-      addInput(tensor_names, false)
-      addInput(shape_and_slices, false)
-      attr("dtypes", dtypes)
-    }
+}
+
+fun TF.restoreV2(prefix: Tensor, tensor_names: Tensor, shape_and_slices: Tensor, dtypes: Array<Long>, name: String = "RestoreV2") = run {
+  buildOpTensors("RestoreV2", name) {
+    addInput(prefix, false)
+    addInput(tensor_names, false)
+    addInput(shape_and_slices, false)
+    attr("dtypes", dtypes)
   }
-  
-  fun save(filename: Tensor, tensor_names: Tensor, data: Tensor, name: String = "Save") = run {
-    tf.buildOp("Save", name) {
-      addInput(filename, false)
-      addInput(tensor_names, false)
-      addInput(data, false)
-    }
+}
+
+fun TF.save(filename: Tensor, tensor_names: Tensor, data: Tensor, name: String = "Save") = run {
+  buildOp("Save", name) {
+    addInput(filename, false)
+    addInput(tensor_names, false)
+    addInput(data, false)
   }
-  
-  fun saveSlices(filename: Tensor, tensor_names: Tensor, shapes_and_slices: Tensor, data: Tensor, name: String = "SaveSlices") = run {
-    tf.buildOp("SaveSlices", name) {
-      addInput(filename, false)
-      addInput(tensor_names, false)
-      addInput(shapes_and_slices, false)
-      addInput(data, false)
-    }
+}
+
+fun TF.saveSlices(filename: Tensor, tensor_names: Tensor, shapes_and_slices: Tensor, data: Tensor, name: String = "SaveSlices") = run {
+  buildOp("SaveSlices", name) {
+    addInput(filename, false)
+    addInput(tensor_names, false)
+    addInput(shapes_and_slices, false)
+    addInput(data, false)
   }
-  
-  fun saveV2(prefix: Tensor, tensor_names: Tensor, shape_and_slices: Tensor, tensors: Tensor, name: String = "SaveV2") = run {
-    tf.buildOp("SaveV2", name) {
-      addInput(prefix, false)
-      addInput(tensor_names, false)
-      addInput(shape_and_slices, false)
-      addInput(tensors, false)
-    }
+}
+
+fun TF.saveV2(prefix: Tensor, tensor_names: Tensor, shape_and_slices: Tensor, tensors: Tensor, name: String = "SaveV2") = run {
+  buildOp("SaveV2", name) {
+    addInput(prefix, false)
+    addInput(tensor_names, false)
+    addInput(shape_and_slices, false)
+    addInput(tensors, false)
   }
-  
-  fun shardedFilename(basename: Tensor, shard: Tensor, num_shards: Tensor, name: String = "ShardedFilename") = run {
-    tf.buildOpTensor("ShardedFilename", name) {
-      addInput(basename, false)
-      addInput(shard, false)
-      addInput(num_shards, false)
-    }
+}
+
+fun TF.shardedFilename(basename: Tensor, shard: Tensor, num_shards: Tensor, name: String = "ShardedFilename") = run {
+  buildOpTensor("ShardedFilename", name) {
+    addInput(basename, false)
+    addInput(shard, false)
+    addInput(num_shards, false)
   }
-  
-  fun shardedFilespec(basename: Tensor, num_shards: Tensor, name: String = "ShardedFilespec") = run {
-    tf.buildOpTensor("ShardedFilespec", name) {
-      addInput(basename, false)
-      addInput(num_shards, false)
-    }
+}
+
+fun TF.shardedFilespec(basename: Tensor, num_shards: Tensor, name: String = "ShardedFilespec") = run {
+  buildOpTensor("ShardedFilespec", name) {
+    addInput(basename, false)
+    addInput(num_shards, false)
   }
-  
-  fun tFRecordReaderV2(container: String = "", shared_name: String = "", compression_type: String = "", name: String = "TFRecordReaderV2") = run {
-    tf.buildOpTensor("TFRecordReaderV2", name) {
-      attr("container", container)
-      attr("shared_name", shared_name)
-      attr("compression_type", compression_type)
-    }
+}
+
+fun TF.tFRecordReaderV2(container: String = "", shared_name: String = "", compression_type: String = "", name: String = "TFRecordReaderV2") = run {
+  buildOpTensor("TFRecordReaderV2", name) {
+    attr("container", container)
+    attr("shared_name", shared_name)
+    attr("compression_type", compression_type)
   }
-  
-  fun textLineReaderV2(skip_header_lines: Long = 0L, container: String = "", shared_name: String = "", name: String = "TextLineReaderV2") = run {
-    tf.buildOpTensor("TextLineReaderV2", name) {
-      attr("skip_header_lines", skip_header_lines)
-      attr("container", container)
-      attr("shared_name", shared_name)
-    }
+}
+
+fun TF.textLineReaderV2(skip_header_lines: Long = 0L, container: String = "", shared_name: String = "", name: String = "TextLineReaderV2") = run {
+  buildOpTensor("TextLineReaderV2", name) {
+    attr("skip_header_lines", skip_header_lines)
+    attr("container", container)
+    attr("shared_name", shared_name)
   }
-  
-  fun wholeFileReaderV2(container: String = "", shared_name: String = "", name: String = "WholeFileReaderV2") = run {
-    tf.buildOpTensor("WholeFileReaderV2", name) {
-      attr("container", container)
-      attr("shared_name", shared_name)
-    }
+}
+
+fun TF.wholeFileReaderV2(container: String = "", shared_name: String = "", name: String = "WholeFileReaderV2") = run {
+  buildOpTensor("WholeFileReaderV2", name) {
+    attr("container", container)
+    attr("shared_name", shared_name)
   }
-  
-  fun writeFile(filename: Tensor, contents: Tensor, name: String = "WriteFile") = run {
-    tf.buildOp("WriteFile", name) {
-      addInput(filename, false)
-      addInput(contents, false)
-    }
+}
+
+fun TF.writeFile(filename: Tensor, contents: Tensor, name: String = "WriteFile") = run {
+  buildOp("WriteFile", name) {
+    addInput(filename, false)
+    addInput(contents, false)
   }
 }

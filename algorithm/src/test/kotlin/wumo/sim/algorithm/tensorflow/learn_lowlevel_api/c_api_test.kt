@@ -5,7 +5,7 @@ import org.bytedeco.javacpp.BytePointer
 import org.bytedeco.javacpp.tensorflow
 import org.junit.Test
 import wumo.sim.algorithm.tensorflow.ops.const
-import wumo.sim.algorithm.tensorflow.ops.matmul
+import wumo.sim.algorithm.tensorflow.ops.gen.matMul
 import wumo.sim.algorithm.tensorflow.ops.variable
 import wumo.sim.algorithm.tensorflow.tf
 import wumo.sim.util.f
@@ -18,7 +18,7 @@ class c_api_test {
     
     val A = tf.const(4 x 1, f(1f, 2f, 3f, 4f))
     val B = tf.const(4 x 1, f(1f, 2f, 3f, 4f))
-    val C = tf.matmul(A, B, transpose_a = true, transpose_b = false)
+    val C = tf.matMul(A, B, transpose_a = true, transpose_b = false)
     val pa = BoolPointer(1L)
     val pb = BoolPointer(1)
     tensorflow.GetNodeAttr(C.node().attrs(), BytePointer("transpose_a"), pa)

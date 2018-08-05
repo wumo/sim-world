@@ -3,6 +3,8 @@ package wumo.sim.algorithm.tensorflow.ops
 import org.bytedeco.javacpp.tensorflow.DT_FLOAT
 import org.bytedeco.javacpp.tensorflow.DT_HALF
 import wumo.sim.algorithm.tensorflow.*
+import wumo.sim.algorithm.tensorflow.ops.gen.rsqrt
+import wumo.sim.algorithm.tensorflow.ops.gen.squaredDifference
 import wumo.sim.util.a
 import wumo.sim.util.i
 

@@ -2,8 +2,6 @@ package wumo.sim.algorithm.tensorflow.ops
 
 import org.bytedeco.javacpp.tensorflow.DT_FLOAT
 import wumo.sim.algorithm.tensorflow.Variable
-import wumo.sim.algorithm.tensorflow.layers.TensorFunction
-import wumo.sim.algorithm.tensorflow.tf
 import wumo.sim.util.Dimension
 
 /**

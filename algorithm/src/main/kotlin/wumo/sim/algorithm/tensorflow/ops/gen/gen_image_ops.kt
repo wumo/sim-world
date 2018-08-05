@@ -3,299 +3,299 @@
  */
 package wumo.sim.algorithm.tensorflow.ops.gen
 
+import org.bytedeco.javacpp.tensorflow.DT_INT32
+import org.bytedeco.javacpp.tensorflow.DT_UINT8
+import wumo.sim.algorithm.tensorflow.TF
 import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.buildOpTensor
 import wumo.sim.algorithm.tensorflow.buildOpTensors
-import wumo.sim.algorithm.tensorflow.tf
 
-object gen_image_ops {
-  fun adjustContrastv2(images: Tensor, contrast_factor: Tensor, name: String = "AdjustContrastv2") = run {
-    tf.buildOpTensor("AdjustContrastv2", name) {
-      addInput(images, false)
-      addInput(contrast_factor, false)
-    }
+fun TF.adjustContrastv2(images: Tensor, contrast_factor: Tensor, name: String = "AdjustContrastv2") = run {
+  buildOpTensor("AdjustContrastv2", name) {
+    addInput(images, false)
+    addInput(contrast_factor, false)
   }
-  
-  fun adjustHue(images: Tensor, delta: Tensor, name: String = "AdjustHue") = run {
-    tf.buildOpTensor("AdjustHue", name) {
-      addInput(images, false)
-      addInput(delta, false)
-    }
+}
+
+fun TF.adjustHue(images: Tensor, delta: Tensor, name: String = "AdjustHue") = run {
+  buildOpTensor("AdjustHue", name) {
+    addInput(images, false)
+    addInput(delta, false)
   }
-  
-  fun adjustSaturation(images: Tensor, scale: Tensor, name: String = "AdjustSaturation") = run {
-    tf.buildOpTensor("AdjustSaturation", name) {
-      addInput(images, false)
-      addInput(scale, false)
-    }
+}
+
+fun TF.adjustSaturation(images: Tensor, scale: Tensor, name: String = "AdjustSaturation") = run {
+  buildOpTensor("AdjustSaturation", name) {
+    addInput(images, false)
+    addInput(scale, false)
   }
-  
-  fun cropAndResize(image: Tensor, boxes: Tensor, box_ind: Tensor, crop_size: Tensor, method: String = "bilinear", extrapolation_value: Float = 0.0f, name: String = "CropAndResize") = run {
-    tf.buildOpTensor("CropAndResize", name) {
-      addInput(image, false)
-      addInput(boxes, false)
-      addInput(box_ind, false)
-      addInput(crop_size, false)
-      attr("method", method)
-      attr("extrapolation_value", extrapolation_value)
-    }
+}
+
+fun TF.cropAndResize(image: Tensor, boxes: Tensor, box_ind: Tensor, crop_size: Tensor, method: String = "bilinear", extrapolation_value: Float = 0.0f, name: String = "CropAndResize") = run {
+  buildOpTensor("CropAndResize", name) {
+    addInput(image, false)
+    addInput(boxes, false)
+    addInput(box_ind, false)
+    addInput(crop_size, false)
+    attr("method", method)
+    attr("extrapolation_value", extrapolation_value)
   }
-  
-  fun cropAndResizeGradBoxes(grads: Tensor, image: Tensor, boxes: Tensor, box_ind: Tensor, method: String = "bilinear", name: String = "CropAndResizeGradBoxes") = run {
-    tf.buildOpTensor("CropAndResizeGradBoxes", name) {
-      addInput(grads, false)
-      addInput(image, false)
-      addInput(boxes, false)
-      addInput(box_ind, false)
-      attr("method", method)
-    }
+}
+
+fun TF.cropAndResizeGradBoxes(grads: Tensor, image: Tensor, boxes: Tensor, box_ind: Tensor, method: String = "bilinear", name: String = "CropAndResizeGradBoxes") = run {
+  buildOpTensor("CropAndResizeGradBoxes", name) {
+    addInput(grads, false)
+    addInput(image, false)
+    addInput(boxes, false)
+    addInput(box_ind, false)
+    attr("method", method)
   }
-  
-  fun cropAndResizeGradImage(grads: Tensor, boxes: Tensor, box_ind: Tensor, image_size: Tensor, t: Int, method: String = "bilinear", name: String = "CropAndResizeGradImage") = run {
-    tf.buildOpTensor("CropAndResizeGradImage", name) {
-      addInput(grads, false)
-      addInput(boxes, false)
-      addInput(box_ind, false)
-      addInput(image_size, false)
-      attrType("T", t)
-      attr("method", method)
-    }
+}
+
+fun TF.cropAndResizeGradImage(grads: Tensor, boxes: Tensor, box_ind: Tensor, image_size: Tensor, t: Int, method: String = "bilinear", name: String = "CropAndResizeGradImage") = run {
+  buildOpTensor("CropAndResizeGradImage", name) {
+    addInput(grads, false)
+    addInput(boxes, false)
+    addInput(box_ind, false)
+    addInput(image_size, false)
+    attrType("T", t)
+    attr("method", method)
   }
-  
-  fun decodeAndCropJpeg(contents: Tensor, crop_window: Tensor, channels: Long = 0L, ratio: Long = 1L, fancy_upscaling: Boolean = true, try_recover_truncated: Boolean = false, acceptable_fraction: Float = 1.0f, dct_method: String = "", name: String = "DecodeAndCropJpeg") = run {
-    tf.buildOpTensor("DecodeAndCropJpeg", name) {
-      addInput(contents, false)
-      addInput(crop_window, false)
-      attr("channels", channels)
-      attr("ratio", ratio)
-      attr("fancy_upscaling", fancy_upscaling)
-      attr("try_recover_truncated", try_recover_truncated)
-      attr("acceptable_fraction", acceptable_fraction)
-      attr("dct_method", dct_method)
-    }
+}
+
+fun TF.decodeAndCropJpeg(contents: Tensor, crop_window: Tensor, channels: Long = 0L, ratio: Long = 1L, fancy_upscaling: Boolean = true, try_recover_truncated: Boolean = false, acceptable_fraction: Float = 1.0f, dct_method: String = "", name: String = "DecodeAndCropJpeg") = run {
+  buildOpTensor("DecodeAndCropJpeg", name) {
+    addInput(contents, false)
+    addInput(crop_window, false)
+    attr("channels", channels)
+    attr("ratio", ratio)
+    attr("fancy_upscaling", fancy_upscaling)
+    attr("try_recover_truncated", try_recover_truncated)
+    attr("acceptable_fraction", acceptable_fraction)
+    attr("dct_method", dct_method)
   }
-  
-  fun decodeBmp(contents: Tensor, channels: Long = 0L, name: String = "DecodeBmp") = run {
-    tf.buildOpTensor("DecodeBmp", name) {
-      addInput(contents, false)
-      attr("channels", channels)
-    }
+}
+
+fun TF.decodeBmp(contents: Tensor, channels: Long = 0L, name: String = "DecodeBmp") = run {
+  buildOpTensor("DecodeBmp", name) {
+    addInput(contents, false)
+    attr("channels", channels)
   }
-  
-  fun decodeGif(contents: Tensor, name: String = "DecodeGif") = run {
-    tf.buildOpTensor("DecodeGif", name) {
-      addInput(contents, false)
-    }
+}
+
+fun TF.decodeGif(contents: Tensor, name: String = "DecodeGif") = run {
+  buildOpTensor("DecodeGif", name) {
+    addInput(contents, false)
   }
-  
-  fun decodeJpeg(contents: Tensor, channels: Long = 0L, ratio: Long = 1L, fancy_upscaling: Boolean = true, try_recover_truncated: Boolean = false, acceptable_fraction: Float = 1.0f, dct_method: String = "", name: String = "DecodeJpeg") = run {
-    tf.buildOpTensor("DecodeJpeg", name) {
-      addInput(contents, false)
-      attr("channels", channels)
-      attr("ratio", ratio)
-      attr("fancy_upscaling", fancy_upscaling)
-      attr("try_recover_truncated", try_recover_truncated)
-      attr("acceptable_fraction", acceptable_fraction)
-      attr("dct_method", dct_method)
-    }
+}
+
+fun TF.decodeJpeg(contents: Tensor, channels: Long = 0L, ratio: Long = 1L, fancy_upscaling: Boolean = true, try_recover_truncated: Boolean = false, acceptable_fraction: Float = 1.0f, dct_method: String = "", name: String = "DecodeJpeg") = run {
+  buildOpTensor("DecodeJpeg", name) {
+    addInput(contents, false)
+    attr("channels", channels)
+    attr("ratio", ratio)
+    attr("fancy_upscaling", fancy_upscaling)
+    attr("try_recover_truncated", try_recover_truncated)
+    attr("acceptable_fraction", acceptable_fraction)
+    attr("dct_method", dct_method)
   }
-  
-  fun decodePng(contents: Tensor, channels: Long = 0L, dtype: Int = 4, name: String = "DecodePng") = run {
-    tf.buildOpTensor("DecodePng", name) {
-      addInput(contents, false)
-      attr("channels", channels)
-      attrType("dtype", dtype)
-    }
+}
+
+fun TF.decodePng(contents: Tensor, channels: Long = 0L, dtype: Int = DT_UINT8, name: String = "DecodePng") = run {
+  buildOpTensor("DecodePng", name) {
+    addInput(contents, false)
+    attr("channels", channels)
+    attrType("dtype", dtype)
   }
-  
-  fun drawBoundingBoxes(images: Tensor, boxes: Tensor, name: String = "DrawBoundingBoxes") = run {
-    tf.buildOpTensor("DrawBoundingBoxes", name) {
-      addInput(images, false)
-      addInput(boxes, false)
-    }
+}
+
+fun TF.drawBoundingBoxes(images: Tensor, boxes: Tensor, name: String = "DrawBoundingBoxes") = run {
+  buildOpTensor("DrawBoundingBoxes", name) {
+    addInput(images, false)
+    addInput(boxes, false)
   }
-  
-  fun encodeJpeg(image: Tensor, format: String = "", quality: Long = 95L, progressive: Boolean = false, optimize_size: Boolean = false, chroma_downsampling: Boolean = true, density_unit: String = "in", x_density: Long = 300L, y_density: Long = 300L, xmp_metadata: String = "", name: String = "EncodeJpeg") = run {
-    tf.buildOpTensor("EncodeJpeg", name) {
-      addInput(image, false)
-      attr("format", format)
-      attr("quality", quality)
-      attr("progressive", progressive)
-      attr("optimize_size", optimize_size)
-      attr("chroma_downsampling", chroma_downsampling)
-      attr("density_unit", density_unit)
-      attr("x_density", x_density)
-      attr("y_density", y_density)
-      attr("xmp_metadata", xmp_metadata)
-    }
+}
+
+fun TF.encodeJpeg(image: Tensor, format: String = "", quality: Long = 95L, progressive: Boolean = false, optimize_size: Boolean = false, chroma_downsampling: Boolean = true, density_unit: String = "in", x_density: Long = 300L, y_density: Long = 300L, xmp_metadata: String = "", name: String = "EncodeJpeg") = run {
+  buildOpTensor("EncodeJpeg", name) {
+    addInput(image, false)
+    attr("format", format)
+    attr("quality", quality)
+    attr("progressive", progressive)
+    attr("optimize_size", optimize_size)
+    attr("chroma_downsampling", chroma_downsampling)
+    attr("density_unit", density_unit)
+    attr("x_density", x_density)
+    attr("y_density", y_density)
+    attr("xmp_metadata", xmp_metadata)
   }
-  
-  fun encodePng(image: Tensor, compression: Long = -1L, name: String = "EncodePng") = run {
-    tf.buildOpTensor("EncodePng", name) {
-      addInput(image, false)
-      attr("compression", compression)
-    }
+}
+
+fun TF.encodePng(image: Tensor, compression: Long = -1L, name: String = "EncodePng") = run {
+  buildOpTensor("EncodePng", name) {
+    addInput(image, false)
+    attr("compression", compression)
   }
-  
-  fun extractGlimpse(input: Tensor, size: Tensor, offsets: Tensor, centered: Boolean = true, normalized: Boolean = true, uniform_noise: Boolean = true, name: String = "ExtractGlimpse") = run {
-    tf.buildOpTensor("ExtractGlimpse", name) {
-      addInput(input, false)
-      addInput(size, false)
-      addInput(offsets, false)
-      attr("centered", centered)
-      attr("normalized", normalized)
-      attr("uniform_noise", uniform_noise)
-    }
+}
+
+fun TF.extractGlimpse(input: Tensor, size: Tensor, offsets: Tensor, centered: Boolean = true, normalized: Boolean = true, uniform_noise: Boolean = true, name: String = "ExtractGlimpse") = run {
+  buildOpTensor("ExtractGlimpse", name) {
+    addInput(input, false)
+    addInput(size, false)
+    addInput(offsets, false)
+    attr("centered", centered)
+    attr("normalized", normalized)
+    attr("uniform_noise", uniform_noise)
   }
-  
-  fun extractJpegShape(contents: Tensor, output_type: Int = 3, name: String = "ExtractJpegShape") = run {
-    tf.buildOpTensor("ExtractJpegShape", name) {
-      addInput(contents, false)
-      attrType("output_type", output_type)
-    }
+}
+
+fun TF.extractJpegShape(contents: Tensor, output_type: Int = DT_INT32, name: String = "ExtractJpegShape") = run {
+  buildOpTensor("ExtractJpegShape", name) {
+    addInput(contents, false)
+    attrType("output_type", output_type)
   }
-  
-  fun hSVToRGB(images: Tensor, name: String = "HSVToRGB") = run {
-    tf.buildOpTensor("HSVToRGB", name) {
-      addInput(images, false)
-    }
+}
+
+fun TF.hSVToRGB(images: Tensor, name: String = "HSVToRGB") = run {
+  buildOpTensor("HSVToRGB", name) {
+    addInput(images, false)
   }
-  
-  fun nonMaxSuppression(boxes: Tensor, scores: Tensor, max_output_size: Tensor, iou_threshold: Float = 0.5f, name: String = "NonMaxSuppression") = run {
-    tf.buildOpTensor("NonMaxSuppression", name) {
-      addInput(boxes, false)
-      addInput(scores, false)
-      addInput(max_output_size, false)
-      attr("iou_threshold", iou_threshold)
-    }
+}
+
+fun TF.nonMaxSuppression(boxes: Tensor, scores: Tensor, max_output_size: Tensor, iou_threshold: Float = 0.5f, name: String = "NonMaxSuppression") = run {
+  buildOpTensor("NonMaxSuppression", name) {
+    addInput(boxes, false)
+    addInput(scores, false)
+    addInput(max_output_size, false)
+    attr("iou_threshold", iou_threshold)
   }
-  
-  fun nonMaxSuppressionV2(boxes: Tensor, scores: Tensor, max_output_size: Tensor, iou_threshold: Tensor, name: String = "NonMaxSuppressionV2") = run {
-    tf.buildOpTensor("NonMaxSuppressionV2", name) {
-      addInput(boxes, false)
-      addInput(scores, false)
-      addInput(max_output_size, false)
-      addInput(iou_threshold, false)
-    }
+}
+
+fun TF.nonMaxSuppressionV2(boxes: Tensor, scores: Tensor, max_output_size: Tensor, iou_threshold: Tensor, name: String = "NonMaxSuppressionV2") = run {
+  buildOpTensor("NonMaxSuppressionV2", name) {
+    addInput(boxes, false)
+    addInput(scores, false)
+    addInput(max_output_size, false)
+    addInput(iou_threshold, false)
   }
-  
-  fun nonMaxSuppressionV3(boxes: Tensor, scores: Tensor, max_output_size: Tensor, iou_threshold: Tensor, score_threshold: Tensor, name: String = "NonMaxSuppressionV3") = run {
-    tf.buildOpTensor("NonMaxSuppressionV3", name) {
-      addInput(boxes, false)
-      addInput(scores, false)
-      addInput(max_output_size, false)
-      addInput(iou_threshold, false)
-      addInput(score_threshold, false)
-    }
+}
+
+fun TF.nonMaxSuppressionV3(boxes: Tensor, scores: Tensor, max_output_size: Tensor, iou_threshold: Tensor, score_threshold: Tensor, name: String = "NonMaxSuppressionV3") = run {
+  buildOpTensor("NonMaxSuppressionV3", name) {
+    addInput(boxes, false)
+    addInput(scores, false)
+    addInput(max_output_size, false)
+    addInput(iou_threshold, false)
+    addInput(score_threshold, false)
   }
-  
-  fun nonMaxSuppressionWithOverlaps(overlaps: Tensor, scores: Tensor, max_output_size: Tensor, overlap_threshold: Tensor, score_threshold: Tensor, name: String = "NonMaxSuppressionWithOverlaps") = run {
-    tf.buildOpTensor("NonMaxSuppressionWithOverlaps", name) {
-      addInput(overlaps, false)
-      addInput(scores, false)
-      addInput(max_output_size, false)
-      addInput(overlap_threshold, false)
-      addInput(score_threshold, false)
-    }
+}
+
+fun TF.nonMaxSuppressionWithOverlaps(overlaps: Tensor, scores: Tensor, max_output_size: Tensor, overlap_threshold: Tensor, score_threshold: Tensor, name: String = "NonMaxSuppressionWithOverlaps") = run {
+  buildOpTensor("NonMaxSuppressionWithOverlaps", name) {
+    addInput(overlaps, false)
+    addInput(scores, false)
+    addInput(max_output_size, false)
+    addInput(overlap_threshold, false)
+    addInput(score_threshold, false)
   }
-  
-  fun quantizedResizeBilinear(images: Tensor, size: Tensor, min: Tensor, max: Tensor, align_corners: Boolean = false, name: String = "QuantizedResizeBilinear") = run {
-    tf.buildOpTensors("QuantizedResizeBilinear", name) {
-      addInput(images, false)
-      addInput(size, false)
-      addInput(min, false)
-      addInput(max, false)
-      attr("align_corners", align_corners)
-    }
+}
+
+fun TF.quantizedResizeBilinear(images: Tensor, size: Tensor, min: Tensor, max: Tensor, align_corners: Boolean = false, name: String = "QuantizedResizeBilinear") = run {
+  buildOpTensors("QuantizedResizeBilinear", name) {
+    addInput(images, false)
+    addInput(size, false)
+    addInput(min, false)
+    addInput(max, false)
+    attr("align_corners", align_corners)
   }
-  
-  fun rGBToHSV(images: Tensor, name: String = "RGBToHSV") = run {
-    tf.buildOpTensor("RGBToHSV", name) {
-      addInput(images, false)
-    }
+}
+
+fun TF.rGBToHSV(images: Tensor, name: String = "RGBToHSV") = run {
+  buildOpTensor("RGBToHSV", name) {
+    addInput(images, false)
   }
-  
-  fun resizeArea(images: Tensor, size: Tensor, align_corners: Boolean = false, name: String = "ResizeArea") = run {
-    tf.buildOpTensor("ResizeArea", name) {
-      addInput(images, false)
-      addInput(size, false)
-      attr("align_corners", align_corners)
-    }
+}
+
+fun TF.resizeArea(images: Tensor, size: Tensor, align_corners: Boolean = false, name: String = "ResizeArea") = run {
+  buildOpTensor("ResizeArea", name) {
+    addInput(images, false)
+    addInput(size, false)
+    attr("align_corners", align_corners)
   }
-  
-  fun resizeBicubic(images: Tensor, size: Tensor, align_corners: Boolean = false, name: String = "ResizeBicubic") = run {
-    tf.buildOpTensor("ResizeBicubic", name) {
-      addInput(images, false)
-      addInput(size, false)
-      attr("align_corners", align_corners)
-    }
+}
+
+fun TF.resizeBicubic(images: Tensor, size: Tensor, align_corners: Boolean = false, name: String = "ResizeBicubic") = run {
+  buildOpTensor("ResizeBicubic", name) {
+    addInput(images, false)
+    addInput(size, false)
+    attr("align_corners", align_corners)
   }
-  
-  fun resizeBilinear(images: Tensor, size: Tensor, align_corners: Boolean = false, name: String = "ResizeBilinear") = run {
-    tf.buildOpTensor("ResizeBilinear", name) {
-      addInput(images, false)
-      addInput(size, false)
-      attr("align_corners", align_corners)
-    }
+}
+
+fun TF.resizeBilinear(images: Tensor, size: Tensor, align_corners: Boolean = false, name: String = "ResizeBilinear") = run {
+  buildOpTensor("ResizeBilinear", name) {
+    addInput(images, false)
+    addInput(size, false)
+    attr("align_corners", align_corners)
   }
-  
-  fun resizeNearestNeighbor(images: Tensor, size: Tensor, align_corners: Boolean = false, name: String = "ResizeNearestNeighbor") = run {
-    tf.buildOpTensor("ResizeNearestNeighbor", name) {
-      addInput(images, false)
-      addInput(size, false)
-      attr("align_corners", align_corners)
-    }
+}
+
+fun TF.resizeNearestNeighbor(images: Tensor, size: Tensor, align_corners: Boolean = false, name: String = "ResizeNearestNeighbor") = run {
+  buildOpTensor("ResizeNearestNeighbor", name) {
+    addInput(images, false)
+    addInput(size, false)
+    attr("align_corners", align_corners)
   }
-  
-  fun sampleDistortedBoundingBox(image_size: Tensor, bounding_boxes: Tensor, seed: Long = 0L, seed2: Long = 0L, min_object_covered: Float = 0.1f, aspect_ratio_range: Array<Float> = arrayOf(0.75f, 1.33f), area_range: Array<Float> = arrayOf(0.05f, 1.0f), max_attempts: Long = 100L, use_image_if_no_bounding_boxes: Boolean = false, name: String = "SampleDistortedBoundingBox") = run {
-    tf.buildOpTensors("SampleDistortedBoundingBox", name) {
-      addInput(image_size, false)
-      addInput(bounding_boxes, false)
-      attr("seed", seed)
-      attr("seed2", seed2)
-      attr("min_object_covered", min_object_covered)
-      attr("aspect_ratio_range", aspect_ratio_range)
-      attr("area_range", area_range)
-      attr("max_attempts", max_attempts)
-      attr("use_image_if_no_bounding_boxes", use_image_if_no_bounding_boxes)
-    }
+}
+
+fun TF.sampleDistortedBoundingBox(image_size: Tensor, bounding_boxes: Tensor, seed: Long = 0L, seed2: Long = 0L, min_object_covered: Float = 0.1f, aspect_ratio_range: Array<Float> = arrayOf(0.75f, 1.33f), area_range: Array<Float> = arrayOf(0.05f, 1.0f), max_attempts: Long = 100L, use_image_if_no_bounding_boxes: Boolean = false, name: String = "SampleDistortedBoundingBox") = run {
+  buildOpTensors("SampleDistortedBoundingBox", name) {
+    addInput(image_size, false)
+    addInput(bounding_boxes, false)
+    attr("seed", seed)
+    attr("seed2", seed2)
+    attr("min_object_covered", min_object_covered)
+    attr("aspect_ratio_range", aspect_ratio_range)
+    attr("area_range", area_range)
+    attr("max_attempts", max_attempts)
+    attr("use_image_if_no_bounding_boxes", use_image_if_no_bounding_boxes)
   }
-  
-  fun sampleDistortedBoundingBoxV2(image_size: Tensor, bounding_boxes: Tensor, min_object_covered: Tensor, seed: Long = 0L, seed2: Long = 0L, aspect_ratio_range: Array<Float> = arrayOf(0.75f, 1.33f), area_range: Array<Float> = arrayOf(0.05f, 1.0f), max_attempts: Long = 100L, use_image_if_no_bounding_boxes: Boolean = false, name: String = "SampleDistortedBoundingBoxV2") = run {
-    tf.buildOpTensors("SampleDistortedBoundingBoxV2", name) {
-      addInput(image_size, false)
-      addInput(bounding_boxes, false)
-      addInput(min_object_covered, false)
-      attr("seed", seed)
-      attr("seed2", seed2)
-      attr("aspect_ratio_range", aspect_ratio_range)
-      attr("area_range", area_range)
-      attr("max_attempts", max_attempts)
-      attr("use_image_if_no_bounding_boxes", use_image_if_no_bounding_boxes)
-    }
+}
+
+fun TF.sampleDistortedBoundingBoxV2(image_size: Tensor, bounding_boxes: Tensor, min_object_covered: Tensor, seed: Long = 0L, seed2: Long = 0L, aspect_ratio_range: Array<Float> = arrayOf(0.75f, 1.33f), area_range: Array<Float> = arrayOf(0.05f, 1.0f), max_attempts: Long = 100L, use_image_if_no_bounding_boxes: Boolean = false, name: String = "SampleDistortedBoundingBoxV2") = run {
+  buildOpTensors("SampleDistortedBoundingBoxV2", name) {
+    addInput(image_size, false)
+    addInput(bounding_boxes, false)
+    addInput(min_object_covered, false)
+    attr("seed", seed)
+    attr("seed2", seed2)
+    attr("aspect_ratio_range", aspect_ratio_range)
+    attr("area_range", area_range)
+    attr("max_attempts", max_attempts)
+    attr("use_image_if_no_bounding_boxes", use_image_if_no_bounding_boxes)
   }
-  
-  fun resizeBicubicGrad(grads: Tensor, original_image: Tensor, align_corners: Boolean = false, name: String = "ResizeBicubicGrad") = run {
-    tf.buildOpTensor("ResizeBicubicGrad", name) {
-      addInput(grads, false)
-      addInput(original_image, false)
-      attr("align_corners", align_corners)
-    }
+}
+
+fun TF.resizeBicubicGrad(grads: Tensor, original_image: Tensor, align_corners: Boolean = false, name: String = "ResizeBicubicGrad") = run {
+  buildOpTensor("ResizeBicubicGrad", name) {
+    addInput(grads, false)
+    addInput(original_image, false)
+    attr("align_corners", align_corners)
   }
-  
-  fun resizeBilinearGrad(grads: Tensor, original_image: Tensor, align_corners: Boolean = false, name: String = "ResizeBilinearGrad") = run {
-    tf.buildOpTensor("ResizeBilinearGrad", name) {
-      addInput(grads, false)
-      addInput(original_image, false)
-      attr("align_corners", align_corners)
-    }
+}
+
+fun TF.resizeBilinearGrad(grads: Tensor, original_image: Tensor, align_corners: Boolean = false, name: String = "ResizeBilinearGrad") = run {
+  buildOpTensor("ResizeBilinearGrad", name) {
+    addInput(grads, false)
+    addInput(original_image, false)
+    attr("align_corners", align_corners)
   }
-  
-  fun resizeNearestNeighborGrad(grads: Tensor, size: Tensor, align_corners: Boolean = false, name: String = "ResizeNearestNeighborGrad") = run {
-    tf.buildOpTensor("ResizeNearestNeighborGrad", name) {
-      addInput(grads, false)
-      addInput(size, false)
-      attr("align_corners", align_corners)
-    }
+}
+
+fun TF.resizeNearestNeighborGrad(grads: Tensor, size: Tensor, align_corners: Boolean = false, name: String = "ResizeNearestNeighborGrad") = run {
+  buildOpTensor("ResizeNearestNeighborGrad", name) {
+    addInput(grads, false)
+    addInput(size, false)
+    attr("align_corners", align_corners)
   }
 }

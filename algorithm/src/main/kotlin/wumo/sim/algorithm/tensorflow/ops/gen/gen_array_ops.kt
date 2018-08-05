@@ -3,756 +3,755 @@
  */
 package wumo.sim.algorithm.tensorflow.ops.gen
 
+import org.bytedeco.javacpp.tensorflow.DT_INT32
 import wumo.sim.algorithm.tensorflow.*
 import wumo.sim.util.Dimension
 
-object gen_array_ops {
-  fun batchToSpace(input: Tensor, crops: Tensor, block_size: Long, name: String = "BatchToSpace") = run {
-    tf.buildOpTensor("BatchToSpace", name) {
-      addInput(input, false)
-      addInput(crops, false)
-      attr("block_size", block_size)
-    }
-  }
-  
-  fun batchToSpaceND(input: Tensor, block_shape: Tensor, crops: Tensor, name: String = "BatchToSpaceND") = run {
-    tf.buildOpTensor("BatchToSpaceND", name) {
-      addInput(input, false)
-      addInput(block_shape, false)
-      addInput(crops, false)
-    }
-  }
-  
-  fun bitcast(input: Tensor, _type: Int, name: String = "Bitcast") = run {
-    tf.buildOpTensor("Bitcast", name) {
-      addInput(input, false)
-      attrType("type", _type)
-    }
-  }
-  
-  fun broadcastArgs(s0: Tensor, s1: Tensor, name: String = "BroadcastArgs") = run {
-    tf.buildOpTensor("BroadcastArgs", name) {
-      addInput(s0, false)
-      addInput(s1, false)
-    }
-  }
-  
-  fun broadcastTo(input: Tensor, shape: Tensor, name: String = "BroadcastTo") = run {
-    tf.buildOpTensor("BroadcastTo", name) {
-      addInput(input, false)
-      addInput(shape, false)
-    }
-  }
-  
-  fun checkNumerics(tensor: Tensor, message: String, name: String = "CheckNumerics") = run {
-    tf.buildOpTensor("CheckNumerics", name) {
-      addInput(tensor, false)
-      attr("message", message)
-    }
-  }
-  
-  fun concatV2(values: Array<Tensor>, axis: Tensor, name: String = "ConcatV2") = run {
-    tf.buildOpTensor("ConcatV2", name) {
-      addInput(values, false)
-      addInput(axis, false)
-    }
-  }
-  
-  fun conjugateTranspose(x: Tensor, perm: Tensor, name: String = "ConjugateTranspose") = run {
-    tf.buildOpTensor("ConjugateTranspose", name) {
-      addInput(x, false)
-      addInput(perm, false)
-    }
-  }
-  
-  fun debugGradientIdentity(input: Tensor, name: String = "DebugGradientIdentity") = run {
-    tf.buildOpTensor("DebugGradientIdentity", name) {
-      addInput(input, false)
-    }
-  }
-  
-  fun debugGradientRefIdentity(input: Tensor, name: String = "DebugGradientRefIdentity") = run {
-    tf.buildOpTensor("DebugGradientRefIdentity", name) {
-      addInput(input, true)
-    }
-  }
-  
-  fun deepCopy(x: Tensor, name: String = "DeepCopy") = run {
-    tf.buildOpTensor("DeepCopy", name) {
-      addInput(x, false)
-    }
-  }
-  
-  fun depthToSpace(input: Tensor, block_size: Long, data_format: String = "NHWC", name: String = "DepthToSpace") = run {
-    tf.buildOpTensor("DepthToSpace", name) {
-      addInput(input, false)
-      attr("block_size", block_size)
-      attr("data_format", data_format)
-    }
-  }
-  
-  fun dequantize(input: Tensor, min_range: Tensor, max_range: Tensor, mode: String = "MIN_COMBINED", name: String = "Dequantize") = run {
-    tf.buildOpTensor("Dequantize", name) {
-      addInput(input, false)
-      addInput(min_range, false)
-      addInput(max_range, false)
-      attr("mode", mode)
-    }
-  }
-  
-  fun diag(diagonal: Tensor, name: String = "Diag") = run {
-    tf.buildOpTensor("Diag", name) {
-      addInput(diagonal, false)
-    }
-  }
-  
-  fun diagPart(input: Tensor, name: String = "DiagPart") = run {
-    tf.buildOpTensor("DiagPart", name) {
-      addInput(input, false)
-    }
-  }
-  
-  fun editDistance(hypothesis_indices: Tensor, hypothesis_values: Tensor, hypothesis_shape: Tensor, truth_indices: Tensor, truth_values: Tensor, truth_shape: Tensor, normalize: Boolean = true, name: String = "EditDistance") = run {
-    tf.buildOpTensor("EditDistance", name) {
-      addInput(hypothesis_indices, false)
-      addInput(hypothesis_values, false)
-      addInput(hypothesis_shape, false)
-      addInput(truth_indices, false)
-      addInput(truth_values, false)
-      addInput(truth_shape, false)
-      attr("normalize", normalize)
-    }
-  }
-  
-  fun empty(shape: Tensor, dtype: Int, init: Boolean = false, name: String = "Empty") = run {
-    tf.buildOpTensor("Empty", name) {
-      addInput(shape, false)
-      attrType("dtype", dtype)
-      attr("init", init)
-    }
-  }
-  
-  fun expandDims(input: Tensor, dim: Tensor, name: String = "ExpandDims") = run {
-    tf.buildOpTensor("ExpandDims", name) {
-      addInput(input, false)
-      addInput(dim, false)
-    }
-  }
-  
-  fun extractImagePatches(images: Tensor, ksizes: Array<Long>, strides: Array<Long>, rates: Array<Long>, padding: String, name: String = "ExtractImagePatches") = run {
-    tf.buildOpTensor("ExtractImagePatches", name) {
-      addInput(images, false)
-      attr("ksizes", ksizes)
-      attr("strides", strides)
-      attr("rates", rates)
-      attr("padding", padding)
-    }
-  }
-  
-  fun fakeQuantWithMinMaxArgs(inputs: Tensor, min: Float = -6.0f, max: Float = 6.0f, num_bits: Long = 8L, narrow_range: Boolean = false, name: String = "FakeQuantWithMinMaxArgs") = run {
-    tf.buildOpTensor("FakeQuantWithMinMaxArgs", name) {
-      addInput(inputs, false)
-      attr("min", min)
-      attr("max", max)
-      attr("num_bits", num_bits)
-      attr("narrow_range", narrow_range)
-    }
-  }
-  
-  fun fakeQuantWithMinMaxArgsGradient(gradients: Tensor, inputs: Tensor, min: Float = -6.0f, max: Float = 6.0f, num_bits: Long = 8L, narrow_range: Boolean = false, name: String = "FakeQuantWithMinMaxArgsGradient") = run {
-    tf.buildOpTensor("FakeQuantWithMinMaxArgsGradient", name) {
-      addInput(gradients, false)
-      addInput(inputs, false)
-      attr("min", min)
-      attr("max", max)
-      attr("num_bits", num_bits)
-      attr("narrow_range", narrow_range)
-    }
-  }
-  
-  fun fakeQuantWithMinMaxVars(inputs: Tensor, min: Tensor, max: Tensor, num_bits: Long = 8L, narrow_range: Boolean = false, name: String = "FakeQuantWithMinMaxVars") = run {
-    tf.buildOpTensor("FakeQuantWithMinMaxVars", name) {
-      addInput(inputs, false)
-      addInput(min, false)
-      addInput(max, false)
-      attr("num_bits", num_bits)
-      attr("narrow_range", narrow_range)
-    }
-  }
-  
-  fun fakeQuantWithMinMaxVarsGradient(gradients: Tensor, inputs: Tensor, min: Tensor, max: Tensor, num_bits: Long = 8L, narrow_range: Boolean = false, name: String = "FakeQuantWithMinMaxVarsGradient") = run {
-    tf.buildOpTensors("FakeQuantWithMinMaxVarsGradient", name) {
-      addInput(gradients, false)
-      addInput(inputs, false)
-      addInput(min, false)
-      addInput(max, false)
-      attr("num_bits", num_bits)
-      attr("narrow_range", narrow_range)
-    }
-  }
-  
-  fun fakeQuantWithMinMaxVarsPerChannel(inputs: Tensor, min: Tensor, max: Tensor, num_bits: Long = 8L, narrow_range: Boolean = false, name: String = "FakeQuantWithMinMaxVarsPerChannel") = run {
-    tf.buildOpTensor("FakeQuantWithMinMaxVarsPerChannel", name) {
-      addInput(inputs, false)
-      addInput(min, false)
-      addInput(max, false)
-      attr("num_bits", num_bits)
-      attr("narrow_range", narrow_range)
-    }
-  }
-  
-  fun fakeQuantWithMinMaxVarsPerChannelGradient(gradients: Tensor, inputs: Tensor, min: Tensor, max: Tensor, num_bits: Long = 8L, narrow_range: Boolean = false, name: String = "FakeQuantWithMinMaxVarsPerChannelGradient") = run {
-    tf.buildOpTensors("FakeQuantWithMinMaxVarsPerChannelGradient", name) {
-      addInput(gradients, false)
-      addInput(inputs, false)
-      addInput(min, false)
-      addInput(max, false)
-      attr("num_bits", num_bits)
-      attr("narrow_range", narrow_range)
-    }
-  }
-  
-  fun fill(dims: Tensor, value: Tensor, name: String = "Fill") = run {
-    tf.buildOpTensor("Fill", name) {
-      addInput(dims, false)
-      addInput(value, false)
-    }
-  }
-  
-  fun gather(params: Tensor, indices: Tensor, validate_indices: Boolean = true, name: String = "Gather") = run {
-    tf.buildOpTensor("Gather", name) {
-      addInput(params, false)
-      addInput(indices, false)
-      attr("validate_indices", validate_indices)
-    }
-  }
-  
-  fun gatherNd(params: Tensor, indices: Tensor, name: String = "GatherNd") = run {
-    tf.buildOpTensor("GatherNd", name) {
-      addInput(params, false)
-      addInput(indices, false)
-    }
-  }
-  
-  fun gatherV2(params: Tensor, indices: Tensor, axis: Tensor, name: String = "GatherV2") = run {
-    tf.buildOpTensor("GatherV2", name) {
-      addInput(params, false)
-      addInput(indices, false)
-      addInput(axis, false)
-    }
-  }
-  
-  fun guaranteeConst(input: Tensor, name: String = "GuaranteeConst") = run {
-    tf.buildOpTensor("GuaranteeConst", name) {
-      addInput(input, false)
-    }
-  }
-  
-  fun identity(input: Tensor, name: String = "Identity") = run {
-    tf.buildOpTensor("Identity", name) {
-      addInput(input, false)
-    }
-  }
-  
-  fun identityN(input: Tensor, name: String = "IdentityN") = run {
-    tf.buildOpTensors("IdentityN", name) {
-      addInput(input, false)
-    }
-  }
-  
-  fun immutableConst(dtype: Int, shape: Dimension, memory_region_name: String, name: String = "ImmutableConst") = run {
-    tf.buildOpTensor("ImmutableConst", name) {
-      attrType("dtype", dtype)
-      attr("shape", shape)
-      attr("memory_region_name", memory_region_name)
-    }
-  }
-  
-  fun inplaceAdd(x: Tensor, i: Tensor, v: Tensor, name: String = "InplaceAdd") = run {
-    tf.buildOpTensor("InplaceAdd", name) {
-      addInput(x, false)
-      addInput(i, false)
-      addInput(v, false)
-    }
-  }
-  
-  fun inplaceSub(x: Tensor, i: Tensor, v: Tensor, name: String = "InplaceSub") = run {
-    tf.buildOpTensor("InplaceSub", name) {
-      addInput(x, false)
-      addInput(i, false)
-      addInput(v, false)
-    }
-  }
-  
-  fun inplaceUpdate(x: Tensor, i: Tensor, v: Tensor, name: String = "InplaceUpdate") = run {
-    tf.buildOpTensor("InplaceUpdate", name) {
-      addInput(x, false)
-      addInput(i, false)
-      addInput(v, false)
-    }
-  }
-  
-  fun invertPermutation(x: Tensor, name: String = "InvertPermutation") = run {
-    tf.buildOpTensor("InvertPermutation", name) {
-      addInput(x, false)
-    }
-  }
-  
-  fun listDiff(x: Tensor, y: Tensor, out_idx: Int = 3, name: String = "ListDiff") = run {
-    tf.buildOpTensors("ListDiff", name) {
-      addInput(x, false)
-      addInput(y, false)
-      attrType("out_idx", out_idx)
-    }
-  }
-  
-  fun matrixBandPart(input: Tensor, num_lower: Tensor, num_upper: Tensor, name: String = "MatrixBandPart") = run {
-    tf.buildOpTensor("MatrixBandPart", name) {
-      addInput(input, false)
-      addInput(num_lower, false)
-      addInput(num_upper, false)
-    }
-  }
-  
-  fun matrixDiag(diagonal: Tensor, name: String = "MatrixDiag") = run {
-    tf.buildOpTensor("MatrixDiag", name) {
-      addInput(diagonal, false)
-    }
-  }
-  
-  fun matrixDiagPart(input: Tensor, name: String = "MatrixDiagPart") = run {
-    tf.buildOpTensor("MatrixDiagPart", name) {
-      addInput(input, false)
-    }
-  }
-  
-  fun matrixSetDiag(input: Tensor, diagonal: Tensor, name: String = "MatrixSetDiag") = run {
-    tf.buildOpTensor("MatrixSetDiag", name) {
-      addInput(input, false)
-      addInput(diagonal, false)
-    }
-  }
-  
-  fun mirrorPad(input: Tensor, paddings: Tensor, mode: String, name: String = "MirrorPad") = run {
-    tf.buildOpTensor("MirrorPad", name) {
-      addInput(input, false)
-      addInput(paddings, false)
-      attr("mode", mode)
-    }
-  }
-  
-  fun oneHot(indices: Tensor, depth: Tensor, on_value: Tensor, off_value: Tensor, axis: Long = -1L, name: String = "OneHot") = run {
-    tf.buildOpTensor("OneHot", name) {
-      addInput(indices, false)
-      addInput(depth, false)
-      addInput(on_value, false)
-      addInput(off_value, false)
-      attr("axis", axis)
-    }
-  }
-  
-  fun onesLike(x: Tensor, name: String = "OnesLike") = run {
-    tf.buildOpTensor("OnesLike", name) {
-      addInput(x, false)
-    }
-  }
-  
-  fun pack(values: Array<Tensor>, axis: Long = 0L, name: String = "Pack") = run {
-    tf.buildOpTensor("Pack", name) {
-      addInput(values, false)
-      attr("axis", axis)
-    }
-  }
-  
-  fun pad(input: Tensor, paddings: Tensor, name: String = "Pad") = run {
-    tf.buildOpTensor("Pad", name) {
-      addInput(input, false)
-      addInput(paddings, false)
-    }
-  }
-  
-  fun padV2(input: Tensor, paddings: Tensor, constant_values: Tensor, name: String = "PadV2") = run {
-    tf.buildOpTensor("PadV2", name) {
-      addInput(input, false)
-      addInput(paddings, false)
-      addInput(constant_values, false)
-    }
-  }
-  
-  fun parallelConcat(values: Array<Tensor>, shape: Dimension, name: String = "ParallelConcat") = run {
-    tf.buildOpTensor("ParallelConcat", name) {
-      addInput(values, false)
-      attr("shape", shape)
-    }
-  }
-  
-  fun placeholder(dtype: Int, shape: Dimension = Dimension(unknow_rank = true), name: String = "Placeholder") = run {
-    tf.buildOpTensor("Placeholder", name) {
-      attrType("dtype", dtype)
-      attr("shape", shape)
-    }
-  }
-  
-  fun placeholderWithDefault(input: Tensor, shape: Dimension, name: String = "PlaceholderWithDefault") = run {
-    tf.buildOpTensor("PlaceholderWithDefault", name) {
-      addInput(input, false)
-      attr("shape", shape)
-    }
-  }
-  
-  fun preventGradient(input: Tensor, message: String = "", name: String = "PreventGradient") = run {
-    tf.buildOpTensor("PreventGradient", name) {
-      addInput(input, false)
-      attr("message", message)
-    }
-  }
-  
-  fun quantizeAndDequantizeV2(input: Tensor, input_min: Tensor, input_max: Tensor, signed_input: Boolean = true, num_bits: Long = 8L, range_given: Boolean = false, name: String = "QuantizeAndDequantizeV2") = run {
-    tf.buildOpTensor("QuantizeAndDequantizeV2", name) {
-      addInput(input, false)
-      addInput(input_min, false)
-      addInput(input_max, false)
-      attr("signed_input", signed_input)
-      attr("num_bits", num_bits)
-      attr("range_given", range_given)
-    }
-  }
-  
-  fun quantizeAndDequantizeV3(input: Tensor, input_min: Tensor, input_max: Tensor, num_bits: Tensor, signed_input: Boolean = true, range_given: Boolean = true, name: String = "QuantizeAndDequantizeV3") = run {
-    tf.buildOpTensor("QuantizeAndDequantizeV3", name) {
-      addInput(input, false)
-      addInput(input_min, false)
-      addInput(input_max, false)
-      addInput(num_bits, false)
-      attr("signed_input", signed_input)
-      attr("range_given", range_given)
-    }
-  }
-  
-  fun quantizeV2(input: Tensor, min_range: Tensor, max_range: Tensor, t: Int, mode: String = "MIN_COMBINED", round_mode: String = "HALF_AWAY_FROM_ZERO", name: String = "QuantizeV2") = run {
-    tf.buildOpTensors("QuantizeV2", name) {
-      addInput(input, false)
-      addInput(min_range, false)
-      addInput(max_range, false)
-      attrType("T", t)
-      attr("mode", mode)
-      attr("round_mode", round_mode)
-    }
-  }
-  
-  fun quantizedConcat(concat_dim: Tensor, values: Array<Tensor>, input_mins: Array<Tensor>, input_maxes: Array<Tensor>, name: String = "QuantizedConcat") = run {
-    tf.buildOpTensors("QuantizedConcat", name) {
-      addInput(concat_dim, false)
-      addInput(values, false)
-      addInput(input_mins, false)
-      addInput(input_maxes, false)
-    }
-  }
-  
-  fun quantizedInstanceNorm(x: Tensor, x_min: Tensor, x_max: Tensor, output_range_given: Boolean = false, given_y_min: Float = 0.0f, given_y_max: Float = 0.0f, variance_epsilon: Float = 1.0E-5f, min_separation: Float = 0.001f, name: String = "QuantizedInstanceNorm") = run {
-    tf.buildOpTensors("QuantizedInstanceNorm", name) {
-      addInput(x, false)
-      addInput(x_min, false)
-      addInput(x_max, false)
-      attr("output_range_given", output_range_given)
-      attr("given_y_min", given_y_min)
-      attr("given_y_max", given_y_max)
-      attr("variance_epsilon", variance_epsilon)
-      attr("min_separation", min_separation)
-    }
-  }
-  
-  fun quantizedReshape(tensor: Tensor, shape: Tensor, input_min: Tensor, input_max: Tensor, name: String = "QuantizedReshape") = run {
-    tf.buildOpTensors("QuantizedReshape", name) {
-      addInput(tensor, false)
-      addInput(shape, false)
-      addInput(input_min, false)
-      addInput(input_max, false)
-    }
-  }
-  
-  fun rank(input: Tensor, name: String = "Rank") = run {
-    tf.buildOpTensor("Rank", name) {
-      addInput(input, false)
-    }
-  }
-  
-  fun reshape(tensor: Tensor, shape: Tensor, name: String = "Reshape") = run {
-    tf.buildOpTensor("Reshape", name) {
-      addInput(tensor, false)
-      addInput(shape, false)
-    }
-  }
-  
-  fun resourceStridedSliceAssign(_ref: Tensor, begin: Tensor, end: Tensor, strides: Tensor, value: Tensor, begin_mask: Long = 0L, end_mask: Long = 0L, ellipsis_mask: Long = 0L, new_axis_mask: Long = 0L, shrink_axis_mask: Long = 0L, name: String = "ResourceStridedSliceAssign") = run {
-    tf.buildOp("ResourceStridedSliceAssign", name) {
-      addInput(_ref, false)
-      addInput(begin, false)
-      addInput(end, false)
-      addInput(strides, false)
-      addInput(value, false)
-      attr("begin_mask", begin_mask)
-      attr("end_mask", end_mask)
-      attr("ellipsis_mask", ellipsis_mask)
-      attr("new_axis_mask", new_axis_mask)
-      attr("shrink_axis_mask", shrink_axis_mask)
-    }
-  }
-  
-  fun reverseSequence(input: Tensor, seq_lengths: Tensor, seq_dim: Long, batch_dim: Long = 0L, name: String = "ReverseSequence") = run {
-    tf.buildOpTensor("ReverseSequence", name) {
-      addInput(input, false)
-      addInput(seq_lengths, false)
-      attr("seq_dim", seq_dim)
-      attr("batch_dim", batch_dim)
-    }
-  }
-  
-  fun reverseV2(tensor: Tensor, axis: Tensor, name: String = "ReverseV2") = run {
-    tf.buildOpTensor("ReverseV2", name) {
-      addInput(tensor, false)
-      addInput(axis, false)
-    }
-  }
-  
-  fun scatterNd(indices: Tensor, updates: Tensor, shape: Tensor, name: String = "ScatterNd") = run {
-    tf.buildOpTensor("ScatterNd", name) {
-      addInput(indices, false)
-      addInput(updates, false)
-      addInput(shape, false)
-    }
-  }
-  
-  fun scatterNdNonAliasingAdd(input: Tensor, indices: Tensor, updates: Tensor, name: String = "ScatterNdNonAliasingAdd") = run {
-    tf.buildOpTensor("ScatterNdNonAliasingAdd", name) {
-      addInput(input, false)
-      addInput(indices, false)
-      addInput(updates, false)
-    }
-  }
-  
-  fun shape(input: Tensor, out_type: Int = 3, name: String = "Shape") = run {
-    tf.buildOpTensor("Shape", name) {
-      addInput(input, false)
-      attrType("out_type", out_type)
-    }
-  }
-  
-  fun shapeN(input: Array<Tensor>, out_type: Int = 3, name: String = "ShapeN") = run {
-    tf.buildOpTensors("ShapeN", name) {
-      addInput(input, false)
-      attrType("out_type", out_type)
-    }
-  }
-  
-  fun size(input: Tensor, out_type: Int = 3, name: String = "Size") = run {
-    tf.buildOpTensor("Size", name) {
-      addInput(input, false)
-      attrType("out_type", out_type)
-    }
-  }
-  
-  fun slice(input: Tensor, begin: Tensor, size: Tensor, name: String = "Slice") = run {
-    tf.buildOpTensor("Slice", name) {
-      addInput(input, false)
-      addInput(begin, false)
-      addInput(size, false)
-    }
-  }
-  
-  fun snapshot(input: Tensor, name: String = "Snapshot") = run {
-    tf.buildOpTensor("Snapshot", name) {
-      addInput(input, false)
-    }
-  }
-  
-  fun spaceToBatch(input: Tensor, paddings: Tensor, block_size: Long, name: String = "SpaceToBatch") = run {
-    tf.buildOpTensor("SpaceToBatch", name) {
-      addInput(input, false)
-      addInput(paddings, false)
-      attr("block_size", block_size)
-    }
-  }
-  
-  fun spaceToBatchND(input: Tensor, block_shape: Tensor, paddings: Tensor, name: String = "SpaceToBatchND") = run {
-    tf.buildOpTensor("SpaceToBatchND", name) {
-      addInput(input, false)
-      addInput(block_shape, false)
-      addInput(paddings, false)
-    }
-  }
-  
-  fun spaceToDepth(input: Tensor, block_size: Long, data_format: String = "NHWC", name: String = "SpaceToDepth") = run {
-    tf.buildOpTensor("SpaceToDepth", name) {
-      addInput(input, false)
-      attr("block_size", block_size)
-      attr("data_format", data_format)
-    }
-  }
-  
-  fun split(split_dim: Tensor, value: Tensor, num_split: Long, name: String = "Split") = run {
-    tf.buildOpTensors("Split", name) {
-      addInput(split_dim, false)
-      addInput(value, false)
-      attr("num_split", num_split)
-    }
-  }
-  
-  fun splitV(value: Tensor, size_splits: Tensor, split_dim: Tensor, num_split: Long, name: String = "SplitV") = run {
-    tf.buildOpTensors("SplitV", name) {
-      addInput(value, false)
-      addInput(size_splits, false)
-      addInput(split_dim, false)
-      attr("num_split", num_split)
-    }
-  }
-  
-  fun squeeze(input: Tensor, squeeze_dims: Array<Long> = arrayOf(), name: String = "Squeeze") = run {
-    tf.buildOpTensor("Squeeze", name) {
-      addInput(input, false)
-      attr("squeeze_dims", squeeze_dims)
-    }
-  }
-  
-  fun stopGradient(input: Tensor, name: String = "StopGradient") = run {
-    tf.buildOpTensor("StopGradient", name) {
-      addInput(input, false)
-    }
-  }
-  
-  fun stridedSlice(input: Tensor, begin: Tensor, end: Tensor, strides: Tensor, begin_mask: Long = 0L, end_mask: Long = 0L, ellipsis_mask: Long = 0L, new_axis_mask: Long = 0L, shrink_axis_mask: Long = 0L, name: String = "StridedSlice") = run {
-    tf.buildOpTensor("StridedSlice", name) {
-      addInput(input, false)
-      addInput(begin, false)
-      addInput(end, false)
-      addInput(strides, false)
-      attr("begin_mask", begin_mask)
-      attr("end_mask", end_mask)
-      attr("ellipsis_mask", ellipsis_mask)
-      attr("new_axis_mask", new_axis_mask)
-      attr("shrink_axis_mask", shrink_axis_mask)
-    }
-  }
-  
-  fun stridedSliceAssign(_ref: Tensor, begin: Tensor, end: Tensor, strides: Tensor, value: Tensor, begin_mask: Long = 0L, end_mask: Long = 0L, ellipsis_mask: Long = 0L, new_axis_mask: Long = 0L, shrink_axis_mask: Long = 0L, name: String = "StridedSliceAssign") = run {
-    tf.buildOpTensor("StridedSliceAssign", name) {
-      addInput(_ref, true)
-      addInput(begin, false)
-      addInput(end, false)
-      addInput(strides, false)
-      addInput(value, false)
-      attr("begin_mask", begin_mask)
-      attr("end_mask", end_mask)
-      attr("ellipsis_mask", ellipsis_mask)
-      attr("new_axis_mask", new_axis_mask)
-      attr("shrink_axis_mask", shrink_axis_mask)
-    }
-  }
-  
-  fun stridedSliceGrad(shape: Tensor, begin: Tensor, end: Tensor, strides: Tensor, dy: Tensor, begin_mask: Long = 0L, end_mask: Long = 0L, ellipsis_mask: Long = 0L, new_axis_mask: Long = 0L, shrink_axis_mask: Long = 0L, name: String = "StridedSliceGrad") = run {
-    tf.buildOpTensor("StridedSliceGrad", name) {
-      addInput(shape, false)
-      addInput(begin, false)
-      addInput(end, false)
-      addInput(strides, false)
-      addInput(dy, false)
-      attr("begin_mask", begin_mask)
-      attr("end_mask", end_mask)
-      attr("ellipsis_mask", ellipsis_mask)
-      attr("new_axis_mask", new_axis_mask)
-      attr("shrink_axis_mask", shrink_axis_mask)
-    }
-  }
-  
-  fun tile(input: Tensor, multiples: Tensor, name: String = "Tile") = run {
-    tf.buildOpTensor("Tile", name) {
-      addInput(input, false)
-      addInput(multiples, false)
-    }
-  }
-  
-  fun transpose(x: Tensor, perm: Tensor, name: String = "Transpose") = run {
-    tf.buildOpTensor("Transpose", name) {
-      addInput(x, false)
-      addInput(perm, false)
-    }
-  }
-  
-  fun unique(x: Tensor, out_idx: Int = 3, name: String = "Unique") = run {
-    tf.buildOpTensors("Unique", name) {
-      addInput(x, false)
-      attrType("out_idx", out_idx)
-    }
-  }
-  
-  fun uniqueV2(x: Tensor, axis: Tensor, out_idx: Int = 3, name: String = "UniqueV2") = run {
-    tf.buildOpTensors("UniqueV2", name) {
-      addInput(x, false)
-      addInput(axis, false)
-      attrType("out_idx", out_idx)
-    }
-  }
-  
-  fun uniqueWithCounts(x: Tensor, out_idx: Int = 3, name: String = "UniqueWithCounts") = run {
-    tf.buildOpTensors("UniqueWithCounts", name) {
-      addInput(x, false)
-      attrType("out_idx", out_idx)
-    }
-  }
-  
-  fun uniqueWithCountsV2(x: Tensor, axis: Tensor, out_idx: Int = 3, name: String = "UniqueWithCountsV2") = run {
-    tf.buildOpTensors("UniqueWithCountsV2", name) {
-      addInput(x, false)
-      addInput(axis, false)
-      attrType("out_idx", out_idx)
-    }
-  }
-  
-  fun unpack(value: Tensor, num: Long, axis: Long = 0L, name: String = "Unpack") = run {
-    tf.buildOpTensors("Unpack", name) {
-      addInput(value, false)
-      attr("num", num)
-      attr("axis", axis)
-    }
-  }
-  
-  fun unravelIndex(indices: Tensor, dims: Tensor, name: String = "UnravelIndex") = run {
-    tf.buildOpTensor("UnravelIndex", name) {
-      addInput(indices, false)
-      addInput(dims, false)
-    }
-  }
-  
-  fun _where(input: Tensor, name: String = "Where") = run {
-    tf.buildOpTensor("Where", name) {
-      addInput(input, false)
-    }
-  }
-  
-  fun zerosLike(x: Tensor, name: String = "ZerosLike") = run {
-    tf.buildOpTensor("ZerosLike", name) {
-      addInput(x, false)
-    }
-  }
-  
-  fun broadcastGradientArgs(s0: Tensor, s1: Tensor, name: String = "BroadcastGradientArgs") = run {
-    tf.buildOpTensors("BroadcastGradientArgs", name) {
-      addInput(s0, false)
-      addInput(s1, false)
-    }
-  }
-  
-  fun mirrorPadGrad(input: Tensor, paddings: Tensor, mode: String, name: String = "MirrorPadGrad") = run {
-    tf.buildOpTensor("MirrorPadGrad", name) {
-      addInput(input, false)
-      addInput(paddings, false)
-      attr("mode", mode)
-    }
-  }
-  
-  fun refIdentity(input: Tensor, name: String = "RefIdentity") = run {
-    tf.buildOpTensor("RefIdentity", name) {
-      addInput(input, true)
-    }
+fun TF.batchToSpace(input: Tensor, crops: Tensor, block_size: Long, name: String = "BatchToSpace") = run {
+  buildOpTensor("BatchToSpace", name) {
+    addInput(input, false)
+    addInput(crops, false)
+    attr("block_size", block_size)
+  }
+}
+
+fun TF.batchToSpaceND(input: Tensor, block_shape: Tensor, crops: Tensor, name: String = "BatchToSpaceND") = run {
+  buildOpTensor("BatchToSpaceND", name) {
+    addInput(input, false)
+    addInput(block_shape, false)
+    addInput(crops, false)
+  }
+}
+
+fun TF.bitcast(input: Tensor, _type: Int, name: String = "Bitcast") = run {
+  buildOpTensor("Bitcast", name) {
+    addInput(input, false)
+    attrType("type", _type)
+  }
+}
+
+fun TF.broadcastArgs(s0: Tensor, s1: Tensor, name: String = "BroadcastArgs") = run {
+  buildOpTensor("BroadcastArgs", name) {
+    addInput(s0, false)
+    addInput(s1, false)
+  }
+}
+
+fun TF.broadcastTo(input: Tensor, shape: Tensor, name: String = "BroadcastTo") = run {
+  buildOpTensor("BroadcastTo", name) {
+    addInput(input, false)
+    addInput(shape, false)
+  }
+}
+
+fun TF.checkNumerics(tensor: Tensor, message: String, name: String = "CheckNumerics") = run {
+  buildOpTensor("CheckNumerics", name) {
+    addInput(tensor, false)
+    attr("message", message)
+  }
+}
+
+fun TF.concatV2(values: Array<Tensor>, axis: Tensor, name: String = "ConcatV2") = run {
+  buildOpTensor("ConcatV2", name) {
+    addInput(values, false)
+    addInput(axis, false)
+  }
+}
+
+fun TF.conjugateTranspose(x: Tensor, perm: Tensor, name: String = "ConjugateTranspose") = run {
+  buildOpTensor("ConjugateTranspose", name) {
+    addInput(x, false)
+    addInput(perm, false)
+  }
+}
+
+fun TF.debugGradientIdentity(input: Tensor, name: String = "DebugGradientIdentity") = run {
+  buildOpTensor("DebugGradientIdentity", name) {
+    addInput(input, false)
+  }
+}
+
+fun TF.debugGradientRefIdentity(input: Tensor, name: String = "DebugGradientRefIdentity") = run {
+  buildOpTensor("DebugGradientRefIdentity", name) {
+    addInput(input, true)
+  }
+}
+
+fun TF.deepCopy(x: Tensor, name: String = "DeepCopy") = run {
+  buildOpTensor("DeepCopy", name) {
+    addInput(x, false)
+  }
+}
+
+fun TF.depthToSpace(input: Tensor, block_size: Long, data_format: String = "NHWC", name: String = "DepthToSpace") = run {
+  buildOpTensor("DepthToSpace", name) {
+    addInput(input, false)
+    attr("block_size", block_size)
+    attr("data_format", data_format)
+  }
+}
+
+fun TF.dequantize(input: Tensor, min_range: Tensor, max_range: Tensor, mode: String = "MIN_COMBINED", name: String = "Dequantize") = run {
+  buildOpTensor("Dequantize", name) {
+    addInput(input, false)
+    addInput(min_range, false)
+    addInput(max_range, false)
+    attr("mode", mode)
+  }
+}
+
+fun TF.diag(diagonal: Tensor, name: String = "Diag") = run {
+  buildOpTensor("Diag", name) {
+    addInput(diagonal, false)
+  }
+}
+
+fun TF.diagPart(input: Tensor, name: String = "DiagPart") = run {
+  buildOpTensor("DiagPart", name) {
+    addInput(input, false)
+  }
+}
+
+fun TF.editDistance(hypothesis_indices: Tensor, hypothesis_values: Tensor, hypothesis_shape: Tensor, truth_indices: Tensor, truth_values: Tensor, truth_shape: Tensor, normalize: Boolean = true, name: String = "EditDistance") = run {
+  buildOpTensor("EditDistance", name) {
+    addInput(hypothesis_indices, false)
+    addInput(hypothesis_values, false)
+    addInput(hypothesis_shape, false)
+    addInput(truth_indices, false)
+    addInput(truth_values, false)
+    addInput(truth_shape, false)
+    attr("normalize", normalize)
+  }
+}
+
+fun TF.empty(shape: Tensor, dtype: Int, init: Boolean = false, name: String = "Empty") = run {
+  buildOpTensor("Empty", name) {
+    addInput(shape, false)
+    attrType("dtype", dtype)
+    attr("init", init)
+  }
+}
+
+fun TF.expandDims(input: Tensor, dim: Tensor, name: String = "ExpandDims") = run {
+  buildOpTensor("ExpandDims", name) {
+    addInput(input, false)
+    addInput(dim, false)
+  }
+}
+
+fun TF.extractImagePatches(images: Tensor, ksizes: Array<Long>, strides: Array<Long>, rates: Array<Long>, padding: String, name: String = "ExtractImagePatches") = run {
+  buildOpTensor("ExtractImagePatches", name) {
+    addInput(images, false)
+    attr("ksizes", ksizes)
+    attr("strides", strides)
+    attr("rates", rates)
+    attr("padding", padding)
+  }
+}
+
+fun TF.fakeQuantWithMinMaxArgs(inputs: Tensor, min: Float = -6.0f, max: Float = 6.0f, num_bits: Long = 8L, narrow_range: Boolean = false, name: String = "FakeQuantWithMinMaxArgs") = run {
+  buildOpTensor("FakeQuantWithMinMaxArgs", name) {
+    addInput(inputs, false)
+    attr("min", min)
+    attr("max", max)
+    attr("num_bits", num_bits)
+    attr("narrow_range", narrow_range)
+  }
+}
+
+fun TF.fakeQuantWithMinMaxArgsGradient(gradients: Tensor, inputs: Tensor, min: Float = -6.0f, max: Float = 6.0f, num_bits: Long = 8L, narrow_range: Boolean = false, name: String = "FakeQuantWithMinMaxArgsGradient") = run {
+  buildOpTensor("FakeQuantWithMinMaxArgsGradient", name) {
+    addInput(gradients, false)
+    addInput(inputs, false)
+    attr("min", min)
+    attr("max", max)
+    attr("num_bits", num_bits)
+    attr("narrow_range", narrow_range)
+  }
+}
+
+fun TF.fakeQuantWithMinMaxVars(inputs: Tensor, min: Tensor, max: Tensor, num_bits: Long = 8L, narrow_range: Boolean = false, name: String = "FakeQuantWithMinMaxVars") = run {
+  buildOpTensor("FakeQuantWithMinMaxVars", name) {
+    addInput(inputs, false)
+    addInput(min, false)
+    addInput(max, false)
+    attr("num_bits", num_bits)
+    attr("narrow_range", narrow_range)
+  }
+}
+
+fun TF.fakeQuantWithMinMaxVarsGradient(gradients: Tensor, inputs: Tensor, min: Tensor, max: Tensor, num_bits: Long = 8L, narrow_range: Boolean = false, name: String = "FakeQuantWithMinMaxVarsGradient") = run {
+  buildOpTensors("FakeQuantWithMinMaxVarsGradient", name) {
+    addInput(gradients, false)
+    addInput(inputs, false)
+    addInput(min, false)
+    addInput(max, false)
+    attr("num_bits", num_bits)
+    attr("narrow_range", narrow_range)
+  }
+}
+
+fun TF.fakeQuantWithMinMaxVarsPerChannel(inputs: Tensor, min: Tensor, max: Tensor, num_bits: Long = 8L, narrow_range: Boolean = false, name: String = "FakeQuantWithMinMaxVarsPerChannel") = run {
+  buildOpTensor("FakeQuantWithMinMaxVarsPerChannel", name) {
+    addInput(inputs, false)
+    addInput(min, false)
+    addInput(max, false)
+    attr("num_bits", num_bits)
+    attr("narrow_range", narrow_range)
+  }
+}
+
+fun TF.fakeQuantWithMinMaxVarsPerChannelGradient(gradients: Tensor, inputs: Tensor, min: Tensor, max: Tensor, num_bits: Long = 8L, narrow_range: Boolean = false, name: String = "FakeQuantWithMinMaxVarsPerChannelGradient") = run {
+  buildOpTensors("FakeQuantWithMinMaxVarsPerChannelGradient", name) {
+    addInput(gradients, false)
+    addInput(inputs, false)
+    addInput(min, false)
+    addInput(max, false)
+    attr("num_bits", num_bits)
+    attr("narrow_range", narrow_range)
+  }
+}
+
+fun TF.fill(dims: Tensor, value: Tensor, name: String = "Fill") = run {
+  buildOpTensor("Fill", name) {
+    addInput(dims, false)
+    addInput(value, false)
+  }
+}
+
+fun TF.gather(params: Tensor, indices: Tensor, validate_indices: Boolean = true, name: String = "Gather") = run {
+  buildOpTensor("Gather", name) {
+    addInput(params, false)
+    addInput(indices, false)
+    attr("validate_indices", validate_indices)
+  }
+}
+
+fun TF.gatherNd(params: Tensor, indices: Tensor, name: String = "GatherNd") = run {
+  buildOpTensor("GatherNd", name) {
+    addInput(params, false)
+    addInput(indices, false)
+  }
+}
+
+fun TF.gatherV2(params: Tensor, indices: Tensor, axis: Tensor, name: String = "GatherV2") = run {
+  buildOpTensor("GatherV2", name) {
+    addInput(params, false)
+    addInput(indices, false)
+    addInput(axis, false)
+  }
+}
+
+fun TF.guaranteeConst(input: Tensor, name: String = "GuaranteeConst") = run {
+  buildOpTensor("GuaranteeConst", name) {
+    addInput(input, false)
+  }
+}
+
+fun TF.identity(input: Tensor, name: String = "Identity") = run {
+  buildOpTensor("Identity", name) {
+    addInput(input, false)
+  }
+}
+
+fun TF.identityN(input: Tensor, name: String = "IdentityN") = run {
+  buildOpTensors("IdentityN", name) {
+    addInput(input, false)
+  }
+}
+
+fun TF.immutableConst(dtype: Int, shape: Dimension, memory_region_name: String, name: String = "ImmutableConst") = run {
+  buildOpTensor("ImmutableConst", name) {
+    attrType("dtype", dtype)
+    attr("shape", shape)
+    attr("memory_region_name", memory_region_name)
+  }
+}
+
+fun TF.inplaceAdd(x: Tensor, i: Tensor, v: Tensor, name: String = "InplaceAdd") = run {
+  buildOpTensor("InplaceAdd", name) {
+    addInput(x, false)
+    addInput(i, false)
+    addInput(v, false)
+  }
+}
+
+fun TF.inplaceSub(x: Tensor, i: Tensor, v: Tensor, name: String = "InplaceSub") = run {
+  buildOpTensor("InplaceSub", name) {
+    addInput(x, false)
+    addInput(i, false)
+    addInput(v, false)
+  }
+}
+
+fun TF.inplaceUpdate(x: Tensor, i: Tensor, v: Tensor, name: String = "InplaceUpdate") = run {
+  buildOpTensor("InplaceUpdate", name) {
+    addInput(x, false)
+    addInput(i, false)
+    addInput(v, false)
+  }
+}
+
+fun TF.invertPermutation(x: Tensor, name: String = "InvertPermutation") = run {
+  buildOpTensor("InvertPermutation", name) {
+    addInput(x, false)
+  }
+}
+
+fun TF.listDiff(x: Tensor, y: Tensor, out_idx: Int = DT_INT32, name: String = "ListDiff") = run {
+  buildOpTensors("ListDiff", name) {
+    addInput(x, false)
+    addInput(y, false)
+    attrType("out_idx", out_idx)
+  }
+}
+
+fun TF.matrixBandPart(input: Tensor, num_lower: Tensor, num_upper: Tensor, name: String = "MatrixBandPart") = run {
+  buildOpTensor("MatrixBandPart", name) {
+    addInput(input, false)
+    addInput(num_lower, false)
+    addInput(num_upper, false)
+  }
+}
+
+fun TF.matrixDiag(diagonal: Tensor, name: String = "MatrixDiag") = run {
+  buildOpTensor("MatrixDiag", name) {
+    addInput(diagonal, false)
+  }
+}
+
+fun TF.matrixDiagPart(input: Tensor, name: String = "MatrixDiagPart") = run {
+  buildOpTensor("MatrixDiagPart", name) {
+    addInput(input, false)
+  }
+}
+
+fun TF.matrixSetDiag(input: Tensor, diagonal: Tensor, name: String = "MatrixSetDiag") = run {
+  buildOpTensor("MatrixSetDiag", name) {
+    addInput(input, false)
+    addInput(diagonal, false)
+  }
+}
+
+fun TF.mirrorPad(input: Tensor, paddings: Tensor, mode: String, name: String = "MirrorPad") = run {
+  buildOpTensor("MirrorPad", name) {
+    addInput(input, false)
+    addInput(paddings, false)
+    attr("mode", mode)
+  }
+}
+
+fun TF.oneHot(indices: Tensor, depth: Tensor, on_value: Tensor, off_value: Tensor, axis: Long = -1L, name: String = "OneHot") = run {
+  buildOpTensor("OneHot", name) {
+    addInput(indices, false)
+    addInput(depth, false)
+    addInput(on_value, false)
+    addInput(off_value, false)
+    attr("axis", axis)
+  }
+}
+
+fun TF.onesLike(x: Tensor, name: String = "OnesLike") = run {
+  buildOpTensor("OnesLike", name) {
+    addInput(x, false)
+  }
+}
+
+fun TF.pack(values: Array<Tensor>, axis: Long = 0L, name: String = "Pack") = run {
+  buildOpTensor("Pack", name) {
+    addInput(values, false)
+    attr("axis", axis)
+  }
+}
+
+fun TF.pad(input: Tensor, paddings: Tensor, name: String = "Pad") = run {
+  buildOpTensor("Pad", name) {
+    addInput(input, false)
+    addInput(paddings, false)
+  }
+}
+
+fun TF.padV2(input: Tensor, paddings: Tensor, constant_values: Tensor, name: String = "PadV2") = run {
+  buildOpTensor("PadV2", name) {
+    addInput(input, false)
+    addInput(paddings, false)
+    addInput(constant_values, false)
+  }
+}
+
+fun TF.parallelConcat(values: Array<Tensor>, shape: Dimension, name: String = "ParallelConcat") = run {
+  buildOpTensor("ParallelConcat", name) {
+    addInput(values, false)
+    attr("shape", shape)
+  }
+}
+
+fun TF.placeholder(dtype: Int, shape: Dimension = Dimension(unknow_rank = true), name: String = "Placeholder") = run {
+  buildOpTensor("Placeholder", name) {
+    attrType("dtype", dtype)
+    attr("shape", shape)
+  }
+}
+
+fun TF.placeholderWithDefault(input: Tensor, shape: Dimension, name: String = "PlaceholderWithDefault") = run {
+  buildOpTensor("PlaceholderWithDefault", name) {
+    addInput(input, false)
+    attr("shape", shape)
+  }
+}
+
+fun TF.preventGradient(input: Tensor, message: String = "", name: String = "PreventGradient") = run {
+  buildOpTensor("PreventGradient", name) {
+    addInput(input, false)
+    attr("message", message)
+  }
+}
+
+fun TF.quantizeAndDequantizeV2(input: Tensor, input_min: Tensor, input_max: Tensor, signed_input: Boolean = true, num_bits: Long = 8L, range_given: Boolean = false, name: String = "QuantizeAndDequantizeV2") = run {
+  buildOpTensor("QuantizeAndDequantizeV2", name) {
+    addInput(input, false)
+    addInput(input_min, false)
+    addInput(input_max, false)
+    attr("signed_input", signed_input)
+    attr("num_bits", num_bits)
+    attr("range_given", range_given)
+  }
+}
+
+fun TF.quantizeAndDequantizeV3(input: Tensor, input_min: Tensor, input_max: Tensor, num_bits: Tensor, signed_input: Boolean = true, range_given: Boolean = true, name: String = "QuantizeAndDequantizeV3") = run {
+  buildOpTensor("QuantizeAndDequantizeV3", name) {
+    addInput(input, false)
+    addInput(input_min, false)
+    addInput(input_max, false)
+    addInput(num_bits, false)
+    attr("signed_input", signed_input)
+    attr("range_given", range_given)
+  }
+}
+
+fun TF.quantizeV2(input: Tensor, min_range: Tensor, max_range: Tensor, t: Int, mode: String = "MIN_COMBINED", round_mode: String = "HALF_AWAY_FROM_ZERO", name: String = "QuantizeV2") = run {
+  buildOpTensors("QuantizeV2", name) {
+    addInput(input, false)
+    addInput(min_range, false)
+    addInput(max_range, false)
+    attrType("T", t)
+    attr("mode", mode)
+    attr("round_mode", round_mode)
+  }
+}
+
+fun TF.quantizedConcat(concat_dim: Tensor, values: Array<Tensor>, input_mins: Array<Tensor>, input_maxes: Array<Tensor>, name: String = "QuantizedConcat") = run {
+  buildOpTensors("QuantizedConcat", name) {
+    addInput(concat_dim, false)
+    addInput(values, false)
+    addInput(input_mins, false)
+    addInput(input_maxes, false)
+  }
+}
+
+fun TF.quantizedInstanceNorm(x: Tensor, x_min: Tensor, x_max: Tensor, output_range_given: Boolean = false, given_y_min: Float = 0.0f, given_y_max: Float = 0.0f, variance_epsilon: Float = 1.0E-5f, min_separation: Float = 0.001f, name: String = "QuantizedInstanceNorm") = run {
+  buildOpTensors("QuantizedInstanceNorm", name) {
+    addInput(x, false)
+    addInput(x_min, false)
+    addInput(x_max, false)
+    attr("output_range_given", output_range_given)
+    attr("given_y_min", given_y_min)
+    attr("given_y_max", given_y_max)
+    attr("variance_epsilon", variance_epsilon)
+    attr("min_separation", min_separation)
+  }
+}
+
+fun TF.quantizedReshape(tensor: Tensor, shape: Tensor, input_min: Tensor, input_max: Tensor, name: String = "QuantizedReshape") = run {
+  buildOpTensors("QuantizedReshape", name) {
+    addInput(tensor, false)
+    addInput(shape, false)
+    addInput(input_min, false)
+    addInput(input_max, false)
+  }
+}
+
+fun TF.rank(input: Tensor, name: String = "Rank") = run {
+  buildOpTensor("Rank", name) {
+    addInput(input, false)
+  }
+}
+
+fun TF.reshape(tensor: Tensor, shape: Tensor, name: String = "Reshape") = run {
+  buildOpTensor("Reshape", name) {
+    addInput(tensor, false)
+    addInput(shape, false)
+  }
+}
+
+fun TF.resourceStridedSliceAssign(_ref: Tensor, begin: Tensor, end: Tensor, strides: Tensor, value: Tensor, begin_mask: Long = 0L, end_mask: Long = 0L, ellipsis_mask: Long = 0L, new_axis_mask: Long = 0L, shrink_axis_mask: Long = 0L, name: String = "ResourceStridedSliceAssign") = run {
+  buildOp("ResourceStridedSliceAssign", name) {
+    addInput(_ref, false)
+    addInput(begin, false)
+    addInput(end, false)
+    addInput(strides, false)
+    addInput(value, false)
+    attr("begin_mask", begin_mask)
+    attr("end_mask", end_mask)
+    attr("ellipsis_mask", ellipsis_mask)
+    attr("new_axis_mask", new_axis_mask)
+    attr("shrink_axis_mask", shrink_axis_mask)
+  }
+}
+
+fun TF.reverseSequence(input: Tensor, seq_lengths: Tensor, seq_dim: Long, batch_dim: Long = 0L, name: String = "ReverseSequence") = run {
+  buildOpTensor("ReverseSequence", name) {
+    addInput(input, false)
+    addInput(seq_lengths, false)
+    attr("seq_dim", seq_dim)
+    attr("batch_dim", batch_dim)
+  }
+}
+
+fun TF.reverseV2(tensor: Tensor, axis: Tensor, name: String = "ReverseV2") = run {
+  buildOpTensor("ReverseV2", name) {
+    addInput(tensor, false)
+    addInput(axis, false)
+  }
+}
+
+fun TF.scatterNd(indices: Tensor, updates: Tensor, shape: Tensor, name: String = "ScatterNd") = run {
+  buildOpTensor("ScatterNd", name) {
+    addInput(indices, false)
+    addInput(updates, false)
+    addInput(shape, false)
+  }
+}
+
+fun TF.scatterNdNonAliasingAdd(input: Tensor, indices: Tensor, updates: Tensor, name: String = "ScatterNdNonAliasingAdd") = run {
+  buildOpTensor("ScatterNdNonAliasingAdd", name) {
+    addInput(input, false)
+    addInput(indices, false)
+    addInput(updates, false)
+  }
+}
+
+fun TF.shape(input: Tensor, out_type: Int = DT_INT32, name: String = "Shape") = run {
+  buildOpTensor("Shape", name) {
+    addInput(input, false)
+    attrType("out_type", out_type)
+  }
+}
+
+fun TF.shapeN(input: Array<Tensor>, out_type: Int = DT_INT32, name: String = "ShapeN") = run {
+  buildOpTensors("ShapeN", name) {
+    addInput(input, false)
+    attrType("out_type", out_type)
+  }
+}
+
+fun TF.size(input: Tensor, out_type: Int = DT_INT32, name: String = "Size") = run {
+  buildOpTensor("Size", name) {
+    addInput(input, false)
+    attrType("out_type", out_type)
+  }
+}
+
+fun TF.slice(input: Tensor, begin: Tensor, size: Tensor, name: String = "Slice") = run {
+  buildOpTensor("Slice", name) {
+    addInput(input, false)
+    addInput(begin, false)
+    addInput(size, false)
+  }
+}
+
+fun TF.snapshot(input: Tensor, name: String = "Snapshot") = run {
+  buildOpTensor("Snapshot", name) {
+    addInput(input, false)
+  }
+}
+
+fun TF.spaceToBatch(input: Tensor, paddings: Tensor, block_size: Long, name: String = "SpaceToBatch") = run {
+  buildOpTensor("SpaceToBatch", name) {
+    addInput(input, false)
+    addInput(paddings, false)
+    attr("block_size", block_size)
+  }
+}
+
+fun TF.spaceToBatchND(input: Tensor, block_shape: Tensor, paddings: Tensor, name: String = "SpaceToBatchND") = run {
+  buildOpTensor("SpaceToBatchND", name) {
+    addInput(input, false)
+    addInput(block_shape, false)
+    addInput(paddings, false)
+  }
+}
+
+fun TF.spaceToDepth(input: Tensor, block_size: Long, data_format: String = "NHWC", name: String = "SpaceToDepth") = run {
+  buildOpTensor("SpaceToDepth", name) {
+    addInput(input, false)
+    attr("block_size", block_size)
+    attr("data_format", data_format)
+  }
+}
+
+fun TF.split(split_dim: Tensor, value: Tensor, num_split: Long, name: String = "Split") = run {
+  buildOpTensors("Split", name) {
+    addInput(split_dim, false)
+    addInput(value, false)
+    attr("num_split", num_split)
+  }
+}
+
+fun TF.splitV(value: Tensor, size_splits: Tensor, split_dim: Tensor, num_split: Long, name: String = "SplitV") = run {
+  buildOpTensors("SplitV", name) {
+    addInput(value, false)
+    addInput(size_splits, false)
+    addInput(split_dim, false)
+    attr("num_split", num_split)
+  }
+}
+
+fun TF.squeeze(input: Tensor, squeeze_dims: Array<Long> = arrayOf(), name: String = "Squeeze") = run {
+  buildOpTensor("Squeeze", name) {
+    addInput(input, false)
+    attr("squeeze_dims", squeeze_dims)
+  }
+}
+
+fun TF.stopGradient(input: Tensor, name: String = "StopGradient") = run {
+  buildOpTensor("StopGradient", name) {
+    addInput(input, false)
+  }
+}
+
+fun TF.stridedSlice(input: Tensor, begin: Tensor, end: Tensor, strides: Tensor, begin_mask: Long = 0L, end_mask: Long = 0L, ellipsis_mask: Long = 0L, new_axis_mask: Long = 0L, shrink_axis_mask: Long = 0L, name: String = "StridedSlice") = run {
+  buildOpTensor("StridedSlice", name) {
+    addInput(input, false)
+    addInput(begin, false)
+    addInput(end, false)
+    addInput(strides, false)
+    attr("begin_mask", begin_mask)
+    attr("end_mask", end_mask)
+    attr("ellipsis_mask", ellipsis_mask)
+    attr("new_axis_mask", new_axis_mask)
+    attr("shrink_axis_mask", shrink_axis_mask)
+  }
+}
+
+fun TF.stridedSliceAssign(_ref: Tensor, begin: Tensor, end: Tensor, strides: Tensor, value: Tensor, begin_mask: Long = 0L, end_mask: Long = 0L, ellipsis_mask: Long = 0L, new_axis_mask: Long = 0L, shrink_axis_mask: Long = 0L, name: String = "StridedSliceAssign") = run {
+  buildOpTensor("StridedSliceAssign", name) {
+    addInput(_ref, true)
+    addInput(begin, false)
+    addInput(end, false)
+    addInput(strides, false)
+    addInput(value, false)
+    attr("begin_mask", begin_mask)
+    attr("end_mask", end_mask)
+    attr("ellipsis_mask", ellipsis_mask)
+    attr("new_axis_mask", new_axis_mask)
+    attr("shrink_axis_mask", shrink_axis_mask)
+  }
+}
+
+fun TF.stridedSliceGrad(shape: Tensor, begin: Tensor, end: Tensor, strides: Tensor, dy: Tensor, begin_mask: Long = 0L, end_mask: Long = 0L, ellipsis_mask: Long = 0L, new_axis_mask: Long = 0L, shrink_axis_mask: Long = 0L, name: String = "StridedSliceGrad") = run {
+  buildOpTensor("StridedSliceGrad", name) {
+    addInput(shape, false)
+    addInput(begin, false)
+    addInput(end, false)
+    addInput(strides, false)
+    addInput(dy, false)
+    attr("begin_mask", begin_mask)
+    attr("end_mask", end_mask)
+    attr("ellipsis_mask", ellipsis_mask)
+    attr("new_axis_mask", new_axis_mask)
+    attr("shrink_axis_mask", shrink_axis_mask)
+  }
+}
+
+fun TF.tile(input: Tensor, multiples: Tensor, name: String = "Tile") = run {
+  buildOpTensor("Tile", name) {
+    addInput(input, false)
+    addInput(multiples, false)
+  }
+}
+
+fun TF.transpose(x: Tensor, perm: Tensor, name: String = "Transpose") = run {
+  buildOpTensor("Transpose", name) {
+    addInput(x, false)
+    addInput(perm, false)
+  }
+}
+
+fun TF.unique(x: Tensor, out_idx: Int = DT_INT32, name: String = "Unique") = run {
+  buildOpTensors("Unique", name) {
+    addInput(x, false)
+    attrType("out_idx", out_idx)
+  }
+}
+
+fun TF.uniqueV2(x: Tensor, axis: Tensor, out_idx: Int = DT_INT32, name: String = "UniqueV2") = run {
+  buildOpTensors("UniqueV2", name) {
+    addInput(x, false)
+    addInput(axis, false)
+    attrType("out_idx", out_idx)
+  }
+}
+
+fun TF.uniqueWithCounts(x: Tensor, out_idx: Int = DT_INT32, name: String = "UniqueWithCounts") = run {
+  buildOpTensors("UniqueWithCounts", name) {
+    addInput(x, false)
+    attrType("out_idx", out_idx)
+  }
+}
+
+fun TF.uniqueWithCountsV2(x: Tensor, axis: Tensor, out_idx: Int = DT_INT32, name: String = "UniqueWithCountsV2") = run {
+  buildOpTensors("UniqueWithCountsV2", name) {
+    addInput(x, false)
+    addInput(axis, false)
+    attrType("out_idx", out_idx)
+  }
+}
+
+fun TF.unpack(value: Tensor, num: Long, axis: Long = 0L, name: String = "Unpack") = run {
+  buildOpTensors("Unpack", name) {
+    addInput(value, false)
+    attr("num", num)
+    attr("axis", axis)
+  }
+}
+
+fun TF.unravelIndex(indices: Tensor, dims: Tensor, name: String = "UnravelIndex") = run {
+  buildOpTensor("UnravelIndex", name) {
+    addInput(indices, false)
+    addInput(dims, false)
+  }
+}
+
+fun TF._where(input: Tensor, name: String = "Where") = run {
+  buildOpTensor("Where", name) {
+    addInput(input, false)
+  }
+}
+
+fun TF.zerosLike(x: Tensor, name: String = "ZerosLike") = run {
+  buildOpTensor("ZerosLike", name) {
+    addInput(x, false)
+  }
+}
+
+fun TF.broadcastGradientArgs(s0: Tensor, s1: Tensor, name: String = "BroadcastGradientArgs") = run {
+  buildOpTensors("BroadcastGradientArgs", name) {
+    addInput(s0, false)
+    addInput(s1, false)
+  }
+}
+
+fun TF.mirrorPadGrad(input: Tensor, paddings: Tensor, mode: String, name: String = "MirrorPadGrad") = run {
+  buildOpTensor("MirrorPadGrad", name) {
+    addInput(input, false)
+    addInput(paddings, false)
+    attr("mode", mode)
+  }
+}
+
+fun TF.refIdentity(input: Tensor, name: String = "RefIdentity") = run {
+  buildOpTensor("RefIdentity", name) {
+    addInput(input, true)
   }
 }

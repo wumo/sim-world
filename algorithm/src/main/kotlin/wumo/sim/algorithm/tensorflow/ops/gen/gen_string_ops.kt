@@ -3,117 +3,115 @@
  */
 package wumo.sim.algorithm.tensorflow.ops.gen
 
+import wumo.sim.algorithm.tensorflow.TF
 import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.buildOpTensor
 import wumo.sim.algorithm.tensorflow.buildOpTensors
-import wumo.sim.algorithm.tensorflow.tf
 
-object gen_string_ops {
-  fun asString(input: Tensor, precision: Long = -1L, scientific: Boolean = false, shortest: Boolean = false, width: Long = -1L, fill: String = "", name: String = "AsString") = run {
-    tf.buildOpTensor("AsString", name) {
-      addInput(input, false)
-      attr("precision", precision)
-      attr("scientific", scientific)
-      attr("shortest", shortest)
-      attr("width", width)
-      attr("fill", fill)
-    }
+fun TF.asString(input: Tensor, precision: Long = -1L, scientific: Boolean = false, shortest: Boolean = false, width: Long = -1L, fill: String = "", name: String = "AsString") = run {
+  buildOpTensor("AsString", name) {
+    addInput(input, false)
+    attr("precision", precision)
+    attr("scientific", scientific)
+    attr("shortest", shortest)
+    attr("width", width)
+    attr("fill", fill)
   }
-  
-  fun decodeBase64(input: Tensor, name: String = "DecodeBase64") = run {
-    tf.buildOpTensor("DecodeBase64", name) {
-      addInput(input, false)
-    }
+}
+
+fun TF.decodeBase64(input: Tensor, name: String = "DecodeBase64") = run {
+  buildOpTensor("DecodeBase64", name) {
+    addInput(input, false)
   }
-  
-  fun encodeBase64(input: Tensor, pad: Boolean = false, name: String = "EncodeBase64") = run {
-    tf.buildOpTensor("EncodeBase64", name) {
-      addInput(input, false)
-      attr("pad", pad)
-    }
+}
+
+fun TF.encodeBase64(input: Tensor, pad: Boolean = false, name: String = "EncodeBase64") = run {
+  buildOpTensor("EncodeBase64", name) {
+    addInput(input, false)
+    attr("pad", pad)
   }
-  
-  fun reduceJoin(inputs: Tensor, reduction_indices: Tensor, keep_dims: Boolean = false, separator: String = "", name: String = "ReduceJoin") = run {
-    tf.buildOpTensor("ReduceJoin", name) {
-      addInput(inputs, false)
-      addInput(reduction_indices, false)
-      attr("keep_dims", keep_dims)
-      attr("separator", separator)
-    }
+}
+
+fun TF.reduceJoin(inputs: Tensor, reduction_indices: Tensor, keep_dims: Boolean = false, separator: String = "", name: String = "ReduceJoin") = run {
+  buildOpTensor("ReduceJoin", name) {
+    addInput(inputs, false)
+    addInput(reduction_indices, false)
+    attr("keep_dims", keep_dims)
+    attr("separator", separator)
   }
-  
-  fun regexFullMatch(input: Tensor, pattern: Tensor, name: String = "RegexFullMatch") = run {
-    tf.buildOpTensor("RegexFullMatch", name) {
-      addInput(input, false)
-      addInput(pattern, false)
-    }
+}
+
+fun TF.regexFullMatch(input: Tensor, pattern: Tensor, name: String = "RegexFullMatch") = run {
+  buildOpTensor("RegexFullMatch", name) {
+    addInput(input, false)
+    addInput(pattern, false)
   }
-  
-  fun regexReplace(input: Tensor, pattern: Tensor, rewrite: Tensor, replace_global: Boolean = true, name: String = "RegexReplace") = run {
-    tf.buildOpTensor("RegexReplace", name) {
-      addInput(input, false)
-      addInput(pattern, false)
-      addInput(rewrite, false)
-      attr("replace_global", replace_global)
-    }
+}
+
+fun TF.regexReplace(input: Tensor, pattern: Tensor, rewrite: Tensor, replace_global: Boolean = true, name: String = "RegexReplace") = run {
+  buildOpTensor("RegexReplace", name) {
+    addInput(input, false)
+    addInput(pattern, false)
+    addInput(rewrite, false)
+    attr("replace_global", replace_global)
   }
-  
-  fun stringJoin(inputs: Array<Tensor>, separator: String = "", name: String = "StringJoin") = run {
-    tf.buildOpTensor("StringJoin", name) {
-      addInput(inputs, false)
-      attr("separator", separator)
-    }
+}
+
+fun TF.stringJoin(inputs: Array<Tensor>, separator: String = "", name: String = "StringJoin") = run {
+  buildOpTensor("StringJoin", name) {
+    addInput(inputs, false)
+    attr("separator", separator)
   }
-  
-  fun stringSplit(input: Tensor, delimiter: Tensor, skip_empty: Boolean = true, name: String = "StringSplit") = run {
-    tf.buildOpTensors("StringSplit", name) {
-      addInput(input, false)
-      addInput(delimiter, false)
-      attr("skip_empty", skip_empty)
-    }
+}
+
+fun TF.stringSplit(input: Tensor, delimiter: Tensor, skip_empty: Boolean = true, name: String = "StringSplit") = run {
+  buildOpTensors("StringSplit", name) {
+    addInput(input, false)
+    addInput(delimiter, false)
+    attr("skip_empty", skip_empty)
   }
-  
-  fun stringSplitV2(input: Tensor, sep: Tensor, maxsplit: Long = -1L, name: String = "StringSplitV2") = run {
-    tf.buildOpTensors("StringSplitV2", name) {
-      addInput(input, false)
-      addInput(sep, false)
-      attr("maxsplit", maxsplit)
-    }
+}
+
+fun TF.stringSplitV2(input: Tensor, sep: Tensor, maxsplit: Long = -1L, name: String = "StringSplitV2") = run {
+  buildOpTensors("StringSplitV2", name) {
+    addInput(input, false)
+    addInput(sep, false)
+    attr("maxsplit", maxsplit)
   }
-  
-  fun stringStrip(input: Tensor, name: String = "StringStrip") = run {
-    tf.buildOpTensor("StringStrip", name) {
-      addInput(input, false)
-    }
+}
+
+fun TF.stringStrip(input: Tensor, name: String = "StringStrip") = run {
+  buildOpTensor("StringStrip", name) {
+    addInput(input, false)
   }
-  
-  fun stringToHashBucket(string_tensor: Tensor, num_buckets: Long, name: String = "StringToHashBucket") = run {
-    tf.buildOpTensor("StringToHashBucket", name) {
-      addInput(string_tensor, false)
-      attr("num_buckets", num_buckets)
-    }
+}
+
+fun TF.stringToHashBucket(string_tensor: Tensor, num_buckets: Long, name: String = "StringToHashBucket") = run {
+  buildOpTensor("StringToHashBucket", name) {
+    addInput(string_tensor, false)
+    attr("num_buckets", num_buckets)
   }
-  
-  fun stringToHashBucketFast(input: Tensor, num_buckets: Long, name: String = "StringToHashBucketFast") = run {
-    tf.buildOpTensor("StringToHashBucketFast", name) {
-      addInput(input, false)
-      attr("num_buckets", num_buckets)
-    }
+}
+
+fun TF.stringToHashBucketFast(input: Tensor, num_buckets: Long, name: String = "StringToHashBucketFast") = run {
+  buildOpTensor("StringToHashBucketFast", name) {
+    addInput(input, false)
+    attr("num_buckets", num_buckets)
   }
-  
-  fun stringToHashBucketStrong(input: Tensor, num_buckets: Long, key: Array<Long>, name: String = "StringToHashBucketStrong") = run {
-    tf.buildOpTensor("StringToHashBucketStrong", name) {
-      addInput(input, false)
-      attr("num_buckets", num_buckets)
-      attr("key", key)
-    }
+}
+
+fun TF.stringToHashBucketStrong(input: Tensor, num_buckets: Long, key: Array<Long>, name: String = "StringToHashBucketStrong") = run {
+  buildOpTensor("StringToHashBucketStrong", name) {
+    addInput(input, false)
+    attr("num_buckets", num_buckets)
+    attr("key", key)
   }
-  
-  fun substr(input: Tensor, pos: Tensor, len: Tensor, name: String = "Substr") = run {
-    tf.buildOpTensor("Substr", name) {
-      addInput(input, false)
-      addInput(pos, false)
-      addInput(len, false)
-    }
+}
+
+fun TF.substr(input: Tensor, pos: Tensor, len: Tensor, name: String = "Substr") = run {
+  buildOpTensor("Substr", name) {
+    addInput(input, false)
+    addInput(pos, false)
+    addInput(len, false)
   }
 }

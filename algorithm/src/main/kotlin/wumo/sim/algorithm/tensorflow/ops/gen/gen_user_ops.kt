@@ -3,12 +3,10 @@
  */
 package wumo.sim.algorithm.tensorflow.ops.gen
 
+import wumo.sim.algorithm.tensorflow.TF
 import wumo.sim.algorithm.tensorflow.buildOpTensor
-import wumo.sim.algorithm.tensorflow.tf
 
-object gen_user_ops {
-  fun fact(name: String = "Fact") = run {
-    tf.buildOpTensor("Fact", name) {
-    }
+fun TF.fact(name: String = "Fact") = run {
+  buildOpTensor("Fact", name) {
   }
 }

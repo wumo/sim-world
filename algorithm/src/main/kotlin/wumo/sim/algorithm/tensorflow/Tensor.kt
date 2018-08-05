@@ -4,7 +4,12 @@ import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
 import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.util.Dimension
 
-interface TensorLike
+sealed class TensorLike
+class IndexedSlices : TensorLike() {
+}
+
+class SparseTensor : TensorLike() {
+}
 
 /**
  * Represents one of the outputs of an `Op`.
@@ -24,7 +29,7 @@ interface TensorLike
  * `Tensor` can be computed by passing it to@{tf.Session.run}.
  * `t.eval()` is a shortcut for calling`tf.get_default_session().run(t)`.
  */
-open class Tensor(val op: Op?, val value_index: Int) : TensorLike {
+open class Tensor(val op: Op?, val value_index: Int) : TensorLike() {
   val dtype: Int
     get() = if (op != null) {
       op.output_types[value_index]

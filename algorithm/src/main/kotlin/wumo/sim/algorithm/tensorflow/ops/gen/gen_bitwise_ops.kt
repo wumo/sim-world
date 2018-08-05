@@ -3,55 +3,53 @@
  */
 package wumo.sim.algorithm.tensorflow.ops.gen
 
+import wumo.sim.algorithm.tensorflow.TF
 import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.buildOpTensor
-import wumo.sim.algorithm.tensorflow.tf
 
-object gen_bitwise_ops {
-  fun bitwiseAnd(x: Tensor, y: Tensor, name: String = "BitwiseAnd") = run {
-    tf.buildOpTensor("BitwiseAnd", name) {
-      addInput(x, false)
-      addInput(y, false)
-    }
+fun TF.bitwiseAnd(x: Tensor, y: Tensor, name: String = "BitwiseAnd") = run {
+  buildOpTensor("BitwiseAnd", name) {
+    addInput(x, false)
+    addInput(y, false)
   }
-  
-  fun bitwiseOr(x: Tensor, y: Tensor, name: String = "BitwiseOr") = run {
-    tf.buildOpTensor("BitwiseOr", name) {
-      addInput(x, false)
-      addInput(y, false)
-    }
+}
+
+fun TF.bitwiseOr(x: Tensor, y: Tensor, name: String = "BitwiseOr") = run {
+  buildOpTensor("BitwiseOr", name) {
+    addInput(x, false)
+    addInput(y, false)
   }
-  
-  fun bitwiseXor(x: Tensor, y: Tensor, name: String = "BitwiseXor") = run {
-    tf.buildOpTensor("BitwiseXor", name) {
-      addInput(x, false)
-      addInput(y, false)
-    }
+}
+
+fun TF.bitwiseXor(x: Tensor, y: Tensor, name: String = "BitwiseXor") = run {
+  buildOpTensor("BitwiseXor", name) {
+    addInput(x, false)
+    addInput(y, false)
   }
-  
-  fun invert(x: Tensor, name: String = "Invert") = run {
-    tf.buildOpTensor("Invert", name) {
-      addInput(x, false)
-    }
+}
+
+fun TF.invert(x: Tensor, name: String = "Invert") = run {
+  buildOpTensor("Invert", name) {
+    addInput(x, false)
   }
-  
-  fun leftShift(x: Tensor, y: Tensor, name: String = "LeftShift") = run {
-    tf.buildOpTensor("LeftShift", name) {
-      addInput(x, false)
-      addInput(y, false)
-    }
+}
+
+fun TF.leftShift(x: Tensor, y: Tensor, name: String = "LeftShift") = run {
+  buildOpTensor("LeftShift", name) {
+    addInput(x, false)
+    addInput(y, false)
   }
-  
-  fun populationCount(x: Tensor, name: String = "PopulationCount") = run {
-    tf.buildOpTensor("PopulationCount", name) {
-      addInput(x, false)
-    }
+}
+
+fun TF.populationCount(x: Tensor, name: String = "PopulationCount") = run {
+  buildOpTensor("PopulationCount", name) {
+    addInput(x, false)
   }
-  
-  fun rightShift(x: Tensor, y: Tensor, name: String = "RightShift") = run {
-    tf.buildOpTensor("RightShift", name) {
-      addInput(x, false)
-      addInput(y, false)
-    }
+}
+
+fun TF.rightShift(x: Tensor, y: Tensor, name: String = "RightShift") = run {
+  buildOpTensor("RightShift", name) {
+    addInput(x, false)
+    addInput(y, false)
   }
 }

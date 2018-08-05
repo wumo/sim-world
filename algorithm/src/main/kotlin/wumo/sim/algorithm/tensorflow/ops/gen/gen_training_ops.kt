@@ -3,687 +3,685 @@
  */
 package wumo.sim.algorithm.tensorflow.ops.gen
 
+import wumo.sim.algorithm.tensorflow.TF
 import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.buildOp
 import wumo.sim.algorithm.tensorflow.buildOpTensor
-import wumo.sim.algorithm.tensorflow.tf
 
-object gen_training_ops {
-  fun applyAdadelta(_var: Tensor, accum: Tensor, accum_update: Tensor, lr: Tensor, rho: Tensor, epsilon: Tensor, grad: Tensor, use_locking: Boolean = false, name: String = "ApplyAdadelta") = run {
-    tf.buildOpTensor("ApplyAdadelta", name) {
-      addInput(_var, true)
-      addInput(accum, true)
-      addInput(accum_update, true)
-      addInput(lr, false)
-      addInput(rho, false)
-      addInput(epsilon, false)
-      addInput(grad, false)
-      attr("use_locking", use_locking)
-    }
+fun TF.applyAdadelta(_var: Tensor, accum: Tensor, accum_update: Tensor, lr: Tensor, rho: Tensor, epsilon: Tensor, grad: Tensor, use_locking: Boolean = false, name: String = "ApplyAdadelta") = run {
+  buildOpTensor("ApplyAdadelta", name) {
+    addInput(_var, true)
+    addInput(accum, true)
+    addInput(accum_update, true)
+    addInput(lr, false)
+    addInput(rho, false)
+    addInput(epsilon, false)
+    addInput(grad, false)
+    attr("use_locking", use_locking)
   }
-  
-  fun applyAdagrad(_var: Tensor, accum: Tensor, lr: Tensor, grad: Tensor, use_locking: Boolean = false, update_slots: Boolean = true, name: String = "ApplyAdagrad") = run {
-    tf.buildOpTensor("ApplyAdagrad", name) {
-      addInput(_var, true)
-      addInput(accum, true)
-      addInput(lr, false)
-      addInput(grad, false)
-      attr("use_locking", use_locking)
-      attr("update_slots", update_slots)
-    }
+}
+
+fun TF.applyAdagrad(_var: Tensor, accum: Tensor, lr: Tensor, grad: Tensor, use_locking: Boolean = false, update_slots: Boolean = true, name: String = "ApplyAdagrad") = run {
+  buildOpTensor("ApplyAdagrad", name) {
+    addInput(_var, true)
+    addInput(accum, true)
+    addInput(lr, false)
+    addInput(grad, false)
+    attr("use_locking", use_locking)
+    attr("update_slots", update_slots)
   }
-  
-  fun applyAdagradDA(_var: Tensor, gradient_accumulator: Tensor, gradient_squared_accumulator: Tensor, grad: Tensor, lr: Tensor, l1: Tensor, l2: Tensor, global_step: Tensor, use_locking: Boolean = false, name: String = "ApplyAdagradDA") = run {
-    tf.buildOpTensor("ApplyAdagradDA", name) {
-      addInput(_var, true)
-      addInput(gradient_accumulator, true)
-      addInput(gradient_squared_accumulator, true)
-      addInput(grad, false)
-      addInput(lr, false)
-      addInput(l1, false)
-      addInput(l2, false)
-      addInput(global_step, false)
-      attr("use_locking", use_locking)
-    }
+}
+
+fun TF.applyAdagradDA(_var: Tensor, gradient_accumulator: Tensor, gradient_squared_accumulator: Tensor, grad: Tensor, lr: Tensor, l1: Tensor, l2: Tensor, global_step: Tensor, use_locking: Boolean = false, name: String = "ApplyAdagradDA") = run {
+  buildOpTensor("ApplyAdagradDA", name) {
+    addInput(_var, true)
+    addInput(gradient_accumulator, true)
+    addInput(gradient_squared_accumulator, true)
+    addInput(grad, false)
+    addInput(lr, false)
+    addInput(l1, false)
+    addInput(l2, false)
+    addInput(global_step, false)
+    attr("use_locking", use_locking)
   }
-  
-  fun applyAdam(_var: Tensor, m: Tensor, v: Tensor, beta1_power: Tensor, beta2_power: Tensor, lr: Tensor, beta1: Tensor, beta2: Tensor, epsilon: Tensor, grad: Tensor, use_locking: Boolean = false, use_nesterov: Boolean = false, name: String = "ApplyAdam") = run {
-    tf.buildOpTensor("ApplyAdam", name) {
-      addInput(_var, true)
-      addInput(m, true)
-      addInput(v, true)
-      addInput(beta1_power, false)
-      addInput(beta2_power, false)
-      addInput(lr, false)
-      addInput(beta1, false)
-      addInput(beta2, false)
-      addInput(epsilon, false)
-      addInput(grad, false)
-      attr("use_locking", use_locking)
-      attr("use_nesterov", use_nesterov)
-    }
+}
+
+fun TF.applyAdam(_var: Tensor, m: Tensor, v: Tensor, beta1_power: Tensor, beta2_power: Tensor, lr: Tensor, beta1: Tensor, beta2: Tensor, epsilon: Tensor, grad: Tensor, use_locking: Boolean = false, use_nesterov: Boolean = false, name: String = "ApplyAdam") = run {
+  buildOpTensor("ApplyAdam", name) {
+    addInput(_var, true)
+    addInput(m, true)
+    addInput(v, true)
+    addInput(beta1_power, false)
+    addInput(beta2_power, false)
+    addInput(lr, false)
+    addInput(beta1, false)
+    addInput(beta2, false)
+    addInput(epsilon, false)
+    addInput(grad, false)
+    attr("use_locking", use_locking)
+    attr("use_nesterov", use_nesterov)
   }
-  
-  fun applyAddSign(_var: Tensor, m: Tensor, lr: Tensor, alpha: Tensor, sign_decay: Tensor, beta: Tensor, grad: Tensor, use_locking: Boolean = false, name: String = "ApplyAddSign") = run {
-    tf.buildOpTensor("ApplyAddSign", name) {
-      addInput(_var, true)
-      addInput(m, true)
-      addInput(lr, false)
-      addInput(alpha, false)
-      addInput(sign_decay, false)
-      addInput(beta, false)
-      addInput(grad, false)
-      attr("use_locking", use_locking)
-    }
+}
+
+fun TF.applyAddSign(_var: Tensor, m: Tensor, lr: Tensor, alpha: Tensor, sign_decay: Tensor, beta: Tensor, grad: Tensor, use_locking: Boolean = false, name: String = "ApplyAddSign") = run {
+  buildOpTensor("ApplyAddSign", name) {
+    addInput(_var, true)
+    addInput(m, true)
+    addInput(lr, false)
+    addInput(alpha, false)
+    addInput(sign_decay, false)
+    addInput(beta, false)
+    addInput(grad, false)
+    attr("use_locking", use_locking)
   }
-  
-  fun applyCenteredRMSProp(_var: Tensor, mg: Tensor, ms: Tensor, mom: Tensor, lr: Tensor, rho: Tensor, momentum: Tensor, epsilon: Tensor, grad: Tensor, use_locking: Boolean = false, name: String = "ApplyCenteredRMSProp") = run {
-    tf.buildOpTensor("ApplyCenteredRMSProp", name) {
-      addInput(_var, true)
-      addInput(mg, true)
-      addInput(ms, true)
-      addInput(mom, true)
-      addInput(lr, false)
-      addInput(rho, false)
-      addInput(momentum, false)
-      addInput(epsilon, false)
-      addInput(grad, false)
-      attr("use_locking", use_locking)
-    }
+}
+
+fun TF.applyCenteredRMSProp(_var: Tensor, mg: Tensor, ms: Tensor, mom: Tensor, lr: Tensor, rho: Tensor, momentum: Tensor, epsilon: Tensor, grad: Tensor, use_locking: Boolean = false, name: String = "ApplyCenteredRMSProp") = run {
+  buildOpTensor("ApplyCenteredRMSProp", name) {
+    addInput(_var, true)
+    addInput(mg, true)
+    addInput(ms, true)
+    addInput(mom, true)
+    addInput(lr, false)
+    addInput(rho, false)
+    addInput(momentum, false)
+    addInput(epsilon, false)
+    addInput(grad, false)
+    attr("use_locking", use_locking)
   }
-  
-  fun applyFtrl(_var: Tensor, accum: Tensor, linear: Tensor, grad: Tensor, lr: Tensor, l1: Tensor, l2: Tensor, lr_power: Tensor, use_locking: Boolean = false, name: String = "ApplyFtrl") = run {
-    tf.buildOpTensor("ApplyFtrl", name) {
-      addInput(_var, true)
-      addInput(accum, true)
-      addInput(linear, true)
-      addInput(grad, false)
-      addInput(lr, false)
-      addInput(l1, false)
-      addInput(l2, false)
-      addInput(lr_power, false)
-      attr("use_locking", use_locking)
-    }
+}
+
+fun TF.applyFtrl(_var: Tensor, accum: Tensor, linear: Tensor, grad: Tensor, lr: Tensor, l1: Tensor, l2: Tensor, lr_power: Tensor, use_locking: Boolean = false, name: String = "ApplyFtrl") = run {
+  buildOpTensor("ApplyFtrl", name) {
+    addInput(_var, true)
+    addInput(accum, true)
+    addInput(linear, true)
+    addInput(grad, false)
+    addInput(lr, false)
+    addInput(l1, false)
+    addInput(l2, false)
+    addInput(lr_power, false)
+    attr("use_locking", use_locking)
   }
-  
-  fun applyFtrlV2(_var: Tensor, accum: Tensor, linear: Tensor, grad: Tensor, lr: Tensor, l1: Tensor, l2: Tensor, l2_shrinkage: Tensor, lr_power: Tensor, use_locking: Boolean = false, name: String = "ApplyFtrlV2") = run {
-    tf.buildOpTensor("ApplyFtrlV2", name) {
-      addInput(_var, true)
-      addInput(accum, true)
-      addInput(linear, true)
-      addInput(grad, false)
-      addInput(lr, false)
-      addInput(l1, false)
-      addInput(l2, false)
-      addInput(l2_shrinkage, false)
-      addInput(lr_power, false)
-      attr("use_locking", use_locking)
-    }
+}
+
+fun TF.applyFtrlV2(_var: Tensor, accum: Tensor, linear: Tensor, grad: Tensor, lr: Tensor, l1: Tensor, l2: Tensor, l2_shrinkage: Tensor, lr_power: Tensor, use_locking: Boolean = false, name: String = "ApplyFtrlV2") = run {
+  buildOpTensor("ApplyFtrlV2", name) {
+    addInput(_var, true)
+    addInput(accum, true)
+    addInput(linear, true)
+    addInput(grad, false)
+    addInput(lr, false)
+    addInput(l1, false)
+    addInput(l2, false)
+    addInput(l2_shrinkage, false)
+    addInput(lr_power, false)
+    attr("use_locking", use_locking)
   }
-  
-  fun applyGradientDescent(_var: Tensor, alpha: Tensor, delta: Tensor, use_locking: Boolean = false, name: String = "ApplyGradientDescent") = run {
-    tf.buildOpTensor("ApplyGradientDescent", name) {
-      addInput(_var, true)
-      addInput(alpha, false)
-      addInput(delta, false)
-      attr("use_locking", use_locking)
-    }
+}
+
+fun TF.applyGradientDescent(_var: Tensor, alpha: Tensor, delta: Tensor, use_locking: Boolean = false, name: String = "ApplyGradientDescent") = run {
+  buildOpTensor("ApplyGradientDescent", name) {
+    addInput(_var, true)
+    addInput(alpha, false)
+    addInput(delta, false)
+    attr("use_locking", use_locking)
   }
-  
-  fun applyMomentum(_var: Tensor, accum: Tensor, lr: Tensor, grad: Tensor, momentum: Tensor, use_locking: Boolean = false, use_nesterov: Boolean = false, name: String = "ApplyMomentum") = run {
-    tf.buildOpTensor("ApplyMomentum", name) {
-      addInput(_var, true)
-      addInput(accum, true)
-      addInput(lr, false)
-      addInput(grad, false)
-      addInput(momentum, false)
-      attr("use_locking", use_locking)
-      attr("use_nesterov", use_nesterov)
-    }
+}
+
+fun TF.applyMomentum(_var: Tensor, accum: Tensor, lr: Tensor, grad: Tensor, momentum: Tensor, use_locking: Boolean = false, use_nesterov: Boolean = false, name: String = "ApplyMomentum") = run {
+  buildOpTensor("ApplyMomentum", name) {
+    addInput(_var, true)
+    addInput(accum, true)
+    addInput(lr, false)
+    addInput(grad, false)
+    addInput(momentum, false)
+    attr("use_locking", use_locking)
+    attr("use_nesterov", use_nesterov)
   }
-  
-  fun applyPowerSign(_var: Tensor, m: Tensor, lr: Tensor, logbase: Tensor, sign_decay: Tensor, beta: Tensor, grad: Tensor, use_locking: Boolean = false, name: String = "ApplyPowerSign") = run {
-    tf.buildOpTensor("ApplyPowerSign", name) {
-      addInput(_var, true)
-      addInput(m, true)
-      addInput(lr, false)
-      addInput(logbase, false)
-      addInput(sign_decay, false)
-      addInput(beta, false)
-      addInput(grad, false)
-      attr("use_locking", use_locking)
-    }
+}
+
+fun TF.applyPowerSign(_var: Tensor, m: Tensor, lr: Tensor, logbase: Tensor, sign_decay: Tensor, beta: Tensor, grad: Tensor, use_locking: Boolean = false, name: String = "ApplyPowerSign") = run {
+  buildOpTensor("ApplyPowerSign", name) {
+    addInput(_var, true)
+    addInput(m, true)
+    addInput(lr, false)
+    addInput(logbase, false)
+    addInput(sign_decay, false)
+    addInput(beta, false)
+    addInput(grad, false)
+    attr("use_locking", use_locking)
   }
-  
-  fun applyProximalAdagrad(_var: Tensor, accum: Tensor, lr: Tensor, l1: Tensor, l2: Tensor, grad: Tensor, use_locking: Boolean = false, name: String = "ApplyProximalAdagrad") = run {
-    tf.buildOpTensor("ApplyProximalAdagrad", name) {
-      addInput(_var, true)
-      addInput(accum, true)
-      addInput(lr, false)
-      addInput(l1, false)
-      addInput(l2, false)
-      addInput(grad, false)
-      attr("use_locking", use_locking)
-    }
+}
+
+fun TF.applyProximalAdagrad(_var: Tensor, accum: Tensor, lr: Tensor, l1: Tensor, l2: Tensor, grad: Tensor, use_locking: Boolean = false, name: String = "ApplyProximalAdagrad") = run {
+  buildOpTensor("ApplyProximalAdagrad", name) {
+    addInput(_var, true)
+    addInput(accum, true)
+    addInput(lr, false)
+    addInput(l1, false)
+    addInput(l2, false)
+    addInput(grad, false)
+    attr("use_locking", use_locking)
   }
-  
-  fun applyProximalGradientDescent(_var: Tensor, alpha: Tensor, l1: Tensor, l2: Tensor, delta: Tensor, use_locking: Boolean = false, name: String = "ApplyProximalGradientDescent") = run {
-    tf.buildOpTensor("ApplyProximalGradientDescent", name) {
-      addInput(_var, true)
-      addInput(alpha, false)
-      addInput(l1, false)
-      addInput(l2, false)
-      addInput(delta, false)
-      attr("use_locking", use_locking)
-    }
+}
+
+fun TF.applyProximalGradientDescent(_var: Tensor, alpha: Tensor, l1: Tensor, l2: Tensor, delta: Tensor, use_locking: Boolean = false, name: String = "ApplyProximalGradientDescent") = run {
+  buildOpTensor("ApplyProximalGradientDescent", name) {
+    addInput(_var, true)
+    addInput(alpha, false)
+    addInput(l1, false)
+    addInput(l2, false)
+    addInput(delta, false)
+    attr("use_locking", use_locking)
   }
-  
-  fun applyRMSProp(_var: Tensor, ms: Tensor, mom: Tensor, lr: Tensor, rho: Tensor, momentum: Tensor, epsilon: Tensor, grad: Tensor, use_locking: Boolean = false, name: String = "ApplyRMSProp") = run {
-    tf.buildOpTensor("ApplyRMSProp", name) {
-      addInput(_var, true)
-      addInput(ms, true)
-      addInput(mom, true)
-      addInput(lr, false)
-      addInput(rho, false)
-      addInput(momentum, false)
-      addInput(epsilon, false)
-      addInput(grad, false)
-      attr("use_locking", use_locking)
-    }
+}
+
+fun TF.applyRMSProp(_var: Tensor, ms: Tensor, mom: Tensor, lr: Tensor, rho: Tensor, momentum: Tensor, epsilon: Tensor, grad: Tensor, use_locking: Boolean = false, name: String = "ApplyRMSProp") = run {
+  buildOpTensor("ApplyRMSProp", name) {
+    addInput(_var, true)
+    addInput(ms, true)
+    addInput(mom, true)
+    addInput(lr, false)
+    addInput(rho, false)
+    addInput(momentum, false)
+    addInput(epsilon, false)
+    addInput(grad, false)
+    attr("use_locking", use_locking)
   }
-  
-  fun resourceApplyAdadelta(_var: Tensor, accum: Tensor, accum_update: Tensor, lr: Tensor, rho: Tensor, epsilon: Tensor, grad: Tensor, use_locking: Boolean = false, name: String = "ResourceApplyAdadelta") = run {
-    tf.buildOp("ResourceApplyAdadelta", name) {
-      addInput(_var, false)
-      addInput(accum, false)
-      addInput(accum_update, false)
-      addInput(lr, false)
-      addInput(rho, false)
-      addInput(epsilon, false)
-      addInput(grad, false)
-      attr("use_locking", use_locking)
-    }
+}
+
+fun TF.resourceApplyAdadelta(_var: Tensor, accum: Tensor, accum_update: Tensor, lr: Tensor, rho: Tensor, epsilon: Tensor, grad: Tensor, use_locking: Boolean = false, name: String = "ResourceApplyAdadelta") = run {
+  buildOp("ResourceApplyAdadelta", name) {
+    addInput(_var, false)
+    addInput(accum, false)
+    addInput(accum_update, false)
+    addInput(lr, false)
+    addInput(rho, false)
+    addInput(epsilon, false)
+    addInput(grad, false)
+    attr("use_locking", use_locking)
   }
-  
-  fun resourceApplyAdagrad(_var: Tensor, accum: Tensor, lr: Tensor, grad: Tensor, use_locking: Boolean = false, update_slots: Boolean = true, name: String = "ResourceApplyAdagrad") = run {
-    tf.buildOp("ResourceApplyAdagrad", name) {
-      addInput(_var, false)
-      addInput(accum, false)
-      addInput(lr, false)
-      addInput(grad, false)
-      attr("use_locking", use_locking)
-      attr("update_slots", update_slots)
-    }
+}
+
+fun TF.resourceApplyAdagrad(_var: Tensor, accum: Tensor, lr: Tensor, grad: Tensor, use_locking: Boolean = false, update_slots: Boolean = true, name: String = "ResourceApplyAdagrad") = run {
+  buildOp("ResourceApplyAdagrad", name) {
+    addInput(_var, false)
+    addInput(accum, false)
+    addInput(lr, false)
+    addInput(grad, false)
+    attr("use_locking", use_locking)
+    attr("update_slots", update_slots)
   }
-  
-  fun resourceApplyAdagradDA(_var: Tensor, gradient_accumulator: Tensor, gradient_squared_accumulator: Tensor, grad: Tensor, lr: Tensor, l1: Tensor, l2: Tensor, global_step: Tensor, use_locking: Boolean = false, name: String = "ResourceApplyAdagradDA") = run {
-    tf.buildOp("ResourceApplyAdagradDA", name) {
-      addInput(_var, false)
-      addInput(gradient_accumulator, false)
-      addInput(gradient_squared_accumulator, false)
-      addInput(grad, false)
-      addInput(lr, false)
-      addInput(l1, false)
-      addInput(l2, false)
-      addInput(global_step, false)
-      attr("use_locking", use_locking)
-    }
+}
+
+fun TF.resourceApplyAdagradDA(_var: Tensor, gradient_accumulator: Tensor, gradient_squared_accumulator: Tensor, grad: Tensor, lr: Tensor, l1: Tensor, l2: Tensor, global_step: Tensor, use_locking: Boolean = false, name: String = "ResourceApplyAdagradDA") = run {
+  buildOp("ResourceApplyAdagradDA", name) {
+    addInput(_var, false)
+    addInput(gradient_accumulator, false)
+    addInput(gradient_squared_accumulator, false)
+    addInput(grad, false)
+    addInput(lr, false)
+    addInput(l1, false)
+    addInput(l2, false)
+    addInput(global_step, false)
+    attr("use_locking", use_locking)
   }
-  
-  fun resourceApplyAdam(_var: Tensor, m: Tensor, v: Tensor, beta1_power: Tensor, beta2_power: Tensor, lr: Tensor, beta1: Tensor, beta2: Tensor, epsilon: Tensor, grad: Tensor, use_locking: Boolean = false, use_nesterov: Boolean = false, name: String = "ResourceApplyAdam") = run {
-    tf.buildOp("ResourceApplyAdam", name) {
-      addInput(_var, false)
-      addInput(m, false)
-      addInput(v, false)
-      addInput(beta1_power, false)
-      addInput(beta2_power, false)
-      addInput(lr, false)
-      addInput(beta1, false)
-      addInput(beta2, false)
-      addInput(epsilon, false)
-      addInput(grad, false)
-      attr("use_locking", use_locking)
-      attr("use_nesterov", use_nesterov)
-    }
+}
+
+fun TF.resourceApplyAdam(_var: Tensor, m: Tensor, v: Tensor, beta1_power: Tensor, beta2_power: Tensor, lr: Tensor, beta1: Tensor, beta2: Tensor, epsilon: Tensor, grad: Tensor, use_locking: Boolean = false, use_nesterov: Boolean = false, name: String = "ResourceApplyAdam") = run {
+  buildOp("ResourceApplyAdam", name) {
+    addInput(_var, false)
+    addInput(m, false)
+    addInput(v, false)
+    addInput(beta1_power, false)
+    addInput(beta2_power, false)
+    addInput(lr, false)
+    addInput(beta1, false)
+    addInput(beta2, false)
+    addInput(epsilon, false)
+    addInput(grad, false)
+    attr("use_locking", use_locking)
+    attr("use_nesterov", use_nesterov)
   }
-  
-  fun resourceApplyAddSign(_var: Tensor, m: Tensor, lr: Tensor, alpha: Tensor, sign_decay: Tensor, beta: Tensor, grad: Tensor, use_locking: Boolean = false, name: String = "ResourceApplyAddSign") = run {
-    tf.buildOp("ResourceApplyAddSign", name) {
-      addInput(_var, false)
-      addInput(m, false)
-      addInput(lr, false)
-      addInput(alpha, false)
-      addInput(sign_decay, false)
-      addInput(beta, false)
-      addInput(grad, false)
-      attr("use_locking", use_locking)
-    }
+}
+
+fun TF.resourceApplyAddSign(_var: Tensor, m: Tensor, lr: Tensor, alpha: Tensor, sign_decay: Tensor, beta: Tensor, grad: Tensor, use_locking: Boolean = false, name: String = "ResourceApplyAddSign") = run {
+  buildOp("ResourceApplyAddSign", name) {
+    addInput(_var, false)
+    addInput(m, false)
+    addInput(lr, false)
+    addInput(alpha, false)
+    addInput(sign_decay, false)
+    addInput(beta, false)
+    addInput(grad, false)
+    attr("use_locking", use_locking)
   }
-  
-  fun resourceApplyCenteredRMSProp(_var: Tensor, mg: Tensor, ms: Tensor, mom: Tensor, lr: Tensor, rho: Tensor, momentum: Tensor, epsilon: Tensor, grad: Tensor, use_locking: Boolean = false, name: String = "ResourceApplyCenteredRMSProp") = run {
-    tf.buildOp("ResourceApplyCenteredRMSProp", name) {
-      addInput(_var, false)
-      addInput(mg, false)
-      addInput(ms, false)
-      addInput(mom, false)
-      addInput(lr, false)
-      addInput(rho, false)
-      addInput(momentum, false)
-      addInput(epsilon, false)
-      addInput(grad, false)
-      attr("use_locking", use_locking)
-    }
+}
+
+fun TF.resourceApplyCenteredRMSProp(_var: Tensor, mg: Tensor, ms: Tensor, mom: Tensor, lr: Tensor, rho: Tensor, momentum: Tensor, epsilon: Tensor, grad: Tensor, use_locking: Boolean = false, name: String = "ResourceApplyCenteredRMSProp") = run {
+  buildOp("ResourceApplyCenteredRMSProp", name) {
+    addInput(_var, false)
+    addInput(mg, false)
+    addInput(ms, false)
+    addInput(mom, false)
+    addInput(lr, false)
+    addInput(rho, false)
+    addInput(momentum, false)
+    addInput(epsilon, false)
+    addInput(grad, false)
+    attr("use_locking", use_locking)
   }
-  
-  fun resourceApplyFtrl(_var: Tensor, accum: Tensor, linear: Tensor, grad: Tensor, lr: Tensor, l1: Tensor, l2: Tensor, lr_power: Tensor, use_locking: Boolean = false, name: String = "ResourceApplyFtrl") = run {
-    tf.buildOp("ResourceApplyFtrl", name) {
-      addInput(_var, false)
-      addInput(accum, false)
-      addInput(linear, false)
-      addInput(grad, false)
-      addInput(lr, false)
-      addInput(l1, false)
-      addInput(l2, false)
-      addInput(lr_power, false)
-      attr("use_locking", use_locking)
-    }
+}
+
+fun TF.resourceApplyFtrl(_var: Tensor, accum: Tensor, linear: Tensor, grad: Tensor, lr: Tensor, l1: Tensor, l2: Tensor, lr_power: Tensor, use_locking: Boolean = false, name: String = "ResourceApplyFtrl") = run {
+  buildOp("ResourceApplyFtrl", name) {
+    addInput(_var, false)
+    addInput(accum, false)
+    addInput(linear, false)
+    addInput(grad, false)
+    addInput(lr, false)
+    addInput(l1, false)
+    addInput(l2, false)
+    addInput(lr_power, false)
+    attr("use_locking", use_locking)
   }
-  
-  fun resourceApplyFtrlV2(_var: Tensor, accum: Tensor, linear: Tensor, grad: Tensor, lr: Tensor, l1: Tensor, l2: Tensor, l2_shrinkage: Tensor, lr_power: Tensor, use_locking: Boolean = false, name: String = "ResourceApplyFtrlV2") = run {
-    tf.buildOp("ResourceApplyFtrlV2", name) {
-      addInput(_var, false)
-      addInput(accum, false)
-      addInput(linear, false)
-      addInput(grad, false)
-      addInput(lr, false)
-      addInput(l1, false)
-      addInput(l2, false)
-      addInput(l2_shrinkage, false)
-      addInput(lr_power, false)
-      attr("use_locking", use_locking)
-    }
+}
+
+fun TF.resourceApplyFtrlV2(_var: Tensor, accum: Tensor, linear: Tensor, grad: Tensor, lr: Tensor, l1: Tensor, l2: Tensor, l2_shrinkage: Tensor, lr_power: Tensor, use_locking: Boolean = false, name: String = "ResourceApplyFtrlV2") = run {
+  buildOp("ResourceApplyFtrlV2", name) {
+    addInput(_var, false)
+    addInput(accum, false)
+    addInput(linear, false)
+    addInput(grad, false)
+    addInput(lr, false)
+    addInput(l1, false)
+    addInput(l2, false)
+    addInput(l2_shrinkage, false)
+    addInput(lr_power, false)
+    attr("use_locking", use_locking)
   }
-  
-  fun resourceApplyGradientDescent(_var: Tensor, alpha: Tensor, delta: Tensor, use_locking: Boolean = false, name: String = "ResourceApplyGradientDescent") = run {
-    tf.buildOp("ResourceApplyGradientDescent", name) {
-      addInput(_var, false)
-      addInput(alpha, false)
-      addInput(delta, false)
-      attr("use_locking", use_locking)
-    }
+}
+
+fun TF.resourceApplyGradientDescent(_var: Tensor, alpha: Tensor, delta: Tensor, use_locking: Boolean = false, name: String = "ResourceApplyGradientDescent") = run {
+  buildOp("ResourceApplyGradientDescent", name) {
+    addInput(_var, false)
+    addInput(alpha, false)
+    addInput(delta, false)
+    attr("use_locking", use_locking)
   }
-  
-  fun resourceApplyMomentum(_var: Tensor, accum: Tensor, lr: Tensor, grad: Tensor, momentum: Tensor, use_locking: Boolean = false, use_nesterov: Boolean = false, name: String = "ResourceApplyMomentum") = run {
-    tf.buildOp("ResourceApplyMomentum", name) {
-      addInput(_var, false)
-      addInput(accum, false)
-      addInput(lr, false)
-      addInput(grad, false)
-      addInput(momentum, false)
-      attr("use_locking", use_locking)
-      attr("use_nesterov", use_nesterov)
-    }
+}
+
+fun TF.resourceApplyMomentum(_var: Tensor, accum: Tensor, lr: Tensor, grad: Tensor, momentum: Tensor, use_locking: Boolean = false, use_nesterov: Boolean = false, name: String = "ResourceApplyMomentum") = run {
+  buildOp("ResourceApplyMomentum", name) {
+    addInput(_var, false)
+    addInput(accum, false)
+    addInput(lr, false)
+    addInput(grad, false)
+    addInput(momentum, false)
+    attr("use_locking", use_locking)
+    attr("use_nesterov", use_nesterov)
   }
-  
-  fun resourceApplyPowerSign(_var: Tensor, m: Tensor, lr: Tensor, logbase: Tensor, sign_decay: Tensor, beta: Tensor, grad: Tensor, use_locking: Boolean = false, name: String = "ResourceApplyPowerSign") = run {
-    tf.buildOp("ResourceApplyPowerSign", name) {
-      addInput(_var, false)
-      addInput(m, false)
-      addInput(lr, false)
-      addInput(logbase, false)
-      addInput(sign_decay, false)
-      addInput(beta, false)
-      addInput(grad, false)
-      attr("use_locking", use_locking)
-    }
+}
+
+fun TF.resourceApplyPowerSign(_var: Tensor, m: Tensor, lr: Tensor, logbase: Tensor, sign_decay: Tensor, beta: Tensor, grad: Tensor, use_locking: Boolean = false, name: String = "ResourceApplyPowerSign") = run {
+  buildOp("ResourceApplyPowerSign", name) {
+    addInput(_var, false)
+    addInput(m, false)
+    addInput(lr, false)
+    addInput(logbase, false)
+    addInput(sign_decay, false)
+    addInput(beta, false)
+    addInput(grad, false)
+    attr("use_locking", use_locking)
   }
-  
-  fun resourceApplyProximalAdagrad(_var: Tensor, accum: Tensor, lr: Tensor, l1: Tensor, l2: Tensor, grad: Tensor, use_locking: Boolean = false, name: String = "ResourceApplyProximalAdagrad") = run {
-    tf.buildOp("ResourceApplyProximalAdagrad", name) {
-      addInput(_var, false)
-      addInput(accum, false)
-      addInput(lr, false)
-      addInput(l1, false)
-      addInput(l2, false)
-      addInput(grad, false)
-      attr("use_locking", use_locking)
-    }
+}
+
+fun TF.resourceApplyProximalAdagrad(_var: Tensor, accum: Tensor, lr: Tensor, l1: Tensor, l2: Tensor, grad: Tensor, use_locking: Boolean = false, name: String = "ResourceApplyProximalAdagrad") = run {
+  buildOp("ResourceApplyProximalAdagrad", name) {
+    addInput(_var, false)
+    addInput(accum, false)
+    addInput(lr, false)
+    addInput(l1, false)
+    addInput(l2, false)
+    addInput(grad, false)
+    attr("use_locking", use_locking)
   }
-  
-  fun resourceApplyProximalGradientDescent(_var: Tensor, alpha: Tensor, l1: Tensor, l2: Tensor, delta: Tensor, use_locking: Boolean = false, name: String = "ResourceApplyProximalGradientDescent") = run {
-    tf.buildOp("ResourceApplyProximalGradientDescent", name) {
-      addInput(_var, false)
-      addInput(alpha, false)
-      addInput(l1, false)
-      addInput(l2, false)
-      addInput(delta, false)
-      attr("use_locking", use_locking)
-    }
+}
+
+fun TF.resourceApplyProximalGradientDescent(_var: Tensor, alpha: Tensor, l1: Tensor, l2: Tensor, delta: Tensor, use_locking: Boolean = false, name: String = "ResourceApplyProximalGradientDescent") = run {
+  buildOp("ResourceApplyProximalGradientDescent", name) {
+    addInput(_var, false)
+    addInput(alpha, false)
+    addInput(l1, false)
+    addInput(l2, false)
+    addInput(delta, false)
+    attr("use_locking", use_locking)
   }
-  
-  fun resourceApplyRMSProp(_var: Tensor, ms: Tensor, mom: Tensor, lr: Tensor, rho: Tensor, momentum: Tensor, epsilon: Tensor, grad: Tensor, use_locking: Boolean = false, name: String = "ResourceApplyRMSProp") = run {
-    tf.buildOp("ResourceApplyRMSProp", name) {
-      addInput(_var, false)
-      addInput(ms, false)
-      addInput(mom, false)
-      addInput(lr, false)
-      addInput(rho, false)
-      addInput(momentum, false)
-      addInput(epsilon, false)
-      addInput(grad, false)
-      attr("use_locking", use_locking)
-    }
+}
+
+fun TF.resourceApplyRMSProp(_var: Tensor, ms: Tensor, mom: Tensor, lr: Tensor, rho: Tensor, momentum: Tensor, epsilon: Tensor, grad: Tensor, use_locking: Boolean = false, name: String = "ResourceApplyRMSProp") = run {
+  buildOp("ResourceApplyRMSProp", name) {
+    addInput(_var, false)
+    addInput(ms, false)
+    addInput(mom, false)
+    addInput(lr, false)
+    addInput(rho, false)
+    addInput(momentum, false)
+    addInput(epsilon, false)
+    addInput(grad, false)
+    attr("use_locking", use_locking)
   }
-  
-  fun resourceSparseApplyAdadelta(_var: Tensor, accum: Tensor, accum_update: Tensor, lr: Tensor, rho: Tensor, epsilon: Tensor, grad: Tensor, indices: Tensor, use_locking: Boolean = false, name: String = "ResourceSparseApplyAdadelta") = run {
-    tf.buildOp("ResourceSparseApplyAdadelta", name) {
-      addInput(_var, false)
-      addInput(accum, false)
-      addInput(accum_update, false)
-      addInput(lr, false)
-      addInput(rho, false)
-      addInput(epsilon, false)
-      addInput(grad, false)
-      addInput(indices, false)
-      attr("use_locking", use_locking)
-    }
+}
+
+fun TF.resourceSparseApplyAdadelta(_var: Tensor, accum: Tensor, accum_update: Tensor, lr: Tensor, rho: Tensor, epsilon: Tensor, grad: Tensor, indices: Tensor, use_locking: Boolean = false, name: String = "ResourceSparseApplyAdadelta") = run {
+  buildOp("ResourceSparseApplyAdadelta", name) {
+    addInput(_var, false)
+    addInput(accum, false)
+    addInput(accum_update, false)
+    addInput(lr, false)
+    addInput(rho, false)
+    addInput(epsilon, false)
+    addInput(grad, false)
+    addInput(indices, false)
+    attr("use_locking", use_locking)
   }
-  
-  fun resourceSparseApplyAdagrad(_var: Tensor, accum: Tensor, lr: Tensor, grad: Tensor, indices: Tensor, use_locking: Boolean = false, update_slots: Boolean = true, name: String = "ResourceSparseApplyAdagrad") = run {
-    tf.buildOp("ResourceSparseApplyAdagrad", name) {
-      addInput(_var, false)
-      addInput(accum, false)
-      addInput(lr, false)
-      addInput(grad, false)
-      addInput(indices, false)
-      attr("use_locking", use_locking)
-      attr("update_slots", update_slots)
-    }
+}
+
+fun TF.resourceSparseApplyAdagrad(_var: Tensor, accum: Tensor, lr: Tensor, grad: Tensor, indices: Tensor, use_locking: Boolean = false, update_slots: Boolean = true, name: String = "ResourceSparseApplyAdagrad") = run {
+  buildOp("ResourceSparseApplyAdagrad", name) {
+    addInput(_var, false)
+    addInput(accum, false)
+    addInput(lr, false)
+    addInput(grad, false)
+    addInput(indices, false)
+    attr("use_locking", use_locking)
+    attr("update_slots", update_slots)
   }
-  
-  fun resourceSparseApplyAdagradDA(_var: Tensor, gradient_accumulator: Tensor, gradient_squared_accumulator: Tensor, grad: Tensor, indices: Tensor, lr: Tensor, l1: Tensor, l2: Tensor, global_step: Tensor, use_locking: Boolean = false, name: String = "ResourceSparseApplyAdagradDA") = run {
-    tf.buildOp("ResourceSparseApplyAdagradDA", name) {
-      addInput(_var, false)
-      addInput(gradient_accumulator, false)
-      addInput(gradient_squared_accumulator, false)
-      addInput(grad, false)
-      addInput(indices, false)
-      addInput(lr, false)
-      addInput(l1, false)
-      addInput(l2, false)
-      addInput(global_step, false)
-      attr("use_locking", use_locking)
-    }
+}
+
+fun TF.resourceSparseApplyAdagradDA(_var: Tensor, gradient_accumulator: Tensor, gradient_squared_accumulator: Tensor, grad: Tensor, indices: Tensor, lr: Tensor, l1: Tensor, l2: Tensor, global_step: Tensor, use_locking: Boolean = false, name: String = "ResourceSparseApplyAdagradDA") = run {
+  buildOp("ResourceSparseApplyAdagradDA", name) {
+    addInput(_var, false)
+    addInput(gradient_accumulator, false)
+    addInput(gradient_squared_accumulator, false)
+    addInput(grad, false)
+    addInput(indices, false)
+    addInput(lr, false)
+    addInput(l1, false)
+    addInput(l2, false)
+    addInput(global_step, false)
+    attr("use_locking", use_locking)
   }
-  
-  fun resourceSparseApplyCenteredRMSProp(_var: Tensor, mg: Tensor, ms: Tensor, mom: Tensor, lr: Tensor, rho: Tensor, momentum: Tensor, epsilon: Tensor, grad: Tensor, indices: Tensor, use_locking: Boolean = false, name: String = "ResourceSparseApplyCenteredRMSProp") = run {
-    tf.buildOp("ResourceSparseApplyCenteredRMSProp", name) {
-      addInput(_var, false)
-      addInput(mg, false)
-      addInput(ms, false)
-      addInput(mom, false)
-      addInput(lr, false)
-      addInput(rho, false)
-      addInput(momentum, false)
-      addInput(epsilon, false)
-      addInput(grad, false)
-      addInput(indices, false)
-      attr("use_locking", use_locking)
-    }
+}
+
+fun TF.resourceSparseApplyCenteredRMSProp(_var: Tensor, mg: Tensor, ms: Tensor, mom: Tensor, lr: Tensor, rho: Tensor, momentum: Tensor, epsilon: Tensor, grad: Tensor, indices: Tensor, use_locking: Boolean = false, name: String = "ResourceSparseApplyCenteredRMSProp") = run {
+  buildOp("ResourceSparseApplyCenteredRMSProp", name) {
+    addInput(_var, false)
+    addInput(mg, false)
+    addInput(ms, false)
+    addInput(mom, false)
+    addInput(lr, false)
+    addInput(rho, false)
+    addInput(momentum, false)
+    addInput(epsilon, false)
+    addInput(grad, false)
+    addInput(indices, false)
+    attr("use_locking", use_locking)
   }
-  
-  fun resourceSparseApplyFtrl(_var: Tensor, accum: Tensor, linear: Tensor, grad: Tensor, indices: Tensor, lr: Tensor, l1: Tensor, l2: Tensor, lr_power: Tensor, use_locking: Boolean = false, name: String = "ResourceSparseApplyFtrl") = run {
-    tf.buildOp("ResourceSparseApplyFtrl", name) {
-      addInput(_var, false)
-      addInput(accum, false)
-      addInput(linear, false)
-      addInput(grad, false)
-      addInput(indices, false)
-      addInput(lr, false)
-      addInput(l1, false)
-      addInput(l2, false)
-      addInput(lr_power, false)
-      attr("use_locking", use_locking)
-    }
+}
+
+fun TF.resourceSparseApplyFtrl(_var: Tensor, accum: Tensor, linear: Tensor, grad: Tensor, indices: Tensor, lr: Tensor, l1: Tensor, l2: Tensor, lr_power: Tensor, use_locking: Boolean = false, name: String = "ResourceSparseApplyFtrl") = run {
+  buildOp("ResourceSparseApplyFtrl", name) {
+    addInput(_var, false)
+    addInput(accum, false)
+    addInput(linear, false)
+    addInput(grad, false)
+    addInput(indices, false)
+    addInput(lr, false)
+    addInput(l1, false)
+    addInput(l2, false)
+    addInput(lr_power, false)
+    attr("use_locking", use_locking)
   }
-  
-  fun resourceSparseApplyFtrlV2(_var: Tensor, accum: Tensor, linear: Tensor, grad: Tensor, indices: Tensor, lr: Tensor, l1: Tensor, l2: Tensor, l2_shrinkage: Tensor, lr_power: Tensor, use_locking: Boolean = false, name: String = "ResourceSparseApplyFtrlV2") = run {
-    tf.buildOp("ResourceSparseApplyFtrlV2", name) {
-      addInput(_var, false)
-      addInput(accum, false)
-      addInput(linear, false)
-      addInput(grad, false)
-      addInput(indices, false)
-      addInput(lr, false)
-      addInput(l1, false)
-      addInput(l2, false)
-      addInput(l2_shrinkage, false)
-      addInput(lr_power, false)
-      attr("use_locking", use_locking)
-    }
+}
+
+fun TF.resourceSparseApplyFtrlV2(_var: Tensor, accum: Tensor, linear: Tensor, grad: Tensor, indices: Tensor, lr: Tensor, l1: Tensor, l2: Tensor, l2_shrinkage: Tensor, lr_power: Tensor, use_locking: Boolean = false, name: String = "ResourceSparseApplyFtrlV2") = run {
+  buildOp("ResourceSparseApplyFtrlV2", name) {
+    addInput(_var, false)
+    addInput(accum, false)
+    addInput(linear, false)
+    addInput(grad, false)
+    addInput(indices, false)
+    addInput(lr, false)
+    addInput(l1, false)
+    addInput(l2, false)
+    addInput(l2_shrinkage, false)
+    addInput(lr_power, false)
+    attr("use_locking", use_locking)
   }
-  
-  fun resourceSparseApplyMomentum(_var: Tensor, accum: Tensor, lr: Tensor, grad: Tensor, indices: Tensor, momentum: Tensor, use_locking: Boolean = false, use_nesterov: Boolean = false, name: String = "ResourceSparseApplyMomentum") = run {
-    tf.buildOp("ResourceSparseApplyMomentum", name) {
-      addInput(_var, false)
-      addInput(accum, false)
-      addInput(lr, false)
-      addInput(grad, false)
-      addInput(indices, false)
-      addInput(momentum, false)
-      attr("use_locking", use_locking)
-      attr("use_nesterov", use_nesterov)
-    }
+}
+
+fun TF.resourceSparseApplyMomentum(_var: Tensor, accum: Tensor, lr: Tensor, grad: Tensor, indices: Tensor, momentum: Tensor, use_locking: Boolean = false, use_nesterov: Boolean = false, name: String = "ResourceSparseApplyMomentum") = run {
+  buildOp("ResourceSparseApplyMomentum", name) {
+    addInput(_var, false)
+    addInput(accum, false)
+    addInput(lr, false)
+    addInput(grad, false)
+    addInput(indices, false)
+    addInput(momentum, false)
+    attr("use_locking", use_locking)
+    attr("use_nesterov", use_nesterov)
   }
-  
-  fun resourceSparseApplyProximalAdagrad(_var: Tensor, accum: Tensor, lr: Tensor, l1: Tensor, l2: Tensor, grad: Tensor, indices: Tensor, use_locking: Boolean = false, name: String = "ResourceSparseApplyProximalAdagrad") = run {
-    tf.buildOp("ResourceSparseApplyProximalAdagrad", name) {
-      addInput(_var, false)
-      addInput(accum, false)
-      addInput(lr, false)
-      addInput(l1, false)
-      addInput(l2, false)
-      addInput(grad, false)
-      addInput(indices, false)
-      attr("use_locking", use_locking)
-    }
+}
+
+fun TF.resourceSparseApplyProximalAdagrad(_var: Tensor, accum: Tensor, lr: Tensor, l1: Tensor, l2: Tensor, grad: Tensor, indices: Tensor, use_locking: Boolean = false, name: String = "ResourceSparseApplyProximalAdagrad") = run {
+  buildOp("ResourceSparseApplyProximalAdagrad", name) {
+    addInput(_var, false)
+    addInput(accum, false)
+    addInput(lr, false)
+    addInput(l1, false)
+    addInput(l2, false)
+    addInput(grad, false)
+    addInput(indices, false)
+    attr("use_locking", use_locking)
   }
-  
-  fun resourceSparseApplyProximalGradientDescent(_var: Tensor, alpha: Tensor, l1: Tensor, l2: Tensor, grad: Tensor, indices: Tensor, use_locking: Boolean = false, name: String = "ResourceSparseApplyProximalGradientDescent") = run {
-    tf.buildOp("ResourceSparseApplyProximalGradientDescent", name) {
-      addInput(_var, false)
-      addInput(alpha, false)
-      addInput(l1, false)
-      addInput(l2, false)
-      addInput(grad, false)
-      addInput(indices, false)
-      attr("use_locking", use_locking)
-    }
+}
+
+fun TF.resourceSparseApplyProximalGradientDescent(_var: Tensor, alpha: Tensor, l1: Tensor, l2: Tensor, grad: Tensor, indices: Tensor, use_locking: Boolean = false, name: String = "ResourceSparseApplyProximalGradientDescent") = run {
+  buildOp("ResourceSparseApplyProximalGradientDescent", name) {
+    addInput(_var, false)
+    addInput(alpha, false)
+    addInput(l1, false)
+    addInput(l2, false)
+    addInput(grad, false)
+    addInput(indices, false)
+    attr("use_locking", use_locking)
   }
-  
-  fun resourceSparseApplyRMSProp(_var: Tensor, ms: Tensor, mom: Tensor, lr: Tensor, rho: Tensor, momentum: Tensor, epsilon: Tensor, grad: Tensor, indices: Tensor, use_locking: Boolean = false, name: String = "ResourceSparseApplyRMSProp") = run {
-    tf.buildOp("ResourceSparseApplyRMSProp", name) {
-      addInput(_var, false)
-      addInput(ms, false)
-      addInput(mom, false)
-      addInput(lr, false)
-      addInput(rho, false)
-      addInput(momentum, false)
-      addInput(epsilon, false)
-      addInput(grad, false)
-      addInput(indices, false)
-      attr("use_locking", use_locking)
-    }
+}
+
+fun TF.resourceSparseApplyRMSProp(_var: Tensor, ms: Tensor, mom: Tensor, lr: Tensor, rho: Tensor, momentum: Tensor, epsilon: Tensor, grad: Tensor, indices: Tensor, use_locking: Boolean = false, name: String = "ResourceSparseApplyRMSProp") = run {
+  buildOp("ResourceSparseApplyRMSProp", name) {
+    addInput(_var, false)
+    addInput(ms, false)
+    addInput(mom, false)
+    addInput(lr, false)
+    addInput(rho, false)
+    addInput(momentum, false)
+    addInput(epsilon, false)
+    addInput(grad, false)
+    addInput(indices, false)
+    attr("use_locking", use_locking)
   }
-  
-  fun sparseApplyAdadelta(_var: Tensor, accum: Tensor, accum_update: Tensor, lr: Tensor, rho: Tensor, epsilon: Tensor, grad: Tensor, indices: Tensor, use_locking: Boolean = false, name: String = "SparseApplyAdadelta") = run {
-    tf.buildOpTensor("SparseApplyAdadelta", name) {
-      addInput(_var, true)
-      addInput(accum, true)
-      addInput(accum_update, true)
-      addInput(lr, false)
-      addInput(rho, false)
-      addInput(epsilon, false)
-      addInput(grad, false)
-      addInput(indices, false)
-      attr("use_locking", use_locking)
-    }
+}
+
+fun TF.sparseApplyAdadelta(_var: Tensor, accum: Tensor, accum_update: Tensor, lr: Tensor, rho: Tensor, epsilon: Tensor, grad: Tensor, indices: Tensor, use_locking: Boolean = false, name: String = "SparseApplyAdadelta") = run {
+  buildOpTensor("SparseApplyAdadelta", name) {
+    addInput(_var, true)
+    addInput(accum, true)
+    addInput(accum_update, true)
+    addInput(lr, false)
+    addInput(rho, false)
+    addInput(epsilon, false)
+    addInput(grad, false)
+    addInput(indices, false)
+    attr("use_locking", use_locking)
   }
-  
-  fun sparseApplyAdagrad(_var: Tensor, accum: Tensor, lr: Tensor, grad: Tensor, indices: Tensor, use_locking: Boolean = false, update_slots: Boolean = true, name: String = "SparseApplyAdagrad") = run {
-    tf.buildOpTensor("SparseApplyAdagrad", name) {
-      addInput(_var, true)
-      addInput(accum, true)
-      addInput(lr, false)
-      addInput(grad, false)
-      addInput(indices, false)
-      attr("use_locking", use_locking)
-      attr("update_slots", update_slots)
-    }
+}
+
+fun TF.sparseApplyAdagrad(_var: Tensor, accum: Tensor, lr: Tensor, grad: Tensor, indices: Tensor, use_locking: Boolean = false, update_slots: Boolean = true, name: String = "SparseApplyAdagrad") = run {
+  buildOpTensor("SparseApplyAdagrad", name) {
+    addInput(_var, true)
+    addInput(accum, true)
+    addInput(lr, false)
+    addInput(grad, false)
+    addInput(indices, false)
+    attr("use_locking", use_locking)
+    attr("update_slots", update_slots)
   }
-  
-  fun sparseApplyAdagradDA(_var: Tensor, gradient_accumulator: Tensor, gradient_squared_accumulator: Tensor, grad: Tensor, indices: Tensor, lr: Tensor, l1: Tensor, l2: Tensor, global_step: Tensor, use_locking: Boolean = false, name: String = "SparseApplyAdagradDA") = run {
-    tf.buildOpTensor("SparseApplyAdagradDA", name) {
-      addInput(_var, true)
-      addInput(gradient_accumulator, true)
-      addInput(gradient_squared_accumulator, true)
-      addInput(grad, false)
-      addInput(indices, false)
-      addInput(lr, false)
-      addInput(l1, false)
-      addInput(l2, false)
-      addInput(global_step, false)
-      attr("use_locking", use_locking)
-    }
+}
+
+fun TF.sparseApplyAdagradDA(_var: Tensor, gradient_accumulator: Tensor, gradient_squared_accumulator: Tensor, grad: Tensor, indices: Tensor, lr: Tensor, l1: Tensor, l2: Tensor, global_step: Tensor, use_locking: Boolean = false, name: String = "SparseApplyAdagradDA") = run {
+  buildOpTensor("SparseApplyAdagradDA", name) {
+    addInput(_var, true)
+    addInput(gradient_accumulator, true)
+    addInput(gradient_squared_accumulator, true)
+    addInput(grad, false)
+    addInput(indices, false)
+    addInput(lr, false)
+    addInput(l1, false)
+    addInput(l2, false)
+    addInput(global_step, false)
+    attr("use_locking", use_locking)
   }
-  
-  fun sparseApplyCenteredRMSProp(_var: Tensor, mg: Tensor, ms: Tensor, mom: Tensor, lr: Tensor, rho: Tensor, momentum: Tensor, epsilon: Tensor, grad: Tensor, indices: Tensor, use_locking: Boolean = false, name: String = "SparseApplyCenteredRMSProp") = run {
-    tf.buildOpTensor("SparseApplyCenteredRMSProp", name) {
-      addInput(_var, true)
-      addInput(mg, true)
-      addInput(ms, true)
-      addInput(mom, true)
-      addInput(lr, false)
-      addInput(rho, false)
-      addInput(momentum, false)
-      addInput(epsilon, false)
-      addInput(grad, false)
-      addInput(indices, false)
-      attr("use_locking", use_locking)
-    }
+}
+
+fun TF.sparseApplyCenteredRMSProp(_var: Tensor, mg: Tensor, ms: Tensor, mom: Tensor, lr: Tensor, rho: Tensor, momentum: Tensor, epsilon: Tensor, grad: Tensor, indices: Tensor, use_locking: Boolean = false, name: String = "SparseApplyCenteredRMSProp") = run {
+  buildOpTensor("SparseApplyCenteredRMSProp", name) {
+    addInput(_var, true)
+    addInput(mg, true)
+    addInput(ms, true)
+    addInput(mom, true)
+    addInput(lr, false)
+    addInput(rho, false)
+    addInput(momentum, false)
+    addInput(epsilon, false)
+    addInput(grad, false)
+    addInput(indices, false)
+    attr("use_locking", use_locking)
   }
-  
-  fun sparseApplyFtrl(_var: Tensor, accum: Tensor, linear: Tensor, grad: Tensor, indices: Tensor, lr: Tensor, l1: Tensor, l2: Tensor, lr_power: Tensor, use_locking: Boolean = false, name: String = "SparseApplyFtrl") = run {
-    tf.buildOpTensor("SparseApplyFtrl", name) {
-      addInput(_var, true)
-      addInput(accum, true)
-      addInput(linear, true)
-      addInput(grad, false)
-      addInput(indices, false)
-      addInput(lr, false)
-      addInput(l1, false)
-      addInput(l2, false)
-      addInput(lr_power, false)
-      attr("use_locking", use_locking)
-    }
+}
+
+fun TF.sparseApplyFtrl(_var: Tensor, accum: Tensor, linear: Tensor, grad: Tensor, indices: Tensor, lr: Tensor, l1: Tensor, l2: Tensor, lr_power: Tensor, use_locking: Boolean = false, name: String = "SparseApplyFtrl") = run {
+  buildOpTensor("SparseApplyFtrl", name) {
+    addInput(_var, true)
+    addInput(accum, true)
+    addInput(linear, true)
+    addInput(grad, false)
+    addInput(indices, false)
+    addInput(lr, false)
+    addInput(l1, false)
+    addInput(l2, false)
+    addInput(lr_power, false)
+    attr("use_locking", use_locking)
   }
-  
-  fun sparseApplyFtrlV2(_var: Tensor, accum: Tensor, linear: Tensor, grad: Tensor, indices: Tensor, lr: Tensor, l1: Tensor, l2: Tensor, l2_shrinkage: Tensor, lr_power: Tensor, use_locking: Boolean = false, name: String = "SparseApplyFtrlV2") = run {
-    tf.buildOpTensor("SparseApplyFtrlV2", name) {
-      addInput(_var, true)
-      addInput(accum, true)
-      addInput(linear, true)
-      addInput(grad, false)
-      addInput(indices, false)
-      addInput(lr, false)
-      addInput(l1, false)
-      addInput(l2, false)
-      addInput(l2_shrinkage, false)
-      addInput(lr_power, false)
-      attr("use_locking", use_locking)
-    }
+}
+
+fun TF.sparseApplyFtrlV2(_var: Tensor, accum: Tensor, linear: Tensor, grad: Tensor, indices: Tensor, lr: Tensor, l1: Tensor, l2: Tensor, l2_shrinkage: Tensor, lr_power: Tensor, use_locking: Boolean = false, name: String = "SparseApplyFtrlV2") = run {
+  buildOpTensor("SparseApplyFtrlV2", name) {
+    addInput(_var, true)
+    addInput(accum, true)
+    addInput(linear, true)
+    addInput(grad, false)
+    addInput(indices, false)
+    addInput(lr, false)
+    addInput(l1, false)
+    addInput(l2, false)
+    addInput(l2_shrinkage, false)
+    addInput(lr_power, false)
+    attr("use_locking", use_locking)
   }
-  
-  fun sparseApplyMomentum(_var: Tensor, accum: Tensor, lr: Tensor, grad: Tensor, indices: Tensor, momentum: Tensor, use_locking: Boolean = false, use_nesterov: Boolean = false, name: String = "SparseApplyMomentum") = run {
-    tf.buildOpTensor("SparseApplyMomentum", name) {
-      addInput(_var, true)
-      addInput(accum, true)
-      addInput(lr, false)
-      addInput(grad, false)
-      addInput(indices, false)
-      addInput(momentum, false)
-      attr("use_locking", use_locking)
-      attr("use_nesterov", use_nesterov)
-    }
+}
+
+fun TF.sparseApplyMomentum(_var: Tensor, accum: Tensor, lr: Tensor, grad: Tensor, indices: Tensor, momentum: Tensor, use_locking: Boolean = false, use_nesterov: Boolean = false, name: String = "SparseApplyMomentum") = run {
+  buildOpTensor("SparseApplyMomentum", name) {
+    addInput(_var, true)
+    addInput(accum, true)
+    addInput(lr, false)
+    addInput(grad, false)
+    addInput(indices, false)
+    addInput(momentum, false)
+    attr("use_locking", use_locking)
+    attr("use_nesterov", use_nesterov)
   }
-  
-  fun sparseApplyProximalAdagrad(_var: Tensor, accum: Tensor, lr: Tensor, l1: Tensor, l2: Tensor, grad: Tensor, indices: Tensor, use_locking: Boolean = false, name: String = "SparseApplyProximalAdagrad") = run {
-    tf.buildOpTensor("SparseApplyProximalAdagrad", name) {
-      addInput(_var, true)
-      addInput(accum, true)
-      addInput(lr, false)
-      addInput(l1, false)
-      addInput(l2, false)
-      addInput(grad, false)
-      addInput(indices, false)
-      attr("use_locking", use_locking)
-    }
+}
+
+fun TF.sparseApplyProximalAdagrad(_var: Tensor, accum: Tensor, lr: Tensor, l1: Tensor, l2: Tensor, grad: Tensor, indices: Tensor, use_locking: Boolean = false, name: String = "SparseApplyProximalAdagrad") = run {
+  buildOpTensor("SparseApplyProximalAdagrad", name) {
+    addInput(_var, true)
+    addInput(accum, true)
+    addInput(lr, false)
+    addInput(l1, false)
+    addInput(l2, false)
+    addInput(grad, false)
+    addInput(indices, false)
+    attr("use_locking", use_locking)
   }
-  
-  fun sparseApplyProximalGradientDescent(_var: Tensor, alpha: Tensor, l1: Tensor, l2: Tensor, grad: Tensor, indices: Tensor, use_locking: Boolean = false, name: String = "SparseApplyProximalGradientDescent") = run {
-    tf.buildOpTensor("SparseApplyProximalGradientDescent", name) {
-      addInput(_var, true)
-      addInput(alpha, false)
-      addInput(l1, false)
-      addInput(l2, false)
-      addInput(grad, false)
-      addInput(indices, false)
-      attr("use_locking", use_locking)
-    }
+}
+
+fun TF.sparseApplyProximalGradientDescent(_var: Tensor, alpha: Tensor, l1: Tensor, l2: Tensor, grad: Tensor, indices: Tensor, use_locking: Boolean = false, name: String = "SparseApplyProximalGradientDescent") = run {
+  buildOpTensor("SparseApplyProximalGradientDescent", name) {
+    addInput(_var, true)
+    addInput(alpha, false)
+    addInput(l1, false)
+    addInput(l2, false)
+    addInput(grad, false)
+    addInput(indices, false)
+    attr("use_locking", use_locking)
   }
-  
-  fun sparseApplyRMSProp(_var: Tensor, ms: Tensor, mom: Tensor, lr: Tensor, rho: Tensor, momentum: Tensor, epsilon: Tensor, grad: Tensor, indices: Tensor, use_locking: Boolean = false, name: String = "SparseApplyRMSProp") = run {
-    tf.buildOpTensor("SparseApplyRMSProp", name) {
-      addInput(_var, true)
-      addInput(ms, true)
-      addInput(mom, true)
-      addInput(lr, false)
-      addInput(rho, false)
-      addInput(momentum, false)
-      addInput(epsilon, false)
-      addInput(grad, false)
-      addInput(indices, false)
-      attr("use_locking", use_locking)
-    }
+}
+
+fun TF.sparseApplyRMSProp(_var: Tensor, ms: Tensor, mom: Tensor, lr: Tensor, rho: Tensor, momentum: Tensor, epsilon: Tensor, grad: Tensor, indices: Tensor, use_locking: Boolean = false, name: String = "SparseApplyRMSProp") = run {
+  buildOpTensor("SparseApplyRMSProp", name) {
+    addInput(_var, true)
+    addInput(ms, true)
+    addInput(mom, true)
+    addInput(lr, false)
+    addInput(rho, false)
+    addInput(momentum, false)
+    addInput(epsilon, false)
+    addInput(grad, false)
+    addInput(indices, false)
+    attr("use_locking", use_locking)
   }
-  
-  fun applyAdaMax(_var: Tensor, m: Tensor, v: Tensor, beta1_power: Tensor, lr: Tensor, beta1: Tensor, beta2: Tensor, epsilon: Tensor, grad: Tensor, use_locking: Boolean = false, name: String = "ApplyAdaMax") = run {
-    tf.buildOpTensor("ApplyAdaMax", name) {
-      addInput(_var, true)
-      addInput(m, true)
-      addInput(v, true)
-      addInput(beta1_power, false)
-      addInput(lr, false)
-      addInput(beta1, false)
-      addInput(beta2, false)
-      addInput(epsilon, false)
-      addInput(grad, false)
-      attr("use_locking", use_locking)
-    }
+}
+
+fun TF.applyAdaMax(_var: Tensor, m: Tensor, v: Tensor, beta1_power: Tensor, lr: Tensor, beta1: Tensor, beta2: Tensor, epsilon: Tensor, grad: Tensor, use_locking: Boolean = false, name: String = "ApplyAdaMax") = run {
+  buildOpTensor("ApplyAdaMax", name) {
+    addInput(_var, true)
+    addInput(m, true)
+    addInput(v, true)
+    addInput(beta1_power, false)
+    addInput(lr, false)
+    addInput(beta1, false)
+    addInput(beta2, false)
+    addInput(epsilon, false)
+    addInput(grad, false)
+    attr("use_locking", use_locking)
   }
-  
-  fun resourceApplyAdaMax(_var: Tensor, m: Tensor, v: Tensor, beta1_power: Tensor, lr: Tensor, beta1: Tensor, beta2: Tensor, epsilon: Tensor, grad: Tensor, use_locking: Boolean = false, name: String = "ResourceApplyAdaMax") = run {
-    tf.buildOp("ResourceApplyAdaMax", name) {
-      addInput(_var, false)
-      addInput(m, false)
-      addInput(v, false)
-      addInput(beta1_power, false)
-      addInput(lr, false)
-      addInput(beta1, false)
-      addInput(beta2, false)
-      addInput(epsilon, false)
-      addInput(grad, false)
-      attr("use_locking", use_locking)
-    }
+}
+
+fun TF.resourceApplyAdaMax(_var: Tensor, m: Tensor, v: Tensor, beta1_power: Tensor, lr: Tensor, beta1: Tensor, beta2: Tensor, epsilon: Tensor, grad: Tensor, use_locking: Boolean = false, name: String = "ResourceApplyAdaMax") = run {
+  buildOp("ResourceApplyAdaMax", name) {
+    addInput(_var, false)
+    addInput(m, false)
+    addInput(v, false)
+    addInput(beta1_power, false)
+    addInput(lr, false)
+    addInput(beta1, false)
+    addInput(beta2, false)
+    addInput(epsilon, false)
+    addInput(grad, false)
+    attr("use_locking", use_locking)
   }
 }
