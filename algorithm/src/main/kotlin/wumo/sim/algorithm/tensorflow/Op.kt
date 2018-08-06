@@ -1,7 +1,7 @@
 package wumo.sim.algorithm.tensorflow
 
-import org.bytedeco.javacpp.BytePointer
 import org.bytedeco.javacpp.PointerPointer
+import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
 import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.algorithm.tensorflow.ops.CondContext
 import wumo.sim.algorithm.tensorflow.ops.ControlFlowContext
@@ -34,8 +34,13 @@ class Op(val graph: Graph, val c_op: TF_Operation) {
    */
   internal fun update_input(index: Int, tensor: Tensor, update_dtype: Boolean = true) {
     val g = graph.c_graph
-    g.graph().UpdateEdge(tensor.node(), tensor.value_index, c_op.node(), index)
+    val status = newStatus()
+    UpdateEdge(g, tensor.asTF_Output(), _tf_input(index), status)
     inputs = _inputs()
+  }
+  
+  internal fun _tf_input(input_idx: Int) = run {
+    TF_Input().oper(c_op).index(input_idx)
   }
   
   override fun equals(other: Any?): Boolean {
@@ -78,14 +83,15 @@ class Op(val graph: Graph, val c_op: TF_Operation) {
    * Add a new control input to this findOp.
    */
   fun addControlInput(op: Op) {
-    val g = tf.g.c_graph.graph()
-    g.AddControlEdge(op.node, node)
+    val g = graph.c_graph
+    AddControlInput(g, c_op, op.c_op)
   }
   
   fun set_attr(key: String, value: AttrValue) {
-    val attr = c_op.node().def().mutable_attr()
-    attr.put(BytePointer("_class"), value)
-    //TODO require attr's operator[]
+    val status = newStatus()
+    val _buf = value.SerializeAsString()
+    val buf = TF_NewBufferFromString(_buf, _buf.limit())
+    SetAttr(graph.c_graph, c_op, key, buf, status)
   }
   
   val control_inputs: List<Op>

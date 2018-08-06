@@ -3,6 +3,7 @@ package wumo.sim.algorithm.tensorflow.learn_lowlevel_api
 import org.bytedeco.javacpp.BoolPointer
 import org.bytedeco.javacpp.BytePointer
 import org.bytedeco.javacpp.tensorflow
+import org.bytedeco.javacpp.tensorflow.AddControlInput
 import org.junit.Test
 import wumo.sim.algorithm.tensorflow.ops.const
 import wumo.sim.algorithm.tensorflow.ops.gen.matMul
@@ -41,6 +42,20 @@ class c_api_test {
     
     val g = tf.g.c_graph.graph()
     g.AddControlEdge(a.node(), c.node())
+    tf.printGraph()
+  }
+  
+  @Test
+  fun `add control input2`() {
+    val a = tf.const(1f, name = "a")
+    tf.control_dependencies(a) {
+      val b = tf.const(2f, name = "b")
+    }
+    
+    val c = tf.const(3f, name = "c")
+    tf.printGraph()
+    
+    AddControlInput(tf.g.c_graph, c.op!!.c_op, a.op!!.c_op)
     tf.printGraph()
   }
 }

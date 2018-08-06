@@ -12,8 +12,8 @@
     <artifactId>algorithm</artifactId>
 
     <properties>
-        <tensorflow.version>1.9.0</tensorflow.version>
-        <javacpp.version>1.4.2</javacpp.version>
+        <tensorflow.version>1.10.0-rc1</tensorflow.version>
+        <javacpp.version>1.4.3-SNAPSHOT</javacpp.version>
         <javacpp-resets-tensorflow.version>${tensorflow.version}-${javacpp.version}</javacpp-resets-tensorflow.version>
         <javacpp-resets-cuda.version>9.2-7.1-${javacpp.version}</javacpp-resets-cuda.version>
         <atomicfu.version>0.10.3</atomicfu.version>
@@ -59,12 +59,12 @@
         <!--<version>${javacpp-resets-tensorflow.version}</version>-->
         <!--<classifier>windows-x86_64-gpu</classifier>-->
         <!--</dependency>-->
-        <dependency>
-            <groupId>org.bytedeco.javacpp-presets</groupId>
-            <artifactId>cuda</artifactId>
-            <version>${javacpp-resets-cuda.version}</version>
-            <classifier>windows-x86_64-redist</classifier>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.bytedeco.javacpp-presets</groupId>-->
+            <!--<artifactId>cuda</artifactId>-->
+            <!--<version>${javacpp-resets-cuda.version}</version>-->
+            <!--<classifier>windows-x86_64-redist</classifier>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>wumo.sim</groupId>
