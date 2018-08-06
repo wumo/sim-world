@@ -4,12 +4,12 @@
 package wumo.sim.algorithm.tensorflow.ops.gen
 
 import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.Tensor
+import wumo.sim.algorithm.tensorflow.ops.Output
 import wumo.sim.algorithm.tensorflow.buildOp
 import wumo.sim.algorithm.tensorflow.buildOpTensor
 import wumo.sim.util.Dimension
 
-fun TF.assign(_ref: Tensor, value: Tensor, validate_shape: Boolean = true, use_locking: Boolean = true, name: String = "Assign") = run {
+fun TF.assign(_ref: Output, value: Output, validate_shape: Boolean = true, use_locking: Boolean = true, name: String = "Assign") = run {
   buildOpTensor("Assign", name) {
     addInput(_ref, true)
     addInput(value, false)
@@ -18,7 +18,7 @@ fun TF.assign(_ref: Tensor, value: Tensor, validate_shape: Boolean = true, use_l
   }
 }
 
-fun TF.assignAdd(_ref: Tensor, value: Tensor, use_locking: Boolean = false, name: String = "AssignAdd") = run {
+fun TF.assignAdd(_ref: Output, value: Output, use_locking: Boolean = false, name: String = "AssignAdd") = run {
   buildOpTensor("AssignAdd", name) {
     addInput(_ref, true)
     addInput(value, false)
@@ -26,7 +26,7 @@ fun TF.assignAdd(_ref: Tensor, value: Tensor, use_locking: Boolean = false, name
   }
 }
 
-fun TF.assignSub(_ref: Tensor, value: Tensor, use_locking: Boolean = false, name: String = "AssignSub") = run {
+fun TF.assignSub(_ref: Output, value: Output, use_locking: Boolean = false, name: String = "AssignSub") = run {
   buildOpTensor("AssignSub", name) {
     addInput(_ref, true)
     addInput(value, false)
@@ -34,27 +34,27 @@ fun TF.assignSub(_ref: Tensor, value: Tensor, use_locking: Boolean = false, name
   }
 }
 
-fun TF.countUpTo(_ref: Tensor, limit: Long, name: String = "CountUpTo") = run {
+fun TF.countUpTo(_ref: Output, limit: Long, name: String = "CountUpTo") = run {
   buildOpTensor("CountUpTo", name) {
     addInput(_ref, true)
     attr("limit", limit)
   }
 }
 
-fun TF.destroyTemporaryVariable(_ref: Tensor, var_name: String, name: String = "DestroyTemporaryVariable") = run {
+fun TF.destroyTemporaryVariable(_ref: Output, var_name: String, name: String = "DestroyTemporaryVariable") = run {
   buildOpTensor("DestroyTemporaryVariable", name) {
     addInput(_ref, true)
     attr("var_name", var_name)
   }
 }
 
-fun TF.isVariableInitialized(_ref: Tensor, name: String = "IsVariableInitialized") = run {
+fun TF.isVariableInitialized(_ref: Output, name: String = "IsVariableInitialized") = run {
   buildOpTensor("IsVariableInitialized", name) {
     addInput(_ref, true)
   }
 }
 
-fun TF.resourceCountUpTo(resource: Tensor, limit: Long, t: Int, name: String = "ResourceCountUpTo") = run {
+fun TF.resourceCountUpTo(resource: Output, limit: Long, t: Int, name: String = "ResourceCountUpTo") = run {
   buildOpTensor("ResourceCountUpTo", name) {
     addInput(resource, false)
     attr("limit", limit)
@@ -62,7 +62,7 @@ fun TF.resourceCountUpTo(resource: Tensor, limit: Long, t: Int, name: String = "
   }
 }
 
-fun TF.resourceScatterNdAdd(_ref: Tensor, indices: Tensor, updates: Tensor, use_locking: Boolean = true, name: String = "ResourceScatterNdAdd") = run {
+fun TF.resourceScatterNdAdd(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = true, name: String = "ResourceScatterNdAdd") = run {
   buildOp("ResourceScatterNdAdd", name) {
     addInput(_ref, false)
     addInput(indices, false)
@@ -71,7 +71,7 @@ fun TF.resourceScatterNdAdd(_ref: Tensor, indices: Tensor, updates: Tensor, use_
   }
 }
 
-fun TF.resourceScatterNdUpdate(_ref: Tensor, indices: Tensor, updates: Tensor, use_locking: Boolean = true, name: String = "ResourceScatterNdUpdate") = run {
+fun TF.resourceScatterNdUpdate(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = true, name: String = "ResourceScatterNdUpdate") = run {
   buildOp("ResourceScatterNdUpdate", name) {
     addInput(_ref, false)
     addInput(indices, false)
@@ -80,7 +80,7 @@ fun TF.resourceScatterNdUpdate(_ref: Tensor, indices: Tensor, updates: Tensor, u
   }
 }
 
-fun TF.scatterAdd(_ref: Tensor, indices: Tensor, updates: Tensor, use_locking: Boolean = false, name: String = "ScatterAdd") = run {
+fun TF.scatterAdd(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = false, name: String = "ScatterAdd") = run {
   buildOpTensor("ScatterAdd", name) {
     addInput(_ref, true)
     addInput(indices, false)
@@ -89,7 +89,7 @@ fun TF.scatterAdd(_ref: Tensor, indices: Tensor, updates: Tensor, use_locking: B
   }
 }
 
-fun TF.scatterDiv(_ref: Tensor, indices: Tensor, updates: Tensor, use_locking: Boolean = false, name: String = "ScatterDiv") = run {
+fun TF.scatterDiv(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = false, name: String = "ScatterDiv") = run {
   buildOpTensor("ScatterDiv", name) {
     addInput(_ref, true)
     addInput(indices, false)
@@ -98,7 +98,7 @@ fun TF.scatterDiv(_ref: Tensor, indices: Tensor, updates: Tensor, use_locking: B
   }
 }
 
-fun TF.scatterMax(_ref: Tensor, indices: Tensor, updates: Tensor, use_locking: Boolean = false, name: String = "ScatterMax") = run {
+fun TF.scatterMax(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = false, name: String = "ScatterMax") = run {
   buildOpTensor("ScatterMax", name) {
     addInput(_ref, true)
     addInput(indices, false)
@@ -107,7 +107,7 @@ fun TF.scatterMax(_ref: Tensor, indices: Tensor, updates: Tensor, use_locking: B
   }
 }
 
-fun TF.scatterMin(_ref: Tensor, indices: Tensor, updates: Tensor, use_locking: Boolean = false, name: String = "ScatterMin") = run {
+fun TF.scatterMin(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = false, name: String = "ScatterMin") = run {
   buildOpTensor("ScatterMin", name) {
     addInput(_ref, true)
     addInput(indices, false)
@@ -116,7 +116,7 @@ fun TF.scatterMin(_ref: Tensor, indices: Tensor, updates: Tensor, use_locking: B
   }
 }
 
-fun TF.scatterMul(_ref: Tensor, indices: Tensor, updates: Tensor, use_locking: Boolean = false, name: String = "ScatterMul") = run {
+fun TF.scatterMul(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = false, name: String = "ScatterMul") = run {
   buildOpTensor("ScatterMul", name) {
     addInput(_ref, true)
     addInput(indices, false)
@@ -125,7 +125,7 @@ fun TF.scatterMul(_ref: Tensor, indices: Tensor, updates: Tensor, use_locking: B
   }
 }
 
-fun TF.scatterNdAdd(_ref: Tensor, indices: Tensor, updates: Tensor, use_locking: Boolean = false, name: String = "ScatterNdAdd") = run {
+fun TF.scatterNdAdd(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = false, name: String = "ScatterNdAdd") = run {
   buildOpTensor("ScatterNdAdd", name) {
     addInput(_ref, true)
     addInput(indices, false)
@@ -134,7 +134,7 @@ fun TF.scatterNdAdd(_ref: Tensor, indices: Tensor, updates: Tensor, use_locking:
   }
 }
 
-fun TF.scatterNdSub(_ref: Tensor, indices: Tensor, updates: Tensor, use_locking: Boolean = false, name: String = "ScatterNdSub") = run {
+fun TF.scatterNdSub(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = false, name: String = "ScatterNdSub") = run {
   buildOpTensor("ScatterNdSub", name) {
     addInput(_ref, true)
     addInput(indices, false)
@@ -143,7 +143,7 @@ fun TF.scatterNdSub(_ref: Tensor, indices: Tensor, updates: Tensor, use_locking:
   }
 }
 
-fun TF.scatterNdUpdate(_ref: Tensor, indices: Tensor, updates: Tensor, use_locking: Boolean = true, name: String = "ScatterNdUpdate") = run {
+fun TF.scatterNdUpdate(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = true, name: String = "ScatterNdUpdate") = run {
   buildOpTensor("ScatterNdUpdate", name) {
     addInput(_ref, true)
     addInput(indices, false)
@@ -152,7 +152,7 @@ fun TF.scatterNdUpdate(_ref: Tensor, indices: Tensor, updates: Tensor, use_locki
   }
 }
 
-fun TF.scatterSub(_ref: Tensor, indices: Tensor, updates: Tensor, use_locking: Boolean = false, name: String = "ScatterSub") = run {
+fun TF.scatterSub(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = false, name: String = "ScatterSub") = run {
   buildOpTensor("ScatterSub", name) {
     addInput(_ref, true)
     addInput(indices, false)
@@ -161,7 +161,7 @@ fun TF.scatterSub(_ref: Tensor, indices: Tensor, updates: Tensor, use_locking: B
   }
 }
 
-fun TF.scatterUpdate(_ref: Tensor, indices: Tensor, updates: Tensor, use_locking: Boolean = true, name: String = "ScatterUpdate") = run {
+fun TF.scatterUpdate(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = true, name: String = "ScatterUpdate") = run {
   buildOpTensor("ScatterUpdate", name) {
     addInput(_ref, true)
     addInput(indices, false)

@@ -4,7 +4,7 @@ package wumo.sim.algorithm.drl.deepq
 
 import org.bytedeco.javacpp.tensorflow.DT_FLOAT
 import org.bytedeco.javacpp.tensorflow.DT_INT32
-import wumo.sim.algorithm.tensorflow.Tensor
+import wumo.sim.algorithm.tensorflow.ops.Output
 import wumo.sim.algorithm.tensorflow.ops.*
 import wumo.sim.algorithm.tensorflow.ops.gen.abs
 import wumo.sim.algorithm.tensorflow.ops.gen.less
@@ -27,19 +27,19 @@ interface Function {
 }
 
 class FunctionTensor(val inputs: Array<out Any>,
-                     val outputs: Array<Tensor>,
+                     val outputs: Array<Output>,
                      val updates: Array<out Any>,
-                     val givens: Array<out Pair<Tensor, NDArray<*>>>) : Function {
+                     val givens: Array<out Pair<Output, NDArray<*>>>) : Function {
   
   override operator fun invoke(vararg args: Any): Array<NDArray<*>> {
     assert(args.size <= inputs.size) { "Too many arguments provided" }
-    val feed_dict = mutableMapOf<Tensor, NDArray<*>>()
+    val feed_dict = mutableMapOf<Output, NDArray<*>>()
     for (i in 0 until inputs.size) {
       val input = inputs[i]
       val value = NDArray.toNDArray(args[i])
       feed_dict += when (input) {
         is TfInput -> input.make_feed_dict(value)
-        is Tensor -> input to value
+        is Output -> input to value
         else -> throw Exception()
       }
     }
@@ -76,9 +76,9 @@ fun function(inputs: Array<String> = emptyArray(),
 }
 
 fun function(inputs: Array<out Any> = emptyArray(),
-             outputs: Tensor,
+             outputs: Output,
              updates: Array<out Any> = emptyArray(),
-             givens: Array<Pair<Tensor, Any>> = emptyArray()): Function {
+             givens: Array<Pair<Output, Any>> = emptyArray()): Function {
   val _givens = a(givens.size) {
     val p = givens[it]
     p.first to NDArray.toNDArray(p.second)
@@ -87,9 +87,9 @@ fun function(inputs: Array<out Any> = emptyArray(),
 }
 
 fun function(inputs: Array<out Any> = emptyArray(),
-             outputs: Array<Tensor> = emptyArray(),
+             outputs: Array<Output> = emptyArray(),
              updates: Array<out Any> = emptyArray(),
-             givens: Array<Pair<Tensor, Any>> = emptyArray()): Function {
+             givens: Array<Pair<Output, Any>> = emptyArray()): Function {
   val _givens = a(givens.size) {
     val p = givens[it]
     p.first to NDArray.toNDArray(p.second)
@@ -97,7 +97,7 @@ fun function(inputs: Array<out Any> = emptyArray(),
   return FunctionTensor(inputs, outputs, updates, _givens)
 }
 
-fun huber_loss(x: Tensor, delta: Float = 1f): Tensor {
+fun huber_loss(x: Output, delta: Float = 1f): Output {
   val delta = tf.const(delta)
   return tf.where(
       tf.less(tf.abs(x), delta),
@@ -107,11 +107,11 @@ fun huber_loss(x: Tensor, delta: Float = 1f): Tensor {
 }
 
 abstract class TfInput(val name: String = "(unnamed)") {
-  abstract fun get(): Tensor
-  abstract fun make_feed_dict(data: NDArray<*>): Pair<Tensor, NDArray<*>>
+  abstract fun get(): Output
+  abstract fun make_feed_dict(data: NDArray<*>): Pair<Output, NDArray<*>>
 }
 
-open class PlaceholderTfInput(val placeholder: Tensor) : TfInput(placeholder.name) {
+open class PlaceholderTfInput(val placeholder: Output) : TfInput(placeholder.name) {
   override fun get() = placeholder
   
   override fun make_feed_dict(data: NDArray<*>) = placeholder to data
@@ -138,7 +138,7 @@ fun observation_input(ob_space: Space<*>, batch_size: Int = -1, name: String = "
       else -> throw NotImplementedError()
     }
 
-class ObservationInput(input: Tensor, val processed_input: Tensor) : PlaceholderTfInput(input) {
+class ObservationInput(input: Output, val processed_input: Output) : PlaceholderTfInput(input) {
   companion object {
     operator fun invoke(observation_space: Space<*>, name: String = ""): ObservationInput {
       val (input, processed_input) = observation_input(observation_space, name = name)

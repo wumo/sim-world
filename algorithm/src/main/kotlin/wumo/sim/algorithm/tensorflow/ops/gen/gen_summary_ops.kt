@@ -4,17 +4,17 @@
 package wumo.sim.algorithm.tensorflow.ops.gen
 
 import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.Tensor
+import wumo.sim.algorithm.tensorflow.ops.Output
 import wumo.sim.algorithm.tensorflow.buildOp
 import wumo.sim.algorithm.tensorflow.buildOpTensor
 
-fun TF.closeSummaryWriter(writer: Tensor, name: String = "CloseSummaryWriter") = run {
+fun TF.closeSummaryWriter(writer: Output, name: String = "CloseSummaryWriter") = run {
   buildOp("CloseSummaryWriter", name) {
     addInput(writer, false)
   }
 }
 
-fun TF.createSummaryDbWriter(writer: Tensor, db_uri: Tensor, experiment_name: Tensor, run_name: Tensor, user_name: Tensor, name: String = "CreateSummaryDbWriter") = run {
+fun TF.createSummaryDbWriter(writer: Output, db_uri: Output, experiment_name: Output, run_name: Output, user_name: Output, name: String = "CreateSummaryDbWriter") = run {
   buildOp("CreateSummaryDbWriter", name) {
     addInput(writer, false)
     addInput(db_uri, false)
@@ -24,7 +24,7 @@ fun TF.createSummaryDbWriter(writer: Tensor, db_uri: Tensor, experiment_name: Te
   }
 }
 
-fun TF.createSummaryFileWriter(writer: Tensor, logdir: Tensor, max_queue: Tensor, flush_millis: Tensor, filename_suffix: Tensor, name: String = "CreateSummaryFileWriter") = run {
+fun TF.createSummaryFileWriter(writer: Output, logdir: Output, max_queue: Output, flush_millis: Output, filename_suffix: Output, name: String = "CreateSummaryFileWriter") = run {
   buildOp("CreateSummaryFileWriter", name) {
     addInput(writer, false)
     addInput(logdir, false)
@@ -34,13 +34,13 @@ fun TF.createSummaryFileWriter(writer: Tensor, logdir: Tensor, max_queue: Tensor
   }
 }
 
-fun TF.flushSummaryWriter(writer: Tensor, name: String = "FlushSummaryWriter") = run {
+fun TF.flushSummaryWriter(writer: Output, name: String = "FlushSummaryWriter") = run {
   buildOp("FlushSummaryWriter", name) {
     addInput(writer, false)
   }
 }
 
-fun TF.importEvent(writer: Tensor, event: Tensor, name: String = "ImportEvent") = run {
+fun TF.importEvent(writer: Output, event: Output, name: String = "ImportEvent") = run {
   buildOp("ImportEvent", name) {
     addInput(writer, false)
     addInput(event, false)
@@ -54,7 +54,7 @@ fun TF.summaryWriter(shared_name: String = "", container: String = "", name: Str
   }
 }
 
-fun TF.writeAudioSummary(writer: Tensor, step: Tensor, tag: Tensor, tensor: Tensor, sample_rate: Tensor, max_outputs: Long = 3L, name: String = "WriteAudioSummary") = run {
+fun TF.writeAudioSummary(writer: Output, step: Output, tag: Output, tensor: Output, sample_rate: Output, max_outputs: Long = 3L, name: String = "WriteAudioSummary") = run {
   buildOp("WriteAudioSummary", name) {
     addInput(writer, false)
     addInput(step, false)
@@ -65,7 +65,7 @@ fun TF.writeAudioSummary(writer: Tensor, step: Tensor, tag: Tensor, tensor: Tens
   }
 }
 
-fun TF.writeGraphSummary(writer: Tensor, step: Tensor, tensor: Tensor, name: String = "WriteGraphSummary") = run {
+fun TF.writeGraphSummary(writer: Output, step: Output, tensor: Output, name: String = "WriteGraphSummary") = run {
   buildOp("WriteGraphSummary", name) {
     addInput(writer, false)
     addInput(step, false)
@@ -73,7 +73,7 @@ fun TF.writeGraphSummary(writer: Tensor, step: Tensor, tensor: Tensor, name: Str
   }
 }
 
-fun TF.writeHistogramSummary(writer: Tensor, step: Tensor, tag: Tensor, values: Tensor, name: String = "WriteHistogramSummary") = run {
+fun TF.writeHistogramSummary(writer: Output, step: Output, tag: Output, values: Output, name: String = "WriteHistogramSummary") = run {
   buildOp("WriteHistogramSummary", name) {
     addInput(writer, false)
     addInput(step, false)
@@ -82,7 +82,7 @@ fun TF.writeHistogramSummary(writer: Tensor, step: Tensor, tag: Tensor, values: 
   }
 }
 
-fun TF.writeImageSummary(writer: Tensor, step: Tensor, tag: Tensor, tensor: Tensor, bad_color: Tensor, max_images: Long = 3L, name: String = "WriteImageSummary") = run {
+fun TF.writeImageSummary(writer: Output, step: Output, tag: Output, tensor: Output, bad_color: Output, max_images: Long = 3L, name: String = "WriteImageSummary") = run {
   buildOp("WriteImageSummary", name) {
     addInput(writer, false)
     addInput(step, false)
@@ -93,7 +93,7 @@ fun TF.writeImageSummary(writer: Tensor, step: Tensor, tag: Tensor, tensor: Tens
   }
 }
 
-fun TF.writeScalarSummary(writer: Tensor, step: Tensor, tag: Tensor, value: Tensor, name: String = "WriteScalarSummary") = run {
+fun TF.writeScalarSummary(writer: Output, step: Output, tag: Output, value: Output, name: String = "WriteScalarSummary") = run {
   buildOp("WriteScalarSummary", name) {
     addInput(writer, false)
     addInput(step, false)
@@ -102,7 +102,7 @@ fun TF.writeScalarSummary(writer: Tensor, step: Tensor, tag: Tensor, value: Tens
   }
 }
 
-fun TF.writeSummary(writer: Tensor, step: Tensor, tensor: Tensor, tag: Tensor, summary_metadata: Tensor, name: String = "WriteSummary") = run {
+fun TF.writeSummary(writer: Output, step: Output, tensor: Output, tag: Output, summary_metadata: Output, name: String = "WriteSummary") = run {
   buildOp("WriteSummary", name) {
     addInput(writer, false)
     addInput(step, false)

@@ -2,16 +2,15 @@ package wumo.sim.algorithm.tensorflow.ops
 
 import org.bytedeco.javacpp.tensorflow.DT_FLOAT
 import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.is_integer
 import wumo.sim.algorithm.tensorflow.ops.gen.*
 import wumo.sim.algorithm.tensorflow.tf
 import wumo.sim.util.Dimension
 import wumo.sim.util.scalarDimension
 
-fun TF.random_normal(shape: Tensor, dtype: Int = DT_FLOAT,
-                     mean: Float = 0f, stddev: Tensor,
-                     name: String = "random_normal"): Tensor {
+fun TF.random_normal(shape: Output, dtype: Int = DT_FLOAT,
+                     mean: Float = 0f, stddev: Output,
+                     name: String = "random_normal"): Output {
   name_scope(name) {
     val mean_t = const(mean, name = "mean")
     val rnd = randomStandardNormal(shape, dtype)
@@ -20,9 +19,9 @@ fun TF.random_normal(shape: Tensor, dtype: Int = DT_FLOAT,
   }
 }
 
-fun TF.random_normal(shape: Tensor, dtype: Int = DT_FLOAT,
+fun TF.random_normal(shape: Output, dtype: Int = DT_FLOAT,
                      mean: Float = 0f, stddev: Float = 1f,
-                     name: String = "random_normal"): Tensor {
+                     name: String = "random_normal"): Output {
   name_scope(name) {
     val mean_t = const(mean, name = "mean")
     val stddev_t = const(stddev)
@@ -32,9 +31,9 @@ fun TF.random_normal(shape: Tensor, dtype: Int = DT_FLOAT,
   }
 }
 
-fun TF.random_normal(shape: Tensor, dtype: Int = DT_FLOAT,
-                     mean: Tensor, stddev: Tensor,
-                     name: String = "RandomStandardNormal"): Tensor {
+fun TF.random_normal(shape: Output, dtype: Int = DT_FLOAT,
+                     mean: Output, stddev: Output,
+                     name: String = "RandomStandardNormal"): Output {
   name_scope(name) {
     val rnd = randomStandardNormal(shape, dtype)
     val mul = rnd * stddev
@@ -42,9 +41,9 @@ fun TF.random_normal(shape: Tensor, dtype: Int = DT_FLOAT,
   }
 }
 
-fun TF.random_uniform(shape: Tensor, dtype: Int = DT_FLOAT,
+fun TF.random_uniform(shape: Output, dtype: Int = DT_FLOAT,
                       min: Number, max: Number,
-                      name: String = "random_uniform"): Tensor {
+                      name: String = "random_uniform"): Output {
   name_scope(name) {
     val minval = const(scalarDimension, dtype, min, name = "min")
     val maxval = const(scalarDimension, dtype, max, name = "max")
@@ -57,7 +56,7 @@ fun TF.random_uniform(shape: Tensor, dtype: Int = DT_FLOAT,
 
 fun TF.random_uniform(shape: Dimension,
                       min: Float, max: Float,
-                      name: String = "random_uniform"): Tensor {
+                      name: String = "random_uniform"): Output {
   name_scope(name) {
     val shape_t = tf.const(shape.asIntArray(), "shape")
     val minval = const(min, "min")
@@ -68,7 +67,7 @@ fun TF.random_uniform(shape: Dimension,
   }
 }
 
-fun TF.truncatedNormal(shape: Tensor, mean: Float = 0f, stddev: Float = 1f, dtype: Int = DT_FLOAT, name: String = "truncated_normal"): Tensor {
+fun TF.truncatedNormal(shape: Output, mean: Float = 0f, stddev: Float = 1f, dtype: Int = DT_FLOAT, name: String = "truncated_normal"): Output {
   name_scope(name) {
     val mean_t = const(mean, name = "mean")
     val stddev_t = const(stddev, name = "stddev")

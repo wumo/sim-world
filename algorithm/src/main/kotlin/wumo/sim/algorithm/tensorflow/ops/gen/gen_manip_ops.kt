@@ -4,10 +4,10 @@
 package wumo.sim.algorithm.tensorflow.ops.gen
 
 import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.Tensor
+import wumo.sim.algorithm.tensorflow.ops.Output
 import wumo.sim.algorithm.tensorflow.buildOpTensor
 
-fun TF.roll(input: Tensor, shift: Tensor, axis: Tensor, name: String = "Roll") = run {
+fun TF.roll(input: Output, shift: Output, axis: Output, name: String = "Roll") = run {
   buildOpTensor("Roll", name) {
     addInput(input, false)
     addInput(shift, false)

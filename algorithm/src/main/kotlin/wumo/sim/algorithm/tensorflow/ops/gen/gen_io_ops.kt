@@ -4,6 +4,7 @@
 package wumo.sim.algorithm.tensorflow.ops.gen
 
 import wumo.sim.algorithm.tensorflow.*
+import wumo.sim.algorithm.tensorflow.ops.Output
 
 fun TF.fixedLengthRecordReaderV2(record_bytes: Long, header_bytes: Long = 0L, footer_bytes: Long = 0L, hop_bytes: Long = 0L, container: String = "", shared_name: String = "", encoding: String = "", name: String = "FixedLengthRecordReaderV2") = run {
   buildOpTensor("FixedLengthRecordReaderV2", name) {
@@ -31,13 +32,13 @@ fun TF.lMDBReader(container: String = "", shared_name: String = "", name: String
   }
 }
 
-fun TF.matchingFiles(pattern: Tensor, name: String = "MatchingFiles") = run {
+fun TF.matchingFiles(pattern: Output, name: String = "MatchingFiles") = run {
   buildOpTensor("MatchingFiles", name) {
     addInput(pattern, false)
   }
 }
 
-fun TF.mergeV2Checkpoints(checkpoint_prefixes: Tensor, destination_prefix: Tensor, delete_old_dirs: Boolean = true, name: String = "MergeV2Checkpoints") = run {
+fun TF.mergeV2Checkpoints(checkpoint_prefixes: Output, destination_prefix: Output, delete_old_dirs: Boolean = true, name: String = "MergeV2Checkpoints") = run {
   buildOp("MergeV2Checkpoints", name) {
     addInput(checkpoint_prefixes, false)
     addInput(destination_prefix, false)
@@ -45,25 +46,25 @@ fun TF.mergeV2Checkpoints(checkpoint_prefixes: Tensor, destination_prefix: Tenso
   }
 }
 
-fun TF.readFile(filename: Tensor, name: String = "ReadFile") = run {
+fun TF.readFile(filename: Output, name: String = "ReadFile") = run {
   buildOpTensor("ReadFile", name) {
     addInput(filename, false)
   }
 }
 
-fun TF.readerNumRecordsProducedV2(reader_handle: Tensor, name: String = "ReaderNumRecordsProducedV2") = run {
+fun TF.readerNumRecordsProducedV2(reader_handle: Output, name: String = "ReaderNumRecordsProducedV2") = run {
   buildOpTensor("ReaderNumRecordsProducedV2", name) {
     addInput(reader_handle, false)
   }
 }
 
-fun TF.readerNumWorkUnitsCompletedV2(reader_handle: Tensor, name: String = "ReaderNumWorkUnitsCompletedV2") = run {
+fun TF.readerNumWorkUnitsCompletedV2(reader_handle: Output, name: String = "ReaderNumWorkUnitsCompletedV2") = run {
   buildOpTensor("ReaderNumWorkUnitsCompletedV2", name) {
     addInput(reader_handle, false)
   }
 }
 
-fun TF.readerReadUpToV2(reader_handle: Tensor, queue_handle: Tensor, num_records: Tensor, name: String = "ReaderReadUpToV2") = run {
+fun TF.readerReadUpToV2(reader_handle: Output, queue_handle: Output, num_records: Output, name: String = "ReaderReadUpToV2") = run {
   buildOpTensors("ReaderReadUpToV2", name) {
     addInput(reader_handle, false)
     addInput(queue_handle, false)
@@ -71,33 +72,33 @@ fun TF.readerReadUpToV2(reader_handle: Tensor, queue_handle: Tensor, num_records
   }
 }
 
-fun TF.readerReadV2(reader_handle: Tensor, queue_handle: Tensor, name: String = "ReaderReadV2") = run {
+fun TF.readerReadV2(reader_handle: Output, queue_handle: Output, name: String = "ReaderReadV2") = run {
   buildOpTensors("ReaderReadV2", name) {
     addInput(reader_handle, false)
     addInput(queue_handle, false)
   }
 }
 
-fun TF.readerResetV2(reader_handle: Tensor, name: String = "ReaderResetV2") = run {
+fun TF.readerResetV2(reader_handle: Output, name: String = "ReaderResetV2") = run {
   buildOp("ReaderResetV2", name) {
     addInput(reader_handle, false)
   }
 }
 
-fun TF.readerRestoreStateV2(reader_handle: Tensor, state: Tensor, name: String = "ReaderRestoreStateV2") = run {
+fun TF.readerRestoreStateV2(reader_handle: Output, state: Output, name: String = "ReaderRestoreStateV2") = run {
   buildOp("ReaderRestoreStateV2", name) {
     addInput(reader_handle, false)
     addInput(state, false)
   }
 }
 
-fun TF.readerSerializeStateV2(reader_handle: Tensor, name: String = "ReaderSerializeStateV2") = run {
+fun TF.readerSerializeStateV2(reader_handle: Output, name: String = "ReaderSerializeStateV2") = run {
   buildOpTensor("ReaderSerializeStateV2", name) {
     addInput(reader_handle, false)
   }
 }
 
-fun TF.restore(file_pattern: Tensor, tensor_name: Tensor, dt: Int, preferred_shard: Long = -1L, name: String = "Restore") = run {
+fun TF.restore(file_pattern: Output, tensor_name: Output, dt: Int, preferred_shard: Long = -1L, name: String = "Restore") = run {
   buildOpTensor("Restore", name) {
     addInput(file_pattern, false)
     addInput(tensor_name, false)
@@ -106,7 +107,7 @@ fun TF.restore(file_pattern: Tensor, tensor_name: Tensor, dt: Int, preferred_sha
   }
 }
 
-fun TF.restoreSlice(file_pattern: Tensor, tensor_name: Tensor, shape_and_slice: Tensor, dt: Int, preferred_shard: Long = -1L, name: String = "RestoreSlice") = run {
+fun TF.restoreSlice(file_pattern: Output, tensor_name: Output, shape_and_slice: Output, dt: Int, preferred_shard: Long = -1L, name: String = "RestoreSlice") = run {
   buildOpTensor("RestoreSlice", name) {
     addInput(file_pattern, false)
     addInput(tensor_name, false)
@@ -116,7 +117,7 @@ fun TF.restoreSlice(file_pattern: Tensor, tensor_name: Tensor, shape_and_slice: 
   }
 }
 
-fun TF.restoreV2(prefix: Tensor, tensor_names: Tensor, shape_and_slices: Tensor, dtypes: Array<Long>, name: String = "RestoreV2") = run {
+fun TF.restoreV2(prefix: Output, tensor_names: Output, shape_and_slices: Output, dtypes: Array<Long>, name: String = "RestoreV2") = run {
   buildOpTensors("RestoreV2", name) {
     addInput(prefix, false)
     addInput(tensor_names, false)
@@ -125,7 +126,7 @@ fun TF.restoreV2(prefix: Tensor, tensor_names: Tensor, shape_and_slices: Tensor,
   }
 }
 
-fun TF.save(filename: Tensor, tensor_names: Tensor, data: Tensor, name: String = "Save") = run {
+fun TF.save(filename: Output, tensor_names: Output, data: Output, name: String = "Save") = run {
   buildOp("Save", name) {
     addInput(filename, false)
     addInput(tensor_names, false)
@@ -133,7 +134,7 @@ fun TF.save(filename: Tensor, tensor_names: Tensor, data: Tensor, name: String =
   }
 }
 
-fun TF.saveSlices(filename: Tensor, tensor_names: Tensor, shapes_and_slices: Tensor, data: Tensor, name: String = "SaveSlices") = run {
+fun TF.saveSlices(filename: Output, tensor_names: Output, shapes_and_slices: Output, data: Output, name: String = "SaveSlices") = run {
   buildOp("SaveSlices", name) {
     addInput(filename, false)
     addInput(tensor_names, false)
@@ -142,7 +143,7 @@ fun TF.saveSlices(filename: Tensor, tensor_names: Tensor, shapes_and_slices: Ten
   }
 }
 
-fun TF.saveV2(prefix: Tensor, tensor_names: Tensor, shape_and_slices: Tensor, tensors: Tensor, name: String = "SaveV2") = run {
+fun TF.saveV2(prefix: Output, tensor_names: Output, shape_and_slices: Output, tensors: Output, name: String = "SaveV2") = run {
   buildOp("SaveV2", name) {
     addInput(prefix, false)
     addInput(tensor_names, false)
@@ -151,7 +152,7 @@ fun TF.saveV2(prefix: Tensor, tensor_names: Tensor, shape_and_slices: Tensor, te
   }
 }
 
-fun TF.shardedFilename(basename: Tensor, shard: Tensor, num_shards: Tensor, name: String = "ShardedFilename") = run {
+fun TF.shardedFilename(basename: Output, shard: Output, num_shards: Output, name: String = "ShardedFilename") = run {
   buildOpTensor("ShardedFilename", name) {
     addInput(basename, false)
     addInput(shard, false)
@@ -159,7 +160,7 @@ fun TF.shardedFilename(basename: Tensor, shard: Tensor, num_shards: Tensor, name
   }
 }
 
-fun TF.shardedFilespec(basename: Tensor, num_shards: Tensor, name: String = "ShardedFilespec") = run {
+fun TF.shardedFilespec(basename: Output, num_shards: Output, name: String = "ShardedFilespec") = run {
   buildOpTensor("ShardedFilespec", name) {
     addInput(basename, false)
     addInput(num_shards, false)
@@ -189,7 +190,7 @@ fun TF.wholeFileReaderV2(container: String = "", shared_name: String = "", name:
   }
 }
 
-fun TF.writeFile(filename: Tensor, contents: Tensor, name: String = "WriteFile") = run {
+fun TF.writeFile(filename: Output, contents: Output, name: String = "WriteFile") = run {
   buildOp("WriteFile", name) {
     addInput(filename, false)
     addInput(contents, false)

@@ -1,9 +1,9 @@
 package wumo.sim.algorithm.tensorflow.ops.gradients
 
 import org.bytedeco.javacpp.tensorflow.*
-import wumo.sim.algorithm.tensorflow.Op
+import wumo.sim.algorithm.tensorflow.ops.Op
 import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.Tensor
+import wumo.sim.algorithm.tensorflow.ops.Output
 import wumo.sim.algorithm.tensorflow.ops.gen.addN
 import wumo.sim.algorithm.tensorflow.ops.register_array_grad
 import wumo.sim.algorithm.tensorflow.ops.register_math_grad
@@ -25,17 +25,17 @@ import kotlin.collections.toTypedArray
 import wumo.sim.algorithm.tensorflow.ops.gen.onesLike as _onesLike
 import wumo.sim.algorithm.tensorflow.ops.gen.zerosLike as _zerosLike
 
-fun TF.addSymbolicGradients(outputs: List<Tensor>,
-                            inputs: List<Tensor>): MutableList<Tensor> {
+fun TF.addSymbolicGradients(outputs: List<Output>,
+                            inputs: List<Output>): MutableList<Output> {
   val grad_inputs = MutableList(outputs.size) {
     _onesLike(outputs[it])
   }
   return addSymbolicGradients(outputs, inputs, grad_inputs)
 }
 
-fun TF.addSymbolicGradients(outputs: List<Tensor>,
-                            inputs: List<Tensor>,
-                            grad_inputs: List<Tensor>): MutableList<Tensor> {
+fun TF.addSymbolicGradients(outputs: List<Output>,
+                            inputs: List<Output>,
+                            grad_inputs: List<Output>): MutableList<Output> {
   val out = MutableList(inputs.size) { noGradient }
   val builder = SymbolicGradientBuilder(this, outputs, inputs, grad_inputs, out)
   builder.addGradients()
@@ -43,9 +43,9 @@ fun TF.addSymbolicGradients(outputs: List<Tensor>,
 }
 
 /**A vector of output endpoints which represents backpropagated gradients.*/
-typealias BackproppedGradients = ArrayList<Tensor>
+typealias BackproppedGradients = ArrayList<Output>
 
-typealias GradFunc = (Op, List<Tensor>, MutableList<Tensor>) -> Unit
+typealias GradFunc = (Op, List<Output>, MutableList<Output>) -> Unit
 
 val nullGradFunc: GradFunc = { _, _, _ -> }
 
@@ -84,16 +84,16 @@ fun register_gradient_op_uniq(name: String, fn: GradFunc) {
 }
 
 class SymbolicGradientBuilder(val tf: TF,
-                              val outputs_: List<Tensor>,
-                              val inputs_: List<Tensor>,
-                              val grad_inputs_: List<Tensor>,
-                              val grad_outputs_: MutableList<Tensor>) {
+                              val outputs_: List<Output>,
+                              val inputs_: List<Output>,
+                              val grad_inputs_: List<Output>,
+                              val grad_outputs_: MutableList<Output>) {
   /**
    * backprops_ is a map from a node output to its accumulated
    * gradients.  When a node output has accumulated all its
    * gradients, we add a node which sums them up.
    */
-  val backprops_ = HashMap<Tensor, BackproppedGradients>()
+  val backprops_ = HashMap<Output, BackproppedGradients>()
   /**
    * pending[i] is count-down counter for i-th node's expected
    * backprops.  When pending[i] becomes zero, we collected all
@@ -110,7 +110,7 @@ class SymbolicGradientBuilder(val tf: TF,
    * The set of node ids in `inputs_`. Used to identify nodes at backprop
    * frontier. Maps from Output -> index into `grad_outputs_`.
    */
-  val input_nodes_ = HashMap<Tensor, Int>()
+  val input_nodes_ = HashMap<Output, Int>()
   
   private fun initialize() {
     if (outputs_.size != grad_inputs_.size)
@@ -192,7 +192,7 @@ class SymbolicGradientBuilder(val tf: TF,
    * to `dst` in the graph. This will add `dst_grad` to the list of pending
    * gradients for the node associated with `src`.
    */
-  private fun backpropAlongEdge(dst_grad: Tensor, src: Tensor) {
+  private fun backpropAlongEdge(dst_grad: Output, src: Output) {
     if (src.node() == null)
       throw Exception("Attempted to backprop along an invalid edge.")
     val grads = backprops_[src]
@@ -364,7 +364,7 @@ class SymbolicGradientBuilder(val tf: TF,
       
       // TODO(andydavis) Add option to encapsulate grad function in
       // SymbolicGradientOp (as opposed to inlining into the graph).
-      val dx = mutableListOf<Tensor>()
+      val dx = mutableListOf<Output>()
       callGradFunction(Operation(n), dy, dx)
       
       // Backprop along the in edges.
@@ -399,7 +399,7 @@ class SymbolicGradientBuilder(val tf: TF,
     }
   }
   
-  private fun callGradFunction(op: Operation, grad_inputs: MutableList<Tensor>, grad_outputs: MutableList<Tensor>) {
+  private fun callGradFunction(op: Operation, grad_inputs: MutableList<Output>, grad_outputs: MutableList<Output>) {
     val grad_fn = GradOpRegistry[op.node().type_string().string]!!
     grad_fn(op.node().toOperation(),
             grad_inputs, grad_outputs)
@@ -414,14 +414,14 @@ class SymbolicGradientBuilder(val tf: TF,
    * Adds a node to the graph (returned in `grad`) that sums the in-bound
    * gradients to `src` (if there are more than one).
    */
-  private fun sumGradients(src: Tensor): Tensor {
+  private fun sumGradients(src: Output): Output {
     val grads = backprops_[src]
         ?: throw  Exception("Unable to find backprop list for node.id ${src.node().name().string}")
     
     // Filter any backproped 'NoGradient' Outputs from 'grads' (if needed).
     // Return any valid backproped gradients that remain after filtering,
     // or 'NoGradient' otherwise.
-    val grads_to_keep = mutableListOf<Tensor>()
+    val grads_to_keep = mutableListOf<Output>()
     for (o in grads) {
       if (o == noGradient) continue
       grads_to_keep.add(o)
@@ -445,9 +445,9 @@ class SymbolicGradientBuilder(val tf: TF,
 
 val noGradient = toTensor(null, -1)
 fun toTensor(n: Node?, v: Int) =
-    if (n == null) Tensor(null, v)
+    if (n == null) Output(null, v)
     else
-      Tensor(n.toOperation(), v)
+      Output(n.toOperation(), v)
 
 fun Node.toOperation() = Op(tf.g, TF_Operation(this))
 

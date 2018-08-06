@@ -1,14 +1,13 @@
 package wumo.sim.algorithm.tensorflow.training
 
-import wumo.sim.algorithm.tensorflow.Op
-import wumo.sim.algorithm.tensorflow.Tensor
+import wumo.sim.algorithm.tensorflow.ops.Op
+import wumo.sim.algorithm.tensorflow.ops.Output
 import wumo.sim.algorithm.tensorflow.Variable
 import wumo.sim.algorithm.tensorflow.ops.gradients
 import wumo.sim.algorithm.tensorflow.ops.group
 import wumo.sim.algorithm.tensorflow.ops.variable
 import wumo.sim.algorithm.tensorflow.tf
 import wumo.sim.util.tuple2
-import wumo.sim.util.zip
 
 /**
  * This class defines the API to add Ops to train a model.  You never use this
@@ -19,19 +18,19 @@ abstract class Optimizer(val use_locking: Boolean, val name: String) {
   val slots = mutableMapOf<String, MutableMap<Variable, Variable>>()
   val non_slot_dict = mutableMapOf<String, Variable>()
   
-  fun minimize(loss: Tensor, var_list: Collection<Variable>? = null, name: String = ""): Op {
+  fun minimize(loss: Output, var_list: Collection<Variable>? = null, name: String = ""): Op {
     val grads_and_vars = compute_gradients(loss, var_list)
     val vars_with_grad = grads_and_vars.map { (g, v) -> v }
     return apply_gradients(grads_and_vars, name = name)
   }
   
-  fun compute_gradients(loss: Tensor, var_list: Collection<Variable>?): List<tuple2<Tensor, Variable>> {
+  fun compute_gradients(loss: Output, var_list: Collection<Variable>?): List<tuple2<Output, Variable>> {
     val var_list = var_list ?: tf.trainables
     val grads = tf.gradients(loss, var_list)
     return grads.zip(var_list)
   }
   
-  fun apply_gradients(grads_and_vars: List<tuple2<Tensor, Variable>>, name: String = ""): Op {
+  fun apply_gradients(grads_and_vars: List<tuple2<Output, Variable>>, name: String = ""): Op {
     val name = if (name.isEmpty()) this.name else name
     val var_list = grads_and_vars.map { (g, v) -> v }
     create_slots(var_list)
@@ -57,7 +56,7 @@ abstract class Optimizer(val use_locking: Boolean, val name: String) {
   abstract fun prepare()
   
   //TODO sparse IndexedSlices
-  abstract fun apply_dense(grad: Tensor, v: Variable): Op
+  abstract fun apply_dense(grad: Output, v: Variable): Op
   
   open fun finish(update_ops: MutableList<Op>, name: String) =
       tf.group(update_ops, name)

@@ -4,18 +4,18 @@
 package wumo.sim.algorithm.tensorflow.ops.gen
 
 import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.Tensor
+import wumo.sim.algorithm.tensorflow.ops.Output
 import wumo.sim.algorithm.tensorflow.buildOpTensor
 import wumo.sim.algorithm.tensorflow.buildOpTensors
 
-fun TF.emptyTensorList(element_shape: Tensor, element_dtype: Int, name: String = "EmptyTensorList") = run {
+fun TF.emptyTensorList(element_shape: Output, element_dtype: Int, name: String = "EmptyTensorList") = run {
   buildOpTensor("EmptyTensorList", name) {
     addInput(element_shape, false)
     attrType("element_dtype", element_dtype)
   }
 }
 
-fun TF.tensorListConcatLists(input_a: Tensor, input_b: Tensor, element_dtype: Int, name: String = "TensorListConcatLists") = run {
+fun TF.tensorListConcatLists(input_a: Output, input_b: Output, element_dtype: Int, name: String = "TensorListConcatLists") = run {
   buildOpTensor("TensorListConcatLists", name) {
     addInput(input_a, false)
     addInput(input_b, false)
@@ -23,21 +23,21 @@ fun TF.tensorListConcatLists(input_a: Tensor, input_b: Tensor, element_dtype: In
   }
 }
 
-fun TF.tensorListElementShape(input_handle: Tensor, shape_type: Int, name: String = "TensorListElementShape") = run {
+fun TF.tensorListElementShape(input_handle: Output, shape_type: Int, name: String = "TensorListElementShape") = run {
   buildOpTensor("TensorListElementShape", name) {
     addInput(input_handle, false)
     attrType("shape_type", shape_type)
   }
 }
 
-fun TF.tensorListFromTensor(tensor: Tensor, element_shape: Tensor, name: String = "TensorListFromTensor") = run {
+fun TF.tensorListFromTensor(tensor: Output, element_shape: Output, name: String = "TensorListFromTensor") = run {
   buildOpTensor("TensorListFromTensor", name) {
     addInput(tensor, false)
     addInput(element_shape, false)
   }
 }
 
-fun TF.tensorListGetItem(input_handle: Tensor, index: Tensor, element_dtype: Int, name: String = "TensorListGetItem") = run {
+fun TF.tensorListGetItem(input_handle: Output, index: Output, element_dtype: Int, name: String = "TensorListGetItem") = run {
   buildOpTensor("TensorListGetItem", name) {
     addInput(input_handle, false)
     addInput(index, false)
@@ -45,34 +45,34 @@ fun TF.tensorListGetItem(input_handle: Tensor, index: Tensor, element_dtype: Int
   }
 }
 
-fun TF.tensorListLength(input_handle: Tensor, name: String = "TensorListLength") = run {
+fun TF.tensorListLength(input_handle: Output, name: String = "TensorListLength") = run {
   buildOpTensor("TensorListLength", name) {
     addInput(input_handle, false)
   }
 }
 
-fun TF.tensorListPopBack(input_handle: Tensor, element_dtype: Int, name: String = "TensorListPopBack") = run {
+fun TF.tensorListPopBack(input_handle: Output, element_dtype: Int, name: String = "TensorListPopBack") = run {
   buildOpTensors("TensorListPopBack", name) {
     addInput(input_handle, false)
     attrType("element_dtype", element_dtype)
   }
 }
 
-fun TF.tensorListPushBack(input_handle: Tensor, tensor: Tensor, name: String = "TensorListPushBack") = run {
+fun TF.tensorListPushBack(input_handle: Output, tensor: Output, name: String = "TensorListPushBack") = run {
   buildOpTensor("TensorListPushBack", name) {
     addInput(input_handle, false)
     addInput(tensor, false)
   }
 }
 
-fun TF.tensorListPushBackBatch(input_handles: Tensor, tensor: Tensor, name: String = "TensorListPushBackBatch") = run {
+fun TF.tensorListPushBackBatch(input_handles: Output, tensor: Output, name: String = "TensorListPushBackBatch") = run {
   buildOpTensor("TensorListPushBackBatch", name) {
     addInput(input_handles, false)
     addInput(tensor, false)
   }
 }
 
-fun TF.tensorListReserve(element_shape: Tensor, num_elements: Tensor, element_dtype: Int, name: String = "TensorListReserve") = run {
+fun TF.tensorListReserve(element_shape: Output, num_elements: Output, element_dtype: Int, name: String = "TensorListReserve") = run {
   buildOpTensor("TensorListReserve", name) {
     addInput(element_shape, false)
     addInput(num_elements, false)
@@ -80,7 +80,7 @@ fun TF.tensorListReserve(element_shape: Tensor, num_elements: Tensor, element_dt
   }
 }
 
-fun TF.tensorListSetItem(input_handle: Tensor, index: Tensor, item: Tensor, name: String = "TensorListSetItem") = run {
+fun TF.tensorListSetItem(input_handle: Output, index: Output, item: Output, name: String = "TensorListSetItem") = run {
   buildOpTensor("TensorListSetItem", name) {
     addInput(input_handle, false)
     addInput(index, false)
@@ -88,7 +88,7 @@ fun TF.tensorListSetItem(input_handle: Tensor, index: Tensor, item: Tensor, name
   }
 }
 
-fun TF.tensorListStack(input_handle: Tensor, element_dtype: Int, num_elements: Long = -1L, name: String = "TensorListStack") = run {
+fun TF.tensorListStack(input_handle: Output, element_dtype: Int, num_elements: Long = -1L, name: String = "TensorListStack") = run {
   buildOpTensor("TensorListStack", name) {
     addInput(input_handle, false)
     attrType("element_dtype", element_dtype)

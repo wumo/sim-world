@@ -1,11 +1,11 @@
 package wumo.sim.algorithm.tensorflow.ops.gradients
 
-import wumo.sim.algorithm.tensorflow.Tensor
+import wumo.sim.algorithm.tensorflow.ops.Output
 
-fun <JAC_T> computeGradientError(xs: Collection<Tensor>, ys: Collection<Tensor>, max_error: MutableCollection<JAC_T>) {
+fun <JAC_T> computeGradientError(xs: Collection<Output>, ys: Collection<Output>, max_error: MutableCollection<JAC_T>) {
 
 }
 
-fun <JAC_T> computeGradientError(xs: Tensor, x_init_value: Tensor, ys: Tensor, max_error: MutableCollection<JAC_T>) {
+fun <JAC_T> computeGradientError(xs: Output, x_init_value: Output, ys: Output, max_error: MutableCollection<JAC_T>) {
 
 }

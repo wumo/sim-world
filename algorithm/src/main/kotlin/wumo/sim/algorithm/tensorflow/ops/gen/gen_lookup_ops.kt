@@ -4,6 +4,7 @@
 package wumo.sim.algorithm.tensorflow.ops.gen
 
 import wumo.sim.algorithm.tensorflow.*
+import wumo.sim.algorithm.tensorflow.ops.Output
 import wumo.sim.util.Dimension
 
 fun TF.hashTableV2(key_dtype: Int, value_dtype: Int, container: String = "", shared_name: String = "", use_node_name_sharing: Boolean = false, name: String = "HashTableV2") = run {
@@ -16,7 +17,7 @@ fun TF.hashTableV2(key_dtype: Int, value_dtype: Int, container: String = "", sha
   }
 }
 
-fun TF.initializeTableFromTextFileV2(table_handle: Tensor, filename: Tensor, key_index: Long, value_index: Long, vocab_size: Long = -1L, delimiter: String = "\t", name: String = "InitializeTableFromTextFileV2") = run {
+fun TF.initializeTableFromTextFileV2(table_handle: Output, filename: Output, key_index: Long, value_index: Long, vocab_size: Long = -1L, delimiter: String = "\t", name: String = "InitializeTableFromTextFileV2") = run {
   buildOp("InitializeTableFromTextFileV2", name) {
     addInput(table_handle, false)
     addInput(filename, false)
@@ -27,7 +28,7 @@ fun TF.initializeTableFromTextFileV2(table_handle: Tensor, filename: Tensor, key
   }
 }
 
-fun TF.initializeTableV2(table_handle: Tensor, keys: Tensor, values: Tensor, name: String = "InitializeTableV2") = run {
+fun TF.initializeTableV2(table_handle: Output, keys: Output, values: Output, name: String = "InitializeTableV2") = run {
   buildOp("InitializeTableV2", name) {
     addInput(table_handle, false)
     addInput(keys, false)
@@ -35,7 +36,7 @@ fun TF.initializeTableV2(table_handle: Tensor, keys: Tensor, values: Tensor, nam
   }
 }
 
-fun TF.lookupTableExportV2(table_handle: Tensor, tkeys: Int, tvalues: Int, name: String = "LookupTableExportV2") = run {
+fun TF.lookupTableExportV2(table_handle: Output, tkeys: Int, tvalues: Int, name: String = "LookupTableExportV2") = run {
   buildOpTensors("LookupTableExportV2", name) {
     addInput(table_handle, false)
     attrType("Tkeys", tkeys)
@@ -43,7 +44,7 @@ fun TF.lookupTableExportV2(table_handle: Tensor, tkeys: Int, tvalues: Int, name:
   }
 }
 
-fun TF.lookupTableFindV2(table_handle: Tensor, keys: Tensor, default_value: Tensor, name: String = "LookupTableFindV2") = run {
+fun TF.lookupTableFindV2(table_handle: Output, keys: Output, default_value: Output, name: String = "LookupTableFindV2") = run {
   buildOpTensor("LookupTableFindV2", name) {
     addInput(table_handle, false)
     addInput(keys, false)
@@ -51,7 +52,7 @@ fun TF.lookupTableFindV2(table_handle: Tensor, keys: Tensor, default_value: Tens
   }
 }
 
-fun TF.lookupTableImportV2(table_handle: Tensor, keys: Tensor, values: Tensor, name: String = "LookupTableImportV2") = run {
+fun TF.lookupTableImportV2(table_handle: Output, keys: Output, values: Output, name: String = "LookupTableImportV2") = run {
   buildOp("LookupTableImportV2", name) {
     addInput(table_handle, false)
     addInput(keys, false)
@@ -59,7 +60,7 @@ fun TF.lookupTableImportV2(table_handle: Tensor, keys: Tensor, values: Tensor, n
   }
 }
 
-fun TF.lookupTableInsertV2(table_handle: Tensor, keys: Tensor, values: Tensor, name: String = "LookupTableInsertV2") = run {
+fun TF.lookupTableInsertV2(table_handle: Output, keys: Output, values: Output, name: String = "LookupTableInsertV2") = run {
   buildOp("LookupTableInsertV2", name) {
     addInput(table_handle, false)
     addInput(keys, false)
@@ -67,13 +68,13 @@ fun TF.lookupTableInsertV2(table_handle: Tensor, keys: Tensor, values: Tensor, n
   }
 }
 
-fun TF.lookupTableSizeV2(table_handle: Tensor, name: String = "LookupTableSizeV2") = run {
+fun TF.lookupTableSizeV2(table_handle: Output, name: String = "LookupTableSizeV2") = run {
   buildOpTensor("LookupTableSizeV2", name) {
     addInput(table_handle, false)
   }
 }
 
-fun TF.mutableDenseHashTableV2(empty_key: Tensor, value_dtype: Int, container: String = "", shared_name: String = "", use_node_name_sharing: Boolean = false, value_shape: Dimension = Dimension(longArrayOf()), initial_num_buckets: Long = 131072L, max_load_factor: Float = 0.8f, name: String = "MutableDenseHashTableV2") = run {
+fun TF.mutableDenseHashTableV2(empty_key: Output, value_dtype: Int, container: String = "", shared_name: String = "", use_node_name_sharing: Boolean = false, value_shape: Dimension = Dimension(longArrayOf()), initial_num_buckets: Long = 131072L, max_load_factor: Float = 0.8f, name: String = "MutableDenseHashTableV2") = run {
   buildOpTensor("MutableDenseHashTableV2", name) {
     addInput(empty_key, false)
     attrType("value_dtype", value_dtype)

@@ -1,13 +1,13 @@
 package wumo.sim.algorithm.tensorflow.training
 
 import org.bytedeco.javacpp.tensorflow.DT_INVALID
-import wumo.sim.algorithm.tensorflow.Tensor
+import wumo.sim.algorithm.tensorflow.ops.Output
 import wumo.sim.algorithm.tensorflow.Variable
 import wumo.sim.algorithm.tensorflow.ops.*
 import wumo.sim.algorithm.tensorflow.tf
 import wumo.sim.util.Dimension
 
-fun create_slot_var(primary: Tensor,
+fun create_slot_var(primary: Output,
                     initializer: Initializer,
                     name: String,
                     validate_shape: Boolean,
@@ -17,7 +17,7 @@ fun create_slot_var(primary: Tensor,
   return tf.variable(shape, dtype, initializer, name, trainable = false, validate_shape = validate_shape)
 }
 
-fun create_slot(primary: Tensor, v: Tensor, name: String, colocate_with_primary: Boolean): Variable {
+fun create_slot(primary: Output, v: Output, name: String, colocate_with_primary: Boolean): Variable {
   TODO("not implemented")
 }
 
@@ -27,7 +27,7 @@ fun create_slot(primary: Tensor, v: Tensor, name: String, colocate_with_primary:
  *
  * The type of the slot is determined by the given value.
  *
- * @param primary The primary `Variable` or `Tensor`.
+ * @param primary The primary `Variable` or `Output`.
  * @param initializer An `Initializer`.  The initial value of the slot.
  * @param shape Shape of the initial value of the slot.
  * @param dtype Type of the value of the slot.
@@ -35,7 +35,7 @@ fun create_slot(primary: Tensor, v: Tensor, name: String, colocate_with_primary:
  * @param colocate_with_primary If True the slot is located on the same device as `primary`.
  * @return  A `Variable` object.
  */
-fun create_slot_with_initializer(primary: Tensor,
+fun create_slot_with_initializer(primary: Output,
                                  initializer: Initializer,
                                  shape: Dimension, dtype: Int,
                                  name: String,
@@ -50,13 +50,13 @@ fun create_slot_with_initializer(primary: Tensor,
 }
 
 /**Create a slot initialized to 0 with same shape as the primary object
- * @param primary he primary `Variable` or [Tensor].
+ * @param primary he primary `Variable` or [Output].
  * @param name Name to use for the slot variable.
  * @param dtype Type of the slot variable.  Defaults to the type of [primary].
  * @param colocate_with_primary f True the slot is located on the same device as [primary].
  * @return A [Variable] object.
  */
-fun create_zeros_slot(primary: Tensor, name: String, dtype: Int = DT_INVALID, colocate_with_primary: Boolean = true): Variable {
+fun create_zeros_slot(primary: Output, name: String, dtype: Int = DT_INVALID, colocate_with_primary: Boolean = true): Variable {
   val dtype = if (dtype == DT_INVALID) primary.dtype else dtype
   val slot_shape = primary.shape
   return if (slot_shape.is_fully_defined) {

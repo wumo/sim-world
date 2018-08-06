@@ -4,6 +4,7 @@
 package wumo.sim.algorithm.tensorflow.ops.gen
 
 import wumo.sim.algorithm.tensorflow.*
+import wumo.sim.algorithm.tensorflow.ops.Output
 
 fun TF.abort(error_msg: String = "", exit_without_error: Boolean = false, name: String = "Abort") = run {
   buildOp("Abort", name) {
@@ -17,52 +18,52 @@ fun TF.controlTrigger(name: String = "ControlTrigger") = run {
   }
 }
 
-fun TF.loopCond(input: Tensor, name: String = "LoopCond") = run {
+fun TF.loopCond(input: Output, name: String = "LoopCond") = run {
   buildOpTensor("LoopCond", name) {
     addInput(input, false)
   }
 }
 
-fun TF.merge(inputs: Array<Tensor>, name: String = "Merge") = run {
+fun TF.merge(inputs: Array<Output>, name: String = "Merge") = run {
   buildOpTensors("Merge", name) {
     addInput(inputs, false)
   }
 }
 
-fun TF.nextIteration(data: Tensor, name: String = "NextIteration") = run {
+fun TF.nextIteration(data: Output, name: String = "NextIteration") = run {
   buildOpTensor("NextIteration", name) {
     addInput(data, false)
   }
 }
 
-fun TF.refNextIteration(data: Tensor, name: String = "RefNextIteration") = run {
+fun TF.refNextIteration(data: Output, name: String = "RefNextIteration") = run {
   buildOpTensor("RefNextIteration", name) {
     addInput(data, true)
   }
 }
 
-fun TF.refSelect(index: Tensor, inputs: Array<Tensor>, name: String = "RefSelect") = run {
+fun TF.refSelect(index: Output, inputs: Array<Output>, name: String = "RefSelect") = run {
   buildOpTensor("RefSelect", name) {
     addInput(index, false)
     addInput(inputs, true)
   }
 }
 
-fun TF.refSwitch(data: Tensor, pred: Tensor, name: String = "RefSwitch") = run {
+fun TF.refSwitch(data: Output, pred: Output, name: String = "RefSwitch") = run {
   buildOpTensors("RefSwitch", name) {
     addInput(data, true)
     addInput(pred, false)
   }
 }
 
-fun TF.switch(data: Tensor, pred: Tensor, name: String = "Switch") = run {
+fun TF.switch(data: Output, pred: Output, name: String = "Switch") = run {
   buildOpTensors("Switch", name) {
     addInput(data, false)
     addInput(pred, false)
   }
 }
 
-fun TF.enter(data: Tensor, frame_name: String, is_constant: Boolean = false, parallel_iterations: Long = 10L, name: String = "Enter") = run {
+fun TF.enter(data: Output, frame_name: String, is_constant: Boolean = false, parallel_iterations: Long = 10L, name: String = "Enter") = run {
   buildOpTensor("Enter", name) {
     addInput(data, false)
     attr("frame_name", frame_name)
@@ -71,13 +72,13 @@ fun TF.enter(data: Tensor, frame_name: String, is_constant: Boolean = false, par
   }
 }
 
-fun TF.exit(data: Tensor, name: String = "Exit") = run {
+fun TF.exit(data: Output, name: String = "Exit") = run {
   buildOpTensor("Exit", name) {
     addInput(data, false)
   }
 }
 
-fun TF.refEnter(data: Tensor, frame_name: String, is_constant: Boolean = false, parallel_iterations: Long = 10L, name: String = "RefEnter") = run {
+fun TF.refEnter(data: Output, frame_name: String, is_constant: Boolean = false, parallel_iterations: Long = 10L, name: String = "RefEnter") = run {
   buildOpTensor("RefEnter", name) {
     addInput(data, true)
     attr("frame_name", frame_name)
@@ -86,13 +87,13 @@ fun TF.refEnter(data: Tensor, frame_name: String, is_constant: Boolean = false, 
   }
 }
 
-fun TF.refExit(data: Tensor, name: String = "RefExit") = run {
+fun TF.refExit(data: Output, name: String = "RefExit") = run {
   buildOpTensor("RefExit", name) {
     addInput(data, true)
   }
 }
 
-fun TF.refMerge(inputs: Array<Tensor>, name: String = "RefMerge") = run {
+fun TF.refMerge(inputs: Array<Output>, name: String = "RefMerge") = run {
   buildOpTensors("RefMerge", name) {
     addInput(inputs, true)
   }

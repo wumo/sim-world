@@ -4,50 +4,50 @@
 package wumo.sim.algorithm.tensorflow.ops.gen
 
 import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.Tensor
+import wumo.sim.algorithm.tensorflow.ops.Output
 import wumo.sim.algorithm.tensorflow.buildOpTensor
 
-fun TF.bitwiseAnd(x: Tensor, y: Tensor, name: String = "BitwiseAnd") = run {
+fun TF.bitwiseAnd(x: Output, y: Output, name: String = "BitwiseAnd") = run {
   buildOpTensor("BitwiseAnd", name) {
     addInput(x, false)
     addInput(y, false)
   }
 }
 
-fun TF.bitwiseOr(x: Tensor, y: Tensor, name: String = "BitwiseOr") = run {
+fun TF.bitwiseOr(x: Output, y: Output, name: String = "BitwiseOr") = run {
   buildOpTensor("BitwiseOr", name) {
     addInput(x, false)
     addInput(y, false)
   }
 }
 
-fun TF.bitwiseXor(x: Tensor, y: Tensor, name: String = "BitwiseXor") = run {
+fun TF.bitwiseXor(x: Output, y: Output, name: String = "BitwiseXor") = run {
   buildOpTensor("BitwiseXor", name) {
     addInput(x, false)
     addInput(y, false)
   }
 }
 
-fun TF.invert(x: Tensor, name: String = "Invert") = run {
+fun TF.invert(x: Output, name: String = "Invert") = run {
   buildOpTensor("Invert", name) {
     addInput(x, false)
   }
 }
 
-fun TF.leftShift(x: Tensor, y: Tensor, name: String = "LeftShift") = run {
+fun TF.leftShift(x: Output, y: Output, name: String = "LeftShift") = run {
   buildOpTensor("LeftShift", name) {
     addInput(x, false)
     addInput(y, false)
   }
 }
 
-fun TF.populationCount(x: Tensor, name: String = "PopulationCount") = run {
+fun TF.populationCount(x: Output, name: String = "PopulationCount") = run {
   buildOpTensor("PopulationCount", name) {
     addInput(x, false)
   }
 }
 
-fun TF.rightShift(x: Tensor, y: Tensor, name: String = "RightShift") = run {
+fun TF.rightShift(x: Output, y: Output, name: String = "RightShift") = run {
   buildOpTensor("RightShift", name) {
     addInput(x, false)
     addInput(y, false)

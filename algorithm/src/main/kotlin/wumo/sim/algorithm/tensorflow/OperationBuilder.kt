@@ -3,6 +3,8 @@ package wumo.sim.algorithm.tensorflow
 import org.bytedeco.javacpp.BytePointer
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
 import org.bytedeco.javacpp.tensorflow.*
+import wumo.sim.algorithm.tensorflow.ops.Op
+import wumo.sim.algorithm.tensorflow.ops.Output
 import wumo.sim.util.Dimension
 import wumo.sim.util.ndarray.NDArray
 import wumo.sim.util.toByte
@@ -24,7 +26,7 @@ fun TF.buildOpTensor(op: String, name: String, setAttr: OperationBuilder.() -> U
     setAttr(builder)
     val _op = builder.build()
     assert(_op.c_op.node().num_outputs() == 1) { "${_op.c_op.node().DebugString()} outputs > 1, use naryOps instead." }
-    Tensor(_op, 0)
+    Output(_op, 0)
   }
 }
 
@@ -34,7 +36,7 @@ fun TF.buildOpTensors(op: String, name: String, setAttr: OperationBuilder.() -> 
     setAttr(builder)
     val _op = builder.build()
     val outputs = _op.c_op.node().num_outputs()
-    Array(outputs) { Tensor(_op, it) }
+    Array(outputs) { Output(_op, it) }
   }
 }
 
@@ -114,14 +116,14 @@ class OperationBuilder(val graph: Graph, val opType: String, val name: String) {
   }
   
   private val input_ops = mutableSetOf<Op>()
-  private fun checkRef(input: Tensor, ref: Boolean) =
+  private fun checkRef(input: Output, ref: Boolean) =
       if (ref) input.asRef() else input.value()
   
-  fun addInput(input: Tensor, ref: Boolean = false) =
+  fun addInput(input: Output, ref: Boolean = false) =
       addInput(checkRef(input, ref).asTF_Output())
           .apply { input_ops += input.op!! }
   
-  fun addInput(input: Collection<Tensor>, ref: Boolean = false) {
+  fun addInput(input: Collection<Output>, ref: Boolean = false) {
     val inputs = TF_Output(input.size.toLong())
     for ((i, _input) in input.withIndex()) {
       val t = checkRef(_input, ref)
@@ -133,7 +135,7 @@ class OperationBuilder(val graph: Graph, val opType: String, val name: String) {
     TF_AddInputList(c_opDesc, inputs.position(0L), input.size)
   }
   
-  fun addInput(input: Array<Tensor>, ref: Boolean = false) {
+  fun addInput(input: Array<Output>, ref: Boolean = false) {
     val inputs = TF_Output(input.size.toLong())
     for ((i, _input) in input.withIndex()) {
       val t = checkRef(_input, ref)

@@ -5,46 +5,46 @@ package wumo.sim.algorithm.tensorflow.ops.gen
 
 import org.bytedeco.javacpp.tensorflow.DT_INT32
 import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.Tensor
+import wumo.sim.algorithm.tensorflow.ops.Output
 import wumo.sim.algorithm.tensorflow.buildOp
 import wumo.sim.algorithm.tensorflow.buildOpTensor
 import wumo.sim.util.Dimension
 
-fun TF.assignAddVariableOp(resource: Tensor, value: Tensor, name: String = "AssignAddVariableOp") = run {
+fun TF.assignAddVariableOp(resource: Output, value: Output, name: String = "AssignAddVariableOp") = run {
   buildOp("AssignAddVariableOp", name) {
     addInput(resource, false)
     addInput(value, false)
   }
 }
 
-fun TF.assignSubVariableOp(resource: Tensor, value: Tensor, name: String = "AssignSubVariableOp") = run {
+fun TF.assignSubVariableOp(resource: Output, value: Output, name: String = "AssignSubVariableOp") = run {
   buildOp("AssignSubVariableOp", name) {
     addInput(resource, false)
     addInput(value, false)
   }
 }
 
-fun TF.assignVariableOp(resource: Tensor, value: Tensor, name: String = "AssignVariableOp") = run {
+fun TF.assignVariableOp(resource: Output, value: Output, name: String = "AssignVariableOp") = run {
   buildOp("AssignVariableOp", name) {
     addInput(resource, false)
     addInput(value, false)
   }
 }
 
-fun TF.consumeMutexLock(mutex_lock: Tensor, name: String = "ConsumeMutexLock") = run {
+fun TF.consumeMutexLock(mutex_lock: Output, name: String = "ConsumeMutexLock") = run {
   buildOp("ConsumeMutexLock", name) {
     addInput(mutex_lock, false)
   }
 }
 
-fun TF.destroyResourceOp(resource: Tensor, ignore_lookup_error: Boolean = true, name: String = "DestroyResourceOp") = run {
+fun TF.destroyResourceOp(resource: Output, ignore_lookup_error: Boolean = true, name: String = "DestroyResourceOp") = run {
   buildOp("DestroyResourceOp", name) {
     addInput(resource, false)
     attr("ignore_lookup_error", ignore_lookup_error)
   }
 }
 
-fun TF.mutexLock(mutex: Tensor, name: String = "MutexLock") = run {
+fun TF.mutexLock(mutex: Output, name: String = "MutexLock") = run {
   buildOpTensor("MutexLock", name) {
     addInput(mutex, false)
   }
@@ -57,14 +57,14 @@ fun TF.mutexV2(container: String = "", shared_name: String = "", name: String = 
   }
 }
 
-fun TF.readVariableOp(resource: Tensor, dtype: Int, name: String = "ReadVariableOp") = run {
+fun TF.readVariableOp(resource: Output, dtype: Int, name: String = "ReadVariableOp") = run {
   buildOpTensor("ReadVariableOp", name) {
     addInput(resource, false)
     attrType("dtype", dtype)
   }
 }
 
-fun TF.resourceGather(resource: Tensor, indices: Tensor, dtype: Int, validate_indices: Boolean = true, name: String = "ResourceGather") = run {
+fun TF.resourceGather(resource: Output, indices: Output, dtype: Int, validate_indices: Boolean = true, name: String = "ResourceGather") = run {
   buildOpTensor("ResourceGather", name) {
     addInput(resource, false)
     addInput(indices, false)
@@ -73,7 +73,7 @@ fun TF.resourceGather(resource: Tensor, indices: Tensor, dtype: Int, validate_in
   }
 }
 
-fun TF.resourceScatterAdd(resource: Tensor, indices: Tensor, updates: Tensor, name: String = "ResourceScatterAdd") = run {
+fun TF.resourceScatterAdd(resource: Output, indices: Output, updates: Output, name: String = "ResourceScatterAdd") = run {
   buildOp("ResourceScatterAdd", name) {
     addInput(resource, false)
     addInput(indices, false)
@@ -81,7 +81,7 @@ fun TF.resourceScatterAdd(resource: Tensor, indices: Tensor, updates: Tensor, na
   }
 }
 
-fun TF.resourceScatterDiv(resource: Tensor, indices: Tensor, updates: Tensor, name: String = "ResourceScatterDiv") = run {
+fun TF.resourceScatterDiv(resource: Output, indices: Output, updates: Output, name: String = "ResourceScatterDiv") = run {
   buildOp("ResourceScatterDiv", name) {
     addInput(resource, false)
     addInput(indices, false)
@@ -89,7 +89,7 @@ fun TF.resourceScatterDiv(resource: Tensor, indices: Tensor, updates: Tensor, na
   }
 }
 
-fun TF.resourceScatterMax(resource: Tensor, indices: Tensor, updates: Tensor, name: String = "ResourceScatterMax") = run {
+fun TF.resourceScatterMax(resource: Output, indices: Output, updates: Output, name: String = "ResourceScatterMax") = run {
   buildOp("ResourceScatterMax", name) {
     addInput(resource, false)
     addInput(indices, false)
@@ -97,7 +97,7 @@ fun TF.resourceScatterMax(resource: Tensor, indices: Tensor, updates: Tensor, na
   }
 }
 
-fun TF.resourceScatterMin(resource: Tensor, indices: Tensor, updates: Tensor, name: String = "ResourceScatterMin") = run {
+fun TF.resourceScatterMin(resource: Output, indices: Output, updates: Output, name: String = "ResourceScatterMin") = run {
   buildOp("ResourceScatterMin", name) {
     addInput(resource, false)
     addInput(indices, false)
@@ -105,7 +105,7 @@ fun TF.resourceScatterMin(resource: Tensor, indices: Tensor, updates: Tensor, na
   }
 }
 
-fun TF.resourceScatterMul(resource: Tensor, indices: Tensor, updates: Tensor, name: String = "ResourceScatterMul") = run {
+fun TF.resourceScatterMul(resource: Output, indices: Output, updates: Output, name: String = "ResourceScatterMul") = run {
   buildOp("ResourceScatterMul", name) {
     addInput(resource, false)
     addInput(indices, false)
@@ -113,7 +113,7 @@ fun TF.resourceScatterMul(resource: Tensor, indices: Tensor, updates: Tensor, na
   }
 }
 
-fun TF.resourceScatterSub(resource: Tensor, indices: Tensor, updates: Tensor, name: String = "ResourceScatterSub") = run {
+fun TF.resourceScatterSub(resource: Output, indices: Output, updates: Output, name: String = "ResourceScatterSub") = run {
   buildOp("ResourceScatterSub", name) {
     addInput(resource, false)
     addInput(indices, false)
@@ -121,7 +121,7 @@ fun TF.resourceScatterSub(resource: Tensor, indices: Tensor, updates: Tensor, na
   }
 }
 
-fun TF.resourceScatterUpdate(resource: Tensor, indices: Tensor, updates: Tensor, name: String = "ResourceScatterUpdate") = run {
+fun TF.resourceScatterUpdate(resource: Output, indices: Output, updates: Output, name: String = "ResourceScatterUpdate") = run {
   buildOp("ResourceScatterUpdate", name) {
     addInput(resource, false)
     addInput(indices, false)
@@ -138,13 +138,13 @@ fun TF.varHandleOp(dtype: Int, shape: Dimension, container: String = "", shared_
   }
 }
 
-fun TF.varIsInitializedOp(resource: Tensor, name: String = "VarIsInitializedOp") = run {
+fun TF.varIsInitializedOp(resource: Output, name: String = "VarIsInitializedOp") = run {
   buildOpTensor("VarIsInitializedOp", name) {
     addInput(resource, false)
   }
 }
 
-fun TF.variableShape(input: Tensor, out_type: Int = DT_INT32, name: String = "VariableShape") = run {
+fun TF.variableShape(input: Output, out_type: Int = DT_INT32, name: String = "VariableShape") = run {
   buildOpTensor("VariableShape", name) {
     addInput(input, false)
     attrType("out_type", out_type)

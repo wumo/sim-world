@@ -5,11 +5,11 @@ package wumo.sim.algorithm.tensorflow.ops.gen
 
 import org.bytedeco.javacpp.tensorflow.NameAttrList
 import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.Tensor
+import wumo.sim.algorithm.tensorflow.ops.Output
 import wumo.sim.algorithm.tensorflow.buildOpTensor
 import wumo.sim.algorithm.tensorflow.buildOpTensors
 
-fun TF.batch(in_tensors: Tensor, num_batch_threads: Long, max_batch_size: Long, batch_timeout_micros: Long, grad_timeout_micros: Long, max_enqueued_batches: Long = 10L, allowed_batch_sizes: Array<Long> = arrayOf(), container: String = "", shared_name: String = "", batching_queue: String = "", name: String = "Batch") = run {
+fun TF.batch(in_tensors: Output, num_batch_threads: Long, max_batch_size: Long, batch_timeout_micros: Long, grad_timeout_micros: Long, max_enqueued_batches: Long = 10L, allowed_batch_sizes: Array<Long> = arrayOf(), container: String = "", shared_name: String = "", batching_queue: String = "", name: String = "Batch") = run {
   buildOpTensors("Batch", name) {
     addInput(in_tensors, false)
     attr("num_batch_threads", num_batch_threads)
@@ -24,7 +24,7 @@ fun TF.batch(in_tensors: Tensor, num_batch_threads: Long, max_batch_size: Long, 
   }
 }
 
-fun TF.batchFunction(in_tensors: Tensor, captured_tensors: Tensor, f: NameAttrList, num_batch_threads: Long, max_batch_size: Long, batch_timeout_micros: Long, tout: Array<Long>, max_enqueued_batches: Long = 10L, allowed_batch_sizes: Array<Long> = arrayOf(), container: String = "", shared_name: String = "", batching_queue: String = "", name: String = "BatchFunction") = run {
+fun TF.batchFunction(in_tensors: Output, captured_tensors: Output, f: NameAttrList, num_batch_threads: Long, max_batch_size: Long, batch_timeout_micros: Long, tout: Array<Long>, max_enqueued_batches: Long = 10L, allowed_batch_sizes: Array<Long> = arrayOf(), container: String = "", shared_name: String = "", batching_queue: String = "", name: String = "BatchFunction") = run {
   buildOpTensors("BatchFunction", name) {
     addInput(in_tensors, false)
     addInput(captured_tensors, false)
@@ -41,7 +41,7 @@ fun TF.batchFunction(in_tensors: Tensor, captured_tensors: Tensor, f: NameAttrLi
   }
 }
 
-fun TF.unbatch(batched_tensor: Tensor, batch_index: Tensor, id: Tensor, timeout_micros: Long, container: String = "", shared_name: String = "", name: String = "Unbatch") = run {
+fun TF.unbatch(batched_tensor: Output, batch_index: Output, id: Output, timeout_micros: Long, container: String = "", shared_name: String = "", name: String = "Unbatch") = run {
   buildOpTensor("Unbatch", name) {
     addInput(batched_tensor, false)
     addInput(batch_index, false)
@@ -52,7 +52,7 @@ fun TF.unbatch(batched_tensor: Tensor, batch_index: Tensor, id: Tensor, timeout_
   }
 }
 
-fun TF.unbatchGrad(original_input: Tensor, batch_index: Tensor, grad: Tensor, id: Tensor, container: String = "", shared_name: String = "", name: String = "UnbatchGrad") = run {
+fun TF.unbatchGrad(original_input: Output, batch_index: Output, grad: Output, id: Output, container: String = "", shared_name: String = "", name: String = "UnbatchGrad") = run {
   buildOpTensor("UnbatchGrad", name) {
     addInput(original_input, false)
     addInput(batch_index, false)

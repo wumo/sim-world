@@ -6,32 +6,32 @@ package wumo.sim.algorithm.tensorflow.ops.gen
 import org.bytedeco.javacpp.tensorflow.DT_INT32
 import org.bytedeco.javacpp.tensorflow.DT_UINT8
 import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.Tensor
+import wumo.sim.algorithm.tensorflow.ops.Output
 import wumo.sim.algorithm.tensorflow.buildOpTensor
 import wumo.sim.algorithm.tensorflow.buildOpTensors
 
-fun TF.adjustContrastv2(images: Tensor, contrast_factor: Tensor, name: String = "AdjustContrastv2") = run {
+fun TF.adjustContrastv2(images: Output, contrast_factor: Output, name: String = "AdjustContrastv2") = run {
   buildOpTensor("AdjustContrastv2", name) {
     addInput(images, false)
     addInput(contrast_factor, false)
   }
 }
 
-fun TF.adjustHue(images: Tensor, delta: Tensor, name: String = "AdjustHue") = run {
+fun TF.adjustHue(images: Output, delta: Output, name: String = "AdjustHue") = run {
   buildOpTensor("AdjustHue", name) {
     addInput(images, false)
     addInput(delta, false)
   }
 }
 
-fun TF.adjustSaturation(images: Tensor, scale: Tensor, name: String = "AdjustSaturation") = run {
+fun TF.adjustSaturation(images: Output, scale: Output, name: String = "AdjustSaturation") = run {
   buildOpTensor("AdjustSaturation", name) {
     addInput(images, false)
     addInput(scale, false)
   }
 }
 
-fun TF.cropAndResize(image: Tensor, boxes: Tensor, box_ind: Tensor, crop_size: Tensor, method: String = "bilinear", extrapolation_value: Float = 0.0f, name: String = "CropAndResize") = run {
+fun TF.cropAndResize(image: Output, boxes: Output, box_ind: Output, crop_size: Output, method: String = "bilinear", extrapolation_value: Float = 0.0f, name: String = "CropAndResize") = run {
   buildOpTensor("CropAndResize", name) {
     addInput(image, false)
     addInput(boxes, false)
@@ -42,7 +42,7 @@ fun TF.cropAndResize(image: Tensor, boxes: Tensor, box_ind: Tensor, crop_size: T
   }
 }
 
-fun TF.cropAndResizeGradBoxes(grads: Tensor, image: Tensor, boxes: Tensor, box_ind: Tensor, method: String = "bilinear", name: String = "CropAndResizeGradBoxes") = run {
+fun TF.cropAndResizeGradBoxes(grads: Output, image: Output, boxes: Output, box_ind: Output, method: String = "bilinear", name: String = "CropAndResizeGradBoxes") = run {
   buildOpTensor("CropAndResizeGradBoxes", name) {
     addInput(grads, false)
     addInput(image, false)
@@ -52,7 +52,7 @@ fun TF.cropAndResizeGradBoxes(grads: Tensor, image: Tensor, boxes: Tensor, box_i
   }
 }
 
-fun TF.cropAndResizeGradImage(grads: Tensor, boxes: Tensor, box_ind: Tensor, image_size: Tensor, t: Int, method: String = "bilinear", name: String = "CropAndResizeGradImage") = run {
+fun TF.cropAndResizeGradImage(grads: Output, boxes: Output, box_ind: Output, image_size: Output, t: Int, method: String = "bilinear", name: String = "CropAndResizeGradImage") = run {
   buildOpTensor("CropAndResizeGradImage", name) {
     addInput(grads, false)
     addInput(boxes, false)
@@ -63,7 +63,7 @@ fun TF.cropAndResizeGradImage(grads: Tensor, boxes: Tensor, box_ind: Tensor, ima
   }
 }
 
-fun TF.decodeAndCropJpeg(contents: Tensor, crop_window: Tensor, channels: Long = 0L, ratio: Long = 1L, fancy_upscaling: Boolean = true, try_recover_truncated: Boolean = false, acceptable_fraction: Float = 1.0f, dct_method: String = "", name: String = "DecodeAndCropJpeg") = run {
+fun TF.decodeAndCropJpeg(contents: Output, crop_window: Output, channels: Long = 0L, ratio: Long = 1L, fancy_upscaling: Boolean = true, try_recover_truncated: Boolean = false, acceptable_fraction: Float = 1.0f, dct_method: String = "", name: String = "DecodeAndCropJpeg") = run {
   buildOpTensor("DecodeAndCropJpeg", name) {
     addInput(contents, false)
     addInput(crop_window, false)
@@ -76,20 +76,20 @@ fun TF.decodeAndCropJpeg(contents: Tensor, crop_window: Tensor, channels: Long =
   }
 }
 
-fun TF.decodeBmp(contents: Tensor, channels: Long = 0L, name: String = "DecodeBmp") = run {
+fun TF.decodeBmp(contents: Output, channels: Long = 0L, name: String = "DecodeBmp") = run {
   buildOpTensor("DecodeBmp", name) {
     addInput(contents, false)
     attr("channels", channels)
   }
 }
 
-fun TF.decodeGif(contents: Tensor, name: String = "DecodeGif") = run {
+fun TF.decodeGif(contents: Output, name: String = "DecodeGif") = run {
   buildOpTensor("DecodeGif", name) {
     addInput(contents, false)
   }
 }
 
-fun TF.decodeJpeg(contents: Tensor, channels: Long = 0L, ratio: Long = 1L, fancy_upscaling: Boolean = true, try_recover_truncated: Boolean = false, acceptable_fraction: Float = 1.0f, dct_method: String = "", name: String = "DecodeJpeg") = run {
+fun TF.decodeJpeg(contents: Output, channels: Long = 0L, ratio: Long = 1L, fancy_upscaling: Boolean = true, try_recover_truncated: Boolean = false, acceptable_fraction: Float = 1.0f, dct_method: String = "", name: String = "DecodeJpeg") = run {
   buildOpTensor("DecodeJpeg", name) {
     addInput(contents, false)
     attr("channels", channels)
@@ -101,7 +101,7 @@ fun TF.decodeJpeg(contents: Tensor, channels: Long = 0L, ratio: Long = 1L, fancy
   }
 }
 
-fun TF.decodePng(contents: Tensor, channels: Long = 0L, dtype: Int = DT_UINT8, name: String = "DecodePng") = run {
+fun TF.decodePng(contents: Output, channels: Long = 0L, dtype: Int = DT_UINT8, name: String = "DecodePng") = run {
   buildOpTensor("DecodePng", name) {
     addInput(contents, false)
     attr("channels", channels)
@@ -109,14 +109,14 @@ fun TF.decodePng(contents: Tensor, channels: Long = 0L, dtype: Int = DT_UINT8, n
   }
 }
 
-fun TF.drawBoundingBoxes(images: Tensor, boxes: Tensor, name: String = "DrawBoundingBoxes") = run {
+fun TF.drawBoundingBoxes(images: Output, boxes: Output, name: String = "DrawBoundingBoxes") = run {
   buildOpTensor("DrawBoundingBoxes", name) {
     addInput(images, false)
     addInput(boxes, false)
   }
 }
 
-fun TF.encodeJpeg(image: Tensor, format: String = "", quality: Long = 95L, progressive: Boolean = false, optimize_size: Boolean = false, chroma_downsampling: Boolean = true, density_unit: String = "in", x_density: Long = 300L, y_density: Long = 300L, xmp_metadata: String = "", name: String = "EncodeJpeg") = run {
+fun TF.encodeJpeg(image: Output, format: String = "", quality: Long = 95L, progressive: Boolean = false, optimize_size: Boolean = false, chroma_downsampling: Boolean = true, density_unit: String = "in", x_density: Long = 300L, y_density: Long = 300L, xmp_metadata: String = "", name: String = "EncodeJpeg") = run {
   buildOpTensor("EncodeJpeg", name) {
     addInput(image, false)
     attr("format", format)
@@ -131,14 +131,14 @@ fun TF.encodeJpeg(image: Tensor, format: String = "", quality: Long = 95L, progr
   }
 }
 
-fun TF.encodePng(image: Tensor, compression: Long = -1L, name: String = "EncodePng") = run {
+fun TF.encodePng(image: Output, compression: Long = -1L, name: String = "EncodePng") = run {
   buildOpTensor("EncodePng", name) {
     addInput(image, false)
     attr("compression", compression)
   }
 }
 
-fun TF.extractGlimpse(input: Tensor, size: Tensor, offsets: Tensor, centered: Boolean = true, normalized: Boolean = true, uniform_noise: Boolean = true, name: String = "ExtractGlimpse") = run {
+fun TF.extractGlimpse(input: Output, size: Output, offsets: Output, centered: Boolean = true, normalized: Boolean = true, uniform_noise: Boolean = true, name: String = "ExtractGlimpse") = run {
   buildOpTensor("ExtractGlimpse", name) {
     addInput(input, false)
     addInput(size, false)
@@ -149,20 +149,20 @@ fun TF.extractGlimpse(input: Tensor, size: Tensor, offsets: Tensor, centered: Bo
   }
 }
 
-fun TF.extractJpegShape(contents: Tensor, output_type: Int = DT_INT32, name: String = "ExtractJpegShape") = run {
+fun TF.extractJpegShape(contents: Output, output_type: Int = DT_INT32, name: String = "ExtractJpegShape") = run {
   buildOpTensor("ExtractJpegShape", name) {
     addInput(contents, false)
     attrType("output_type", output_type)
   }
 }
 
-fun TF.hSVToRGB(images: Tensor, name: String = "HSVToRGB") = run {
+fun TF.hSVToRGB(images: Output, name: String = "HSVToRGB") = run {
   buildOpTensor("HSVToRGB", name) {
     addInput(images, false)
   }
 }
 
-fun TF.nonMaxSuppression(boxes: Tensor, scores: Tensor, max_output_size: Tensor, iou_threshold: Float = 0.5f, name: String = "NonMaxSuppression") = run {
+fun TF.nonMaxSuppression(boxes: Output, scores: Output, max_output_size: Output, iou_threshold: Float = 0.5f, name: String = "NonMaxSuppression") = run {
   buildOpTensor("NonMaxSuppression", name) {
     addInput(boxes, false)
     addInput(scores, false)
@@ -171,7 +171,7 @@ fun TF.nonMaxSuppression(boxes: Tensor, scores: Tensor, max_output_size: Tensor,
   }
 }
 
-fun TF.nonMaxSuppressionV2(boxes: Tensor, scores: Tensor, max_output_size: Tensor, iou_threshold: Tensor, name: String = "NonMaxSuppressionV2") = run {
+fun TF.nonMaxSuppressionV2(boxes: Output, scores: Output, max_output_size: Output, iou_threshold: Output, name: String = "NonMaxSuppressionV2") = run {
   buildOpTensor("NonMaxSuppressionV2", name) {
     addInput(boxes, false)
     addInput(scores, false)
@@ -180,7 +180,7 @@ fun TF.nonMaxSuppressionV2(boxes: Tensor, scores: Tensor, max_output_size: Tenso
   }
 }
 
-fun TF.nonMaxSuppressionV3(boxes: Tensor, scores: Tensor, max_output_size: Tensor, iou_threshold: Tensor, score_threshold: Tensor, name: String = "NonMaxSuppressionV3") = run {
+fun TF.nonMaxSuppressionV3(boxes: Output, scores: Output, max_output_size: Output, iou_threshold: Output, score_threshold: Output, name: String = "NonMaxSuppressionV3") = run {
   buildOpTensor("NonMaxSuppressionV3", name) {
     addInput(boxes, false)
     addInput(scores, false)
@@ -190,7 +190,7 @@ fun TF.nonMaxSuppressionV3(boxes: Tensor, scores: Tensor, max_output_size: Tenso
   }
 }
 
-fun TF.nonMaxSuppressionWithOverlaps(overlaps: Tensor, scores: Tensor, max_output_size: Tensor, overlap_threshold: Tensor, score_threshold: Tensor, name: String = "NonMaxSuppressionWithOverlaps") = run {
+fun TF.nonMaxSuppressionWithOverlaps(overlaps: Output, scores: Output, max_output_size: Output, overlap_threshold: Output, score_threshold: Output, name: String = "NonMaxSuppressionWithOverlaps") = run {
   buildOpTensor("NonMaxSuppressionWithOverlaps", name) {
     addInput(overlaps, false)
     addInput(scores, false)
@@ -200,7 +200,7 @@ fun TF.nonMaxSuppressionWithOverlaps(overlaps: Tensor, scores: Tensor, max_outpu
   }
 }
 
-fun TF.quantizedResizeBilinear(images: Tensor, size: Tensor, min: Tensor, max: Tensor, align_corners: Boolean = false, name: String = "QuantizedResizeBilinear") = run {
+fun TF.quantizedResizeBilinear(images: Output, size: Output, min: Output, max: Output, align_corners: Boolean = false, name: String = "QuantizedResizeBilinear") = run {
   buildOpTensors("QuantizedResizeBilinear", name) {
     addInput(images, false)
     addInput(size, false)
@@ -210,13 +210,13 @@ fun TF.quantizedResizeBilinear(images: Tensor, size: Tensor, min: Tensor, max: T
   }
 }
 
-fun TF.rGBToHSV(images: Tensor, name: String = "RGBToHSV") = run {
+fun TF.rGBToHSV(images: Output, name: String = "RGBToHSV") = run {
   buildOpTensor("RGBToHSV", name) {
     addInput(images, false)
   }
 }
 
-fun TF.resizeArea(images: Tensor, size: Tensor, align_corners: Boolean = false, name: String = "ResizeArea") = run {
+fun TF.resizeArea(images: Output, size: Output, align_corners: Boolean = false, name: String = "ResizeArea") = run {
   buildOpTensor("ResizeArea", name) {
     addInput(images, false)
     addInput(size, false)
@@ -224,7 +224,7 @@ fun TF.resizeArea(images: Tensor, size: Tensor, align_corners: Boolean = false, 
   }
 }
 
-fun TF.resizeBicubic(images: Tensor, size: Tensor, align_corners: Boolean = false, name: String = "ResizeBicubic") = run {
+fun TF.resizeBicubic(images: Output, size: Output, align_corners: Boolean = false, name: String = "ResizeBicubic") = run {
   buildOpTensor("ResizeBicubic", name) {
     addInput(images, false)
     addInput(size, false)
@@ -232,7 +232,7 @@ fun TF.resizeBicubic(images: Tensor, size: Tensor, align_corners: Boolean = fals
   }
 }
 
-fun TF.resizeBilinear(images: Tensor, size: Tensor, align_corners: Boolean = false, name: String = "ResizeBilinear") = run {
+fun TF.resizeBilinear(images: Output, size: Output, align_corners: Boolean = false, name: String = "ResizeBilinear") = run {
   buildOpTensor("ResizeBilinear", name) {
     addInput(images, false)
     addInput(size, false)
@@ -240,7 +240,7 @@ fun TF.resizeBilinear(images: Tensor, size: Tensor, align_corners: Boolean = fal
   }
 }
 
-fun TF.resizeNearestNeighbor(images: Tensor, size: Tensor, align_corners: Boolean = false, name: String = "ResizeNearestNeighbor") = run {
+fun TF.resizeNearestNeighbor(images: Output, size: Output, align_corners: Boolean = false, name: String = "ResizeNearestNeighbor") = run {
   buildOpTensor("ResizeNearestNeighbor", name) {
     addInput(images, false)
     addInput(size, false)
@@ -248,7 +248,7 @@ fun TF.resizeNearestNeighbor(images: Tensor, size: Tensor, align_corners: Boolea
   }
 }
 
-fun TF.sampleDistortedBoundingBox(image_size: Tensor, bounding_boxes: Tensor, seed: Long = 0L, seed2: Long = 0L, min_object_covered: Float = 0.1f, aspect_ratio_range: Array<Float> = arrayOf(0.75f, 1.33f), area_range: Array<Float> = arrayOf(0.05f, 1.0f), max_attempts: Long = 100L, use_image_if_no_bounding_boxes: Boolean = false, name: String = "SampleDistortedBoundingBox") = run {
+fun TF.sampleDistortedBoundingBox(image_size: Output, bounding_boxes: Output, seed: Long = 0L, seed2: Long = 0L, min_object_covered: Float = 0.1f, aspect_ratio_range: Array<Float> = arrayOf(0.75f, 1.33f), area_range: Array<Float> = arrayOf(0.05f, 1.0f), max_attempts: Long = 100L, use_image_if_no_bounding_boxes: Boolean = false, name: String = "SampleDistortedBoundingBox") = run {
   buildOpTensors("SampleDistortedBoundingBox", name) {
     addInput(image_size, false)
     addInput(bounding_boxes, false)
@@ -262,7 +262,7 @@ fun TF.sampleDistortedBoundingBox(image_size: Tensor, bounding_boxes: Tensor, se
   }
 }
 
-fun TF.sampleDistortedBoundingBoxV2(image_size: Tensor, bounding_boxes: Tensor, min_object_covered: Tensor, seed: Long = 0L, seed2: Long = 0L, aspect_ratio_range: Array<Float> = arrayOf(0.75f, 1.33f), area_range: Array<Float> = arrayOf(0.05f, 1.0f), max_attempts: Long = 100L, use_image_if_no_bounding_boxes: Boolean = false, name: String = "SampleDistortedBoundingBoxV2") = run {
+fun TF.sampleDistortedBoundingBoxV2(image_size: Output, bounding_boxes: Output, min_object_covered: Output, seed: Long = 0L, seed2: Long = 0L, aspect_ratio_range: Array<Float> = arrayOf(0.75f, 1.33f), area_range: Array<Float> = arrayOf(0.05f, 1.0f), max_attempts: Long = 100L, use_image_if_no_bounding_boxes: Boolean = false, name: String = "SampleDistortedBoundingBoxV2") = run {
   buildOpTensors("SampleDistortedBoundingBoxV2", name) {
     addInput(image_size, false)
     addInput(bounding_boxes, false)
@@ -276,7 +276,7 @@ fun TF.sampleDistortedBoundingBoxV2(image_size: Tensor, bounding_boxes: Tensor, 
   }
 }
 
-fun TF.resizeBicubicGrad(grads: Tensor, original_image: Tensor, align_corners: Boolean = false, name: String = "ResizeBicubicGrad") = run {
+fun TF.resizeBicubicGrad(grads: Output, original_image: Output, align_corners: Boolean = false, name: String = "ResizeBicubicGrad") = run {
   buildOpTensor("ResizeBicubicGrad", name) {
     addInput(grads, false)
     addInput(original_image, false)
@@ -284,7 +284,7 @@ fun TF.resizeBicubicGrad(grads: Tensor, original_image: Tensor, align_corners: B
   }
 }
 
-fun TF.resizeBilinearGrad(grads: Tensor, original_image: Tensor, align_corners: Boolean = false, name: String = "ResizeBilinearGrad") = run {
+fun TF.resizeBilinearGrad(grads: Output, original_image: Output, align_corners: Boolean = false, name: String = "ResizeBilinearGrad") = run {
   buildOpTensor("ResizeBilinearGrad", name) {
     addInput(grads, false)
     addInput(original_image, false)
@@ -292,7 +292,7 @@ fun TF.resizeBilinearGrad(grads: Tensor, original_image: Tensor, align_corners: 
   }
 }
 
-fun TF.resizeNearestNeighborGrad(grads: Tensor, size: Tensor, align_corners: Boolean = false, name: String = "ResizeNearestNeighborGrad") = run {
+fun TF.resizeNearestNeighborGrad(grads: Output, size: Output, align_corners: Boolean = false, name: String = "ResizeNearestNeighborGrad") = run {
   buildOpTensor("ResizeNearestNeighborGrad", name) {
     addInput(grads, false)
     addInput(size, false)

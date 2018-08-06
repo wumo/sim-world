@@ -4,14 +4,15 @@
 package wumo.sim.algorithm.tensorflow.ops.gen
 
 import wumo.sim.algorithm.tensorflow.*
+import wumo.sim.algorithm.tensorflow.ops.Output
 
-fun TF.sdcaFprint(input: Tensor, name: String = "SdcaFprint") = run {
+fun TF.sdcaFprint(input: Output, name: String = "SdcaFprint") = run {
   buildOpTensor("SdcaFprint", name) {
     addInput(input, false)
   }
 }
 
-fun TF.sdcaOptimizer(sparse_example_indices: Array<Tensor>, sparse_feature_indices: Array<Tensor>, sparse_feature_values: Array<Tensor>, dense_features: Array<Tensor>, example_weights: Tensor, example_labels: Tensor, sparse_indices: Array<Tensor>, sparse_weights: Array<Tensor>, dense_weights: Array<Tensor>, example_state_data: Tensor, loss_type: String, l1: Float, l2: Float, num_loss_partitions: Long, num_inner_iterations: Long, adaptative: Boolean = false, name: String = "SdcaOptimizer") = run {
+fun TF.sdcaOptimizer(sparse_example_indices: Array<Output>, sparse_feature_indices: Array<Output>, sparse_feature_values: Array<Output>, dense_features: Array<Output>, example_weights: Output, example_labels: Output, sparse_indices: Array<Output>, sparse_weights: Array<Output>, dense_weights: Array<Output>, example_state_data: Output, loss_type: String, l1: Float, l2: Float, num_loss_partitions: Long, num_inner_iterations: Long, adaptative: Boolean = false, name: String = "SdcaOptimizer") = run {
   buildOpTensors("SdcaOptimizer", name) {
     addInput(sparse_example_indices, false)
     addInput(sparse_feature_indices, false)
@@ -32,7 +33,7 @@ fun TF.sdcaOptimizer(sparse_example_indices: Array<Tensor>, sparse_feature_indic
   }
 }
 
-fun TF.sdcaShrinkL1(weights: Array<Tensor>, l1: Float, l2: Float, name: String = "SdcaShrinkL1") = run {
+fun TF.sdcaShrinkL1(weights: Array<Output>, l1: Float, l2: Float, name: String = "SdcaShrinkL1") = run {
   buildOp("SdcaShrinkL1", name) {
     addInput(weights, true)
     attr("l1", l1)

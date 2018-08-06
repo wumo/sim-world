@@ -4,10 +4,10 @@
 package wumo.sim.algorithm.tensorflow.ops.gen
 
 import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.Tensor
+import wumo.sim.algorithm.tensorflow.ops.Output
 import wumo.sim.algorithm.tensorflow.buildOpTensors
 
-fun TF.allCandidateSampler(true_classes: Tensor, num_true: Long, num_sampled: Long, unique: Boolean, seed: Long = 0L, seed2: Long = 0L, name: String = "AllCandidateSampler") = run {
+fun TF.allCandidateSampler(true_classes: Output, num_true: Long, num_sampled: Long, unique: Boolean, seed: Long = 0L, seed2: Long = 0L, name: String = "AllCandidateSampler") = run {
   buildOpTensors("AllCandidateSampler", name) {
     addInput(true_classes, false)
     attr("num_true", num_true)
@@ -18,7 +18,7 @@ fun TF.allCandidateSampler(true_classes: Tensor, num_true: Long, num_sampled: Lo
   }
 }
 
-fun TF.computeAccidentalHits(true_classes: Tensor, sampled_candidates: Tensor, num_true: Long, seed: Long = 0L, seed2: Long = 0L, name: String = "ComputeAccidentalHits") = run {
+fun TF.computeAccidentalHits(true_classes: Output, sampled_candidates: Output, num_true: Long, seed: Long = 0L, seed2: Long = 0L, name: String = "ComputeAccidentalHits") = run {
   buildOpTensors("ComputeAccidentalHits", name) {
     addInput(true_classes, false)
     addInput(sampled_candidates, false)
@@ -28,7 +28,7 @@ fun TF.computeAccidentalHits(true_classes: Tensor, sampled_candidates: Tensor, n
   }
 }
 
-fun TF.fixedUnigramCandidateSampler(true_classes: Tensor, num_true: Long, num_sampled: Long, unique: Boolean, range_max: Long, vocab_file: String = "", distortion: Float = 1.0f, num_reserved_ids: Long = 0L, num_shards: Long = 1L, shard: Long = 0L, unigrams: Array<Float> = arrayOf(), seed: Long = 0L, seed2: Long = 0L, name: String = "FixedUnigramCandidateSampler") = run {
+fun TF.fixedUnigramCandidateSampler(true_classes: Output, num_true: Long, num_sampled: Long, unique: Boolean, range_max: Long, vocab_file: String = "", distortion: Float = 1.0f, num_reserved_ids: Long = 0L, num_shards: Long = 1L, shard: Long = 0L, unigrams: Array<Float> = arrayOf(), seed: Long = 0L, seed2: Long = 0L, name: String = "FixedUnigramCandidateSampler") = run {
   buildOpTensors("FixedUnigramCandidateSampler", name) {
     addInput(true_classes, false)
     attr("num_true", num_true)
@@ -46,7 +46,7 @@ fun TF.fixedUnigramCandidateSampler(true_classes: Tensor, num_true: Long, num_sa
   }
 }
 
-fun TF.learnedUnigramCandidateSampler(true_classes: Tensor, num_true: Long, num_sampled: Long, unique: Boolean, range_max: Long, seed: Long = 0L, seed2: Long = 0L, name: String = "LearnedUnigramCandidateSampler") = run {
+fun TF.learnedUnigramCandidateSampler(true_classes: Output, num_true: Long, num_sampled: Long, unique: Boolean, range_max: Long, seed: Long = 0L, seed2: Long = 0L, name: String = "LearnedUnigramCandidateSampler") = run {
   buildOpTensors("LearnedUnigramCandidateSampler", name) {
     addInput(true_classes, false)
     attr("num_true", num_true)
@@ -58,7 +58,7 @@ fun TF.learnedUnigramCandidateSampler(true_classes: Tensor, num_true: Long, num_
   }
 }
 
-fun TF.logUniformCandidateSampler(true_classes: Tensor, num_true: Long, num_sampled: Long, unique: Boolean, range_max: Long, seed: Long = 0L, seed2: Long = 0L, name: String = "LogUniformCandidateSampler") = run {
+fun TF.logUniformCandidateSampler(true_classes: Output, num_true: Long, num_sampled: Long, unique: Boolean, range_max: Long, seed: Long = 0L, seed2: Long = 0L, name: String = "LogUniformCandidateSampler") = run {
   buildOpTensors("LogUniformCandidateSampler", name) {
     addInput(true_classes, false)
     attr("num_true", num_true)
@@ -70,7 +70,7 @@ fun TF.logUniformCandidateSampler(true_classes: Tensor, num_true: Long, num_samp
   }
 }
 
-fun TF.uniformCandidateSampler(true_classes: Tensor, num_true: Long, num_sampled: Long, unique: Boolean, range_max: Long, seed: Long = 0L, seed2: Long = 0L, name: String = "UniformCandidateSampler") = run {
+fun TF.uniformCandidateSampler(true_classes: Output, num_true: Long, num_sampled: Long, unique: Boolean, range_max: Long, seed: Long = 0L, seed2: Long = 0L, name: String = "UniformCandidateSampler") = run {
   buildOpTensors("UniformCandidateSampler", name) {
     addInput(true_classes, false)
     attr("num_true", num_true)

@@ -2,7 +2,6 @@ package wumo.sim.algorithm.tensorflow.ops
 
 import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.ops.gen.*
 import wumo.sim.algorithm.tensorflow.orUse
 import wumo.sim.util.Dimension
@@ -11,15 +10,15 @@ import wumo.sim.algorithm.tensorflow.ops.gen.rank as _rank
 import wumo.sim.algorithm.tensorflow.ops.gen.shape as _shape
 import wumo.sim.algorithm.tensorflow.ops.gen.zerosLike as _zerosLike
 
-fun TF.oneHot(indices: Tensor, depth: Tensor, on_value: Tensor = const(1f, "on_value"),
-              off_value: Tensor = const(0f, "off_value"), axis: Long = -1L, name: String = "OneHot") =
+fun TF.oneHot(indices: Output, depth: Output, on_value: Output = const(1f, "on_value"),
+              off_value: Output = const(0f, "off_value"), axis: Long = -1L, name: String = "OneHot") =
     _oneHot(indices, depth, on_value, off_value, axis, name)
 
 inline fun TF.placeholder(shape: Dimension = Dimension(unknow_rank = true),
-                          dtype: Int = DT_FLOAT, name: String = "Placeholder"): Tensor =
+                          dtype: Int = DT_FLOAT, name: String = "Placeholder"): Output =
     placeholder(dtype, shape, name)
 
-fun TF.zerosLike(x: Tensor, dtype: Int = DT_INVALID, optimize: Boolean = true, name: String = "ZerosLike") =
+fun TF.zerosLike(x: Output, dtype: Int = DT_INVALID, optimize: Boolean = true, name: String = "ZerosLike") =
     when {
       optimize && x.shape.is_fully_defined && x.dtype != DT_VARIANT ->
         zeros(x.shape, dtype = dtype.orUse(x.dtype), name = name)
@@ -28,11 +27,11 @@ fun TF.zerosLike(x: Tensor, dtype: Int = DT_INVALID, optimize: Boolean = true, n
       else -> _zerosLike(x, name)
     }
 
-fun TF.zeros(shape: Tensor, dtype: Int = DT_FLOAT, name: String = "Ones"): Tensor {
+fun TF.zeros(shape: Output, dtype: Int = DT_FLOAT, name: String = "Ones"): Output {
   TODO()
 }
 
-fun TF.zeros(shape: Dimension, dtype: Int = DT_FLOAT, name: String = "Ones"): Tensor {
+fun TF.zeros(shape: Dimension, dtype: Int = DT_FLOAT, name: String = "Ones"): Output {
   name_scope(name) {
     val zero = when (dtype) {
       DT_STRING -> ""
@@ -47,7 +46,7 @@ fun TF.zeros(shape: Dimension, dtype: Int = DT_FLOAT, name: String = "Ones"): Te
   }
 }
 
-fun TF.ones(shape: Dimension, dtype: Int = DT_FLOAT, name: String = "Ones"): Tensor {
+fun TF.ones(shape: Dimension, dtype: Int = DT_FLOAT, name: String = "Ones"): Output {
   name_scope(name) {
     return if (shape.numElements() < 1000)
       const(shape, dtype, 1, ctxNs.scopeName)
@@ -63,8 +62,8 @@ fun TF.ones(shape: Dimension, dtype: Int = DT_FLOAT, name: String = "Ones"): Ten
  *
  *
  */
-fun TF.shape(input: Tensor, out_type: Int = DT_INT32, name: String = "Shape", optimize: Boolean = true): Tensor {
-  //TODO SparseTensor
+fun TF.shape(input: Output, out_type: Int = DT_INT32, name: String = "Shape", optimize: Boolean = true): Output {
+  //TODO SparseOutput
   val input_shape = input.shape
   if (optimize && input_shape.is_fully_defined)
     return const(input_shape.asIntArray(), name)
@@ -112,7 +111,7 @@ Notes:
 - NumPy advanced indexing is currently not supported.
  *@return The appropriate slice of "tensor", based on "slice_spec".
  */
-operator fun Tensor.get(vararg slice_spec: Int): Tensor {
+operator fun Output.get(vararg slice_spec: Int): Output {
   val begin = mutableListOf<Int>()
   val end = mutableListOf<Int>()
   val strides = mutableListOf<Int>()
@@ -148,15 +147,15 @@ class StridedSliceAttrs(var begin_mask_: Int = 0,
                         var new_axis_mask_: Int = 0,
                         var shrink_axis_mask_: Int = 0)
 
-fun TF.gather(params: Tensor, indices: Tensor, axis: Int = 0, name: String = "GatherV2"): Tensor {
+fun TF.gather(params: Output, indices: Output, axis: Int = 0, name: String = "GatherV2"): Output {
   if (axis == 0) {
   }
   //TODO detect resource variables
   return gatherV2(params, indices, const(axis), name)
 }
 
-fun TF.rank(input: Tensor, name: String = "Rank", optimize: Boolean = true): Tensor {
-  //TODO SparseTensor
+fun TF.rank(input: Output, name: String = "Rank", optimize: Boolean = true): Output {
+  //TODO SparseOutput
   val input_shape = input.shape
   if (optimize && input_shape.is_fully_defined)
     return const(input_shape.rank(), name)
@@ -189,27 +188,27 @@ fun TF.rank(input: Tensor, name: String = "Rank", optimize: Boolean = true): Ten
  * tf.stack([x, y, z]) = np.stack([x, y, z])
  * ```
  *
- * @param values A list of `Tensor` objects with the same shape and type.
+ * @param values A list of `Output` objects with the same shape and type.
  * @param axis An `int`. The axis to stack along. Defaults to the first dimension.
  * Negative values wrap around, so the valid range is `[-(R+1), R+1)`.
  * @param name
- * @return A stacked `Tensor` with the same type as `values`.
+ * @return A stacked `Output` with the same type as `values`.
  */
-fun TF.stack(values: Array<Tensor>, axis: Long = 0L, name: String = "stack"): Tensor {
+fun TF.stack(values: Array<Output>, axis: Long = 0L, name: String = "stack"): Output {
   if (axis == 0L) {
     return pack(values, axis, name)
   }
   TODO()
 }
 
-fun TF.stack(values: List<Int>, axis: Int = 0, name: String = "stack"): Tensor {
+fun TF.stack(values: List<Int>, axis: Int = 0, name: String = "stack"): Output {
   if (axis == 0) {
     return const(values.toIntArray(), name)
   }
   TODO()
 }
 
-fun TF.stack(values: Collection<Tensor>, axis: Long = 0L, name: String = "stack") =
+fun TF.stack(values: Collection<Output>, axis: Long = 0L, name: String = "stack") =
     pack(values.toTypedArray(), axis, name)
 
 /**
@@ -238,11 +237,11 @@ fun TF.stack(values: Collection<Tensor>, axis: Long = 0L, name: String = "stack"
  * has the same shape as `x` and `y`, then it chooses which element to copy from
  * `x` and `y`.
  */
-fun TF.where(condition: Tensor, x: Tensor, y: Tensor, name: String = "Where") =
+fun TF.where(condition: Output, x: Output, y: Output, name: String = "Where") =
     select(condition, x, y, name)
 
-fun TF.where(condition: Tensor, name: String = "Where") = _where(condition, name)
-/**Tensor conversion function that automatically packs arguments.*/
-fun TF.autopack(v: Array<Tensor>, name: String = "packed"): Tensor {
+fun TF.where(condition: Output, name: String = "Where") = _where(condition, name)
+/**Output conversion function that automatically packs arguments.*/
+fun TF.autopack(v: Array<Output>, name: String = "packed"): Output {
   TODO()
 }

@@ -5,6 +5,7 @@ package wumo.sim.algorithm.tensorflow.ops.gen
 
 import org.bytedeco.javacpp.tensorflow.NameAttrList
 import wumo.sim.algorithm.tensorflow.*
+import wumo.sim.algorithm.tensorflow.ops.Output
 import wumo.sim.util.Dimension
 
 fun TF.anonymousIterator(output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "AnonymousIterator") = run {
@@ -14,7 +15,7 @@ fun TF.anonymousIterator(output_types: Array<Long>, output_shapes: Array<Dimensi
   }
 }
 
-fun TF.batchDataset(input_dataset: Tensor, batch_size: Tensor, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "BatchDataset") = run {
+fun TF.batchDataset(input_dataset: Output, batch_size: Output, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "BatchDataset") = run {
   buildOpTensor("BatchDataset", name) {
     addInput(input_dataset, false)
     addInput(batch_size, false)
@@ -23,7 +24,7 @@ fun TF.batchDataset(input_dataset: Tensor, batch_size: Tensor, output_types: Arr
   }
 }
 
-fun TF.bytesProducedStatsDataset(input_dataset: Tensor, tag: Tensor, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "BytesProducedStatsDataset") = run {
+fun TF.bytesProducedStatsDataset(input_dataset: Output, tag: Output, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "BytesProducedStatsDataset") = run {
   buildOpTensor("BytesProducedStatsDataset", name) {
     addInput(input_dataset, false)
     addInput(tag, false)
@@ -32,7 +33,7 @@ fun TF.bytesProducedStatsDataset(input_dataset: Tensor, tag: Tensor, output_type
   }
 }
 
-fun TF.cacheDataset(input_dataset: Tensor, filename: Tensor, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "CacheDataset") = run {
+fun TF.cacheDataset(input_dataset: Output, filename: Output, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "CacheDataset") = run {
   buildOpTensor("CacheDataset", name) {
     addInput(input_dataset, false)
     addInput(filename, false)
@@ -41,7 +42,7 @@ fun TF.cacheDataset(input_dataset: Tensor, filename: Tensor, output_types: Array
   }
 }
 
-fun TF.concatenateDataset(input_dataset: Tensor, another_dataset: Tensor, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "ConcatenateDataset") = run {
+fun TF.concatenateDataset(input_dataset: Output, another_dataset: Output, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "ConcatenateDataset") = run {
   buildOpTensor("ConcatenateDataset", name) {
     addInput(input_dataset, false)
     addInput(another_dataset, false)
@@ -50,7 +51,7 @@ fun TF.concatenateDataset(input_dataset: Tensor, another_dataset: Tensor, output
   }
 }
 
-fun TF.datasetToSingleElement(dataset: Tensor, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "DatasetToSingleElement") = run {
+fun TF.datasetToSingleElement(dataset: Output, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "DatasetToSingleElement") = run {
   buildOpTensors("DatasetToSingleElement", name) {
     addInput(dataset, false)
     attr("output_types", output_types)
@@ -58,7 +59,7 @@ fun TF.datasetToSingleElement(dataset: Tensor, output_types: Array<Long>, output
   }
 }
 
-fun TF.denseToSparseBatchDataset(input_dataset: Tensor, batch_size: Tensor, row_shape: Tensor, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "DenseToSparseBatchDataset") = run {
+fun TF.denseToSparseBatchDataset(input_dataset: Output, batch_size: Output, row_shape: Output, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "DenseToSparseBatchDataset") = run {
   buildOpTensor("DenseToSparseBatchDataset", name) {
     addInput(input_dataset, false)
     addInput(batch_size, false)
@@ -68,21 +69,21 @@ fun TF.denseToSparseBatchDataset(input_dataset: Tensor, batch_size: Tensor, row_
   }
 }
 
-fun TF.deserializeIterator(resource_handle: Tensor, serialized: Tensor, name: String = "DeserializeIterator") = run {
+fun TF.deserializeIterator(resource_handle: Output, serialized: Output, name: String = "DeserializeIterator") = run {
   buildOp("DeserializeIterator", name) {
     addInput(resource_handle, false)
     addInput(serialized, false)
   }
 }
 
-fun TF.enqueueInQueueDataset(queue: Tensor, components: Tensor, name: String = "EnqueueInQueueDataset") = run {
+fun TF.enqueueInQueueDataset(queue: Output, components: Output, name: String = "EnqueueInQueueDataset") = run {
   buildOp("EnqueueInQueueDataset", name) {
     addInput(queue, false)
     addInput(components, false)
   }
 }
 
-fun TF.featureStatsDataset(input_dataset: Tensor, tag: Tensor, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "FeatureStatsDataset") = run {
+fun TF.featureStatsDataset(input_dataset: Output, tag: Output, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "FeatureStatsDataset") = run {
   buildOpTensor("FeatureStatsDataset", name) {
     addInput(input_dataset, false)
     addInput(tag, false)
@@ -91,7 +92,7 @@ fun TF.featureStatsDataset(input_dataset: Tensor, tag: Tensor, output_types: Arr
   }
 }
 
-fun TF.filterDataset(input_dataset: Tensor, other_arguments: Tensor, predicate: NameAttrList, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "FilterDataset") = run {
+fun TF.filterDataset(input_dataset: Output, other_arguments: Output, predicate: NameAttrList, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "FilterDataset") = run {
   buildOpTensor("FilterDataset", name) {
     addInput(input_dataset, false)
     addInput(other_arguments, false)
@@ -101,7 +102,7 @@ fun TF.filterDataset(input_dataset: Tensor, other_arguments: Tensor, predicate: 
   }
 }
 
-fun TF.fixedLengthRecordDataset(filenames: Tensor, header_bytes: Tensor, record_bytes: Tensor, footer_bytes: Tensor, buffer_size: Tensor, name: String = "FixedLengthRecordDataset") = run {
+fun TF.fixedLengthRecordDataset(filenames: Output, header_bytes: Output, record_bytes: Output, footer_bytes: Output, buffer_size: Output, name: String = "FixedLengthRecordDataset") = run {
   buildOpTensor("FixedLengthRecordDataset", name) {
     addInput(filenames, false)
     addInput(header_bytes, false)
@@ -111,7 +112,7 @@ fun TF.fixedLengthRecordDataset(filenames: Tensor, header_bytes: Tensor, record_
   }
 }
 
-fun TF.flatMapDataset(input_dataset: Tensor, other_arguments: Tensor, f: NameAttrList, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "FlatMapDataset") = run {
+fun TF.flatMapDataset(input_dataset: Output, other_arguments: Output, f: NameAttrList, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "FlatMapDataset") = run {
   buildOpTensor("FlatMapDataset", name) {
     addInput(input_dataset, false)
     addInput(other_arguments, false)
@@ -121,7 +122,7 @@ fun TF.flatMapDataset(input_dataset: Tensor, other_arguments: Tensor, f: NameAtt
   }
 }
 
-fun TF.generatorDataset(init_func_other_args: Tensor, next_func_other_args: Tensor, finalize_func_other_args: Tensor, init_func: NameAttrList, next_func: NameAttrList, finalize_func: NameAttrList, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "GeneratorDataset") = run {
+fun TF.generatorDataset(init_func_other_args: Output, next_func_other_args: Output, finalize_func_other_args: Output, init_func: NameAttrList, next_func: NameAttrList, finalize_func: NameAttrList, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "GeneratorDataset") = run {
   buildOpTensor("GeneratorDataset", name) {
     addInput(init_func_other_args, false)
     addInput(next_func_other_args, false)
@@ -134,7 +135,7 @@ fun TF.generatorDataset(init_func_other_args: Tensor, next_func_other_args: Tens
   }
 }
 
-fun TF.groupByWindowDataset(input_dataset: Tensor, key_func_other_arguments: Tensor, reduce_func_other_arguments: Tensor, window_size_func_other_arguments: Tensor, key_func: NameAttrList, reduce_func: NameAttrList, window_size_func: NameAttrList, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "GroupByWindowDataset") = run {
+fun TF.groupByWindowDataset(input_dataset: Output, key_func_other_arguments: Output, reduce_func_other_arguments: Output, window_size_func_other_arguments: Output, key_func: NameAttrList, reduce_func: NameAttrList, window_size_func: NameAttrList, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "GroupByWindowDataset") = run {
   buildOpTensor("GroupByWindowDataset", name) {
     addInput(input_dataset, false)
     addInput(key_func_other_arguments, false)
@@ -148,7 +149,7 @@ fun TF.groupByWindowDataset(input_dataset: Tensor, key_func_other_arguments: Ten
   }
 }
 
-fun TF.interleaveDataset(input_dataset: Tensor, other_arguments: Tensor, cycle_length: Tensor, block_length: Tensor, f: NameAttrList, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "InterleaveDataset") = run {
+fun TF.interleaveDataset(input_dataset: Output, other_arguments: Output, cycle_length: Output, block_length: Output, f: NameAttrList, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "InterleaveDataset") = run {
   buildOpTensor("InterleaveDataset", name) {
     addInput(input_dataset, false)
     addInput(other_arguments, false)
@@ -169,7 +170,7 @@ fun TF.iterator(shared_name: String, container: String, output_types: Array<Long
   }
 }
 
-fun TF.iteratorFromStringHandle(string_handle: Tensor, output_types: Array<Long> = arrayOf(), output_shapes: Array<Dimension> = arrayOf(), name: String = "IteratorFromStringHandle") = run {
+fun TF.iteratorFromStringHandle(string_handle: Output, output_types: Array<Long> = arrayOf(), output_shapes: Array<Dimension> = arrayOf(), name: String = "IteratorFromStringHandle") = run {
   buildOpTensor("IteratorFromStringHandle", name) {
     addInput(string_handle, false)
     attr("output_types", output_types)
@@ -177,7 +178,7 @@ fun TF.iteratorFromStringHandle(string_handle: Tensor, output_types: Array<Long>
   }
 }
 
-fun TF.iteratorGetNext(iterator: Tensor, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "IteratorGetNext") = run {
+fun TF.iteratorGetNext(iterator: Output, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "IteratorGetNext") = run {
   buildOpTensors("IteratorGetNext", name) {
     addInput(iterator, false)
     attr("output_types", output_types)
@@ -185,7 +186,7 @@ fun TF.iteratorGetNext(iterator: Tensor, output_types: Array<Long>, output_shape
   }
 }
 
-fun TF.iteratorGetNextSync(iterator: Tensor, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "IteratorGetNextSync") = run {
+fun TF.iteratorGetNextSync(iterator: Output, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "IteratorGetNextSync") = run {
   buildOpTensors("IteratorGetNextSync", name) {
     addInput(iterator, false)
     attr("output_types", output_types)
@@ -193,13 +194,13 @@ fun TF.iteratorGetNextSync(iterator: Tensor, output_types: Array<Long>, output_s
   }
 }
 
-fun TF.iteratorToStringHandle(resource_handle: Tensor, name: String = "IteratorToStringHandle") = run {
+fun TF.iteratorToStringHandle(resource_handle: Output, name: String = "IteratorToStringHandle") = run {
   buildOpTensor("IteratorToStringHandle", name) {
     addInput(resource_handle, false)
   }
 }
 
-fun TF.latencyStatsDataset(input_dataset: Tensor, tag: Tensor, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "LatencyStatsDataset") = run {
+fun TF.latencyStatsDataset(input_dataset: Output, tag: Output, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "LatencyStatsDataset") = run {
   buildOpTensor("LatencyStatsDataset", name) {
     addInput(input_dataset, false)
     addInput(tag, false)
@@ -208,14 +209,14 @@ fun TF.latencyStatsDataset(input_dataset: Tensor, tag: Tensor, output_types: Arr
   }
 }
 
-fun TF.makeIterator(dataset: Tensor, iterator: Tensor, name: String = "MakeIterator") = run {
+fun TF.makeIterator(dataset: Output, iterator: Output, name: String = "MakeIterator") = run {
   buildOp("MakeIterator", name) {
     addInput(dataset, false)
     addInput(iterator, false)
   }
 }
 
-fun TF.mapDataset(input_dataset: Tensor, other_arguments: Tensor, f: NameAttrList, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "MapDataset") = run {
+fun TF.mapDataset(input_dataset: Output, other_arguments: Output, f: NameAttrList, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "MapDataset") = run {
   buildOpTensor("MapDataset", name) {
     addInput(input_dataset, false)
     addInput(other_arguments, false)
@@ -235,7 +236,7 @@ fun TF.oneShotIterator(dataset_factory: NameAttrList, output_types: Array<Long>,
   }
 }
 
-fun TF.paddedBatchDataset(input_dataset: Tensor, batch_size: Tensor, padded_shapes: Array<Tensor>, padding_values: Tensor, output_shapes: Array<Dimension>, name: String = "PaddedBatchDataset") = run {
+fun TF.paddedBatchDataset(input_dataset: Output, batch_size: Output, padded_shapes: Array<Output>, padding_values: Output, output_shapes: Array<Dimension>, name: String = "PaddedBatchDataset") = run {
   buildOpTensor("PaddedBatchDataset", name) {
     addInput(input_dataset, false)
     addInput(batch_size, false)
@@ -245,7 +246,7 @@ fun TF.paddedBatchDataset(input_dataset: Tensor, batch_size: Tensor, padded_shap
   }
 }
 
-fun TF.parallelInterleaveDataset(input_dataset: Tensor, other_arguments: Tensor, cycle_length: Tensor, block_length: Tensor, sloppy: Tensor, buffer_output_elements: Tensor, prefetch_input_elements: Tensor, f: NameAttrList, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "ParallelInterleaveDataset") = run {
+fun TF.parallelInterleaveDataset(input_dataset: Output, other_arguments: Output, cycle_length: Output, block_length: Output, sloppy: Output, buffer_output_elements: Output, prefetch_input_elements: Output, f: NameAttrList, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "ParallelInterleaveDataset") = run {
   buildOpTensor("ParallelInterleaveDataset", name) {
     addInput(input_dataset, false)
     addInput(other_arguments, false)
@@ -260,7 +261,7 @@ fun TF.parallelInterleaveDataset(input_dataset: Tensor, other_arguments: Tensor,
   }
 }
 
-fun TF.parallelMapDataset(input_dataset: Tensor, other_arguments: Tensor, num_parallel_calls: Tensor, f: NameAttrList, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "ParallelMapDataset") = run {
+fun TF.parallelMapDataset(input_dataset: Output, other_arguments: Output, num_parallel_calls: Output, f: NameAttrList, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "ParallelMapDataset") = run {
   buildOpTensor("ParallelMapDataset", name) {
     addInput(input_dataset, false)
     addInput(other_arguments, false)
@@ -271,7 +272,7 @@ fun TF.parallelMapDataset(input_dataset: Tensor, other_arguments: Tensor, num_pa
   }
 }
 
-fun TF.prefetchDataset(input_dataset: Tensor, buffer_size: Tensor, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "PrefetchDataset") = run {
+fun TF.prefetchDataset(input_dataset: Output, buffer_size: Output, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "PrefetchDataset") = run {
   buildOpTensor("PrefetchDataset", name) {
     addInput(input_dataset, false)
     addInput(buffer_size, false)
@@ -280,7 +281,7 @@ fun TF.prefetchDataset(input_dataset: Tensor, buffer_size: Tensor, output_types:
   }
 }
 
-fun TF.prependFromQueueAndPaddedBatchDataset(input_dataset: Tensor, batch_size: Tensor, padded_shapes: Array<Tensor>, padding_values: Tensor, output_shapes: Array<Dimension>, name: String = "PrependFromQueueAndPaddedBatchDataset") = run {
+fun TF.prependFromQueueAndPaddedBatchDataset(input_dataset: Output, batch_size: Output, padded_shapes: Array<Output>, padding_values: Output, output_shapes: Array<Dimension>, name: String = "PrependFromQueueAndPaddedBatchDataset") = run {
   buildOpTensor("PrependFromQueueAndPaddedBatchDataset", name) {
     addInput(input_dataset, false)
     addInput(batch_size, false)
@@ -290,7 +291,7 @@ fun TF.prependFromQueueAndPaddedBatchDataset(input_dataset: Tensor, batch_size: 
   }
 }
 
-fun TF.randomDataset(seed: Tensor, seed2: Tensor, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "RandomDataset") = run {
+fun TF.randomDataset(seed: Output, seed2: Output, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "RandomDataset") = run {
   buildOpTensor("RandomDataset", name) {
     addInput(seed, false)
     addInput(seed2, false)
@@ -299,7 +300,7 @@ fun TF.randomDataset(seed: Tensor, seed2: Tensor, output_types: Array<Long>, out
   }
 }
 
-fun TF.rangeDataset(start: Tensor, stop: Tensor, step: Tensor, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "RangeDataset") = run {
+fun TF.rangeDataset(start: Output, stop: Output, step: Output, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "RangeDataset") = run {
   buildOpTensor("RangeDataset", name) {
     addInput(start, false)
     addInput(stop, false)
@@ -309,7 +310,7 @@ fun TF.rangeDataset(start: Tensor, stop: Tensor, step: Tensor, output_types: Arr
   }
 }
 
-fun TF.repeatDataset(input_dataset: Tensor, count: Tensor, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "RepeatDataset") = run {
+fun TF.repeatDataset(input_dataset: Output, count: Output, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "RepeatDataset") = run {
   buildOpTensor("RepeatDataset", name) {
     addInput(input_dataset, false)
     addInput(count, false)
@@ -318,7 +319,7 @@ fun TF.repeatDataset(input_dataset: Tensor, count: Tensor, output_types: Array<L
   }
 }
 
-fun TF.scanDataset(input_dataset: Tensor, initial_state: Tensor, other_arguments: Tensor, f: NameAttrList, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "ScanDataset") = run {
+fun TF.scanDataset(input_dataset: Output, initial_state: Output, other_arguments: Output, f: NameAttrList, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "ScanDataset") = run {
   buildOpTensor("ScanDataset", name) {
     addInput(input_dataset, false)
     addInput(initial_state, false)
@@ -329,13 +330,13 @@ fun TF.scanDataset(input_dataset: Tensor, initial_state: Tensor, other_arguments
   }
 }
 
-fun TF.serializeIterator(resource_handle: Tensor, name: String = "SerializeIterator") = run {
+fun TF.serializeIterator(resource_handle: Output, name: String = "SerializeIterator") = run {
   buildOpTensor("SerializeIterator", name) {
     addInput(resource_handle, false)
   }
 }
 
-fun TF.setStatsAggregatorDataset(input_dataset: Tensor, stats_aggregator: Tensor, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "SetStatsAggregatorDataset") = run {
+fun TF.setStatsAggregatorDataset(input_dataset: Output, stats_aggregator: Output, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "SetStatsAggregatorDataset") = run {
   buildOpTensor("SetStatsAggregatorDataset", name) {
     addInput(input_dataset, false)
     addInput(stats_aggregator, false)
@@ -344,7 +345,7 @@ fun TF.setStatsAggregatorDataset(input_dataset: Tensor, stats_aggregator: Tensor
   }
 }
 
-fun TF.shuffleAndRepeatDataset(input_dataset: Tensor, buffer_size: Tensor, seed: Tensor, seed2: Tensor, count: Tensor, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "ShuffleAndRepeatDataset") = run {
+fun TF.shuffleAndRepeatDataset(input_dataset: Output, buffer_size: Output, seed: Output, seed2: Output, count: Output, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "ShuffleAndRepeatDataset") = run {
   buildOpTensor("ShuffleAndRepeatDataset", name) {
     addInput(input_dataset, false)
     addInput(buffer_size, false)
@@ -356,7 +357,7 @@ fun TF.shuffleAndRepeatDataset(input_dataset: Tensor, buffer_size: Tensor, seed:
   }
 }
 
-fun TF.shuffleDataset(input_dataset: Tensor, buffer_size: Tensor, seed: Tensor, seed2: Tensor, output_types: Array<Long>, output_shapes: Array<Dimension>, reshuffle_each_iteration: Boolean = true, name: String = "ShuffleDataset") = run {
+fun TF.shuffleDataset(input_dataset: Output, buffer_size: Output, seed: Output, seed2: Output, output_types: Array<Long>, output_shapes: Array<Dimension>, reshuffle_each_iteration: Boolean = true, name: String = "ShuffleDataset") = run {
   buildOpTensor("ShuffleDataset", name) {
     addInput(input_dataset, false)
     addInput(buffer_size, false)
@@ -368,7 +369,7 @@ fun TF.shuffleDataset(input_dataset: Tensor, buffer_size: Tensor, seed: Tensor, 
   }
 }
 
-fun TF.skipDataset(input_dataset: Tensor, count: Tensor, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "SkipDataset") = run {
+fun TF.skipDataset(input_dataset: Output, count: Output, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "SkipDataset") = run {
   buildOpTensor("SkipDataset", name) {
     addInput(input_dataset, false)
     addInput(count, false)
@@ -377,7 +378,7 @@ fun TF.skipDataset(input_dataset: Tensor, count: Tensor, output_types: Array<Lon
   }
 }
 
-fun TF.slideDataset(input_dataset: Tensor, window_size: Tensor, window_shift: Tensor, window_stride: Tensor, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "SlideDataset") = run {
+fun TF.slideDataset(input_dataset: Output, window_size: Output, window_shift: Output, window_stride: Output, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "SlideDataset") = run {
   buildOpTensor("SlideDataset", name) {
     addInput(input_dataset, false)
     addInput(window_size, false)
@@ -388,7 +389,7 @@ fun TF.slideDataset(input_dataset: Tensor, window_size: Tensor, window_shift: Te
   }
 }
 
-fun TF.sparseTensorSliceDataset(indices: Tensor, values: Tensor, dense_shape: Tensor, name: String = "SparseTensorSliceDataset") = run {
+fun TF.sparseTensorSliceDataset(indices: Output, values: Output, dense_shape: Output, name: String = "SparseTensorSliceDataset") = run {
   buildOpTensor("SparseTensorSliceDataset", name) {
     addInput(indices, false)
     addInput(values, false)
@@ -396,7 +397,7 @@ fun TF.sparseTensorSliceDataset(indices: Tensor, values: Tensor, dense_shape: Te
   }
 }
 
-fun TF.sqlDataset(driver_name: Tensor, data_source_name: Tensor, query: Tensor, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "SqlDataset") = run {
+fun TF.sqlDataset(driver_name: Output, data_source_name: Output, query: Output, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "SqlDataset") = run {
   buildOpTensor("SqlDataset", name) {
     addInput(driver_name, false)
     addInput(data_source_name, false)
@@ -413,13 +414,13 @@ fun TF.statsAggregatorHandle(container: String = "", shared_name: String = "", n
   }
 }
 
-fun TF.statsAggregatorSummary(iterator: Tensor, name: String = "StatsAggregatorSummary") = run {
+fun TF.statsAggregatorSummary(iterator: Output, name: String = "StatsAggregatorSummary") = run {
   buildOpTensor("StatsAggregatorSummary", name) {
     addInput(iterator, false)
   }
 }
 
-fun TF.tFRecordDataset(filenames: Tensor, compression_type: Tensor, buffer_size: Tensor, name: String = "TFRecordDataset") = run {
+fun TF.tFRecordDataset(filenames: Output, compression_type: Output, buffer_size: Output, name: String = "TFRecordDataset") = run {
   buildOpTensor("TFRecordDataset", name) {
     addInput(filenames, false)
     addInput(compression_type, false)
@@ -427,7 +428,7 @@ fun TF.tFRecordDataset(filenames: Tensor, compression_type: Tensor, buffer_size:
   }
 }
 
-fun TF.takeDataset(input_dataset: Tensor, count: Tensor, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "TakeDataset") = run {
+fun TF.takeDataset(input_dataset: Output, count: Output, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "TakeDataset") = run {
   buildOpTensor("TakeDataset", name) {
     addInput(input_dataset, false)
     addInput(count, false)
@@ -436,21 +437,21 @@ fun TF.takeDataset(input_dataset: Tensor, count: Tensor, output_types: Array<Lon
   }
 }
 
-fun TF.tensorDataset(components: Tensor, output_shapes: Array<Dimension>, name: String = "TensorDataset") = run {
+fun TF.tensorDataset(components: Output, output_shapes: Array<Dimension>, name: String = "TensorDataset") = run {
   buildOpTensor("TensorDataset", name) {
     addInput(components, false)
     attr("output_shapes", output_shapes)
   }
 }
 
-fun TF.tensorSliceDataset(components: Tensor, output_shapes: Array<Dimension>, name: String = "TensorSliceDataset") = run {
+fun TF.tensorSliceDataset(components: Output, output_shapes: Array<Dimension>, name: String = "TensorSliceDataset") = run {
   buildOpTensor("TensorSliceDataset", name) {
     addInput(components, false)
     attr("output_shapes", output_shapes)
   }
 }
 
-fun TF.textLineDataset(filenames: Tensor, compression_type: Tensor, buffer_size: Tensor, name: String = "TextLineDataset") = run {
+fun TF.textLineDataset(filenames: Output, compression_type: Output, buffer_size: Output, name: String = "TextLineDataset") = run {
   buildOpTensor("TextLineDataset", name) {
     addInput(filenames, false)
     addInput(compression_type, false)
@@ -458,7 +459,7 @@ fun TF.textLineDataset(filenames: Tensor, compression_type: Tensor, buffer_size:
   }
 }
 
-fun TF.unbatchDataset(input_dataset: Tensor, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "UnbatchDataset") = run {
+fun TF.unbatchDataset(input_dataset: Output, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "UnbatchDataset") = run {
   buildOpTensor("UnbatchDataset", name) {
     addInput(input_dataset, false)
     attr("output_types", output_types)
@@ -466,7 +467,7 @@ fun TF.unbatchDataset(input_dataset: Tensor, output_types: Array<Long>, output_s
   }
 }
 
-fun TF.zipDataset(input_datasets: Array<Tensor>, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "ZipDataset") = run {
+fun TF.zipDataset(input_datasets: Array<Output>, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "ZipDataset") = run {
   buildOpTensor("ZipDataset", name) {
     addInput(input_datasets, false)
     attr("output_types", output_types)
@@ -474,7 +475,7 @@ fun TF.zipDataset(input_datasets: Array<Tensor>, output_types: Array<Long>, outp
   }
 }
 
-fun TF.batchDatasetV2(input_dataset: Tensor, batch_size: Tensor, drop_remainder: Tensor, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "BatchDatasetV2") = run {
+fun TF.batchDatasetV2(input_dataset: Output, batch_size: Output, drop_remainder: Output, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "BatchDatasetV2") = run {
   buildOpTensor("BatchDatasetV2", name) {
     addInput(input_dataset, false)
     addInput(batch_size, false)
@@ -484,13 +485,13 @@ fun TF.batchDatasetV2(input_dataset: Tensor, batch_size: Tensor, drop_remainder:
   }
 }
 
-fun TF.datasetToGraph(input_dataset: Tensor, name: String = "DatasetToGraph") = run {
+fun TF.datasetToGraph(input_dataset: Output, name: String = "DatasetToGraph") = run {
   buildOpTensor("DatasetToGraph", name) {
     addInput(input_dataset, false)
   }
 }
 
-fun TF.datasetToTFRecord(input_dataset: Tensor, filename: Tensor, compression_type: Tensor, name: String = "DatasetToTFRecord") = run {
+fun TF.datasetToTFRecord(input_dataset: Output, filename: Output, compression_type: Output, name: String = "DatasetToTFRecord") = run {
   buildOp("DatasetToTFRecord", name) {
     addInput(input_dataset, false)
     addInput(filename, false)
@@ -498,7 +499,7 @@ fun TF.datasetToTFRecord(input_dataset: Tensor, filename: Tensor, compression_ty
   }
 }
 
-fun TF.groupByReducerDataset(input_dataset: Tensor, key_func_other_arguments: Tensor, init_func_other_arguments: Tensor, reduce_func_other_arguments: Tensor, finalize_func_other_arguments: Tensor, key_func: NameAttrList, init_func: NameAttrList, reduce_func: NameAttrList, finalize_func: NameAttrList, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "GroupByReducerDataset") = run {
+fun TF.groupByReducerDataset(input_dataset: Output, key_func_other_arguments: Output, init_func_other_arguments: Output, reduce_func_other_arguments: Output, finalize_func_other_arguments: Output, key_func: NameAttrList, init_func: NameAttrList, reduce_func: NameAttrList, finalize_func: NameAttrList, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "GroupByReducerDataset") = run {
   buildOpTensor("GroupByReducerDataset", name) {
     addInput(input_dataset, false)
     addInput(key_func_other_arguments, false)
@@ -514,7 +515,7 @@ fun TF.groupByReducerDataset(input_dataset: Tensor, key_func_other_arguments: Te
   }
 }
 
-fun TF.iteratorFromStringHandleV2(string_handle: Tensor, output_types: Array<Long> = arrayOf(), output_shapes: Array<Dimension> = arrayOf(), name: String = "IteratorFromStringHandleV2") = run {
+fun TF.iteratorFromStringHandleV2(string_handle: Output, output_types: Array<Long> = arrayOf(), output_shapes: Array<Dimension> = arrayOf(), name: String = "IteratorFromStringHandleV2") = run {
   buildOpTensor("IteratorFromStringHandleV2", name) {
     addInput(string_handle, false)
     attr("output_types", output_types)
@@ -531,7 +532,7 @@ fun TF.iteratorV2(shared_name: String, container: String, output_types: Array<Lo
   }
 }
 
-fun TF.mapAndBatchDataset(input_dataset: Tensor, other_arguments: Tensor, batch_size: Tensor, num_parallel_batches: Tensor, drop_remainder: Tensor, f: NameAttrList, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "MapAndBatchDataset") = run {
+fun TF.mapAndBatchDataset(input_dataset: Output, other_arguments: Output, batch_size: Output, num_parallel_batches: Output, drop_remainder: Output, f: NameAttrList, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "MapAndBatchDataset") = run {
   buildOpTensor("MapAndBatchDataset", name) {
     addInput(input_dataset, false)
     addInput(other_arguments, false)
@@ -544,7 +545,7 @@ fun TF.mapAndBatchDataset(input_dataset: Tensor, other_arguments: Tensor, batch_
   }
 }
 
-fun TF.mapAndBatchDatasetV2(input_dataset: Tensor, other_arguments: Tensor, batch_size: Tensor, num_parallel_calls: Tensor, drop_remainder: Tensor, f: NameAttrList, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "MapAndBatchDatasetV2") = run {
+fun TF.mapAndBatchDatasetV2(input_dataset: Output, other_arguments: Output, batch_size: Output, num_parallel_calls: Output, drop_remainder: Output, f: NameAttrList, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "MapAndBatchDatasetV2") = run {
   buildOpTensor("MapAndBatchDatasetV2", name) {
     addInput(input_dataset, false)
     addInput(other_arguments, false)
@@ -557,7 +558,7 @@ fun TF.mapAndBatchDatasetV2(input_dataset: Tensor, other_arguments: Tensor, batc
   }
 }
 
-fun TF.optimizeDataset(input_dataset: Tensor, optimizations: Tensor, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "OptimizeDataset") = run {
+fun TF.optimizeDataset(input_dataset: Output, optimizations: Output, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "OptimizeDataset") = run {
   buildOpTensor("OptimizeDataset", name) {
     addInput(input_dataset, false)
     addInput(optimizations, false)
@@ -566,7 +567,7 @@ fun TF.optimizeDataset(input_dataset: Tensor, optimizations: Tensor, output_type
   }
 }
 
-fun TF.paddedBatchDatasetV2(input_dataset: Tensor, batch_size: Tensor, padded_shapes: Array<Tensor>, padding_values: Tensor, drop_remainder: Tensor, output_shapes: Array<Dimension>, name: String = "PaddedBatchDatasetV2") = run {
+fun TF.paddedBatchDatasetV2(input_dataset: Output, batch_size: Output, padded_shapes: Array<Output>, padding_values: Output, drop_remainder: Output, output_shapes: Array<Dimension>, name: String = "PaddedBatchDatasetV2") = run {
   buildOpTensor("PaddedBatchDatasetV2", name) {
     addInput(input_dataset, false)
     addInput(batch_size, false)
@@ -577,13 +578,13 @@ fun TF.paddedBatchDatasetV2(input_dataset: Tensor, batch_size: Tensor, padded_sh
   }
 }
 
-fun TF.sinkDataset(input_dataset: Tensor, name: String = "SinkDataset") = run {
+fun TF.sinkDataset(input_dataset: Output, name: String = "SinkDataset") = run {
   buildOpTensor("SinkDataset", name) {
     addInput(input_dataset, false)
   }
 }
 
-fun TF.windowDataset(input_dataset: Tensor, window_size: Tensor, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "WindowDataset") = run {
+fun TF.windowDataset(input_dataset: Output, window_size: Output, output_types: Array<Long>, output_shapes: Array<Dimension>, name: String = "WindowDataset") = run {
   buildOpTensor("WindowDataset", name) {
     addInput(input_dataset, false)
     addInput(window_size, false)

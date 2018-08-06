@@ -4,9 +4,8 @@ import org.bytedeco.javacpp.Loader
 import org.bytedeco.javacpp.tensorflow
 import org.bytedeco.javacpp.tensorflow.*
 import org.tensorflow.framework.GraphDef
-import wumo.sim.algorithm.tensorflow.ops.CondContext
-import wumo.sim.algorithm.tensorflow.ops.ControlFlowContext
-import wumo.sim.algorithm.tensorflow.ops.group
+import wumo.sim.algorithm.tensorflow.ops.*
+import wumo.sim.algorithm.tensorflow.ops.Output
 import wumo.sim.algorithm.tensorflow.scope.NameScope
 import wumo.sim.algorithm.tensorflow.scope.VariableScope
 import wumo.sim.util.println
@@ -31,6 +30,8 @@ class TF {
       Loader.load(tensorflow::class.java)
       tensorflow.InitMain("trainer", null as IntArray?, null)
     }
+    
+    val version = TF_Version().string!!
   }
   
   val g = Graph(this)
@@ -189,7 +190,7 @@ class TF {
     this.device = tmpDev
   }
   
-  inline fun <R> condContext(pred: Tensor, pivot: Tensor, branch: Int, block: (CondContext) -> R): R {
+  inline fun <R> condContext(pred: Output, pivot: Output, branch: Int, block: (CondContext) -> R): R {
     val tmp = control_flow_context
     control_flow_context = CondContext(pred, pivot, branch)
     try {
@@ -209,10 +210,10 @@ class TF {
     }
   }
   
-  inline fun <R> control_dependencies(control_inputs: Tensor, block: () -> R) =
+  inline fun <R> control_dependencies(control_inputs: Output, block: () -> R) =
       control_dependencies(control_inputs.op!!) { block() }
   
-  inline fun <R> colocate_with(op: Tensor, ignore_existing: Boolean = false, block: () -> R) =
+  inline fun <R> colocate_with(op: Output, ignore_existing: Boolean = false, block: () -> R) =
       colocate_with(op.op!!, ignore_existing, block)
   
   inline fun <R> colocate_with(op: Op, ignore_existing: Boolean = false, block: () -> R) =
@@ -235,11 +236,11 @@ class TF {
     }
   }
   
-  inline fun <R> colocate_with_tensors(op: Array<Tensor>, ignore_existing: Boolean = false, block: () -> R): R {
+  inline fun <R> colocate_with_tensors(op: Array<Output>, ignore_existing: Boolean = false, block: () -> R): R {
     return colocate_with(op.map { it.op!! }, ignore_existing, block)
   }
   
-  inline fun <R> colocate_with_tensors(op: List<Tensor>, ignore_existing: Boolean = false, block: () -> R): R {
+  inline fun <R> colocate_with_tensors(op: List<Output>, ignore_existing: Boolean = false, block: () -> R): R {
     return colocate_with(op.map { it.op!! }, ignore_existing, block)
   }
   

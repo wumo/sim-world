@@ -2,7 +2,6 @@ package wumo.sim.algorithm.tensorflow.ops
 
 import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.algorithm.tensorflow.*
-import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.TensorBuffer
 import wumo.sim.util.*
 import wumo.sim.util.Dimension
@@ -50,7 +49,7 @@ fun TF.const(shape: Dimension, value: Array<String>, name: String = "Const") = c
 fun TF.const(dtype: Int, value: Any, name: String = "Const") =
     const(scalarDimension, dtype, value, name)
 
-val const_switch = SwitchValue3<Int, Dimension, Any, String, Tensor>().apply {
+val const_switch = SwitchValue3<Int, Dimension, Any, String, Output>().apply {
   case(DT_INT8, DT_UINT8) { tf.const(_1, (_2 as Number).toByte(), _3) }
   case(DT_FLOAT) { tf.const(_1, (_2 as Number).toFloat(), _3) }
   case(DT_DOUBLE) { tf.const(_1, (_2 as Number).toDouble(), _3) }
@@ -61,11 +60,11 @@ val const_switch = SwitchValue3<Int, Dimension, Any, String, Tensor>().apply {
   case(DT_STRING) { tf.const(_1, _2.toString(), _3) }
 }
 
-fun TF.const(shape: Dimension, dtype: Int, value: Any, name: String = "Const"): Tensor {
+fun TF.const(shape: Dimension, dtype: Int, value: Any, name: String = "Const"): Output {
   return const_switch(dtype, shape, value, name)
 }
 
-private fun TF.const(shape: Dimension, dtype: Int, name: String = "Const", set_value: TensorProto.() -> Unit): Tensor {
+private fun TF.const(shape: Dimension, dtype: Int, name: String = "Const", set_value: TensorProto.() -> Unit): Output {
   val tensor_proto = AttrValue()
   tensor_proto.mutable_tensor().apply {
     set_dtype(dtype)
@@ -87,7 +86,7 @@ fun <T : Any> TF.const(value: TensorBuffer<T>, name: String = "Const") =
       attrType("dtype", value.dtype.base_dtype)
     }
 
-fun <T : Any> TF.const(value: NDArray<T>, name: String = "Const"): Tensor {
+fun <T : Any> TF.const(value: NDArray<T>, name: String = "Const"): Output {
   val dtype = dtypeFromClass(value.dtype)
   return buildOpTensor("Const", name = name) {
     attr("value", TensorBuffer.fromNDArray(value))

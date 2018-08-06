@@ -11,7 +11,7 @@ import wumo.sim.util.Dimension
  * @param shape: shape of the new or existing variable.
  * @param dtype: type of the new or existing variable (defaults to `DT_FLOAT`).
  * @param initializer: initializer for the variable if one is created.
- * @param regularizer: a (Tensor -> Tensor or None) function; the result of
+ * @param regularizer: a (Output -> Output or None) function; the result of
 applying it on a newly created variable will be added to the collection
  * @param trainable: If `True` also add the variable to the graph collection
 `GraphKeys.TRAINABLE_VARIABLES` (see `tf.Variable`).

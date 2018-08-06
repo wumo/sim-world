@@ -4,8 +4,9 @@
 package wumo.sim.algorithm.tensorflow.ops.gen
 
 import wumo.sim.algorithm.tensorflow.*
+import wumo.sim.algorithm.tensorflow.ops.Output
 
-fun TF.boostedTreesCalculateBestGainsPerFeature(node_id_range: Tensor, stats_summary_list: Array<Tensor>, l1: Tensor, l2: Tensor, tree_complexity: Tensor, min_node_weight: Tensor, max_splits: Long, name: String = "BoostedTreesCalculateBestGainsPerFeature") = run {
+fun TF.boostedTreesCalculateBestGainsPerFeature(node_id_range: Output, stats_summary_list: Array<Output>, l1: Output, l2: Output, tree_complexity: Output, min_node_weight: Output, max_splits: Long, name: String = "BoostedTreesCalculateBestGainsPerFeature") = run {
   buildOpTensors("BoostedTreesCalculateBestGainsPerFeature", name) {
     addInput(node_id_range, false)
     addInput(stats_summary_list, false)
@@ -17,7 +18,7 @@ fun TF.boostedTreesCalculateBestGainsPerFeature(node_id_range: Tensor, stats_sum
   }
 }
 
-fun TF.boostedTreesCenterBias(tree_ensemble_handle: Tensor, mean_gradients: Tensor, mean_hessians: Tensor, l1: Tensor, l2: Tensor, name: String = "BoostedTreesCenterBias") = run {
+fun TF.boostedTreesCenterBias(tree_ensemble_handle: Output, mean_gradients: Output, mean_hessians: Output, l1: Output, l2: Output, name: String = "BoostedTreesCenterBias") = run {
   buildOpTensor("BoostedTreesCenterBias", name) {
     addInput(tree_ensemble_handle, false)
     addInput(mean_gradients, false)
@@ -27,7 +28,7 @@ fun TF.boostedTreesCenterBias(tree_ensemble_handle: Tensor, mean_gradients: Tens
   }
 }
 
-fun TF.boostedTreesCreateEnsemble(tree_ensemble_handle: Tensor, stamp_token: Tensor, tree_ensemble_serialized: Tensor, name: String = "BoostedTreesCreateEnsemble") = run {
+fun TF.boostedTreesCreateEnsemble(tree_ensemble_handle: Output, stamp_token: Output, tree_ensemble_serialized: Output, name: String = "BoostedTreesCreateEnsemble") = run {
   buildOp("BoostedTreesCreateEnsemble", name) {
     addInput(tree_ensemble_handle, false)
     addInput(stamp_token, false)
@@ -35,7 +36,7 @@ fun TF.boostedTreesCreateEnsemble(tree_ensemble_handle: Tensor, stamp_token: Ten
   }
 }
 
-fun TF.boostedTreesDeserializeEnsemble(tree_ensemble_handle: Tensor, stamp_token: Tensor, tree_ensemble_serialized: Tensor, name: String = "BoostedTreesDeserializeEnsemble") = run {
+fun TF.boostedTreesDeserializeEnsemble(tree_ensemble_handle: Output, stamp_token: Output, tree_ensemble_serialized: Output, name: String = "BoostedTreesDeserializeEnsemble") = run {
   buildOp("BoostedTreesDeserializeEnsemble", name) {
     addInput(tree_ensemble_handle, false)
     addInput(stamp_token, false)
@@ -50,7 +51,7 @@ fun TF.boostedTreesEnsembleResourceHandleOp(container: String = "", shared_name:
   }
 }
 
-fun TF.boostedTreesExampleDebugOutputs(tree_ensemble_handle: Tensor, bucketized_features: Array<Tensor>, logits_dimension: Long, name: String = "BoostedTreesExampleDebugOutputs") = run {
+fun TF.boostedTreesExampleDebugOutputs(tree_ensemble_handle: Output, bucketized_features: Array<Output>, logits_dimension: Long, name: String = "BoostedTreesExampleDebugOutputs") = run {
   buildOpTensor("BoostedTreesExampleDebugOutputs", name) {
     addInput(tree_ensemble_handle, false)
     addInput(bucketized_features, false)
@@ -58,13 +59,13 @@ fun TF.boostedTreesExampleDebugOutputs(tree_ensemble_handle: Tensor, bucketized_
   }
 }
 
-fun TF.boostedTreesGetEnsembleStates(tree_ensemble_handle: Tensor, name: String = "BoostedTreesGetEnsembleStates") = run {
+fun TF.boostedTreesGetEnsembleStates(tree_ensemble_handle: Output, name: String = "BoostedTreesGetEnsembleStates") = run {
   buildOpTensors("BoostedTreesGetEnsembleStates", name) {
     addInput(tree_ensemble_handle, false)
   }
 }
 
-fun TF.boostedTreesMakeStatsSummary(node_ids: Tensor, gradients: Tensor, hessians: Tensor, bucketized_features_list: Array<Tensor>, max_splits: Long, num_buckets: Long, name: String = "BoostedTreesMakeStatsSummary") = run {
+fun TF.boostedTreesMakeStatsSummary(node_ids: Output, gradients: Output, hessians: Output, bucketized_features_list: Array<Output>, max_splits: Long, num_buckets: Long, name: String = "BoostedTreesMakeStatsSummary") = run {
   buildOpTensor("BoostedTreesMakeStatsSummary", name) {
     addInput(node_ids, false)
     addInput(gradients, false)
@@ -75,7 +76,7 @@ fun TF.boostedTreesMakeStatsSummary(node_ids: Tensor, gradients: Tensor, hessian
   }
 }
 
-fun TF.boostedTreesPredict(tree_ensemble_handle: Tensor, bucketized_features: Array<Tensor>, logits_dimension: Long, name: String = "BoostedTreesPredict") = run {
+fun TF.boostedTreesPredict(tree_ensemble_handle: Output, bucketized_features: Array<Output>, logits_dimension: Long, name: String = "BoostedTreesPredict") = run {
   buildOpTensor("BoostedTreesPredict", name) {
     addInput(tree_ensemble_handle, false)
     addInput(bucketized_features, false)
@@ -83,13 +84,13 @@ fun TF.boostedTreesPredict(tree_ensemble_handle: Tensor, bucketized_features: Ar
   }
 }
 
-fun TF.boostedTreesSerializeEnsemble(tree_ensemble_handle: Tensor, name: String = "BoostedTreesSerializeEnsemble") = run {
+fun TF.boostedTreesSerializeEnsemble(tree_ensemble_handle: Output, name: String = "BoostedTreesSerializeEnsemble") = run {
   buildOpTensors("BoostedTreesSerializeEnsemble", name) {
     addInput(tree_ensemble_handle, false)
   }
 }
 
-fun TF.boostedTreesTrainingPredict(tree_ensemble_handle: Tensor, cached_tree_ids: Tensor, cached_node_ids: Tensor, bucketized_features: Array<Tensor>, logits_dimension: Long, name: String = "BoostedTreesTrainingPredict") = run {
+fun TF.boostedTreesTrainingPredict(tree_ensemble_handle: Output, cached_tree_ids: Output, cached_node_ids: Output, bucketized_features: Array<Output>, logits_dimension: Long, name: String = "BoostedTreesTrainingPredict") = run {
   buildOpTensors("BoostedTreesTrainingPredict", name) {
     addInput(tree_ensemble_handle, false)
     addInput(cached_tree_ids, false)
@@ -99,7 +100,7 @@ fun TF.boostedTreesTrainingPredict(tree_ensemble_handle: Tensor, cached_tree_ids
   }
 }
 
-fun TF.boostedTreesUpdateEnsemble(tree_ensemble_handle: Tensor, feature_ids: Tensor, node_ids: Array<Tensor>, gains: Array<Tensor>, thresholds: Array<Tensor>, left_node_contribs: Array<Tensor>, right_node_contribs: Array<Tensor>, max_depth: Tensor, learning_rate: Tensor, pruning_mode: Long, name: String = "BoostedTreesUpdateEnsemble") = run {
+fun TF.boostedTreesUpdateEnsemble(tree_ensemble_handle: Output, feature_ids: Output, node_ids: Array<Output>, gains: Array<Output>, thresholds: Array<Output>, left_node_contribs: Array<Output>, right_node_contribs: Array<Output>, max_depth: Output, learning_rate: Output, pruning_mode: Long, name: String = "BoostedTreesUpdateEnsemble") = run {
   buildOp("BoostedTreesUpdateEnsemble", name) {
     addInput(tree_ensemble_handle, false)
     addInput(feature_ids, false)
@@ -114,7 +115,7 @@ fun TF.boostedTreesUpdateEnsemble(tree_ensemble_handle: Tensor, feature_ids: Ten
   }
 }
 
-fun TF.isBoostedTreesEnsembleInitialized(tree_ensemble_handle: Tensor, name: String = "IsBoostedTreesEnsembleInitialized") = run {
+fun TF.isBoostedTreesEnsembleInitialized(tree_ensemble_handle: Output, name: String = "IsBoostedTreesEnsembleInitialized") = run {
   buildOpTensor("IsBoostedTreesEnsembleInitialized", name) {
     addInput(tree_ensemble_handle, false)
   }

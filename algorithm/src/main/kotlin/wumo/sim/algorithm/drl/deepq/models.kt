@@ -1,14 +1,14 @@
 package wumo.sim.algorithm.drl.deepq
 
-import wumo.sim.algorithm.tensorflow.Tensor
+import wumo.sim.algorithm.tensorflow.ops.Output
 import wumo.sim.algorithm.tensorflow.contrib.fully_connected
 import wumo.sim.algorithm.tensorflow.contrib.layer_norm
 import wumo.sim.algorithm.tensorflow.ops.gen.relu
 import wumo.sim.algorithm.tensorflow.tf
 
-typealias Q_func = (Tensor, Int, String, Boolean) -> Tensor
+typealias Q_func = (Output, Int, String, Boolean) -> Output
 
-fun _mlp(hiddens: IntArray, input: Tensor, num_actions: Int, layer_norm: Boolean = false, name: String = "mlp", reuse: Boolean = false): Tensor {
+fun _mlp(hiddens: IntArray, input: Output, num_actions: Int, layer_norm: Boolean = false, name: String = "mlp", reuse: Boolean = false): Output {
   tf.variable_scope(name) {
     tf.ctxVs.reuse = reuse
     tf.ctxVs.reenter_increment = true

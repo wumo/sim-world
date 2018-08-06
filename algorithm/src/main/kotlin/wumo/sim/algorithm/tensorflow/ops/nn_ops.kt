@@ -3,7 +3,6 @@ package wumo.sim.algorithm.tensorflow.ops
 import org.bytedeco.javacpp.tensorflow.DT_FLOAT
 import org.bytedeco.javacpp.tensorflow.DT_HALF
 import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.ops.gen.rsqrt
 import wumo.sim.algorithm.tensorflow.ops.gen.squaredDifference
 import wumo.sim.algorithm.tensorflow.ops.gen.squeeze
@@ -27,18 +26,18 @@ When using these moments for batch normalization (see
 shape `[batch, height, width, depth]`, pass `axes=[0, 1, 2]`.
  * for simple batch normalization pass `axes=[0]` (batch only).
  
- * @param x: A `Tensor`.
+ * @param x: A `Output`.
  * @param axes: Array of ints.  Axes along which to compute mean and
 variance.
  * @param name: Name used to scope the operations that compute the moments.
  * @param keep_dims: produce moments with the same dimensionality as the input.
  
- * @return: Two `Tensor` objects: `mean` and `variance`.
+ * @return: Two `Output` objects: `mean` and `variance`.
  */
-fun TF.moments(x: Tensor,
+fun TF.moments(x: Output,
                axes: LongArray,
                name: String = "moments",
-               keep_dims: Boolean = false): Array<Tensor> {
+               keep_dims: Boolean = false): Array<Output> {
   name_scope(name) {
     //The dynamic range of fp16 is too limited to support the collection of
     //sufficient statistics. As a workaround we simply perform the operations
@@ -87,23 +86,23 @@ convolutions.
 `tf.nn.moments(..., keep_dims=False)` during training, or running averages
 thereof during inference.
  
- * @param x: Input `Tensor` of arbitrary dimensionality.
- * @param mean: A mean `Tensor`.
- * @param variance: A variance `Tensor`.
- * @param offset: An offset `Tensor`, often denoted \\(\beta\\) in equations, or
+ * @param x: Input `Output` of arbitrary dimensionality.
+ * @param mean: A mean `Output`.
+ * @param variance: A variance `Output`.
+ * @param offset: An offset `Output`, often denoted \\(\beta\\) in equations, or
 None. If present, will be added to the normalized tensor.
- * @param scale: A scale `Tensor`, often denoted \\(\gamma\\) in equations, or
+ * @param scale: A scale `Output`, often denoted \\(\gamma\\) in equations, or
 `None`. If present, the scale is applied to the normalized tensor.
  * @param variance_epsilon: A small float number to avoid dividing by 0.
  * @param name: A name for this operation (optional).
  
  * @return:the normalized, scaled, offset tensor.
  */
-fun TF.batch_normalization(x: Tensor,
-                           mean: Tensor, variance: Tensor,
-                           offset: Tensor?, scale: Tensor?,
+fun TF.batch_normalization(x: Output,
+                           mean: Output, variance: Output,
+                           offset: Output?, scale: Output?,
                            variance_epsilon: Float,
-                           name: String = "batchnorm"): Tensor {
+                           name: String = "batchnorm"): Output {
   name_scope(name) {
     //    val _variance_epsilon = tf.const(variance_epsilon)
     var inv = rsqrt(variance + variance_epsilon)

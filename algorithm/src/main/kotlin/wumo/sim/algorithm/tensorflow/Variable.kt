@@ -1,22 +1,24 @@
 package wumo.sim.algorithm.tensorflow
 
-import wumo.sim.algorithm.tensorflow.ops.assign
-import wumo.sim.algorithm.tensorflow.ops.cond
+import wumo.sim.algorithm.tensorflow.ops.*
 import wumo.sim.algorithm.tensorflow.ops.gen.identity
-import wumo.sim.algorithm.tensorflow.ops.is_variable_initialized
 import wumo.sim.util.a
 
-class Variable(op: Op, value_index: Int) : Tensor(op, value_index) {
-  lateinit var initial_value: Tensor
-  lateinit var initializer_op: Tensor
-  lateinit var snapshot: Tensor
+class Variable(op: Op, value_index: Int) : OutputConvertible {
+  override fun toTensor(): Output {
+    TODO("not implemented")
+  }
+  
+  lateinit var initial_value: Output
+  lateinit var initializer_op: Output
+  lateinit var snapshot: Output
   /**
    * Returns the value of the initialized variable.
    *
    * You should use this instead of the variable itself to initialize another
    * variable with a value that depends on the value of this variable.
    *
-   * @return A `Tensor` holding the value of this variable after its initializer has run.
+   * @return A `Output` holding the value of this variable after its initializer has run.
    */
   fun initialized_value() =
       tf.init_scope {
@@ -26,14 +28,14 @@ class Variable(op: Op, value_index: Int) : Tensor(op, value_index) {
   /**
    * Tests if a variable has been initialized.
    *
-   * @return Returns a scalar boolean Tensor, `True` if the variable has been
+   * @return Returns a scalar boolean Output, `True` if the variable has been
    * initialized, `False` otherwise.
    */
   private fun is_variable_initialized() =
       tf.is_variable_initialized(this)
   
   fun read_value() = tf.identity(this, name = "read")
-  fun assign(value: Tensor, use_locking: Boolean = false): Tensor {
+  fun assign(value: Output, use_locking: Boolean = false): Output {
     return tf.assign(this, value)
   }
   
@@ -55,9 +57,9 @@ class Variable(op: Op, value_index: Int) : Tensor(op, value_index) {
    * graph uses initialized variables or that they guard access to variables
    * using their `initialized_value` method.
    * @param initial_value The initial value.
-   * @return A [Tensor] suitable to initialize a variable.
+   * @return A [Output] suitable to initialize a variable.
    */
-  fun try_guard_against_uninitialized_dependencies(initial_value: Tensor): Tensor {
+  fun try_guard_against_uninitialized_dependencies(initial_value: Output): Output {
     /**Detect cycles in the dependencies of [initial_value].*/
     fun has_cycle(op: Op, path: MutableSet<String>): Boolean {
       if (op.name in path) return true
@@ -78,15 +80,15 @@ class Variable(op: Op, value_index: Int) : Tensor(op, value_index) {
   
   /**
    * Replace dependencies on variables with their initialized values.
-   * @param tensor A [Tensor]. The tensor to replace.
+   * @param tensor A [Output]. The tensor to replace.
    * @param op_cache A dict mapping findOp names to [Op]s. Used to memoize
    * the results so as to avoid creating redundant operations.
-   * @return A [Tensor] compatible with [tensor]. Any inputs that lead to variable
+   * @return A [Output] compatible with [tensor]. Any inputs that lead to variable
    * values will be replaced with a corresponding graph that uses the
    * variable's initialized values. This is done on a best-effort basis. If no
    * modifications need to be made then [tensor] will be returned unchanged.
    */
-  private fun safe_initial_value_from_tensor(tensor: Tensor, op_cache: MutableMap<String, Op>): Tensor {
+  private fun safe_initial_value_from_tensor(tensor: Output, op_cache: MutableMap<String, Op>): Output {
     val op = tensor.op
     val new_op = op_cache.compute(op!!.name) { _, new_op ->
       new_op ?: safe_initial_value_from_op(op, op_cache)
@@ -99,7 +101,7 @@ class Variable(op: Op, value_index: Int) : Tensor(op, value_index) {
    * @param op A [Op]. The tensor to replace.
    * @param op_cache A dict mapping findOp names to [Op]s. Used to memoize
    * the results so as to avoid creating redundant operations.
-   * @return A [Tensor] compatible with [op]. Any inputs that lead to variable
+   * @return A [Output] compatible with [op]. Any inputs that lead to variable
    * values will be replaced with a corresponding graph that uses the
    * variable's initialized values. This is done on a best-effort basis. If no
    * modifications need to be made then [op] will be returned unchanged.
@@ -115,7 +117,7 @@ class Variable(op: Op, value_index: Int) : Tensor(op, value_index) {
     }
     //Recursively build initializer expressions for inputs.
     var modified = false
-    val new_op_inputs = mutableListOf<Tensor>()
+    val new_op_inputs = mutableListOf<Output>()
     for (op_input in op.inputs) {
       val new_op_input = safe_initial_value_from_tensor(op_input, op_cache)
       new_op_inputs += new_op_input
@@ -138,10 +140,10 @@ class Variable(op: Op, value_index: Int) : Tensor(op, value_index) {
    *
    * To do so, lookup the variable op in the variables collection.
    * @param variable_op
-   * @return A [Tensor] representing the initialized value for the variable or `null`
+   * @return A [Output] representing the initialized value for the variable or `null`
    * if the initialized value could not be found.
    */
-  private fun find_initialized_value_for_variable(variable_op: Op): Tensor? {
+  private fun find_initialized_value_for_variable(variable_op: Op): Output? {
     val var_names = variable_op.name
     for (v in tf.global_variables)
       if (v.op!!.name == var_names)

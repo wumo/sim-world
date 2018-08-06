@@ -4,49 +4,49 @@
 package wumo.sim.algorithm.tensorflow.ops.gen
 
 import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.Tensor
+import wumo.sim.algorithm.tensorflow.ops.Output
 import wumo.sim.algorithm.tensorflow.buildOpTensor
 import wumo.sim.algorithm.tensorflow.buildOpTensors
 
-fun TF.cholesky(input: Tensor, name: String = "Cholesky") = run {
+fun TF.cholesky(input: Output, name: String = "Cholesky") = run {
   buildOpTensor("Cholesky", name) {
     addInput(input, false)
   }
 }
 
-fun TF.choleskyGrad(l: Tensor, grad: Tensor, name: String = "CholeskyGrad") = run {
+fun TF.choleskyGrad(l: Output, grad: Output, name: String = "CholeskyGrad") = run {
   buildOpTensor("CholeskyGrad", name) {
     addInput(l, false)
     addInput(grad, false)
   }
 }
 
-fun TF.logMatrixDeterminant(input: Tensor, name: String = "LogMatrixDeterminant") = run {
+fun TF.logMatrixDeterminant(input: Output, name: String = "LogMatrixDeterminant") = run {
   buildOpTensors("LogMatrixDeterminant", name) {
     addInput(input, false)
   }
 }
 
-fun TF.matrixDeterminant(input: Tensor, name: String = "MatrixDeterminant") = run {
+fun TF.matrixDeterminant(input: Output, name: String = "MatrixDeterminant") = run {
   buildOpTensor("MatrixDeterminant", name) {
     addInput(input, false)
   }
 }
 
-fun TF.matrixExponential(input: Tensor, name: String = "MatrixExponential") = run {
+fun TF.matrixExponential(input: Output, name: String = "MatrixExponential") = run {
   buildOpTensor("MatrixExponential", name) {
     addInput(input, false)
   }
 }
 
-fun TF.matrixInverse(input: Tensor, adjoint: Boolean = false, name: String = "MatrixInverse") = run {
+fun TF.matrixInverse(input: Output, adjoint: Boolean = false, name: String = "MatrixInverse") = run {
   buildOpTensor("MatrixInverse", name) {
     addInput(input, false)
     attr("adjoint", adjoint)
   }
 }
 
-fun TF.matrixSolve(matrix: Tensor, rhs: Tensor, adjoint: Boolean = false, name: String = "MatrixSolve") = run {
+fun TF.matrixSolve(matrix: Output, rhs: Output, adjoint: Boolean = false, name: String = "MatrixSolve") = run {
   buildOpTensor("MatrixSolve", name) {
     addInput(matrix, false)
     addInput(rhs, false)
@@ -54,7 +54,7 @@ fun TF.matrixSolve(matrix: Tensor, rhs: Tensor, adjoint: Boolean = false, name: 
   }
 }
 
-fun TF.matrixSolveLs(matrix: Tensor, rhs: Tensor, l2_regularizer: Tensor, fast: Boolean = true, name: String = "MatrixSolveLs") = run {
+fun TF.matrixSolveLs(matrix: Output, rhs: Output, l2_regularizer: Output, fast: Boolean = true, name: String = "MatrixSolveLs") = run {
   buildOpTensor("MatrixSolveLs", name) {
     addInput(matrix, false)
     addInput(rhs, false)
@@ -63,7 +63,7 @@ fun TF.matrixSolveLs(matrix: Tensor, rhs: Tensor, l2_regularizer: Tensor, fast: 
   }
 }
 
-fun TF.matrixTriangularSolve(matrix: Tensor, rhs: Tensor, lower: Boolean = true, adjoint: Boolean = false, name: String = "MatrixTriangularSolve") = run {
+fun TF.matrixTriangularSolve(matrix: Output, rhs: Output, lower: Boolean = true, adjoint: Boolean = false, name: String = "MatrixTriangularSolve") = run {
   buildOpTensor("MatrixTriangularSolve", name) {
     addInput(matrix, false)
     addInput(rhs, false)
@@ -72,21 +72,21 @@ fun TF.matrixTriangularSolve(matrix: Tensor, rhs: Tensor, lower: Boolean = true,
   }
 }
 
-fun TF.qr(input: Tensor, full_matrices: Boolean = false, name: String = "Qr") = run {
+fun TF.qr(input: Output, full_matrices: Boolean = false, name: String = "Qr") = run {
   buildOpTensors("Qr", name) {
     addInput(input, false)
     attr("full_matrices", full_matrices)
   }
 }
 
-fun TF.selfAdjointEigV2(input: Tensor, compute_v: Boolean = true, name: String = "SelfAdjointEigV2") = run {
+fun TF.selfAdjointEigV2(input: Output, compute_v: Boolean = true, name: String = "SelfAdjointEigV2") = run {
   buildOpTensors("SelfAdjointEigV2", name) {
     addInput(input, false)
     attr("compute_v", compute_v)
   }
 }
 
-fun TF.svd(input: Tensor, compute_uv: Boolean = true, full_matrices: Boolean = false, name: String = "Svd") = run {
+fun TF.svd(input: Output, compute_uv: Boolean = true, full_matrices: Boolean = false, name: String = "Svd") = run {
   buildOpTensors("Svd", name) {
     addInput(input, false)
     attr("compute_uv", compute_uv)
@@ -94,7 +94,7 @@ fun TF.svd(input: Tensor, compute_uv: Boolean = true, full_matrices: Boolean = f
   }
 }
 
-fun TF.matrixLogarithm(input: Tensor, name: String = "MatrixLogarithm") = run {
+fun TF.matrixLogarithm(input: Output, name: String = "MatrixLogarithm") = run {
   buildOpTensor("MatrixLogarithm", name) {
     addInput(input, false)
   }

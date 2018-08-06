@@ -4,11 +4,11 @@
 package wumo.sim.algorithm.tensorflow.ops.gen
 
 import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.Tensor
+import wumo.sim.algorithm.tensorflow.ops.Output
 import wumo.sim.algorithm.tensorflow.buildOpTensor
 import wumo.sim.algorithm.tensorflow.buildOpTensors
 
-fun TF.denseToDenseSetOperation(set1: Tensor, set2: Tensor, set_operation: String, validate_indices: Boolean = true, name: String = "DenseToDenseSetOperation") = run {
+fun TF.denseToDenseSetOperation(set1: Output, set2: Output, set_operation: String, validate_indices: Boolean = true, name: String = "DenseToDenseSetOperation") = run {
   buildOpTensors("DenseToDenseSetOperation", name) {
     addInput(set1, false)
     addInput(set2, false)
@@ -17,7 +17,7 @@ fun TF.denseToDenseSetOperation(set1: Tensor, set2: Tensor, set_operation: Strin
   }
 }
 
-fun TF.denseToSparseSetOperation(set1: Tensor, set2_indices: Tensor, set2_values: Tensor, set2_shape: Tensor, set_operation: String, validate_indices: Boolean = true, name: String = "DenseToSparseSetOperation") = run {
+fun TF.denseToSparseSetOperation(set1: Output, set2_indices: Output, set2_values: Output, set2_shape: Output, set_operation: String, validate_indices: Boolean = true, name: String = "DenseToSparseSetOperation") = run {
   buildOpTensors("DenseToSparseSetOperation", name) {
     addInput(set1, false)
     addInput(set2_indices, false)
@@ -28,7 +28,7 @@ fun TF.denseToSparseSetOperation(set1: Tensor, set2_indices: Tensor, set2_values
   }
 }
 
-fun TF.setSize(set_indices: Tensor, set_values: Tensor, set_shape: Tensor, validate_indices: Boolean = true, name: String = "SetSize") = run {
+fun TF.setSize(set_indices: Output, set_values: Output, set_shape: Output, validate_indices: Boolean = true, name: String = "SetSize") = run {
   buildOpTensor("SetSize", name) {
     addInput(set_indices, false)
     addInput(set_values, false)
@@ -37,7 +37,7 @@ fun TF.setSize(set_indices: Tensor, set_values: Tensor, set_shape: Tensor, valid
   }
 }
 
-fun TF.sparseToSparseSetOperation(set1_indices: Tensor, set1_values: Tensor, set1_shape: Tensor, set2_indices: Tensor, set2_values: Tensor, set2_shape: Tensor, set_operation: String, validate_indices: Boolean = true, name: String = "SparseToSparseSetOperation") = run {
+fun TF.sparseToSparseSetOperation(set1_indices: Output, set1_values: Output, set1_shape: Output, set2_indices: Output, set2_values: Output, set2_shape: Output, set_operation: String, validate_indices: Boolean = true, name: String = "SparseToSparseSetOperation") = run {
   buildOpTensors("SparseToSparseSetOperation", name) {
     addInput(set1_indices, false)
     addInput(set1_values, false)

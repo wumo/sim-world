@@ -5,10 +5,10 @@ package wumo.sim.algorithm.tensorflow.ops.gen
 
 import org.bytedeco.javacpp.tensorflow.NameAttrList
 import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.Tensor
+import wumo.sim.algorithm.tensorflow.ops.Output
 import wumo.sim.algorithm.tensorflow.buildOpTensors
 
-fun TF._for(start: Tensor, limit: Tensor, delta: Tensor, input: Tensor, body: NameAttrList, name: String = "For") = run {
+fun TF._for(start: Output, limit: Output, delta: Output, input: Output, body: NameAttrList, name: String = "For") = run {
   buildOpTensors("For", name) {
     addInput(start, false)
     addInput(limit, false)
@@ -18,7 +18,7 @@ fun TF._for(start: Tensor, limit: Tensor, delta: Tensor, input: Tensor, body: Na
   }
 }
 
-fun TF._if(cond: Tensor, input: Tensor, tout: Array<Long>, then_branch: NameAttrList, else_branch: NameAttrList, name: String = "If") = run {
+fun TF._if(cond: Output, input: Output, tout: Array<Long>, then_branch: NameAttrList, else_branch: NameAttrList, name: String = "If") = run {
   buildOpTensors("If", name) {
     addInput(cond, false)
     addInput(input, false)
@@ -28,7 +28,7 @@ fun TF._if(cond: Tensor, input: Tensor, tout: Array<Long>, then_branch: NameAttr
   }
 }
 
-fun TF.partitionedCall(args: Tensor, tout: Array<Long>, f: NameAttrList, name: String = "PartitionedCall") = run {
+fun TF.partitionedCall(args: Output, tout: Array<Long>, f: NameAttrList, name: String = "PartitionedCall") = run {
   buildOpTensors("PartitionedCall", name) {
     addInput(args, false)
     attr("Tout", tout)
@@ -36,7 +36,7 @@ fun TF.partitionedCall(args: Tensor, tout: Array<Long>, f: NameAttrList, name: S
   }
 }
 
-fun TF.remoteCall(target: Tensor, args: Tensor, tout: Array<Long>, f: NameAttrList, name: String = "RemoteCall") = run {
+fun TF.remoteCall(target: Output, args: Output, tout: Array<Long>, f: NameAttrList, name: String = "RemoteCall") = run {
   buildOpTensors("RemoteCall", name) {
     addInput(target, false)
     addInput(args, false)
@@ -45,7 +45,7 @@ fun TF.remoteCall(target: Tensor, args: Tensor, tout: Array<Long>, f: NameAttrLi
   }
 }
 
-fun TF.statefulPartitionedCall(args: Tensor, tout: Array<Long>, f: NameAttrList, name: String = "StatefulPartitionedCall") = run {
+fun TF.statefulPartitionedCall(args: Output, tout: Array<Long>, f: NameAttrList, name: String = "StatefulPartitionedCall") = run {
   buildOpTensors("StatefulPartitionedCall", name) {
     addInput(args, false)
     attr("Tout", tout)
@@ -53,7 +53,7 @@ fun TF.statefulPartitionedCall(args: Tensor, tout: Array<Long>, f: NameAttrList,
   }
 }
 
-fun TF.symbolicGradient(input: Tensor, tout: Array<Long>, f: NameAttrList, name: String = "SymbolicGradient") = run {
+fun TF.symbolicGradient(input: Output, tout: Array<Long>, f: NameAttrList, name: String = "SymbolicGradient") = run {
   buildOpTensors("SymbolicGradient", name) {
     addInput(input, false)
     attr("Tout", tout)
@@ -61,7 +61,7 @@ fun TF.symbolicGradient(input: Tensor, tout: Array<Long>, f: NameAttrList, name:
   }
 }
 
-fun TF._while(input: Tensor, cond: NameAttrList, body: NameAttrList, name: String = "While") = run {
+fun TF._while(input: Output, cond: NameAttrList, body: NameAttrList, name: String = "While") = run {
   buildOpTensors("While", name) {
     addInput(input, false)
     attr("cond", cond)

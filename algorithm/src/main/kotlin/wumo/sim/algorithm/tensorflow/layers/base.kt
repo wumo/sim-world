@@ -1,28 +1,28 @@
 package wumo.sim.algorithm.tensorflow.layers
 
 import org.bytedeco.javacpp.tensorflow.DT_INVALID
-import wumo.sim.algorithm.tensorflow.Tensor
+import wumo.sim.algorithm.tensorflow.ops.Output
 import wumo.sim.algorithm.tensorflow.ops.Initializer
 import wumo.sim.algorithm.tensorflow.ops.get_variable
 import wumo.sim.algorithm.tensorflow.tf
 import wumo.sim.util.Dimension
 
-typealias TensorFunction = (Tensor) -> Tensor
+typealias TensorFunction = (Output) -> Output
 
 open class Layer(val trainable: Boolean = true,
                  val activity_reqularizer: Any? = null,
                  var dtype: Int = 0) {
   var statefule = false
   var built = false
-  val losses = mutableListOf<Tensor>()
+  val losses = mutableListOf<Output>()
   
   open fun build(input_shape: Dimension) {
     built = true
   }
   
-  open fun call(input: Tensor) = input
+  open fun call(input: Output) = input
   
-  open operator fun invoke(inputs: Tensor): Tensor {
+  open operator fun invoke(inputs: Output): Output {
     if (!built) {
       if (dtype == DT_INVALID)
         dtype = inputs.dtype
@@ -40,7 +40,7 @@ open class Layer(val trainable: Boolean = true,
                              initializer: Initializer,
                              regularizer: TensorFunction? = null,
                              trainable: Boolean = true,
-                             name: String = ""): Tensor {
+                             name: String = ""): Output {
     val v = tf.get_variable(shape, dtype, initializer, name, trainable && this.trainable)
     if (regularizer != null)
       losses += regularizer(v)

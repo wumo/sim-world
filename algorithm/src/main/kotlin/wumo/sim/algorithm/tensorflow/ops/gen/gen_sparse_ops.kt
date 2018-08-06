@@ -5,11 +5,11 @@ package wumo.sim.algorithm.tensorflow.ops.gen
 
 import org.bytedeco.javacpp.tensorflow.DT_STRING
 import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.Tensor
+import wumo.sim.algorithm.tensorflow.ops.Output
 import wumo.sim.algorithm.tensorflow.buildOpTensor
 import wumo.sim.algorithm.tensorflow.buildOpTensors
 
-fun TF.addManySparseToTensorsMap(sparse_indices: Tensor, sparse_values: Tensor, sparse_shape: Tensor, container: String = "", shared_name: String = "", name: String = "AddManySparseToTensorsMap") = run {
+fun TF.addManySparseToTensorsMap(sparse_indices: Output, sparse_values: Output, sparse_shape: Output, container: String = "", shared_name: String = "", name: String = "AddManySparseToTensorsMap") = run {
   buildOpTensor("AddManySparseToTensorsMap", name) {
     addInput(sparse_indices, false)
     addInput(sparse_values, false)
@@ -19,7 +19,7 @@ fun TF.addManySparseToTensorsMap(sparse_indices: Tensor, sparse_values: Tensor, 
   }
 }
 
-fun TF.addSparseToTensorsMap(sparse_indices: Tensor, sparse_values: Tensor, sparse_shape: Tensor, container: String = "", shared_name: String = "", name: String = "AddSparseToTensorsMap") = run {
+fun TF.addSparseToTensorsMap(sparse_indices: Output, sparse_values: Output, sparse_shape: Output, container: String = "", shared_name: String = "", name: String = "AddSparseToTensorsMap") = run {
   buildOpTensor("AddSparseToTensorsMap", name) {
     addInput(sparse_indices, false)
     addInput(sparse_values, false)
@@ -29,21 +29,21 @@ fun TF.addSparseToTensorsMap(sparse_indices: Tensor, sparse_values: Tensor, spar
   }
 }
 
-fun TF.deserializeManySparse(serialized_sparse: Tensor, dtype: Int, name: String = "DeserializeManySparse") = run {
+fun TF.deserializeManySparse(serialized_sparse: Output, dtype: Int, name: String = "DeserializeManySparse") = run {
   buildOpTensors("DeserializeManySparse", name) {
     addInput(serialized_sparse, false)
     attrType("dtype", dtype)
   }
 }
 
-fun TF.deserializeSparse(serialized_sparse: Tensor, dtype: Int, name: String = "DeserializeSparse") = run {
+fun TF.deserializeSparse(serialized_sparse: Output, dtype: Int, name: String = "DeserializeSparse") = run {
   buildOpTensors("DeserializeSparse", name) {
     addInput(serialized_sparse, false)
     attrType("dtype", dtype)
   }
 }
 
-fun TF.serializeManySparse(sparse_indices: Tensor, sparse_values: Tensor, sparse_shape: Tensor, out_type: Int = DT_STRING, name: String = "SerializeManySparse") = run {
+fun TF.serializeManySparse(sparse_indices: Output, sparse_values: Output, sparse_shape: Output, out_type: Int = DT_STRING, name: String = "SerializeManySparse") = run {
   buildOpTensor("SerializeManySparse", name) {
     addInput(sparse_indices, false)
     addInput(sparse_values, false)
@@ -52,7 +52,7 @@ fun TF.serializeManySparse(sparse_indices: Tensor, sparse_values: Tensor, sparse
   }
 }
 
-fun TF.serializeSparse(sparse_indices: Tensor, sparse_values: Tensor, sparse_shape: Tensor, out_type: Int = DT_STRING, name: String = "SerializeSparse") = run {
+fun TF.serializeSparse(sparse_indices: Output, sparse_values: Output, sparse_shape: Output, out_type: Int = DT_STRING, name: String = "SerializeSparse") = run {
   buildOpTensor("SerializeSparse", name) {
     addInput(sparse_indices, false)
     addInput(sparse_values, false)
@@ -61,7 +61,7 @@ fun TF.serializeSparse(sparse_indices: Tensor, sparse_values: Tensor, sparse_sha
   }
 }
 
-fun TF.sparseAdd(a_indices: Tensor, a_values: Tensor, a_shape: Tensor, b_indices: Tensor, b_values: Tensor, b_shape: Tensor, thresh: Tensor, name: String = "SparseAdd") = run {
+fun TF.sparseAdd(a_indices: Output, a_values: Output, a_shape: Output, b_indices: Output, b_values: Output, b_shape: Output, thresh: Output, name: String = "SparseAdd") = run {
   buildOpTensors("SparseAdd", name) {
     addInput(a_indices, false)
     addInput(a_values, false)
@@ -73,7 +73,7 @@ fun TF.sparseAdd(a_indices: Tensor, a_values: Tensor, a_shape: Tensor, b_indices
   }
 }
 
-fun TF.sparseAddGrad(backprop_val_grad: Tensor, a_indices: Tensor, b_indices: Tensor, sum_indices: Tensor, name: String = "SparseAddGrad") = run {
+fun TF.sparseAddGrad(backprop_val_grad: Output, a_indices: Output, b_indices: Output, sum_indices: Output, name: String = "SparseAddGrad") = run {
   buildOpTensors("SparseAddGrad", name) {
     addInput(backprop_val_grad, false)
     addInput(a_indices, false)
@@ -82,7 +82,7 @@ fun TF.sparseAddGrad(backprop_val_grad: Tensor, a_indices: Tensor, b_indices: Te
   }
 }
 
-fun TF.sparseConcat(indices: Array<Tensor>, values: Array<Tensor>, shapes: Array<Tensor>, concat_dim: Long, name: String = "SparseConcat") = run {
+fun TF.sparseConcat(indices: Array<Output>, values: Array<Output>, shapes: Array<Output>, concat_dim: Long, name: String = "SparseConcat") = run {
   buildOpTensors("SparseConcat", name) {
     addInput(indices, false)
     addInput(values, false)
@@ -91,7 +91,7 @@ fun TF.sparseConcat(indices: Array<Tensor>, values: Array<Tensor>, shapes: Array
   }
 }
 
-fun TF.sparseCross(indices: Array<Tensor>, values: Tensor, shapes: Array<Tensor>, dense_inputs: Tensor, hashed_output: Boolean, num_buckets: Long, hash_key: Long, out_type: Int, internal_type: Int, name: String = "SparseCross") = run {
+fun TF.sparseCross(indices: Array<Output>, values: Output, shapes: Array<Output>, dense_inputs: Output, hashed_output: Boolean, num_buckets: Long, hash_key: Long, out_type: Int, internal_type: Int, name: String = "SparseCross") = run {
   buildOpTensors("SparseCross", name) {
     addInput(indices, false)
     addInput(values, false)
@@ -105,7 +105,7 @@ fun TF.sparseCross(indices: Array<Tensor>, values: Tensor, shapes: Array<Tensor>
   }
 }
 
-fun TF.sparseDenseCwiseAdd(sp_indices: Tensor, sp_values: Tensor, sp_shape: Tensor, dense: Tensor, name: String = "SparseDenseCwiseAdd") = run {
+fun TF.sparseDenseCwiseAdd(sp_indices: Output, sp_values: Output, sp_shape: Output, dense: Output, name: String = "SparseDenseCwiseAdd") = run {
   buildOpTensor("SparseDenseCwiseAdd", name) {
     addInput(sp_indices, false)
     addInput(sp_values, false)
@@ -114,7 +114,7 @@ fun TF.sparseDenseCwiseAdd(sp_indices: Tensor, sp_values: Tensor, sp_shape: Tens
   }
 }
 
-fun TF.sparseDenseCwiseDiv(sp_indices: Tensor, sp_values: Tensor, sp_shape: Tensor, dense: Tensor, name: String = "SparseDenseCwiseDiv") = run {
+fun TF.sparseDenseCwiseDiv(sp_indices: Output, sp_values: Output, sp_shape: Output, dense: Output, name: String = "SparseDenseCwiseDiv") = run {
   buildOpTensor("SparseDenseCwiseDiv", name) {
     addInput(sp_indices, false)
     addInput(sp_values, false)
@@ -123,7 +123,7 @@ fun TF.sparseDenseCwiseDiv(sp_indices: Tensor, sp_values: Tensor, sp_shape: Tens
   }
 }
 
-fun TF.sparseDenseCwiseMul(sp_indices: Tensor, sp_values: Tensor, sp_shape: Tensor, dense: Tensor, name: String = "SparseDenseCwiseMul") = run {
+fun TF.sparseDenseCwiseMul(sp_indices: Output, sp_values: Output, sp_shape: Output, dense: Output, name: String = "SparseDenseCwiseMul") = run {
   buildOpTensor("SparseDenseCwiseMul", name) {
     addInput(sp_indices, false)
     addInput(sp_values, false)
@@ -132,7 +132,7 @@ fun TF.sparseDenseCwiseMul(sp_indices: Tensor, sp_values: Tensor, sp_shape: Tens
   }
 }
 
-fun TF.sparseFillEmptyRows(indices: Tensor, values: Tensor, dense_shape: Tensor, default_value: Tensor, name: String = "SparseFillEmptyRows") = run {
+fun TF.sparseFillEmptyRows(indices: Output, values: Output, dense_shape: Output, default_value: Output, name: String = "SparseFillEmptyRows") = run {
   buildOpTensors("SparseFillEmptyRows", name) {
     addInput(indices, false)
     addInput(values, false)
@@ -141,14 +141,14 @@ fun TF.sparseFillEmptyRows(indices: Tensor, values: Tensor, dense_shape: Tensor,
   }
 }
 
-fun TF.sparseFillEmptyRowsGrad(reverse_index_map: Tensor, grad_values: Tensor, name: String = "SparseFillEmptyRowsGrad") = run {
+fun TF.sparseFillEmptyRowsGrad(reverse_index_map: Output, grad_values: Output, name: String = "SparseFillEmptyRowsGrad") = run {
   buildOpTensors("SparseFillEmptyRowsGrad", name) {
     addInput(reverse_index_map, false)
     addInput(grad_values, false)
   }
 }
 
-fun TF.sparseReduceMax(input_indices: Tensor, input_values: Tensor, input_shape: Tensor, reduction_axes: Tensor, keep_dims: Boolean = false, name: String = "SparseReduceMax") = run {
+fun TF.sparseReduceMax(input_indices: Output, input_values: Output, input_shape: Output, reduction_axes: Output, keep_dims: Boolean = false, name: String = "SparseReduceMax") = run {
   buildOpTensor("SparseReduceMax", name) {
     addInput(input_indices, false)
     addInput(input_values, false)
@@ -158,7 +158,7 @@ fun TF.sparseReduceMax(input_indices: Tensor, input_values: Tensor, input_shape:
   }
 }
 
-fun TF.sparseReduceMaxSparse(input_indices: Tensor, input_values: Tensor, input_shape: Tensor, reduction_axes: Tensor, keep_dims: Boolean = false, name: String = "SparseReduceMaxSparse") = run {
+fun TF.sparseReduceMaxSparse(input_indices: Output, input_values: Output, input_shape: Output, reduction_axes: Output, keep_dims: Boolean = false, name: String = "SparseReduceMaxSparse") = run {
   buildOpTensors("SparseReduceMaxSparse", name) {
     addInput(input_indices, false)
     addInput(input_values, false)
@@ -168,7 +168,7 @@ fun TF.sparseReduceMaxSparse(input_indices: Tensor, input_values: Tensor, input_
   }
 }
 
-fun TF.sparseReduceSum(input_indices: Tensor, input_values: Tensor, input_shape: Tensor, reduction_axes: Tensor, keep_dims: Boolean = false, name: String = "SparseReduceSum") = run {
+fun TF.sparseReduceSum(input_indices: Output, input_values: Output, input_shape: Output, reduction_axes: Output, keep_dims: Boolean = false, name: String = "SparseReduceSum") = run {
   buildOpTensor("SparseReduceSum", name) {
     addInput(input_indices, false)
     addInput(input_values, false)
@@ -178,7 +178,7 @@ fun TF.sparseReduceSum(input_indices: Tensor, input_values: Tensor, input_shape:
   }
 }
 
-fun TF.sparseReduceSumSparse(input_indices: Tensor, input_values: Tensor, input_shape: Tensor, reduction_axes: Tensor, keep_dims: Boolean = false, name: String = "SparseReduceSumSparse") = run {
+fun TF.sparseReduceSumSparse(input_indices: Output, input_values: Output, input_shape: Output, reduction_axes: Output, keep_dims: Boolean = false, name: String = "SparseReduceSumSparse") = run {
   buildOpTensors("SparseReduceSumSparse", name) {
     addInput(input_indices, false)
     addInput(input_values, false)
@@ -188,7 +188,7 @@ fun TF.sparseReduceSumSparse(input_indices: Tensor, input_values: Tensor, input_
   }
 }
 
-fun TF.sparseReorder(input_indices: Tensor, input_values: Tensor, input_shape: Tensor, name: String = "SparseReorder") = run {
+fun TF.sparseReorder(input_indices: Output, input_values: Output, input_shape: Output, name: String = "SparseReorder") = run {
   buildOpTensors("SparseReorder", name) {
     addInput(input_indices, false)
     addInput(input_values, false)
@@ -196,7 +196,7 @@ fun TF.sparseReorder(input_indices: Tensor, input_values: Tensor, input_shape: T
   }
 }
 
-fun TF.sparseReshape(input_indices: Tensor, input_shape: Tensor, new_shape: Tensor, name: String = "SparseReshape") = run {
+fun TF.sparseReshape(input_indices: Output, input_shape: Output, new_shape: Output, name: String = "SparseReshape") = run {
   buildOpTensors("SparseReshape", name) {
     addInput(input_indices, false)
     addInput(input_shape, false)
@@ -204,7 +204,7 @@ fun TF.sparseReshape(input_indices: Tensor, input_shape: Tensor, new_shape: Tens
   }
 }
 
-fun TF.sparseSlice(indices: Tensor, values: Tensor, shape: Tensor, start: Tensor, size: Tensor, name: String = "SparseSlice") = run {
+fun TF.sparseSlice(indices: Output, values: Output, shape: Output, start: Output, size: Output, name: String = "SparseSlice") = run {
   buildOpTensors("SparseSlice", name) {
     addInput(indices, false)
     addInput(values, false)
@@ -214,7 +214,7 @@ fun TF.sparseSlice(indices: Tensor, values: Tensor, shape: Tensor, start: Tensor
   }
 }
 
-fun TF.sparseSliceGrad(backprop_val_grad: Tensor, input_indices: Tensor, input_start: Tensor, output_indices: Tensor, name: String = "SparseSliceGrad") = run {
+fun TF.sparseSliceGrad(backprop_val_grad: Output, input_indices: Output, input_start: Output, output_indices: Output, name: String = "SparseSliceGrad") = run {
   buildOpTensor("SparseSliceGrad", name) {
     addInput(backprop_val_grad, false)
     addInput(input_indices, false)
@@ -223,7 +223,7 @@ fun TF.sparseSliceGrad(backprop_val_grad: Tensor, input_indices: Tensor, input_s
   }
 }
 
-fun TF.sparseSoftmax(sp_indices: Tensor, sp_values: Tensor, sp_shape: Tensor, name: String = "SparseSoftmax") = run {
+fun TF.sparseSoftmax(sp_indices: Output, sp_values: Output, sp_shape: Output, name: String = "SparseSoftmax") = run {
   buildOpTensor("SparseSoftmax", name) {
     addInput(sp_indices, false)
     addInput(sp_values, false)
@@ -231,7 +231,7 @@ fun TF.sparseSoftmax(sp_indices: Tensor, sp_values: Tensor, sp_shape: Tensor, na
   }
 }
 
-fun TF.sparseSparseMaximum(a_indices: Tensor, a_values: Tensor, a_shape: Tensor, b_indices: Tensor, b_values: Tensor, b_shape: Tensor, name: String = "SparseSparseMaximum") = run {
+fun TF.sparseSparseMaximum(a_indices: Output, a_values: Output, a_shape: Output, b_indices: Output, b_values: Output, b_shape: Output, name: String = "SparseSparseMaximum") = run {
   buildOpTensors("SparseSparseMaximum", name) {
     addInput(a_indices, false)
     addInput(a_values, false)
@@ -242,7 +242,7 @@ fun TF.sparseSparseMaximum(a_indices: Tensor, a_values: Tensor, a_shape: Tensor,
   }
 }
 
-fun TF.sparseSparseMinimum(a_indices: Tensor, a_values: Tensor, a_shape: Tensor, b_indices: Tensor, b_values: Tensor, b_shape: Tensor, name: String = "SparseSparseMinimum") = run {
+fun TF.sparseSparseMinimum(a_indices: Output, a_values: Output, a_shape: Output, b_indices: Output, b_values: Output, b_shape: Output, name: String = "SparseSparseMinimum") = run {
   buildOpTensors("SparseSparseMinimum", name) {
     addInput(a_indices, false)
     addInput(a_values, false)
@@ -253,7 +253,7 @@ fun TF.sparseSparseMinimum(a_indices: Tensor, a_values: Tensor, a_shape: Tensor,
   }
 }
 
-fun TF.sparseSplit(split_dim: Tensor, indices: Tensor, values: Tensor, shape: Tensor, num_split: Long, name: String = "SparseSplit") = run {
+fun TF.sparseSplit(split_dim: Output, indices: Output, values: Output, shape: Output, num_split: Long, name: String = "SparseSplit") = run {
   buildOpTensors("SparseSplit", name) {
     addInput(split_dim, false)
     addInput(indices, false)
@@ -263,7 +263,7 @@ fun TF.sparseSplit(split_dim: Tensor, indices: Tensor, values: Tensor, shape: Te
   }
 }
 
-fun TF.sparseTensorDenseAdd(a_indices: Tensor, a_values: Tensor, a_shape: Tensor, b: Tensor, name: String = "SparseTensorDenseAdd") = run {
+fun TF.sparseTensorDenseAdd(a_indices: Output, a_values: Output, a_shape: Output, b: Output, name: String = "SparseTensorDenseAdd") = run {
   buildOpTensor("SparseTensorDenseAdd", name) {
     addInput(a_indices, false)
     addInput(a_values, false)
@@ -272,7 +272,7 @@ fun TF.sparseTensorDenseAdd(a_indices: Tensor, a_values: Tensor, a_shape: Tensor
   }
 }
 
-fun TF.sparseTensorDenseMatMul(a_indices: Tensor, a_values: Tensor, a_shape: Tensor, b: Tensor, adjoint_a: Boolean = false, adjoint_b: Boolean = false, name: String = "SparseTensorDenseMatMul") = run {
+fun TF.sparseTensorDenseMatMul(a_indices: Output, a_values: Output, a_shape: Output, b: Output, adjoint_a: Boolean = false, adjoint_b: Boolean = false, name: String = "SparseTensorDenseMatMul") = run {
   buildOpTensor("SparseTensorDenseMatMul", name) {
     addInput(a_indices, false)
     addInput(a_values, false)
@@ -283,7 +283,7 @@ fun TF.sparseTensorDenseMatMul(a_indices: Tensor, a_values: Tensor, a_shape: Ten
   }
 }
 
-fun TF.sparseToDense(sparse_indices: Tensor, output_shape: Tensor, sparse_values: Tensor, default_value: Tensor, validate_indices: Boolean = true, name: String = "SparseToDense") = run {
+fun TF.sparseToDense(sparse_indices: Output, output_shape: Output, sparse_values: Output, default_value: Output, validate_indices: Boolean = true, name: String = "SparseToDense") = run {
   buildOpTensor("SparseToDense", name) {
     addInput(sparse_indices, false)
     addInput(output_shape, false)
@@ -293,7 +293,7 @@ fun TF.sparseToDense(sparse_indices: Tensor, output_shape: Tensor, sparse_values
   }
 }
 
-fun TF.takeManySparseFromTensorsMap(sparse_handles: Tensor, dtype: Int, container: String = "", shared_name: String = "", name: String = "TakeManySparseFromTensorsMap") = run {
+fun TF.takeManySparseFromTensorsMap(sparse_handles: Output, dtype: Int, container: String = "", shared_name: String = "", name: String = "TakeManySparseFromTensorsMap") = run {
   buildOpTensors("TakeManySparseFromTensorsMap", name) {
     addInput(sparse_handles, false)
     attrType("dtype", dtype)

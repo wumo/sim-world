@@ -3,7 +3,7 @@ package wumo.sim.algorithm.tensorflow.contrib
 import org.bytedeco.javacpp.tensorflow.DT_INT32
 import org.bytedeco.javacpp.tensorflow.DT_INT64
 import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.Tensor
+import wumo.sim.algorithm.tensorflow.ops.Output
 import wumo.sim.algorithm.tensorflow.base_dtype
 import wumo.sim.algorithm.tensorflow.layers.Dense
 import wumo.sim.algorithm.tensorflow.layers.TensorFunction
@@ -14,10 +14,10 @@ import wumo.sim.algorithm.tensorflow.ops.gen.relu
 import wumo.sim.algorithm.tensorflow.tf
 
 @Suppress("NAME_SHADOWING")
-fun TF.one_hot_encoding(labels: Tensor,
+fun TF.one_hot_encoding(labels: Output,
                         num_class: Int,
                         on_value: Float = 1f, off_value: Float = 0f,
-                        name: String = "OneHotEncoding"): Tensor {
+                        name: String = "OneHotEncoding"): Output {
   name_scope(name) {
     val labels = if (labels.dtype == DT_INT32) cast(labels, DT_INT64) else labels
     return oneHot(labels, const(num_class, name = "depth"),
@@ -26,10 +26,10 @@ fun TF.one_hot_encoding(labels: Tensor,
   }
 }
 
-fun TF.fully_connected(inputs: Tensor,
+fun TF.fully_connected(inputs: Output,
                        num_outputs: Int,
                        activation_fn: TensorFunction? = { tf.relu(it) },
-                       normalizer_fn: ((Tensor, Any?) -> Tensor)? = null,
+                       normalizer_fn: ((Output, Any?) -> Output)? = null,
                        normalizer_params: Any? = null,
                        weights_initializer: Initializer = xavier_initializer(),
                        weights_regularizer: TensorFunction? = null,
@@ -37,7 +37,7 @@ fun TF.fully_connected(inputs: Tensor,
                        biases_regularizer: TensorFunction? = null,
                        variables_collections: Any? = null,
                        outputs_collections: Any? = null,
-                       trainable: Boolean = true): Tensor {
+                       trainable: Boolean = true): Output {
   variable_scope("fully_connected") {
     val layer = Dense(units = num_outputs,
                       activation = null,
@@ -106,7 +106,7 @@ and centering parameters will have dimensions
 `begin_params_axis : rank(inputs)` and will be broadcast with the
 normalized inputs accordingly.
  
- * @return:A `Tensor` representing the output of the findOp, having the same
+ * @return:A `Output` representing the output of the findOp, having the same
 shape and dtype as `inputs`.
  
  * @throws
@@ -115,12 +115,12 @@ ValueError: If the rank of `inputs` is not known at graph build time,
 or if `inputs.shape[begin_params_axis:]` is not fully defined at
 graph build time.
  */
-fun TF.layer_norm(inputs: Tensor,
+fun TF.layer_norm(inputs: Output,
                   center: Boolean = true, scale: Boolean = true,
                   activation_fn: TensorFunction? = null,
                   trainable: Boolean = true,
                   _begin_norm_axis: Int = 1,
-                  begin_params_axis: Int = -1): Tensor {
+                  begin_params_axis: Int = -1): Output {
   variable_scope("LayerNorm") {
     val inputs_shape = inputs.shape
     val inputs_rank = inputs_shape.rank()

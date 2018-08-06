@@ -4,81 +4,81 @@
 package wumo.sim.algorithm.tensorflow.ops.gen
 
 import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.Tensor
+import wumo.sim.algorithm.tensorflow.ops.Output
 import wumo.sim.algorithm.tensorflow.buildOpTensor
 
-fun TF.fFT(input: Tensor, name: String = "FFT") = run {
+fun TF.fFT(input: Output, name: String = "FFT") = run {
   buildOpTensor("FFT", name) {
     addInput(input, false)
   }
 }
 
-fun TF.fFT2D(input: Tensor, name: String = "FFT2D") = run {
+fun TF.fFT2D(input: Output, name: String = "FFT2D") = run {
   buildOpTensor("FFT2D", name) {
     addInput(input, false)
   }
 }
 
-fun TF.fFT3D(input: Tensor, name: String = "FFT3D") = run {
+fun TF.fFT3D(input: Output, name: String = "FFT3D") = run {
   buildOpTensor("FFT3D", name) {
     addInput(input, false)
   }
 }
 
-fun TF.iFFT(input: Tensor, name: String = "IFFT") = run {
+fun TF.iFFT(input: Output, name: String = "IFFT") = run {
   buildOpTensor("IFFT", name) {
     addInput(input, false)
   }
 }
 
-fun TF.iFFT2D(input: Tensor, name: String = "IFFT2D") = run {
+fun TF.iFFT2D(input: Output, name: String = "IFFT2D") = run {
   buildOpTensor("IFFT2D", name) {
     addInput(input, false)
   }
 }
 
-fun TF.iFFT3D(input: Tensor, name: String = "IFFT3D") = run {
+fun TF.iFFT3D(input: Output, name: String = "IFFT3D") = run {
   buildOpTensor("IFFT3D", name) {
     addInput(input, false)
   }
 }
 
-fun TF.iRFFT(input: Tensor, fft_length: Tensor, name: String = "IRFFT") = run {
+fun TF.iRFFT(input: Output, fft_length: Output, name: String = "IRFFT") = run {
   buildOpTensor("IRFFT", name) {
     addInput(input, false)
     addInput(fft_length, false)
   }
 }
 
-fun TF.iRFFT2D(input: Tensor, fft_length: Tensor, name: String = "IRFFT2D") = run {
+fun TF.iRFFT2D(input: Output, fft_length: Output, name: String = "IRFFT2D") = run {
   buildOpTensor("IRFFT2D", name) {
     addInput(input, false)
     addInput(fft_length, false)
   }
 }
 
-fun TF.iRFFT3D(input: Tensor, fft_length: Tensor, name: String = "IRFFT3D") = run {
+fun TF.iRFFT3D(input: Output, fft_length: Output, name: String = "IRFFT3D") = run {
   buildOpTensor("IRFFT3D", name) {
     addInput(input, false)
     addInput(fft_length, false)
   }
 }
 
-fun TF.rFFT(input: Tensor, fft_length: Tensor, name: String = "RFFT") = run {
+fun TF.rFFT(input: Output, fft_length: Output, name: String = "RFFT") = run {
   buildOpTensor("RFFT", name) {
     addInput(input, false)
     addInput(fft_length, false)
   }
 }
 
-fun TF.rFFT2D(input: Tensor, fft_length: Tensor, name: String = "RFFT2D") = run {
+fun TF.rFFT2D(input: Output, fft_length: Output, name: String = "RFFT2D") = run {
   buildOpTensor("RFFT2D", name) {
     addInput(input, false)
     addInput(fft_length, false)
   }
 }
 
-fun TF.rFFT3D(input: Tensor, fft_length: Tensor, name: String = "RFFT3D") = run {
+fun TF.rFFT3D(input: Output, fft_length: Output, name: String = "RFFT3D") = run {
   buildOpTensor("RFFT3D", name) {
     addInput(input, false)
     addInput(fft_length, false)

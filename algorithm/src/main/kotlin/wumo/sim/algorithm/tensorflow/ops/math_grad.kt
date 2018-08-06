@@ -1,8 +1,6 @@
 package wumo.sim.algorithm.tensorflow.ops
 
 import org.bytedeco.javacpp.tensorflow.*
-import wumo.sim.algorithm.tensorflow.Op
-import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.ops.gen.*
 import wumo.sim.algorithm.tensorflow.ops.gradients.append
 import wumo.sim.algorithm.tensorflow.ops.gradients.noGradient
@@ -297,7 +295,7 @@ fun register_math_grad() {
     grad_outputs.add(dx)
   }
   
-  fun binaryGradCommon(op: Op, grad_outputs: MutableList<Tensor>, gx_1: Tensor, gx_2: Tensor) {
+  fun binaryGradCommon(op: Op, grad_outputs: MutableList<Output>, gx_1: Output, gx_2: Output) {
     val sx_1 = tf.shape(op.inputs[0])
     val sx_2 = tf.shape(op.inputs[1])
     val (r0, r1) = tf.broadcastGradientArgs(sx_1, sx_2)
@@ -418,9 +416,9 @@ fun register_math_grad() {
    * the binary Maximum and Minimum ops.
    */
   fun maximumMinimumGradCommon(op: Op,
-                               grad_inputs: List<Tensor>,
-                               grad_outputs: MutableList<Tensor>,
-                               comparator: Tensor) {
+                               grad_inputs: List<Output>,
+                               grad_outputs: MutableList<Output>,
+                               comparator: Output) {
     // comparator is a boolean tensor, with
     // y = x_1 at points where comparator is true, and x_2 otherwise
     // Therefore
@@ -486,13 +484,13 @@ fun register_math_grad() {
   /**
    * Helper function for reduction ops.
    *
-   * input_shape: 1-D Tensor, the shape of the Tensor being reduced.
-   * axes: 1-D Tensor, the reduction axes.
+   * input_shape: 1-D Output, the shape of the Output being reduced.
+   * axes: 1-D Output, the reduction axes.
    *   Note that the reduction indices are in the range
    *   -rank(input_shape), rank(input_shape)
-   * returns a 1-D Tensor, the output shape as if keep_dims were set to True.
+   * returns a 1-D Output, the output shape as if keep_dims were set to True.
    */
-  fun reducedShapeHelper(input_shape: Tensor, reduction_axes: Tensor): Tensor {
+  fun reducedShapeHelper(input_shape: Output, reduction_axes: Output): Output {
     val zero = tf.const(0)
     val one = tf.const(1)
     
@@ -542,14 +540,14 @@ fun register_math_grad() {
   /**
    * Integer division x / y, assuming x and y >=0, but treats x/0 = x
    */
-  fun safeDivHelper(x: Tensor, y: Tensor) =
+  fun safeDivHelper(x: Output, y: Output) =
       tf.div(x, tf.maximum(y, tf.const(1)))
   
   /**
    * SumGradHelper returns the gradient for the Sum operator, and is used
    * by SumGrad and MeanGrad.
    */
-  fun sumGradHelper(op: Op, grad_inputs: List<Tensor>): Tensor {
+  fun sumGradHelper(op: Op, grad_inputs: List<Output>): Output {
     // The partial derivative for any input along a "reduced" dimension
     // is just 1, so we only need replicate the output gradient on such a
     // dimension to its "expanded" shape.
@@ -630,7 +628,7 @@ fun register_math_grad() {
     }
   }
   
-  fun minOrMaxGrad(op: Op, grad_inputs: List<Tensor>, grad_outputs: MutableList<Tensor>) {
+  fun minOrMaxGrad(op: Op, grad_inputs: List<Output>, grad_outputs: MutableList<Output>) {
     // The partial derivative for any input along a "reduced" dimension
     // is 1 when it is the min (or max) and 0 everywhere else. So the
     // gradient calculation is identical for both operators.
@@ -864,11 +862,11 @@ fun register_math_grad() {
    * based on input matrix transposition combinations.
    */
   fun matMulGradHelper(is_batch: Boolean,
-                       x0: Tensor, adj_x0: Boolean
-                       , x1: Tensor, adj_x1: Boolean,
-                       y0: Tensor, adj_y0: Boolean,
-                       y1: Tensor, adj_y1: Boolean,
-                       grad_outputs: MutableList<Tensor>) {
+                       x0: Output, adj_x0: Boolean
+                       , x1: Output, adj_x1: Boolean,
+                       y0: Output, adj_y0: Boolean,
+                       y1: Output, adj_y1: Boolean,
+                       grad_outputs: MutableList<Output>) {
     if (!is_batch) {
       val dx = tf.matMul(x0, x1, transpose_a = adj_x0, transpose_b = adj_x1)
       val dy = tf.matMul(y0, y1, transpose_a = adj_y0, transpose_b = adj_y1)
@@ -889,9 +887,9 @@ fun register_math_grad() {
    */
   fun matMulGradCommon(op: Op,
                        is_batch: Boolean,
-                       grad_inputs: List<Tensor>,
+                       grad_inputs: List<Output>,
                        attr_adj_x: String, attr_adj_y: String,
-                       grad_outputs: MutableList<Tensor>) {
+                       grad_outputs: MutableList<Output>) {
     val grad = grad_inputs[0]
     var a = op.inputs[0]
     var b = op.inputs[1]

@@ -4,12 +4,12 @@
 package wumo.sim.algorithm.tensorflow.ops.gen
 
 import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.Tensor
+import wumo.sim.algorithm.tensorflow.ops.Output
 import wumo.sim.algorithm.tensorflow.buildOp
 import wumo.sim.algorithm.tensorflow.buildOpTensor
 import wumo.sim.util.ndarray.NDArray
 
-fun TF.assert(condition: Tensor, data: Tensor, summarize: Long = 3L, name: String = "Assert") = run {
+fun TF.assert(condition: Output, data: Output, summarize: Long = 3L, name: String = "Assert") = run {
   buildOp("Assert", name) {
     addInput(condition, false)
     addInput(data, false)
@@ -17,7 +17,7 @@ fun TF.assert(condition: Tensor, data: Tensor, summarize: Long = 3L, name: Strin
   }
 }
 
-fun TF.audioSummaryV2(tag: Tensor, tensor: Tensor, sample_rate: Tensor, max_outputs: Long = 3L, name: String = "AudioSummaryV2") = run {
+fun TF.audioSummaryV2(tag: Output, tensor: Output, sample_rate: Output, max_outputs: Long = 3L, name: String = "AudioSummaryV2") = run {
   buildOpTensor("AudioSummaryV2", name) {
     addInput(tag, false)
     addInput(tensor, false)
@@ -26,14 +26,14 @@ fun TF.audioSummaryV2(tag: Tensor, tensor: Tensor, sample_rate: Tensor, max_outp
   }
 }
 
-fun TF.histogramSummary(tag: Tensor, values: Tensor, name: String = "HistogramSummary") = run {
+fun TF.histogramSummary(tag: Output, values: Output, name: String = "HistogramSummary") = run {
   buildOpTensor("HistogramSummary", name) {
     addInput(tag, false)
     addInput(values, false)
   }
 }
 
-fun TF.imageSummary(tag: Tensor, tensor: Tensor, max_images: Long = 3L, bad_color: NDArray<*>, name: String = "ImageSummary") = run {
+fun TF.imageSummary(tag: Output, tensor: Output, max_images: Long = 3L, bad_color: NDArray<*>, name: String = "ImageSummary") = run {
   buildOpTensor("ImageSummary", name) {
     addInput(tag, false)
     addInput(tensor, false)
@@ -42,13 +42,13 @@ fun TF.imageSummary(tag: Tensor, tensor: Tensor, max_images: Long = 3L, bad_colo
   }
 }
 
-fun TF.mergeSummary(inputs: Array<Tensor>, name: String = "MergeSummary") = run {
+fun TF.mergeSummary(inputs: Array<Output>, name: String = "MergeSummary") = run {
   buildOpTensor("MergeSummary", name) {
     addInput(inputs, false)
   }
 }
 
-fun TF.print(input: Tensor, data: Tensor, message: String = "", first_n: Long = -1L, summarize: Long = 3L, name: String = "Print") = run {
+fun TF.print(input: Output, data: Output, message: String = "", first_n: Long = -1L, summarize: Long = 3L, name: String = "Print") = run {
   buildOpTensor("Print", name) {
     addInput(input, false)
     addInput(data, false)
@@ -58,14 +58,14 @@ fun TF.print(input: Tensor, data: Tensor, message: String = "", first_n: Long = 
   }
 }
 
-fun TF.scalarSummary(tags: Tensor, values: Tensor, name: String = "ScalarSummary") = run {
+fun TF.scalarSummary(tags: Output, values: Output, name: String = "ScalarSummary") = run {
   buildOpTensor("ScalarSummary", name) {
     addInput(tags, false)
     addInput(values, false)
   }
 }
 
-fun TF.tensorSummary(tensor: Tensor, description: String = "", labels: Array<String> = arrayOf(), display_name: String = "", name: String = "TensorSummary") = run {
+fun TF.tensorSummary(tensor: Output, description: String = "", labels: Array<String> = arrayOf(), display_name: String = "", name: String = "TensorSummary") = run {
   buildOpTensor("TensorSummary", name) {
     addInput(tensor, false)
     attr("description", description)
@@ -74,7 +74,7 @@ fun TF.tensorSummary(tensor: Tensor, description: String = "", labels: Array<Str
   }
 }
 
-fun TF.tensorSummaryV2(tag: Tensor, tensor: Tensor, serialized_summary_metadata: Tensor, name: String = "TensorSummaryV2") = run {
+fun TF.tensorSummaryV2(tag: Output, tensor: Output, serialized_summary_metadata: Output, name: String = "TensorSummaryV2") = run {
   buildOpTensor("TensorSummaryV2", name) {
     addInput(tag, false)
     addInput(tensor, false)

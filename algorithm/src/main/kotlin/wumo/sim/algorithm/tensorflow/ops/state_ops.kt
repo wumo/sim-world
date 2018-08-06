@@ -71,7 +71,7 @@ fun TF.variable(shape: Dimension, initial_value: Short, name: String = "Variable
 fun TF.variable(shape: Dimension, initial_value: Int, name: String = "Variable", trainable: Boolean = true) = _variable({ const(shape, initial_value, it) }, name, trainable)
 fun TF.variable(shape: Dimension, initial_value: Long, name: String = "Variable", trainable: Boolean = true) = _variable({ const(shape, initial_value, it) }, name, trainable)
 fun TF.variable(shape: Dimension, initial_value: String, name: String = "Variable", trainable: Boolean = true) = _variable({ const(shape, initial_value, it) }, name, trainable)
-private fun TF._variable(initializer: (String) -> Tensor, name: String, trainable: Boolean = true): Variable {
+private fun TF._variable(initializer: (String) -> Output, name: String, trainable: Boolean = true): Variable {
   name_scope(name) {
     init_scope {
       //Use attr_scope and device(None) to simulate the behavior of
@@ -108,17 +108,17 @@ fun TF.variable(shape: Dimension, initializer: Initializer, name: String, traina
 fun TF.variable(shape: Dimension, dtype: Int, initializer: Initializer, name: String, trainable: Boolean = true, validate_shape: Boolean = true) =
     _variable({ initializer(shape, dtype.base_dtype, "initial_value") }, name, trainable)
 
-fun TF.variable(initial_value: Tensor, name: String = "Variable", trainable: Boolean = true) =
+fun TF.variable(initial_value: Output, name: String = "Variable", trainable: Boolean = true) =
     _variable({ initial_value }, name, trainable)
 
-fun TF.assign(ref: Tensor, value: Tensor, name: String = "Assign") =
+fun TF.assign(ref: Output, value: Output, name: String = "Assign") =
 //TODO NOTE(mrry): We add an explicit colocation constraint between
 //the newly created op and any of its reference-typed inputs.
     colocate_with(ref) {
       _assign(ref, value, name = name)
     }
 
-fun TF.is_variable_initialized(ref: Tensor, name: String = "IsVariableInitialized"): Tensor {
+fun TF.is_variable_initialized(ref: Output, name: String = "IsVariableInitialized"): Output {
   if (ref.dtype.is_ref_dytpe) {
     _isVariableInitialized(ref, name)
   }
@@ -168,13 +168,13 @@ fun TF.get_variable(shape: Dimension, initializer: Initializer, name: String, tr
 fun TF.get_variable(shape: Dimension, dtype: Int, initializer: Initializer, name: String, trainable: Boolean = true, validate_shape: Boolean = true) =
     get_variable({ initializer(shape, dtype.base_dtype, "Initializer") }, name, trainable)
 
-fun TF.get_variable(initial_value: Tensor, name: String = "Variable", trainable: Boolean = true) =
+fun TF.get_variable(initial_value: Output, name: String = "Variable", trainable: Boolean = true) =
     get_variable({ initial_value }, name, trainable)
 
 /**
  * [get_variable]的命名只会使用[TF.ctxVs]绑定的[NameScope]
  */
-private fun TF.get_variable(initializer: (String) -> Tensor, name: String, trainable: Boolean = true): Variable {
+private fun TF.get_variable(initializer: (String) -> Output, name: String, trainable: Boolean = true): Variable {
   return if (ctxVs.reuse)
     ctxVs.variables[name]!!
   else {

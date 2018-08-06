@@ -1,11 +1,8 @@
 package wumo.sim.algorithm.tensorflow.training
 
 import wumo.sim.algorithm.tensorflow.*
-import wumo.sim.algorithm.tensorflow.ops.cast
-import wumo.sim.algorithm.tensorflow.ops.const
+import wumo.sim.algorithm.tensorflow.ops.*
 import wumo.sim.algorithm.tensorflow.ops.gen.applyAdam
-import wumo.sim.algorithm.tensorflow.ops.group
-import wumo.sim.algorithm.tensorflow.ops.times
 import wumo.sim.util.tuple2
 
 /**
@@ -48,7 +45,7 @@ behavior (in contrast to some momentum implementations which ignore momentum
 unless a variable slice was actually used).
  
  
- * @param learning_rate: A Tensor or a floating point value.  The learning rate.
+ * @param learning_rate: A Output or a floating point value.  The learning rate.
  * @param beta1: A float value or a constant float tensor.
 The exponential decay rate for the 1st moment estimates.
  * @param beta2: A float value or a constant float tensor.
@@ -66,10 +63,10 @@ class AdamOptimizer(val learningRate: Float = 0.001f,
                     val epsilon: Float = 1e-8f,
                     use_locking: Boolean = false,
                     name: String = "Adam") : Optimizer(use_locking, name) {
-  lateinit var lr_t: Tensor
-  lateinit var beta1_t: Tensor
-  lateinit var beta2_t: Tensor
-  lateinit var epsilon_t: Tensor
+  lateinit var lr_t: Output
+  lateinit var beta1_t: Output
+  lateinit var beta2_t: Output
+  lateinit var epsilon_t: Output
   
   override fun create_slots(var_list: List<Variable>) {
     // Create the beta1 and beta2 accumulators on the same device as the first
@@ -97,7 +94,7 @@ class AdamOptimizer(val learningRate: Float = 0.001f,
     epsilon_t = tf.const(epsilon, name = "epsilon")
   }
   
-  override fun apply_dense(grad: Tensor, _v: Variable): Op {
+  override fun apply_dense(grad: Output, _v: Variable): Op {
     val m = get_slot(_v, "m")
     val v = get_slot(_v, "v")
     val (beta1_power, beta2_power) = get_beta_accumulators()

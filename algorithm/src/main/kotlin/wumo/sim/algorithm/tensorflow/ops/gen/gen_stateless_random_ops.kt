@@ -6,10 +6,10 @@ package wumo.sim.algorithm.tensorflow.ops.gen
 import org.bytedeco.javacpp.tensorflow.DT_FLOAT
 import org.bytedeco.javacpp.tensorflow.DT_INT64
 import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.Tensor
+import wumo.sim.algorithm.tensorflow.ops.Output
 import wumo.sim.algorithm.tensorflow.buildOpTensor
 
-fun TF.statelessMultinomial(logits: Tensor, num_samples: Tensor, seed: Tensor, output_dtype: Int = DT_INT64, name: String = "StatelessMultinomial") = run {
+fun TF.statelessMultinomial(logits: Output, num_samples: Output, seed: Output, output_dtype: Int = DT_INT64, name: String = "StatelessMultinomial") = run {
   buildOpTensor("StatelessMultinomial", name) {
     addInput(logits, false)
     addInput(num_samples, false)
@@ -18,7 +18,7 @@ fun TF.statelessMultinomial(logits: Tensor, num_samples: Tensor, seed: Tensor, o
   }
 }
 
-fun TF.statelessRandomNormal(shape: Tensor, seed: Tensor, dtype: Int = DT_FLOAT, name: String = "StatelessRandomNormal") = run {
+fun TF.statelessRandomNormal(shape: Output, seed: Output, dtype: Int = DT_FLOAT, name: String = "StatelessRandomNormal") = run {
   buildOpTensor("StatelessRandomNormal", name) {
     addInput(shape, false)
     addInput(seed, false)
@@ -26,7 +26,7 @@ fun TF.statelessRandomNormal(shape: Tensor, seed: Tensor, dtype: Int = DT_FLOAT,
   }
 }
 
-fun TF.statelessRandomUniform(shape: Tensor, seed: Tensor, dtype: Int = DT_FLOAT, name: String = "StatelessRandomUniform") = run {
+fun TF.statelessRandomUniform(shape: Output, seed: Output, dtype: Int = DT_FLOAT, name: String = "StatelessRandomUniform") = run {
   buildOpTensor("StatelessRandomUniform", name) {
     addInput(shape, false)
     addInput(seed, false)
@@ -34,7 +34,7 @@ fun TF.statelessRandomUniform(shape: Tensor, seed: Tensor, dtype: Int = DT_FLOAT
   }
 }
 
-fun TF.statelessTruncatedNormal(shape: Tensor, seed: Tensor, dtype: Int = DT_FLOAT, name: String = "StatelessTruncatedNormal") = run {
+fun TF.statelessTruncatedNormal(shape: Output, seed: Output, dtype: Int = DT_FLOAT, name: String = "StatelessTruncatedNormal") = run {
   buildOpTensor("StatelessTruncatedNormal", name) {
     addInput(shape, false)
     addInput(seed, false)

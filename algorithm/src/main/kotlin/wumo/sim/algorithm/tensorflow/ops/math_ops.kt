@@ -2,7 +2,6 @@ package wumo.sim.algorithm.tensorflow.ops
 
 import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.algorithm.tensorflow.*
-import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.Variable
 import wumo.sim.algorithm.tensorflow.ops.gen.*
 import wumo.sim.util.arange
@@ -14,67 +13,67 @@ import wumo.sim.algorithm.tensorflow.ops.gen.range as _range
 import wumo.sim.algorithm.tensorflow.ops.gen.realDiv as _realDiv
 import wumo.sim.algorithm.tensorflow.ops.gen.sum as _sum
 
-fun TF.argmax(a: Tensor, axis: Int = 0, output_type: Int = DT_INT64, name: String = "ArgMax") =
+fun TF.argmax(a: Output, axis: Int = 0, output_type: Int = DT_INT64, name: String = "ArgMax") =
     name_scope(name) {
       val dimension = const(axis, "dimension")
       argMax(a, dimension, output_type, tf.ctxNs.scopeName)
     }
 
-fun TF.argmin(a: Tensor, axis: Int = 0, output_type: Int = DT_INT64, name: String = "ArgMin") =
+fun TF.argmin(a: Output, axis: Int = 0, output_type: Int = DT_INT64, name: String = "ArgMin") =
     name_scope(name) {
       val dimension = const(axis, "dimension")
       argMin(a, dimension, output_type, tf.ctxNs.scopeName)
     }
 
-operator fun Tensor.plus(b: Any) =
+operator fun Output.plus(b: Any) =
     tf.name_scope("add") {
       val y = tf.const(this.dtype.base_dtype, b, name = "y")
       tf.add(this, y, name = tf.ctxNs.scopeName)
     }
 
-operator fun Tensor.plus(b: Tensor) = tf.add(this, b)
+operator fun Output.plus(b: Output) = tf.add(this, b)
 
-fun TF.cast(x: Tensor, dstT: Int, name: String = "Cast") = run {
+fun TF.cast(x: Output, dstT: Int, name: String = "Cast") = run {
   val x = (x as? Variable)?.value() ?: x
   if (x.dtype == dstT) x
   else _cast(x, dstT, name)
 }
 
-//fun TF._cast(x: Tensor, dstT: Int, name: String = "Cast") =
+//fun TF._cast(x: Output, dstT: Int, name: String = "Cast") =
 //    naryOp("Cast", x.value(), name = name) {
 //      attrType("DstT", dstT)
 //    }
 
-fun TF.conj(x: Tensor, name: String = "Conj") =
+fun TF.conj(x: Output, name: String = "Conj") =
     if (x.dtype == DT_COMPLEX64 || x.dtype == DT_COMPLEX128)
       _conj(x, name)
     else
       x
 
-operator fun Tensor.div(b: Any) =
+operator fun Output.div(b: Any) =
     tf.name_scope("div") {
       val y = tf.const(this.dtype.base_dtype, b, name = "y")
       tf.div(this, y, name = tf.ctxNs.scopeName)
     }
 
-operator fun Tensor.div(b: Tensor) = tf.div(this, b)
+operator fun Output.div(b: Output) = tf.div(this, b)
 
-fun TF.greaterEqual(a: Tensor, b: Any, name: String = "GreaterEqual") =
+fun TF.greaterEqual(a: Output, b: Any, name: String = "GreaterEqual") =
     name_scope(name) {
       val y = tf.const(a.dtype.base_dtype, b, name = "y")
       _greaterEqual(a, y, ctxNs.scopeName)
     }
 
-fun TF.reductionDims(x: Tensor, axis: Tensor?): Tensor {
+fun TF.reductionDims(x: Output, axis: Output?): Output {
   if (axis != null) return axis
   //Fast path: avoid creating Rank and Range ops if ndims is known.
   return const(arange(x.shape.rank()), name = "reduction_indices")
-  //TODO SparseTensor
+  //TODO SparseOutput
   // Otherwise, we rely on Range and Rank to do the right thing at run-time.
   return range(const(0), rank(x))
 }
 
-fun TF.mean(input: Tensor, axis: LongArray? = null, keep_dims: Boolean = false, name: String = "mean") =
+fun TF.mean(input: Output, axis: LongArray? = null, keep_dims: Boolean = false, name: String = "mean") =
     name_scope(name) {
       val reduction_indices =
           reductionDims(input,
@@ -83,23 +82,23 @@ fun TF.mean(input: Tensor, axis: LongArray? = null, keep_dims: Boolean = false, 
       mean(input, reduction_indices, keep_dims, name)
     }
 
-operator fun Tensor.minus(b: Any) =
+operator fun Output.minus(b: Any) =
     tf.name_scope("add") {
       val y = tf.const(this.dtype.base_dtype, b, name = "y")
       tf.sub(this, y, name = tf.ctxNs.scopeName)
     }
 
-operator fun Tensor.minus(b: Tensor) = tf.sub(this, b)
+operator fun Output.minus(b: Output) = tf.sub(this, b)
 
-operator fun Tensor.times(b: Any) =
+operator fun Output.times(b: Any) =
     tf.name_scope("mul") {
       val y = tf.const(this.dtype.base_dtype, b, name = "y")
       tf.mul(this, y, name = tf.ctxNs.scopeName)
     }
 
-operator fun Tensor.times(b: Tensor) = tf.mul(this, b)
+operator fun Output.times(b: Output) = tf.mul(this, b)
 
-operator fun Tensor.unaryMinus() = tf.neg(this)
+operator fun Output.unaryMinus() = tf.neg(this)
 
 private val dtype_hierarchy = mapOf(DT_INT32 to 0,
                                     DT_INT64 to 1,
@@ -134,18 +133,18 @@ tf.range(start, limit, delta)  # [3, 2.5, 2, 1.5]
 limit = 5
 tf.range(limit)  # [0, 1, 2, 3, 4]
 ```
- * @param start: A 0-D `Tensor` (scalar). Acts as first entry in the range if
+ * @param start: A 0-D `Output` (scalar). Acts as first entry in the range if
  * `limit` is not None; otherwise, acts as range limit and first entry
  * defaults to 0.
- * @param limit: A 0-D `Tensor` (scalar). Upper limit of sequence,
+ * @param limit: A 0-D `Output` (scalar). Upper limit of sequence,
  * exclusive. If None, defaults to the value of `start` while the first
  * entry of the range defaults to 0.
- * @param delta: A 0-D `Tensor` (scalar). Number that increments
+ * @param delta: A 0-D `Output` (scalar). Number that increments
  * `start`. Defaults to 1.
  * @param name: A name for the operation. Defaults to "range".
- * @return An 1-D `Tensor` of type `dtype`.
+ * @return An 1-D `Output` of type `dtype`.
  */
-fun TF.range(start: Tensor, limit: Tensor, delta: Tensor = const(1), name: String = "Range") = run {
+fun TF.range(start: Output, limit: Output, delta: Output = const(1), name: String = "Range") = run {
   val dtypes = i(start.dtype, limit.dtype, delta.dtype)
   val inferred_dtype = dtypes.maxBy { dtype_hierarchy[it]!! }!!
   val start = cast(start, inferred_dtype)
@@ -154,13 +153,13 @@ fun TF.range(start: Tensor, limit: Tensor, delta: Tensor = const(1), name: Strin
   _range(start, limit, delta, name)
 }
 
-fun TF.realDiv(a: Tensor, b: Any, name: String = "RealDiv") =
+fun TF.realDiv(a: Output, b: Any, name: String = "RealDiv") =
     name_scope("truediv") {
       val y = const(a.dtype.base_dtype, b, name = "y")
       _realDiv(a, y, name = ctxNs.scopeName)
     }
 
-fun TF.sum(input: Tensor, axis: Int? = null, keep_dims: Boolean = false, name: String = "sum") =
+fun TF.sum(input: Output, axis: Int? = null, keep_dims: Boolean = false, name: String = "sum") =
     name_scope(name) {
       val reduction_indices =
           reductionDims(input,
@@ -169,9 +168,9 @@ fun TF.sum(input: Tensor, axis: Int? = null, keep_dims: Boolean = false, name: S
       _sum(input, reduction_indices, keep_dims, ctxNs.scopeName)
     }
 
-fun TF.sum(input: Tensor, axis: Tensor? = null, keep_dims: Boolean = false, name: String = "sum") =
+fun TF.sum(input: Output, axis: Output? = null, keep_dims: Boolean = false, name: String = "sum") =
     _sum(input, reductionDims(input, axis), keep_dims, name)
 
-fun TF.tensordot(input: Tensor, kernel: Tensor, const: Tensor): Tensor {
+fun TF.tensordot(input: Output, kernel: Output, const: Output): Output {
   TODO()
 }

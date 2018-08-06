@@ -4,11 +4,11 @@
 package wumo.sim.algorithm.tensorflow.ops.gen
 
 import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.Tensor
+import wumo.sim.algorithm.tensorflow.ops.Output
 import wumo.sim.algorithm.tensorflow.buildOpTensor
 import wumo.sim.algorithm.tensorflow.buildOpTensors
 
-fun TF.audioSpectrogram(input: Tensor, window_size: Long, stride: Long, magnitude_squared: Boolean = false, name: String = "AudioSpectrogram") = run {
+fun TF.audioSpectrogram(input: Output, window_size: Long, stride: Long, magnitude_squared: Boolean = false, name: String = "AudioSpectrogram") = run {
   buildOpTensor("AudioSpectrogram", name) {
     addInput(input, false)
     attr("window_size", window_size)
@@ -17,7 +17,7 @@ fun TF.audioSpectrogram(input: Tensor, window_size: Long, stride: Long, magnitud
   }
 }
 
-fun TF.decodeWav(contents: Tensor, desired_channels: Long = -1L, desired_samples: Long = -1L, name: String = "DecodeWav") = run {
+fun TF.decodeWav(contents: Output, desired_channels: Long = -1L, desired_samples: Long = -1L, name: String = "DecodeWav") = run {
   buildOpTensors("DecodeWav", name) {
     addInput(contents, false)
     attr("desired_channels", desired_channels)
@@ -25,14 +25,14 @@ fun TF.decodeWav(contents: Tensor, desired_channels: Long = -1L, desired_samples
   }
 }
 
-fun TF.encodeWav(audio: Tensor, sample_rate: Tensor, name: String = "EncodeWav") = run {
+fun TF.encodeWav(audio: Output, sample_rate: Output, name: String = "EncodeWav") = run {
   buildOpTensor("EncodeWav", name) {
     addInput(audio, false)
     addInput(sample_rate, false)
   }
 }
 
-fun TF.mfcc(spectrogram: Tensor, sample_rate: Tensor, upper_frequency_limit: Float = 4000.0f, lower_frequency_limit: Float = 20.0f, filterbank_channel_count: Long = 40L, dct_coefficient_count: Long = 13L, name: String = "Mfcc") = run {
+fun TF.mfcc(spectrogram: Output, sample_rate: Output, upper_frequency_limit: Float = 4000.0f, lower_frequency_limit: Float = 20.0f, filterbank_channel_count: Long = 40L, dct_coefficient_count: Long = 13L, name: String = "Mfcc") = run {
   buildOpTensor("Mfcc", name) {
     addInput(spectrogram, false)
     addInput(sample_rate, false)

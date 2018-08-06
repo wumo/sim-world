@@ -8,12 +8,12 @@ import wumo.sim.algorithm.tensorflow.ops.gen.merge as _merge
 abstract class ControlFlowContext {
   var outer_context = tf.control_flow_context
   val values = hashSetOf<String>()
-  val external_values = hashMapOf<String, Tensor>()
+  val external_values = hashMapOf<String, Output>()
   abstract fun addOp(op: Op)
 }
 
-class CondContext(val pred: Tensor,
-                  val pivot: Tensor,
+class CondContext(val pred: Output,
+                  val pivot: Output,
                   val branch: Int) : ControlFlowContext() {
   
   init {
@@ -56,7 +56,7 @@ class CondContext(val pred: Tensor,
   }
   
   /**Add `val` to the current context and its outer context recursively.*/
-  private fun addValue(v: Tensor): Tensor {
+  private fun addValue(v: Output): Output {
     return if (v.name in values) {
       //Use the real value if it comes from outer context. This is needed in
       //particular for nested conds.
@@ -80,26 +80,26 @@ class CondContext(val pred: Tensor,
     }
   }
   
-  fun buildCondTensor(v: Any): Tensor {
+  fun buildCondTensor(v: Any): Output {
     return when (v) {
       is Op -> {//Use pivot as the proxy for this op.
         with_dependencies(v, output_tensor = pivot)
       }
-      is IndexedSlices, is SparseTensor -> {
+      is IndexedSlices, is SparseOutput -> {
         TODO()
       }
-      else -> processOutputTensor((v as Tensor).value())
+      else -> processOutputTensor((v as Output).value())
     }
   }
   
   /**Add the subgraph defined by fn() to the graph.*/
-  fun buildCondBranch(fn: () -> Any): Tensor {
+  fun buildCondBranch(fn: () -> Any): Output {
     val original_result = fn()
     val result = buildCondTensor(original_result)
     return result
   }
   
-  private fun processOutputTensor(v: Tensor): Tensor {
+  private fun processOutputTensor(v: Output): Output {
     var real_v = v
     if (v.name !in values) {
       values += v.name
@@ -131,15 +131,15 @@ See also @{tf.tuple$tuple} and @{tf.group$group}.
 
 Args:
  * @param dependencies: Iterable of operations to run before this op finishes.
- * @param output_tensor: A `Tensor` or `IndexedSlices` that will be returned.
+ * @param output_tensor: A `Output` or `IndexedSlices` that will be returned.
  * @param name: (Optional) A name for this operation.
 
 Returns:
 Same as `output_tensor`.
  */
 fun with_dependencies(vararg dependencies: Op,
-                      output_tensor: Tensor,
-                      name: String = "control_dependency"): Tensor {
+                      output_tensor: Output,
+                      name: String = "control_dependency"): Output {
   with(tf) {
     name_scope(name) {
       colocate_with(output_tensor) {
@@ -152,7 +152,7 @@ fun with_dependencies(vararg dependencies: Op,
   }
 }
 
-fun TF._identity(data: Tensor, name: String): Tensor {
+fun TF._identity(data: Output, name: String): Output {
   return if (data.dtype.is_ref_dytpe)
     refIdentity(data, name)
   else
@@ -166,7 +166,7 @@ fun TF.group(inputs: List<Any>, name: String = "group_deps"): Op {
     val op = when (input) {
       is Op -> input
       is Variable -> input.initializer_op.op
-      is Tensor -> input.op
+      is Output -> input.op
       else -> throw IllegalArgumentException("unsupported ${input::class.java}")
     }
     val dev = op!!.device
@@ -213,10 +213,10 @@ private fun TF.groupControlDeps(deps: List<Op>, name: String = "noOp") = run {
  * @return  Tensors returned by the call to either `true_fn` or `false_fn`. If the
  * callables return a singleton list, the element is extracted from the list.
  */
-fun TF.cond(pred: Tensor,
+fun TF.cond(pred: Output,
             true_fn: () -> Any,
             false_fn: () -> Any,
-            name: String = "cond"): Tensor {
+            name: String = "cond"): Output {
   name_scope(name) {
     val (p_2, p_1) = switch(pred, pred)
     val pivot_1 = identity(p_1, name = "switch_t")
@@ -248,25 +248,25 @@ fun TF.cond(pred: Tensor,
  * It is an error if more than one tensor in `inputs` is available. If no tensor
  * in `inputs` is available, the returned tensor and index are not set.
  *
- * This op handles both `Tensor`s and `IndexedSlices`. If inputs has a mix of
- * `Tensor`s and `IndexedSlices`, all inputs are converted to IndexedSlices
+ * This op handles both `Output`s and `IndexedSlices`. If inputs has a mix of
+ * `Output`s and `IndexedSlices`, all inputs are converted to IndexedSlices
  * before merging.
  * @param inputs The input tensors, at most one of which is available.
  * @param name A name for this operation (optional).
  * @return A tuple containing the chosen input tensor and its index in `inputs`.
  */
-fun TF.merge(vararg inputs: Tensor, name: String = "Merge"): Array<Tensor> {
+fun TF.merge(vararg inputs: Output, name: String = "Merge"): Array<Output> {
   return if (inputs.all { it.dtype.is_ref_dytpe })
-    ref_merge(inputs as Array<Tensor>, name)
+    ref_merge(inputs as Array<Output>, name)
   else
-    _merge(inputs as Array<Tensor>, name)
+    _merge(inputs as Array<Output>, name)
   //TODO handle sparseTensor indexedSlices
 }
 
 /**
  * @see [_merge]
  */
-private fun TF.ref_merge(inputs: Array<Tensor>, name: String): Array<Tensor> {
+private fun TF.ref_merge(inputs: Array<Output>, name: String): Array<Output> {
   colocate_with_tensors(inputs) {
     return refMerge(inputs, name)
   }
@@ -275,9 +275,9 @@ private fun TF.ref_merge(inputs: Array<Tensor>, name: String): Array<Tensor> {
 /**
  * @see [switch]
  */
-private fun TF._switchRefOrTensor(data: Tensor,
-                                  pred: Tensor,
-                                  name: String = "Switch"): Array<Tensor> {
+private fun TF._switchRefOrTensor(data: Output,
+                                  pred: Output,
+                                  name: String = "Switch"): Array<Output> {
   colocate_with(data, ignore_existing = true) {
     if (data.dtype.is_ref_dytpe)
       return refSwitch(data, pred, name)

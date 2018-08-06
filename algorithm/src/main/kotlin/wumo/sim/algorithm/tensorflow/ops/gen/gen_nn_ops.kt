@@ -5,11 +5,11 @@ package wumo.sim.algorithm.tensorflow.ops.gen
 
 import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.Tensor
+import wumo.sim.algorithm.tensorflow.ops.Output
 import wumo.sim.algorithm.tensorflow.buildOpTensor
 import wumo.sim.algorithm.tensorflow.buildOpTensors
 
-fun TF.avgPool(value: Tensor, ksize: Array<Long>, strides: Array<Long>, padding: String, data_format: String = "NHWC", name: String = "AvgPool") = run {
+fun TF.avgPool(value: Output, ksize: Array<Long>, strides: Array<Long>, padding: String, data_format: String = "NHWC", name: String = "AvgPool") = run {
   buildOpTensor("AvgPool", name) {
     addInput(value, false)
     attr("ksize", ksize)
@@ -19,7 +19,7 @@ fun TF.avgPool(value: Tensor, ksize: Array<Long>, strides: Array<Long>, padding:
   }
 }
 
-fun TF.avgPool3D(input: Tensor, ksize: Array<Long>, strides: Array<Long>, padding: String, data_format: String = "NDHWC", name: String = "AvgPool3D") = run {
+fun TF.avgPool3D(input: Output, ksize: Array<Long>, strides: Array<Long>, padding: String, data_format: String = "NDHWC", name: String = "AvgPool3D") = run {
   buildOpTensor("AvgPool3D", name) {
     addInput(input, false)
     attr("ksize", ksize)
@@ -29,7 +29,7 @@ fun TF.avgPool3D(input: Tensor, ksize: Array<Long>, strides: Array<Long>, paddin
   }
 }
 
-fun TF.avgPool3DGrad(orig_input_shape: Tensor, grad: Tensor, ksize: Array<Long>, strides: Array<Long>, padding: String, data_format: String = "NDHWC", name: String = "AvgPool3DGrad") = run {
+fun TF.avgPool3DGrad(orig_input_shape: Output, grad: Output, ksize: Array<Long>, strides: Array<Long>, padding: String, data_format: String = "NDHWC", name: String = "AvgPool3DGrad") = run {
   buildOpTensor("AvgPool3DGrad", name) {
     addInput(orig_input_shape, false)
     addInput(grad, false)
@@ -40,7 +40,7 @@ fun TF.avgPool3DGrad(orig_input_shape: Tensor, grad: Tensor, ksize: Array<Long>,
   }
 }
 
-fun TF.biasAdd(value: Tensor, bias: Tensor, data_format: String = "NHWC", name: String = "BiasAdd") = run {
+fun TF.biasAdd(value: Output, bias: Output, data_format: String = "NHWC", name: String = "BiasAdd") = run {
   buildOpTensor("BiasAdd", name) {
     addInput(value, false)
     addInput(bias, false)
@@ -48,14 +48,14 @@ fun TF.biasAdd(value: Tensor, bias: Tensor, data_format: String = "NHWC", name: 
   }
 }
 
-fun TF.biasAddGrad(out_backprop: Tensor, data_format: String = "NHWC", name: String = "BiasAddGrad") = run {
+fun TF.biasAddGrad(out_backprop: Output, data_format: String = "NHWC", name: String = "BiasAddGrad") = run {
   buildOpTensor("BiasAddGrad", name) {
     addInput(out_backprop, false)
     attr("data_format", data_format)
   }
 }
 
-fun TF.conv2D(input: Tensor, filter: Tensor, strides: Array<Long>, padding: String, use_cudnn_on_gpu: Boolean = true, data_format: String = "NHWC", dilations: Array<Long> = arrayOf(1L, 1L, 1L, 1L), name: String = "Conv2D") = run {
+fun TF.conv2D(input: Output, filter: Output, strides: Array<Long>, padding: String, use_cudnn_on_gpu: Boolean = true, data_format: String = "NHWC", dilations: Array<Long> = arrayOf(1L, 1L, 1L, 1L), name: String = "Conv2D") = run {
   buildOpTensor("Conv2D", name) {
     addInput(input, false)
     addInput(filter, false)
@@ -67,7 +67,7 @@ fun TF.conv2D(input: Tensor, filter: Tensor, strides: Array<Long>, padding: Stri
   }
 }
 
-fun TF.conv2DBackpropFilter(input: Tensor, filter_sizes: Tensor, out_backprop: Tensor, strides: Array<Long>, padding: String, use_cudnn_on_gpu: Boolean = true, data_format: String = "NHWC", dilations: Array<Long> = arrayOf(1L, 1L, 1L, 1L), name: String = "Conv2DBackpropFilter") = run {
+fun TF.conv2DBackpropFilter(input: Output, filter_sizes: Output, out_backprop: Output, strides: Array<Long>, padding: String, use_cudnn_on_gpu: Boolean = true, data_format: String = "NHWC", dilations: Array<Long> = arrayOf(1L, 1L, 1L, 1L), name: String = "Conv2DBackpropFilter") = run {
   buildOpTensor("Conv2DBackpropFilter", name) {
     addInput(input, false)
     addInput(filter_sizes, false)
@@ -80,7 +80,7 @@ fun TF.conv2DBackpropFilter(input: Tensor, filter_sizes: Tensor, out_backprop: T
   }
 }
 
-fun TF.conv2DBackpropInput(input_sizes: Tensor, filter: Tensor, out_backprop: Tensor, strides: Array<Long>, padding: String, use_cudnn_on_gpu: Boolean = true, data_format: String = "NHWC", dilations: Array<Long> = arrayOf(1L, 1L, 1L, 1L), name: String = "Conv2DBackpropInput") = run {
+fun TF.conv2DBackpropInput(input_sizes: Output, filter: Output, out_backprop: Output, strides: Array<Long>, padding: String, use_cudnn_on_gpu: Boolean = true, data_format: String = "NHWC", dilations: Array<Long> = arrayOf(1L, 1L, 1L, 1L), name: String = "Conv2DBackpropInput") = run {
   buildOpTensor("Conv2DBackpropInput", name) {
     addInput(input_sizes, false)
     addInput(filter, false)
@@ -93,7 +93,7 @@ fun TF.conv2DBackpropInput(input_sizes: Tensor, filter: Tensor, out_backprop: Te
   }
 }
 
-fun TF.conv3D(input: Tensor, filter: Tensor, strides: Array<Long>, padding: String, data_format: String = "NDHWC", dilations: Array<Long> = arrayOf(1L, 1L, 1L, 1L, 1L), name: String = "Conv3D") = run {
+fun TF.conv3D(input: Output, filter: Output, strides: Array<Long>, padding: String, data_format: String = "NDHWC", dilations: Array<Long> = arrayOf(1L, 1L, 1L, 1L, 1L), name: String = "Conv3D") = run {
   buildOpTensor("Conv3D", name) {
     addInput(input, false)
     addInput(filter, false)
@@ -104,7 +104,7 @@ fun TF.conv3D(input: Tensor, filter: Tensor, strides: Array<Long>, padding: Stri
   }
 }
 
-fun TF.conv3DBackpropFilterV2(input: Tensor, filter_sizes: Tensor, out_backprop: Tensor, strides: Array<Long>, padding: String, data_format: String = "NDHWC", dilations: Array<Long> = arrayOf(1L, 1L, 1L, 1L, 1L), name: String = "Conv3DBackpropFilterV2") = run {
+fun TF.conv3DBackpropFilterV2(input: Output, filter_sizes: Output, out_backprop: Output, strides: Array<Long>, padding: String, data_format: String = "NDHWC", dilations: Array<Long> = arrayOf(1L, 1L, 1L, 1L, 1L), name: String = "Conv3DBackpropFilterV2") = run {
   buildOpTensor("Conv3DBackpropFilterV2", name) {
     addInput(input, false)
     addInput(filter_sizes, false)
@@ -116,7 +116,7 @@ fun TF.conv3DBackpropFilterV2(input: Tensor, filter_sizes: Tensor, out_backprop:
   }
 }
 
-fun TF.conv3DBackpropInputV2(input_sizes: Tensor, filter: Tensor, out_backprop: Tensor, strides: Array<Long>, padding: String, data_format: String = "NDHWC", dilations: Array<Long> = arrayOf(1L, 1L, 1L, 1L, 1L), name: String = "Conv3DBackpropInputV2") = run {
+fun TF.conv3DBackpropInputV2(input_sizes: Output, filter: Output, out_backprop: Output, strides: Array<Long>, padding: String, data_format: String = "NDHWC", dilations: Array<Long> = arrayOf(1L, 1L, 1L, 1L, 1L), name: String = "Conv3DBackpropInputV2") = run {
   buildOpTensor("Conv3DBackpropInputV2", name) {
     addInput(input_sizes, false)
     addInput(filter, false)
@@ -128,7 +128,7 @@ fun TF.conv3DBackpropInputV2(input_sizes: Tensor, filter: Tensor, out_backprop: 
   }
 }
 
-fun TF.dataFormatDimMap(x: Tensor, src_format: String = "NHWC", dst_format: String = "NCHW", name: String = "DataFormatDimMap") = run {
+fun TF.dataFormatDimMap(x: Output, src_format: String = "NHWC", dst_format: String = "NCHW", name: String = "DataFormatDimMap") = run {
   buildOpTensor("DataFormatDimMap", name) {
     addInput(x, false)
     attr("src_format", src_format)
@@ -136,7 +136,7 @@ fun TF.dataFormatDimMap(x: Tensor, src_format: String = "NHWC", dst_format: Stri
   }
 }
 
-fun TF.dataFormatVecPermute(x: Tensor, src_format: String = "NHWC", dst_format: String = "NCHW", name: String = "DataFormatVecPermute") = run {
+fun TF.dataFormatVecPermute(x: Output, src_format: String = "NHWC", dst_format: String = "NCHW", name: String = "DataFormatVecPermute") = run {
   buildOpTensor("DataFormatVecPermute", name) {
     addInput(x, false)
     attr("src_format", src_format)
@@ -144,7 +144,7 @@ fun TF.dataFormatVecPermute(x: Tensor, src_format: String = "NHWC", dst_format: 
   }
 }
 
-fun TF.depthwiseConv2dNative(input: Tensor, filter: Tensor, strides: Array<Long>, padding: String, data_format: String = "NHWC", dilations: Array<Long> = arrayOf(1L, 1L, 1L, 1L), name: String = "DepthwiseConv2dNative") = run {
+fun TF.depthwiseConv2dNative(input: Output, filter: Output, strides: Array<Long>, padding: String, data_format: String = "NHWC", dilations: Array<Long> = arrayOf(1L, 1L, 1L, 1L), name: String = "DepthwiseConv2dNative") = run {
   buildOpTensor("DepthwiseConv2dNative", name) {
     addInput(input, false)
     addInput(filter, false)
@@ -155,7 +155,7 @@ fun TF.depthwiseConv2dNative(input: Tensor, filter: Tensor, strides: Array<Long>
   }
 }
 
-fun TF.depthwiseConv2dNativeBackpropFilter(input: Tensor, filter_sizes: Tensor, out_backprop: Tensor, strides: Array<Long>, padding: String, data_format: String = "NHWC", dilations: Array<Long> = arrayOf(1L, 1L, 1L, 1L), name: String = "DepthwiseConv2dNativeBackpropFilter") = run {
+fun TF.depthwiseConv2dNativeBackpropFilter(input: Output, filter_sizes: Output, out_backprop: Output, strides: Array<Long>, padding: String, data_format: String = "NHWC", dilations: Array<Long> = arrayOf(1L, 1L, 1L, 1L), name: String = "DepthwiseConv2dNativeBackpropFilter") = run {
   buildOpTensor("DepthwiseConv2dNativeBackpropFilter", name) {
     addInput(input, false)
     addInput(filter_sizes, false)
@@ -167,7 +167,7 @@ fun TF.depthwiseConv2dNativeBackpropFilter(input: Tensor, filter_sizes: Tensor, 
   }
 }
 
-fun TF.depthwiseConv2dNativeBackpropInput(input_sizes: Tensor, filter: Tensor, out_backprop: Tensor, strides: Array<Long>, padding: String, data_format: String = "NHWC", dilations: Array<Long> = arrayOf(1L, 1L, 1L, 1L), name: String = "DepthwiseConv2dNativeBackpropInput") = run {
+fun TF.depthwiseConv2dNativeBackpropInput(input_sizes: Output, filter: Output, out_backprop: Output, strides: Array<Long>, padding: String, data_format: String = "NHWC", dilations: Array<Long> = arrayOf(1L, 1L, 1L, 1L), name: String = "DepthwiseConv2dNativeBackpropInput") = run {
   buildOpTensor("DepthwiseConv2dNativeBackpropInput", name) {
     addInput(input_sizes, false)
     addInput(filter, false)
@@ -179,7 +179,7 @@ fun TF.depthwiseConv2dNativeBackpropInput(input_sizes: Tensor, filter: Tensor, o
   }
 }
 
-fun TF.dilation2D(input: Tensor, filter: Tensor, strides: Array<Long>, rates: Array<Long>, padding: String, name: String = "Dilation2D") = run {
+fun TF.dilation2D(input: Output, filter: Output, strides: Array<Long>, rates: Array<Long>, padding: String, name: String = "Dilation2D") = run {
   buildOpTensor("Dilation2D", name) {
     addInput(input, false)
     addInput(filter, false)
@@ -189,7 +189,7 @@ fun TF.dilation2D(input: Tensor, filter: Tensor, strides: Array<Long>, rates: Ar
   }
 }
 
-fun TF.dilation2DBackpropFilter(input: Tensor, filter: Tensor, out_backprop: Tensor, strides: Array<Long>, rates: Array<Long>, padding: String, name: String = "Dilation2DBackpropFilter") = run {
+fun TF.dilation2DBackpropFilter(input: Output, filter: Output, out_backprop: Output, strides: Array<Long>, rates: Array<Long>, padding: String, name: String = "Dilation2DBackpropFilter") = run {
   buildOpTensor("Dilation2DBackpropFilter", name) {
     addInput(input, false)
     addInput(filter, false)
@@ -200,7 +200,7 @@ fun TF.dilation2DBackpropFilter(input: Tensor, filter: Tensor, out_backprop: Ten
   }
 }
 
-fun TF.dilation2DBackpropInput(input: Tensor, filter: Tensor, out_backprop: Tensor, strides: Array<Long>, rates: Array<Long>, padding: String, name: String = "Dilation2DBackpropInput") = run {
+fun TF.dilation2DBackpropInput(input: Output, filter: Output, out_backprop: Output, strides: Array<Long>, rates: Array<Long>, padding: String, name: String = "Dilation2DBackpropInput") = run {
   buildOpTensor("Dilation2DBackpropInput", name) {
     addInput(input, false)
     addInput(filter, false)
@@ -211,13 +211,13 @@ fun TF.dilation2DBackpropInput(input: Tensor, filter: Tensor, out_backprop: Tens
   }
 }
 
-fun TF.elu(features: Tensor, name: String = "Elu") = run {
+fun TF.elu(features: Output, name: String = "Elu") = run {
   buildOpTensor("Elu", name) {
     addInput(features, false)
   }
 }
 
-fun TF.fractionalAvgPool(value: Tensor, pooling_ratio: Array<Float>, pseudo_random: Boolean = false, overlapping: Boolean = false, deterministic: Boolean = false, seed: Long = 0L, seed2: Long = 0L, name: String = "FractionalAvgPool") = run {
+fun TF.fractionalAvgPool(value: Output, pooling_ratio: Array<Float>, pseudo_random: Boolean = false, overlapping: Boolean = false, deterministic: Boolean = false, seed: Long = 0L, seed2: Long = 0L, name: String = "FractionalAvgPool") = run {
   buildOpTensors("FractionalAvgPool", name) {
     addInput(value, false)
     attr("pooling_ratio", pooling_ratio)
@@ -229,7 +229,7 @@ fun TF.fractionalAvgPool(value: Tensor, pooling_ratio: Array<Float>, pseudo_rand
   }
 }
 
-fun TF.fractionalMaxPool(value: Tensor, pooling_ratio: Array<Float>, pseudo_random: Boolean = false, overlapping: Boolean = false, deterministic: Boolean = false, seed: Long = 0L, seed2: Long = 0L, name: String = "FractionalMaxPool") = run {
+fun TF.fractionalMaxPool(value: Output, pooling_ratio: Array<Float>, pseudo_random: Boolean = false, overlapping: Boolean = false, deterministic: Boolean = false, seed: Long = 0L, seed2: Long = 0L, name: String = "FractionalMaxPool") = run {
   buildOpTensors("FractionalMaxPool", name) {
     addInput(value, false)
     attr("pooling_ratio", pooling_ratio)
@@ -241,7 +241,7 @@ fun TF.fractionalMaxPool(value: Tensor, pooling_ratio: Array<Float>, pseudo_rand
   }
 }
 
-fun TF.fusedBatchNorm(x: Tensor, scale: Tensor, offset: Tensor, mean: Tensor, variance: Tensor, epsilon: Float = 1.0E-4f, data_format: String = "NHWC", is_training: Boolean = true, name: String = "FusedBatchNorm") = run {
+fun TF.fusedBatchNorm(x: Output, scale: Output, offset: Output, mean: Output, variance: Output, epsilon: Float = 1.0E-4f, data_format: String = "NHWC", is_training: Boolean = true, name: String = "FusedBatchNorm") = run {
   buildOpTensors("FusedBatchNorm", name) {
     addInput(x, false)
     addInput(scale, false)
@@ -254,7 +254,7 @@ fun TF.fusedBatchNorm(x: Tensor, scale: Tensor, offset: Tensor, mean: Tensor, va
   }
 }
 
-fun TF.fusedBatchNormGrad(y_backprop: Tensor, x: Tensor, scale: Tensor, reserve_space_1: Tensor, reserve_space_2: Tensor, epsilon: Float = 1.0E-4f, data_format: String = "NHWC", is_training: Boolean = true, name: String = "FusedBatchNormGrad") = run {
+fun TF.fusedBatchNormGrad(y_backprop: Output, x: Output, scale: Output, reserve_space_1: Output, reserve_space_2: Output, epsilon: Float = 1.0E-4f, data_format: String = "NHWC", is_training: Boolean = true, name: String = "FusedBatchNormGrad") = run {
   buildOpTensors("FusedBatchNormGrad", name) {
     addInput(y_backprop, false)
     addInput(x, false)
@@ -267,7 +267,7 @@ fun TF.fusedBatchNormGrad(y_backprop: Tensor, x: Tensor, scale: Tensor, reserve_
   }
 }
 
-fun TF.fusedBatchNormGradV2(y_backprop: Tensor, x: Tensor, scale: Tensor, reserve_space_1: Tensor, reserve_space_2: Tensor, epsilon: Float = 1.0E-4f, data_format: String = "NHWC", is_training: Boolean = true, name: String = "FusedBatchNormGradV2") = run {
+fun TF.fusedBatchNormGradV2(y_backprop: Output, x: Output, scale: Output, reserve_space_1: Output, reserve_space_2: Output, epsilon: Float = 1.0E-4f, data_format: String = "NHWC", is_training: Boolean = true, name: String = "FusedBatchNormGradV2") = run {
   buildOpTensors("FusedBatchNormGradV2", name) {
     addInput(y_backprop, false)
     addInput(x, false)
@@ -280,7 +280,7 @@ fun TF.fusedBatchNormGradV2(y_backprop: Tensor, x: Tensor, scale: Tensor, reserv
   }
 }
 
-fun TF.fusedBatchNormV2(x: Tensor, scale: Tensor, offset: Tensor, mean: Tensor, variance: Tensor, epsilon: Float = 1.0E-4f, data_format: String = "NHWC", is_training: Boolean = true, name: String = "FusedBatchNormV2") = run {
+fun TF.fusedBatchNormV2(x: Output, scale: Output, offset: Output, mean: Output, variance: Output, epsilon: Float = 1.0E-4f, data_format: String = "NHWC", is_training: Boolean = true, name: String = "FusedBatchNormV2") = run {
   buildOpTensors("FusedBatchNormV2", name) {
     addInput(x, false)
     addInput(scale, false)
@@ -293,7 +293,7 @@ fun TF.fusedBatchNormV2(x: Tensor, scale: Tensor, offset: Tensor, mean: Tensor, 
   }
 }
 
-fun TF.fusedPadConv2D(input: Tensor, paddings: Tensor, filter: Tensor, mode: String, strides: Array<Long>, padding: String, name: String = "FusedPadConv2D") = run {
+fun TF.fusedPadConv2D(input: Output, paddings: Output, filter: Output, mode: String, strides: Array<Long>, padding: String, name: String = "FusedPadConv2D") = run {
   buildOpTensor("FusedPadConv2D", name) {
     addInput(input, false)
     addInput(paddings, false)
@@ -304,7 +304,7 @@ fun TF.fusedPadConv2D(input: Tensor, paddings: Tensor, filter: Tensor, mode: Str
   }
 }
 
-fun TF.fusedResizeAndPadConv2D(input: Tensor, size: Tensor, paddings: Tensor, filter: Tensor, mode: String, strides: Array<Long>, padding: String, resize_align_corners: Boolean = false, name: String = "FusedResizeAndPadConv2D") = run {
+fun TF.fusedResizeAndPadConv2D(input: Output, size: Output, paddings: Output, filter: Output, mode: String, strides: Array<Long>, padding: String, resize_align_corners: Boolean = false, name: String = "FusedResizeAndPadConv2D") = run {
   buildOpTensor("FusedResizeAndPadConv2D", name) {
     addInput(input, false)
     addInput(size, false)
@@ -317,7 +317,7 @@ fun TF.fusedResizeAndPadConv2D(input: Tensor, size: Tensor, paddings: Tensor, fi
   }
 }
 
-fun TF.inTopK(predictions: Tensor, targets: Tensor, k: Long, name: String = "InTopK") = run {
+fun TF.inTopK(predictions: Output, targets: Output, k: Long, name: String = "InTopK") = run {
   buildOpTensor("InTopK", name) {
     addInput(predictions, false)
     addInput(targets, false)
@@ -325,7 +325,7 @@ fun TF.inTopK(predictions: Tensor, targets: Tensor, k: Long, name: String = "InT
   }
 }
 
-fun TF.inTopKV2(predictions: Tensor, targets: Tensor, k: Tensor, name: String = "InTopKV2") = run {
+fun TF.inTopKV2(predictions: Output, targets: Output, k: Output, name: String = "InTopKV2") = run {
   buildOpTensor("InTopKV2", name) {
     addInput(predictions, false)
     addInput(targets, false)
@@ -333,13 +333,13 @@ fun TF.inTopKV2(predictions: Tensor, targets: Tensor, k: Tensor, name: String = 
   }
 }
 
-fun TF.l2Loss(t: Tensor, name: String = "L2Loss") = run {
+fun TF.l2Loss(t: Output, name: String = "L2Loss") = run {
   buildOpTensor("L2Loss", name) {
     addInput(t, false)
   }
 }
 
-fun TF.lRN(input: Tensor, depth_radius: Long = 5L, bias: Float = 1.0f, alpha: Float = 1.0f, beta: Float = 0.5f, name: String = "LRN") = run {
+fun TF.lRN(input: Output, depth_radius: Long = 5L, bias: Float = 1.0f, alpha: Float = 1.0f, beta: Float = 0.5f, name: String = "LRN") = run {
   buildOpTensor("LRN", name) {
     addInput(input, false)
     attr("depth_radius", depth_radius)
@@ -349,13 +349,13 @@ fun TF.lRN(input: Tensor, depth_radius: Long = 5L, bias: Float = 1.0f, alpha: Fl
   }
 }
 
-fun TF.logSoftmax(logits: Tensor, name: String = "LogSoftmax") = run {
+fun TF.logSoftmax(logits: Output, name: String = "LogSoftmax") = run {
   buildOpTensor("LogSoftmax", name) {
     addInput(logits, false)
   }
 }
 
-fun TF.maxPool(input: Tensor, ksize: Array<Long>, strides: Array<Long>, padding: String, data_format: String = "NHWC", name: String = "MaxPool") = run {
+fun TF.maxPool(input: Output, ksize: Array<Long>, strides: Array<Long>, padding: String, data_format: String = "NHWC", name: String = "MaxPool") = run {
   buildOpTensor("MaxPool", name) {
     addInput(input, false)
     attr("ksize", ksize)
@@ -365,7 +365,7 @@ fun TF.maxPool(input: Tensor, ksize: Array<Long>, strides: Array<Long>, padding:
   }
 }
 
-fun TF.maxPool3D(input: Tensor, ksize: Array<Long>, strides: Array<Long>, padding: String, data_format: String = "NDHWC", name: String = "MaxPool3D") = run {
+fun TF.maxPool3D(input: Output, ksize: Array<Long>, strides: Array<Long>, padding: String, data_format: String = "NDHWC", name: String = "MaxPool3D") = run {
   buildOpTensor("MaxPool3D", name) {
     addInput(input, false)
     attr("ksize", ksize)
@@ -375,7 +375,7 @@ fun TF.maxPool3D(input: Tensor, ksize: Array<Long>, strides: Array<Long>, paddin
   }
 }
 
-fun TF.maxPool3DGrad(orig_input: Tensor, orig_output: Tensor, grad: Tensor, ksize: Array<Long>, strides: Array<Long>, padding: String, data_format: String = "NDHWC", name: String = "MaxPool3DGrad") = run {
+fun TF.maxPool3DGrad(orig_input: Output, orig_output: Output, grad: Output, ksize: Array<Long>, strides: Array<Long>, padding: String, data_format: String = "NDHWC", name: String = "MaxPool3DGrad") = run {
   buildOpTensor("MaxPool3DGrad", name) {
     addInput(orig_input, false)
     addInput(orig_output, false)
@@ -387,7 +387,7 @@ fun TF.maxPool3DGrad(orig_input: Tensor, orig_output: Tensor, grad: Tensor, ksiz
   }
 }
 
-fun TF.maxPool3DGradGrad(orig_input: Tensor, orig_output: Tensor, grad: Tensor, ksize: Array<Long>, strides: Array<Long>, padding: String, data_format: String = "NDHWC", name: String = "MaxPool3DGradGrad") = run {
+fun TF.maxPool3DGradGrad(orig_input: Output, orig_output: Output, grad: Output, ksize: Array<Long>, strides: Array<Long>, padding: String, data_format: String = "NDHWC", name: String = "MaxPool3DGradGrad") = run {
   buildOpTensor("MaxPool3DGradGrad", name) {
     addInput(orig_input, false)
     addInput(orig_output, false)
@@ -399,7 +399,7 @@ fun TF.maxPool3DGradGrad(orig_input: Tensor, orig_output: Tensor, grad: Tensor, 
   }
 }
 
-fun TF.maxPoolGradGrad(orig_input: Tensor, orig_output: Tensor, grad: Tensor, ksize: Array<Long>, strides: Array<Long>, padding: String, data_format: String = "NHWC", name: String = "MaxPoolGradGrad") = run {
+fun TF.maxPoolGradGrad(orig_input: Output, orig_output: Output, grad: Output, ksize: Array<Long>, strides: Array<Long>, padding: String, data_format: String = "NHWC", name: String = "MaxPoolGradGrad") = run {
   buildOpTensor("MaxPoolGradGrad", name) {
     addInput(orig_input, false)
     addInput(orig_output, false)
@@ -411,7 +411,7 @@ fun TF.maxPoolGradGrad(orig_input: Tensor, orig_output: Tensor, grad: Tensor, ks
   }
 }
 
-fun TF.maxPoolGradGradV2(orig_input: Tensor, orig_output: Tensor, grad: Tensor, ksize: Tensor, strides: Tensor, padding: String, data_format: String = "NHWC", name: String = "MaxPoolGradGradV2") = run {
+fun TF.maxPoolGradGradV2(orig_input: Output, orig_output: Output, grad: Output, ksize: Output, strides: Output, padding: String, data_format: String = "NHWC", name: String = "MaxPoolGradGradV2") = run {
   buildOpTensor("MaxPoolGradGradV2", name) {
     addInput(orig_input, false)
     addInput(orig_output, false)
@@ -423,7 +423,7 @@ fun TF.maxPoolGradGradV2(orig_input: Tensor, orig_output: Tensor, grad: Tensor, 
   }
 }
 
-fun TF.maxPoolGradGradWithArgmax(input: Tensor, grad: Tensor, argmax: Tensor, ksize: Array<Long>, strides: Array<Long>, padding: String, name: String = "MaxPoolGradGradWithArgmax") = run {
+fun TF.maxPoolGradGradWithArgmax(input: Output, grad: Output, argmax: Output, ksize: Array<Long>, strides: Array<Long>, padding: String, name: String = "MaxPoolGradGradWithArgmax") = run {
   buildOpTensor("MaxPoolGradGradWithArgmax", name) {
     addInput(input, false)
     addInput(grad, false)
@@ -434,7 +434,7 @@ fun TF.maxPoolGradGradWithArgmax(input: Tensor, grad: Tensor, argmax: Tensor, ks
   }
 }
 
-fun TF.maxPoolGradV2(orig_input: Tensor, orig_output: Tensor, grad: Tensor, ksize: Tensor, strides: Tensor, padding: String, data_format: String = "NHWC", name: String = "MaxPoolGradV2") = run {
+fun TF.maxPoolGradV2(orig_input: Output, orig_output: Output, grad: Output, ksize: Output, strides: Output, padding: String, data_format: String = "NHWC", name: String = "MaxPoolGradV2") = run {
   buildOpTensor("MaxPoolGradV2", name) {
     addInput(orig_input, false)
     addInput(orig_output, false)
@@ -446,7 +446,7 @@ fun TF.maxPoolGradV2(orig_input: Tensor, orig_output: Tensor, grad: Tensor, ksiz
   }
 }
 
-fun TF.maxPoolV2(input: Tensor, ksize: Tensor, strides: Tensor, padding: String, data_format: String = "NHWC", name: String = "MaxPoolV2") = run {
+fun TF.maxPoolV2(input: Output, ksize: Output, strides: Output, padding: String, data_format: String = "NHWC", name: String = "MaxPoolV2") = run {
   buildOpTensor("MaxPoolV2", name) {
     addInput(input, false)
     addInput(ksize, false)
@@ -456,7 +456,7 @@ fun TF.maxPoolV2(input: Tensor, ksize: Tensor, strides: Tensor, padding: String,
   }
 }
 
-fun TF.maxPoolWithArgmax(input: Tensor, ksize: Array<Long>, strides: Array<Long>, padding: String, targmax: Int = DT_INT64, name: String = "MaxPoolWithArgmax") = run {
+fun TF.maxPoolWithArgmax(input: Output, ksize: Array<Long>, strides: Array<Long>, padding: String, targmax: Int = DT_INT64, name: String = "MaxPoolWithArgmax") = run {
   buildOpTensors("MaxPoolWithArgmax", name) {
     addInput(input, false)
     attr("ksize", ksize)
@@ -466,7 +466,7 @@ fun TF.maxPoolWithArgmax(input: Tensor, ksize: Array<Long>, strides: Array<Long>
   }
 }
 
-fun TF.nthElement(input: Tensor, n: Tensor, reverse: Boolean = false, name: String = "NthElement") = run {
+fun TF.nthElement(input: Output, n: Output, reverse: Boolean = false, name: String = "NthElement") = run {
   buildOpTensor("NthElement", name) {
     addInput(input, false)
     addInput(n, false)
@@ -474,7 +474,7 @@ fun TF.nthElement(input: Tensor, n: Tensor, reverse: Boolean = false, name: Stri
   }
 }
 
-fun TF.quantizedAvgPool(input: Tensor, min_input: Tensor, max_input: Tensor, ksize: Array<Long>, strides: Array<Long>, padding: String, name: String = "QuantizedAvgPool") = run {
+fun TF.quantizedAvgPool(input: Output, min_input: Output, max_input: Output, ksize: Array<Long>, strides: Array<Long>, padding: String, name: String = "QuantizedAvgPool") = run {
   buildOpTensors("QuantizedAvgPool", name) {
     addInput(input, false)
     addInput(min_input, false)
@@ -485,7 +485,7 @@ fun TF.quantizedAvgPool(input: Tensor, min_input: Tensor, max_input: Tensor, ksi
   }
 }
 
-fun TF.quantizedBatchNormWithGlobalNormalization(t: Tensor, t_min: Tensor, t_max: Tensor, m: Tensor, m_min: Tensor, m_max: Tensor, v: Tensor, v_min: Tensor, v_max: Tensor, beta: Tensor, beta_min: Tensor, beta_max: Tensor, gamma: Tensor, gamma_min: Tensor, gamma_max: Tensor, out_type: Int, variance_epsilon: Float, scale_after_normalization: Boolean, name: String = "QuantizedBatchNormWithGlobalNormalization") = run {
+fun TF.quantizedBatchNormWithGlobalNormalization(t: Output, t_min: Output, t_max: Output, m: Output, m_min: Output, m_max: Output, v: Output, v_min: Output, v_max: Output, beta: Output, beta_min: Output, beta_max: Output, gamma: Output, gamma_min: Output, gamma_max: Output, out_type: Int, variance_epsilon: Float, scale_after_normalization: Boolean, name: String = "QuantizedBatchNormWithGlobalNormalization") = run {
   buildOpTensors("QuantizedBatchNormWithGlobalNormalization", name) {
     addInput(t, false)
     addInput(t_min, false)
@@ -508,7 +508,7 @@ fun TF.quantizedBatchNormWithGlobalNormalization(t: Tensor, t_min: Tensor, t_max
   }
 }
 
-fun TF.quantizedBiasAdd(input: Tensor, bias: Tensor, min_input: Tensor, max_input: Tensor, min_bias: Tensor, max_bias: Tensor, out_type: Int, name: String = "QuantizedBiasAdd") = run {
+fun TF.quantizedBiasAdd(input: Output, bias: Output, min_input: Output, max_input: Output, min_bias: Output, max_bias: Output, out_type: Int, name: String = "QuantizedBiasAdd") = run {
   buildOpTensors("QuantizedBiasAdd", name) {
     addInput(input, false)
     addInput(bias, false)
@@ -520,7 +520,7 @@ fun TF.quantizedBiasAdd(input: Tensor, bias: Tensor, min_input: Tensor, max_inpu
   }
 }
 
-fun TF.quantizedConv2D(input: Tensor, filter: Tensor, min_input: Tensor, max_input: Tensor, min_filter: Tensor, max_filter: Tensor, strides: Array<Long>, padding: String, out_type: Int = DT_QINT32, dilations: Array<Long> = arrayOf(1L, 1L, 1L, 1L), name: String = "QuantizedConv2D") = run {
+fun TF.quantizedConv2D(input: Output, filter: Output, min_input: Output, max_input: Output, min_filter: Output, max_filter: Output, strides: Array<Long>, padding: String, out_type: Int = DT_QINT32, dilations: Array<Long> = arrayOf(1L, 1L, 1L, 1L), name: String = "QuantizedConv2D") = run {
   buildOpTensors("QuantizedConv2D", name) {
     addInput(input, false)
     addInput(filter, false)
@@ -535,7 +535,7 @@ fun TF.quantizedConv2D(input: Tensor, filter: Tensor, min_input: Tensor, max_inp
   }
 }
 
-fun TF.quantizedMaxPool(input: Tensor, min_input: Tensor, max_input: Tensor, ksize: Array<Long>, strides: Array<Long>, padding: String, name: String = "QuantizedMaxPool") = run {
+fun TF.quantizedMaxPool(input: Output, min_input: Output, max_input: Output, ksize: Array<Long>, strides: Array<Long>, padding: String, name: String = "QuantizedMaxPool") = run {
   buildOpTensors("QuantizedMaxPool", name) {
     addInput(input, false)
     addInput(min_input, false)
@@ -546,7 +546,7 @@ fun TF.quantizedMaxPool(input: Tensor, min_input: Tensor, max_input: Tensor, ksi
   }
 }
 
-fun TF.quantizedRelu(features: Tensor, min_features: Tensor, max_features: Tensor, out_type: Int = DT_QUINT8, name: String = "QuantizedRelu") = run {
+fun TF.quantizedRelu(features: Output, min_features: Output, max_features: Output, out_type: Int = DT_QUINT8, name: String = "QuantizedRelu") = run {
   buildOpTensors("QuantizedRelu", name) {
     addInput(features, false)
     addInput(min_features, false)
@@ -555,7 +555,7 @@ fun TF.quantizedRelu(features: Tensor, min_features: Tensor, max_features: Tenso
   }
 }
 
-fun TF.quantizedRelu6(features: Tensor, min_features: Tensor, max_features: Tensor, out_type: Int = DT_QUINT8, name: String = "QuantizedRelu6") = run {
+fun TF.quantizedRelu6(features: Output, min_features: Output, max_features: Output, out_type: Int = DT_QUINT8, name: String = "QuantizedRelu6") = run {
   buildOpTensors("QuantizedRelu6", name) {
     addInput(features, false)
     addInput(min_features, false)
@@ -564,7 +564,7 @@ fun TF.quantizedRelu6(features: Tensor, min_features: Tensor, max_features: Tens
   }
 }
 
-fun TF.quantizedReluX(features: Tensor, max_value: Tensor, min_features: Tensor, max_features: Tensor, out_type: Int = DT_QUINT8, name: String = "QuantizedReluX") = run {
+fun TF.quantizedReluX(features: Output, max_value: Output, min_features: Output, max_features: Output, out_type: Int = DT_QUINT8, name: String = "QuantizedReluX") = run {
   buildOpTensors("QuantizedReluX", name) {
     addInput(features, false)
     addInput(max_value, false)
@@ -574,57 +574,57 @@ fun TF.quantizedReluX(features: Tensor, max_value: Tensor, min_features: Tensor,
   }
 }
 
-fun TF.relu(features: Tensor, name: String = "Relu") = run {
+fun TF.relu(features: Output, name: String = "Relu") = run {
   buildOpTensor("Relu", name) {
     addInput(features, false)
   }
 }
 
-fun TF.relu6(features: Tensor, name: String = "Relu6") = run {
+fun TF.relu6(features: Output, name: String = "Relu6") = run {
   buildOpTensor("Relu6", name) {
     addInput(features, false)
   }
 }
 
-fun TF.selu(features: Tensor, name: String = "Selu") = run {
+fun TF.selu(features: Output, name: String = "Selu") = run {
   buildOpTensor("Selu", name) {
     addInput(features, false)
   }
 }
 
-fun TF.softmax(logits: Tensor, name: String = "Softmax") = run {
+fun TF.softmax(logits: Output, name: String = "Softmax") = run {
   buildOpTensor("Softmax", name) {
     addInput(logits, false)
   }
 }
 
-fun TF.softmaxCrossEntropyWithLogits(features: Tensor, labels: Tensor, name: String = "SoftmaxCrossEntropyWithLogits") = run {
+fun TF.softmaxCrossEntropyWithLogits(features: Output, labels: Output, name: String = "SoftmaxCrossEntropyWithLogits") = run {
   buildOpTensors("SoftmaxCrossEntropyWithLogits", name) {
     addInput(features, false)
     addInput(labels, false)
   }
 }
 
-fun TF.softplus(features: Tensor, name: String = "Softplus") = run {
+fun TF.softplus(features: Output, name: String = "Softplus") = run {
   buildOpTensor("Softplus", name) {
     addInput(features, false)
   }
 }
 
-fun TF.softsign(features: Tensor, name: String = "Softsign") = run {
+fun TF.softsign(features: Output, name: String = "Softsign") = run {
   buildOpTensor("Softsign", name) {
     addInput(features, false)
   }
 }
 
-fun TF.sparseSoftmaxCrossEntropyWithLogits(features: Tensor, labels: Tensor, name: String = "SparseSoftmaxCrossEntropyWithLogits") = run {
+fun TF.sparseSoftmaxCrossEntropyWithLogits(features: Output, labels: Output, name: String = "SparseSoftmaxCrossEntropyWithLogits") = run {
   buildOpTensors("SparseSoftmaxCrossEntropyWithLogits", name) {
     addInput(features, false)
     addInput(labels, false)
   }
 }
 
-fun TF.topKV2(input: Tensor, k: Tensor, sorted: Boolean = true, name: String = "TopKV2") = run {
+fun TF.topKV2(input: Output, k: Output, sorted: Boolean = true, name: String = "TopKV2") = run {
   buildOpTensors("TopKV2", name) {
     addInput(input, false)
     addInput(k, false)
@@ -632,7 +632,7 @@ fun TF.topKV2(input: Tensor, k: Tensor, sorted: Boolean = true, name: String = "
   }
 }
 
-fun TF.avgPoolGrad(orig_input_shape: Tensor, grad: Tensor, ksize: Array<Long>, strides: Array<Long>, padding: String, data_format: String = "NHWC", name: String = "AvgPoolGrad") = run {
+fun TF.avgPoolGrad(orig_input_shape: Output, grad: Output, ksize: Array<Long>, strides: Array<Long>, padding: String, data_format: String = "NHWC", name: String = "AvgPoolGrad") = run {
   buildOpTensor("AvgPoolGrad", name) {
     addInput(orig_input_shape, false)
     addInput(grad, false)
@@ -643,14 +643,14 @@ fun TF.avgPoolGrad(orig_input_shape: Tensor, grad: Tensor, ksize: Array<Long>, s
   }
 }
 
-fun TF.eluGrad(gradients: Tensor, outputs: Tensor, name: String = "EluGrad") = run {
+fun TF.eluGrad(gradients: Output, outputs: Output, name: String = "EluGrad") = run {
   buildOpTensor("EluGrad", name) {
     addInput(gradients, false)
     addInput(outputs, false)
   }
 }
 
-fun TF.fractionalAvgPoolGrad(orig_input_tensor_shape: Tensor, out_backprop: Tensor, row_pooling_sequence: Tensor, col_pooling_sequence: Tensor, overlapping: Boolean = false, name: String = "FractionalAvgPoolGrad") = run {
+fun TF.fractionalAvgPoolGrad(orig_input_tensor_shape: Output, out_backprop: Output, row_pooling_sequence: Output, col_pooling_sequence: Output, overlapping: Boolean = false, name: String = "FractionalAvgPoolGrad") = run {
   buildOpTensor("FractionalAvgPoolGrad", name) {
     addInput(orig_input_tensor_shape, false)
     addInput(out_backprop, false)
@@ -660,7 +660,7 @@ fun TF.fractionalAvgPoolGrad(orig_input_tensor_shape: Tensor, out_backprop: Tens
   }
 }
 
-fun TF.fractionalMaxPoolGrad(orig_input: Tensor, orig_output: Tensor, out_backprop: Tensor, row_pooling_sequence: Tensor, col_pooling_sequence: Tensor, overlapping: Boolean = false, name: String = "FractionalMaxPoolGrad") = run {
+fun TF.fractionalMaxPoolGrad(orig_input: Output, orig_output: Output, out_backprop: Output, row_pooling_sequence: Output, col_pooling_sequence: Output, overlapping: Boolean = false, name: String = "FractionalMaxPoolGrad") = run {
   buildOpTensor("FractionalMaxPoolGrad", name) {
     addInput(orig_input, false)
     addInput(orig_output, false)
@@ -671,7 +671,7 @@ fun TF.fractionalMaxPoolGrad(orig_input: Tensor, orig_output: Tensor, out_backpr
   }
 }
 
-fun TF.lRNGrad(input_grads: Tensor, input_image: Tensor, output_image: Tensor, depth_radius: Long = 5L, bias: Float = 1.0f, alpha: Float = 1.0f, beta: Float = 0.5f, name: String = "LRNGrad") = run {
+fun TF.lRNGrad(input_grads: Output, input_image: Output, output_image: Output, depth_radius: Long = 5L, bias: Float = 1.0f, alpha: Float = 1.0f, beta: Float = 0.5f, name: String = "LRNGrad") = run {
   buildOpTensor("LRNGrad", name) {
     addInput(input_grads, false)
     addInput(input_image, false)
@@ -683,7 +683,7 @@ fun TF.lRNGrad(input_grads: Tensor, input_image: Tensor, output_image: Tensor, d
   }
 }
 
-fun TF.maxPoolGrad(orig_input: Tensor, orig_output: Tensor, grad: Tensor, ksize: Array<Long>, strides: Array<Long>, padding: String, data_format: String = "NHWC", name: String = "MaxPoolGrad") = run {
+fun TF.maxPoolGrad(orig_input: Output, orig_output: Output, grad: Output, ksize: Array<Long>, strides: Array<Long>, padding: String, data_format: String = "NHWC", name: String = "MaxPoolGrad") = run {
   buildOpTensor("MaxPoolGrad", name) {
     addInput(orig_input, false)
     addInput(orig_output, false)
@@ -695,7 +695,7 @@ fun TF.maxPoolGrad(orig_input: Tensor, orig_output: Tensor, grad: Tensor, ksize:
   }
 }
 
-fun TF.maxPoolGradWithArgmax(input: Tensor, grad: Tensor, argmax: Tensor, ksize: Array<Long>, strides: Array<Long>, padding: String, name: String = "MaxPoolGradWithArgmax") = run {
+fun TF.maxPoolGradWithArgmax(input: Output, grad: Output, argmax: Output, ksize: Array<Long>, strides: Array<Long>, padding: String, name: String = "MaxPoolGradWithArgmax") = run {
   buildOpTensor("MaxPoolGradWithArgmax", name) {
     addInput(input, false)
     addInput(grad, false)
@@ -706,35 +706,35 @@ fun TF.maxPoolGradWithArgmax(input: Tensor, grad: Tensor, argmax: Tensor, ksize:
   }
 }
 
-fun TF.relu6Grad(gradients: Tensor, features: Tensor, name: String = "Relu6Grad") = run {
+fun TF.relu6Grad(gradients: Output, features: Output, name: String = "Relu6Grad") = run {
   buildOpTensor("Relu6Grad", name) {
     addInput(gradients, false)
     addInput(features, false)
   }
 }
 
-fun TF.reluGrad(gradients: Tensor, features: Tensor, name: String = "ReluGrad") = run {
+fun TF.reluGrad(gradients: Output, features: Output, name: String = "ReluGrad") = run {
   buildOpTensor("ReluGrad", name) {
     addInput(gradients, false)
     addInput(features, false)
   }
 }
 
-fun TF.seluGrad(gradients: Tensor, outputs: Tensor, name: String = "SeluGrad") = run {
+fun TF.seluGrad(gradients: Output, outputs: Output, name: String = "SeluGrad") = run {
   buildOpTensor("SeluGrad", name) {
     addInput(gradients, false)
     addInput(outputs, false)
   }
 }
 
-fun TF.softplusGrad(gradients: Tensor, features: Tensor, name: String = "SoftplusGrad") = run {
+fun TF.softplusGrad(gradients: Output, features: Output, name: String = "SoftplusGrad") = run {
   buildOpTensor("SoftplusGrad", name) {
     addInput(gradients, false)
     addInput(features, false)
   }
 }
 
-fun TF.softsignGrad(gradients: Tensor, features: Tensor, name: String = "SoftsignGrad") = run {
+fun TF.softsignGrad(gradients: Output, features: Output, name: String = "SoftsignGrad") = run {
   buildOpTensor("SoftsignGrad", name) {
     addInput(gradients, false)
     addInput(features, false)

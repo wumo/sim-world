@@ -4,10 +4,10 @@
 package wumo.sim.algorithm.tensorflow.ops.gen
 
 import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.Tensor
+import wumo.sim.algorithm.tensorflow.ops.Output
 import wumo.sim.algorithm.tensorflow.buildOpTensors
 
-fun TF.eagerPyFunc(input: Tensor, token: String, tout: Array<Long>, name: String = "EagerPyFunc") = run {
+fun TF.eagerPyFunc(input: Output, token: String, tout: Array<Long>, name: String = "EagerPyFunc") = run {
   buildOpTensors("EagerPyFunc", name) {
     addInput(input, false)
     attr("token", token)

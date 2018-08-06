@@ -3,9 +3,7 @@ package wumo.sim.algorithm.drl.deepq
 import okio.BufferedSink
 import okio.BufferedSource
 import wumo.sim.algorithm.tensorflow.*
-import wumo.sim.algorithm.tensorflow.ops.assign
-import wumo.sim.algorithm.tensorflow.ops.const
-import wumo.sim.algorithm.tensorflow.ops.group
+import wumo.sim.algorithm.tensorflow.ops.*
 import wumo.sim.util.buffer
 import wumo.sim.util.ndarray.*
 import wumo.sim.util.sink
@@ -19,7 +17,7 @@ fun BufferedSink.encode(act: ActFunction, prefix: String) {
     for (input in inputs) {
       val name = "$prefix/" + when (input) {
         is TfInput -> input.name
-        is Tensor -> input.name
+        is Output -> input.name
         else -> throw Exception()
       }
       encode(name)
@@ -33,7 +31,7 @@ fun BufferedSink.encode(act: ActFunction, prefix: String) {
     for (input in updates) {
       val name = "$prefix/" + when (input) {
         is Op -> input.name
-        is Tensor -> input.op!!.name
+        is Output -> input.op!!.name
         else -> throw Exception()
       }
       encode(name)

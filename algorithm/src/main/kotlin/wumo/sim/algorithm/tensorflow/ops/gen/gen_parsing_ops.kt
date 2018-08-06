@@ -5,12 +5,12 @@ package wumo.sim.algorithm.tensorflow.ops.gen
 
 import org.bytedeco.javacpp.tensorflow.DT_FLOAT
 import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.Tensor
+import wumo.sim.algorithm.tensorflow.ops.Output
 import wumo.sim.algorithm.tensorflow.buildOpTensor
 import wumo.sim.algorithm.tensorflow.buildOpTensors
 import wumo.sim.util.Dimension
 
-fun TF.decodeCSV(records: Tensor, record_defaults: Tensor, field_delim: String = ",", use_quote_delim: Boolean = true, na_value: String = "", select_cols: Array<Long> = arrayOf(), name: String = "DecodeCSV") = run {
+fun TF.decodeCSV(records: Output, record_defaults: Output, field_delim: String = ",", use_quote_delim: Boolean = true, na_value: String = "", select_cols: Array<Long> = arrayOf(), name: String = "DecodeCSV") = run {
   buildOpTensors("DecodeCSV", name) {
     addInput(records, false)
     addInput(record_defaults, false)
@@ -21,20 +21,20 @@ fun TF.decodeCSV(records: Tensor, record_defaults: Tensor, field_delim: String =
   }
 }
 
-fun TF.decodeCompressed(bytes: Tensor, compression_type: String = "", name: String = "DecodeCompressed") = run {
+fun TF.decodeCompressed(bytes: Output, compression_type: String = "", name: String = "DecodeCompressed") = run {
   buildOpTensor("DecodeCompressed", name) {
     addInput(bytes, false)
     attr("compression_type", compression_type)
   }
 }
 
-fun TF.decodeJSONExample(json_examples: Tensor, name: String = "DecodeJSONExample") = run {
+fun TF.decodeJSONExample(json_examples: Output, name: String = "DecodeJSONExample") = run {
   buildOpTensor("DecodeJSONExample", name) {
     addInput(json_examples, false)
   }
 }
 
-fun TF.decodeRaw(bytes: Tensor, out_type: Int, little_endian: Boolean = true, name: String = "DecodeRaw") = run {
+fun TF.decodeRaw(bytes: Output, out_type: Int, little_endian: Boolean = true, name: String = "DecodeRaw") = run {
   buildOpTensor("DecodeRaw", name) {
     addInput(bytes, false)
     attrType("out_type", out_type)
@@ -42,7 +42,7 @@ fun TF.decodeRaw(bytes: Tensor, out_type: Int, little_endian: Boolean = true, na
   }
 }
 
-fun TF.parseExample(serialized: Tensor, names: Tensor, sparse_keys: Array<Tensor>, dense_keys: Array<Tensor>, dense_defaults: Tensor, sparse_types: Array<Long>, dense_shapes: Array<Dimension>, name: String = "ParseExample") = run {
+fun TF.parseExample(serialized: Output, names: Output, sparse_keys: Array<Output>, dense_keys: Array<Output>, dense_defaults: Output, sparse_types: Array<Long>, dense_shapes: Array<Dimension>, name: String = "ParseExample") = run {
   buildOpTensors("ParseExample", name) {
     addInput(serialized, false)
     addInput(names, false)
@@ -54,7 +54,7 @@ fun TF.parseExample(serialized: Tensor, names: Tensor, sparse_keys: Array<Tensor
   }
 }
 
-fun TF.parseSingleExample(serialized: Tensor, dense_defaults: Tensor, num_sparse: Long, sparse_keys: Array<String>, dense_keys: Array<String>, sparse_types: Array<Long>, dense_shapes: Array<Dimension>, name: String = "ParseSingleExample") = run {
+fun TF.parseSingleExample(serialized: Output, dense_defaults: Output, num_sparse: Long, sparse_keys: Array<String>, dense_keys: Array<String>, sparse_types: Array<Long>, dense_shapes: Array<Dimension>, name: String = "ParseSingleExample") = run {
   buildOpTensors("ParseSingleExample", name) {
     addInput(serialized, false)
     addInput(dense_defaults, false)
@@ -66,7 +66,7 @@ fun TF.parseSingleExample(serialized: Tensor, dense_defaults: Tensor, num_sparse
   }
 }
 
-fun TF.parseSingleSequenceExample(serialized: Tensor, feature_list_dense_missing_assumed_empty: Tensor, context_sparse_keys: Array<Tensor>, context_dense_keys: Array<Tensor>, feature_list_sparse_keys: Array<Tensor>, feature_list_dense_keys: Array<Tensor>, context_dense_defaults: Tensor, debug_name: Tensor, context_sparse_types: Array<Long> = arrayOf(), feature_list_dense_types: Array<Long> = arrayOf(), context_dense_shapes: Array<Dimension> = arrayOf(), feature_list_sparse_types: Array<Long> = arrayOf(), feature_list_dense_shapes: Array<Dimension> = arrayOf(), name: String = "ParseSingleSequenceExample") = run {
+fun TF.parseSingleSequenceExample(serialized: Output, feature_list_dense_missing_assumed_empty: Output, context_sparse_keys: Array<Output>, context_dense_keys: Array<Output>, feature_list_sparse_keys: Array<Output>, feature_list_dense_keys: Array<Output>, context_dense_defaults: Output, debug_name: Output, context_sparse_types: Array<Long> = arrayOf(), feature_list_dense_types: Array<Long> = arrayOf(), context_dense_shapes: Array<Dimension> = arrayOf(), feature_list_sparse_types: Array<Long> = arrayOf(), feature_list_dense_shapes: Array<Dimension> = arrayOf(), name: String = "ParseSingleSequenceExample") = run {
   buildOpTensors("ParseSingleSequenceExample", name) {
     addInput(serialized, false)
     addInput(feature_list_dense_missing_assumed_empty, false)
@@ -84,20 +84,20 @@ fun TF.parseSingleSequenceExample(serialized: Tensor, feature_list_dense_missing
   }
 }
 
-fun TF.parseTensor(serialized: Tensor, out_type: Int, name: String = "ParseTensor") = run {
+fun TF.parseTensor(serialized: Output, out_type: Int, name: String = "ParseTensor") = run {
   buildOpTensor("ParseTensor", name) {
     addInput(serialized, false)
     attrType("out_type", out_type)
   }
 }
 
-fun TF.serializeTensor(tensor: Tensor, name: String = "SerializeTensor") = run {
+fun TF.serializeTensor(tensor: Output, name: String = "SerializeTensor") = run {
   buildOpTensor("SerializeTensor", name) {
     addInput(tensor, false)
   }
 }
 
-fun TF.stringToNumber(string_tensor: Tensor, out_type: Int = DT_FLOAT, name: String = "StringToNumber") = run {
+fun TF.stringToNumber(string_tensor: Output, out_type: Int = DT_FLOAT, name: String = "StringToNumber") = run {
   buildOpTensor("StringToNumber", name) {
     addInput(string_tensor, false)
     attrType("out_type", out_type)

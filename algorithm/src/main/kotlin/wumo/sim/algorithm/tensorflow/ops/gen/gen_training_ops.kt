@@ -4,11 +4,11 @@
 package wumo.sim.algorithm.tensorflow.ops.gen
 
 import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.Tensor
+import wumo.sim.algorithm.tensorflow.ops.Output
 import wumo.sim.algorithm.tensorflow.buildOp
 import wumo.sim.algorithm.tensorflow.buildOpTensor
 
-fun TF.applyAdadelta(_var: Tensor, accum: Tensor, accum_update: Tensor, lr: Tensor, rho: Tensor, epsilon: Tensor, grad: Tensor, use_locking: Boolean = false, name: String = "ApplyAdadelta") = run {
+fun TF.applyAdadelta(_var: Output, accum: Output, accum_update: Output, lr: Output, rho: Output, epsilon: Output, grad: Output, use_locking: Boolean = false, name: String = "ApplyAdadelta") = run {
   buildOpTensor("ApplyAdadelta", name) {
     addInput(_var, true)
     addInput(accum, true)
@@ -21,7 +21,7 @@ fun TF.applyAdadelta(_var: Tensor, accum: Tensor, accum_update: Tensor, lr: Tens
   }
 }
 
-fun TF.applyAdagrad(_var: Tensor, accum: Tensor, lr: Tensor, grad: Tensor, use_locking: Boolean = false, update_slots: Boolean = true, name: String = "ApplyAdagrad") = run {
+fun TF.applyAdagrad(_var: Output, accum: Output, lr: Output, grad: Output, use_locking: Boolean = false, update_slots: Boolean = true, name: String = "ApplyAdagrad") = run {
   buildOpTensor("ApplyAdagrad", name) {
     addInput(_var, true)
     addInput(accum, true)
@@ -32,7 +32,7 @@ fun TF.applyAdagrad(_var: Tensor, accum: Tensor, lr: Tensor, grad: Tensor, use_l
   }
 }
 
-fun TF.applyAdagradDA(_var: Tensor, gradient_accumulator: Tensor, gradient_squared_accumulator: Tensor, grad: Tensor, lr: Tensor, l1: Tensor, l2: Tensor, global_step: Tensor, use_locking: Boolean = false, name: String = "ApplyAdagradDA") = run {
+fun TF.applyAdagradDA(_var: Output, gradient_accumulator: Output, gradient_squared_accumulator: Output, grad: Output, lr: Output, l1: Output, l2: Output, global_step: Output, use_locking: Boolean = false, name: String = "ApplyAdagradDA") = run {
   buildOpTensor("ApplyAdagradDA", name) {
     addInput(_var, true)
     addInput(gradient_accumulator, true)
@@ -46,7 +46,7 @@ fun TF.applyAdagradDA(_var: Tensor, gradient_accumulator: Tensor, gradient_squar
   }
 }
 
-fun TF.applyAdam(_var: Tensor, m: Tensor, v: Tensor, beta1_power: Tensor, beta2_power: Tensor, lr: Tensor, beta1: Tensor, beta2: Tensor, epsilon: Tensor, grad: Tensor, use_locking: Boolean = false, use_nesterov: Boolean = false, name: String = "ApplyAdam") = run {
+fun TF.applyAdam(_var: Output, m: Output, v: Output, beta1_power: Output, beta2_power: Output, lr: Output, beta1: Output, beta2: Output, epsilon: Output, grad: Output, use_locking: Boolean = false, use_nesterov: Boolean = false, name: String = "ApplyAdam") = run {
   buildOpTensor("ApplyAdam", name) {
     addInput(_var, true)
     addInput(m, true)
@@ -63,7 +63,7 @@ fun TF.applyAdam(_var: Tensor, m: Tensor, v: Tensor, beta1_power: Tensor, beta2_
   }
 }
 
-fun TF.applyAddSign(_var: Tensor, m: Tensor, lr: Tensor, alpha: Tensor, sign_decay: Tensor, beta: Tensor, grad: Tensor, use_locking: Boolean = false, name: String = "ApplyAddSign") = run {
+fun TF.applyAddSign(_var: Output, m: Output, lr: Output, alpha: Output, sign_decay: Output, beta: Output, grad: Output, use_locking: Boolean = false, name: String = "ApplyAddSign") = run {
   buildOpTensor("ApplyAddSign", name) {
     addInput(_var, true)
     addInput(m, true)
@@ -76,7 +76,7 @@ fun TF.applyAddSign(_var: Tensor, m: Tensor, lr: Tensor, alpha: Tensor, sign_dec
   }
 }
 
-fun TF.applyCenteredRMSProp(_var: Tensor, mg: Tensor, ms: Tensor, mom: Tensor, lr: Tensor, rho: Tensor, momentum: Tensor, epsilon: Tensor, grad: Tensor, use_locking: Boolean = false, name: String = "ApplyCenteredRMSProp") = run {
+fun TF.applyCenteredRMSProp(_var: Output, mg: Output, ms: Output, mom: Output, lr: Output, rho: Output, momentum: Output, epsilon: Output, grad: Output, use_locking: Boolean = false, name: String = "ApplyCenteredRMSProp") = run {
   buildOpTensor("ApplyCenteredRMSProp", name) {
     addInput(_var, true)
     addInput(mg, true)
@@ -91,7 +91,7 @@ fun TF.applyCenteredRMSProp(_var: Tensor, mg: Tensor, ms: Tensor, mom: Tensor, l
   }
 }
 
-fun TF.applyFtrl(_var: Tensor, accum: Tensor, linear: Tensor, grad: Tensor, lr: Tensor, l1: Tensor, l2: Tensor, lr_power: Tensor, use_locking: Boolean = false, name: String = "ApplyFtrl") = run {
+fun TF.applyFtrl(_var: Output, accum: Output, linear: Output, grad: Output, lr: Output, l1: Output, l2: Output, lr_power: Output, use_locking: Boolean = false, name: String = "ApplyFtrl") = run {
   buildOpTensor("ApplyFtrl", name) {
     addInput(_var, true)
     addInput(accum, true)
@@ -105,7 +105,7 @@ fun TF.applyFtrl(_var: Tensor, accum: Tensor, linear: Tensor, grad: Tensor, lr: 
   }
 }
 
-fun TF.applyFtrlV2(_var: Tensor, accum: Tensor, linear: Tensor, grad: Tensor, lr: Tensor, l1: Tensor, l2: Tensor, l2_shrinkage: Tensor, lr_power: Tensor, use_locking: Boolean = false, name: String = "ApplyFtrlV2") = run {
+fun TF.applyFtrlV2(_var: Output, accum: Output, linear: Output, grad: Output, lr: Output, l1: Output, l2: Output, l2_shrinkage: Output, lr_power: Output, use_locking: Boolean = false, name: String = "ApplyFtrlV2") = run {
   buildOpTensor("ApplyFtrlV2", name) {
     addInput(_var, true)
     addInput(accum, true)
@@ -120,7 +120,7 @@ fun TF.applyFtrlV2(_var: Tensor, accum: Tensor, linear: Tensor, grad: Tensor, lr
   }
 }
 
-fun TF.applyGradientDescent(_var: Tensor, alpha: Tensor, delta: Tensor, use_locking: Boolean = false, name: String = "ApplyGradientDescent") = run {
+fun TF.applyGradientDescent(_var: Output, alpha: Output, delta: Output, use_locking: Boolean = false, name: String = "ApplyGradientDescent") = run {
   buildOpTensor("ApplyGradientDescent", name) {
     addInput(_var, true)
     addInput(alpha, false)
@@ -129,7 +129,7 @@ fun TF.applyGradientDescent(_var: Tensor, alpha: Tensor, delta: Tensor, use_lock
   }
 }
 
-fun TF.applyMomentum(_var: Tensor, accum: Tensor, lr: Tensor, grad: Tensor, momentum: Tensor, use_locking: Boolean = false, use_nesterov: Boolean = false, name: String = "ApplyMomentum") = run {
+fun TF.applyMomentum(_var: Output, accum: Output, lr: Output, grad: Output, momentum: Output, use_locking: Boolean = false, use_nesterov: Boolean = false, name: String = "ApplyMomentum") = run {
   buildOpTensor("ApplyMomentum", name) {
     addInput(_var, true)
     addInput(accum, true)
@@ -141,7 +141,7 @@ fun TF.applyMomentum(_var: Tensor, accum: Tensor, lr: Tensor, grad: Tensor, mome
   }
 }
 
-fun TF.applyPowerSign(_var: Tensor, m: Tensor, lr: Tensor, logbase: Tensor, sign_decay: Tensor, beta: Tensor, grad: Tensor, use_locking: Boolean = false, name: String = "ApplyPowerSign") = run {
+fun TF.applyPowerSign(_var: Output, m: Output, lr: Output, logbase: Output, sign_decay: Output, beta: Output, grad: Output, use_locking: Boolean = false, name: String = "ApplyPowerSign") = run {
   buildOpTensor("ApplyPowerSign", name) {
     addInput(_var, true)
     addInput(m, true)
@@ -154,7 +154,7 @@ fun TF.applyPowerSign(_var: Tensor, m: Tensor, lr: Tensor, logbase: Tensor, sign
   }
 }
 
-fun TF.applyProximalAdagrad(_var: Tensor, accum: Tensor, lr: Tensor, l1: Tensor, l2: Tensor, grad: Tensor, use_locking: Boolean = false, name: String = "ApplyProximalAdagrad") = run {
+fun TF.applyProximalAdagrad(_var: Output, accum: Output, lr: Output, l1: Output, l2: Output, grad: Output, use_locking: Boolean = false, name: String = "ApplyProximalAdagrad") = run {
   buildOpTensor("ApplyProximalAdagrad", name) {
     addInput(_var, true)
     addInput(accum, true)
@@ -166,7 +166,7 @@ fun TF.applyProximalAdagrad(_var: Tensor, accum: Tensor, lr: Tensor, l1: Tensor,
   }
 }
 
-fun TF.applyProximalGradientDescent(_var: Tensor, alpha: Tensor, l1: Tensor, l2: Tensor, delta: Tensor, use_locking: Boolean = false, name: String = "ApplyProximalGradientDescent") = run {
+fun TF.applyProximalGradientDescent(_var: Output, alpha: Output, l1: Output, l2: Output, delta: Output, use_locking: Boolean = false, name: String = "ApplyProximalGradientDescent") = run {
   buildOpTensor("ApplyProximalGradientDescent", name) {
     addInput(_var, true)
     addInput(alpha, false)
@@ -177,7 +177,7 @@ fun TF.applyProximalGradientDescent(_var: Tensor, alpha: Tensor, l1: Tensor, l2:
   }
 }
 
-fun TF.applyRMSProp(_var: Tensor, ms: Tensor, mom: Tensor, lr: Tensor, rho: Tensor, momentum: Tensor, epsilon: Tensor, grad: Tensor, use_locking: Boolean = false, name: String = "ApplyRMSProp") = run {
+fun TF.applyRMSProp(_var: Output, ms: Output, mom: Output, lr: Output, rho: Output, momentum: Output, epsilon: Output, grad: Output, use_locking: Boolean = false, name: String = "ApplyRMSProp") = run {
   buildOpTensor("ApplyRMSProp", name) {
     addInput(_var, true)
     addInput(ms, true)
@@ -191,7 +191,7 @@ fun TF.applyRMSProp(_var: Tensor, ms: Tensor, mom: Tensor, lr: Tensor, rho: Tens
   }
 }
 
-fun TF.resourceApplyAdadelta(_var: Tensor, accum: Tensor, accum_update: Tensor, lr: Tensor, rho: Tensor, epsilon: Tensor, grad: Tensor, use_locking: Boolean = false, name: String = "ResourceApplyAdadelta") = run {
+fun TF.resourceApplyAdadelta(_var: Output, accum: Output, accum_update: Output, lr: Output, rho: Output, epsilon: Output, grad: Output, use_locking: Boolean = false, name: String = "ResourceApplyAdadelta") = run {
   buildOp("ResourceApplyAdadelta", name) {
     addInput(_var, false)
     addInput(accum, false)
@@ -204,7 +204,7 @@ fun TF.resourceApplyAdadelta(_var: Tensor, accum: Tensor, accum_update: Tensor, 
   }
 }
 
-fun TF.resourceApplyAdagrad(_var: Tensor, accum: Tensor, lr: Tensor, grad: Tensor, use_locking: Boolean = false, update_slots: Boolean = true, name: String = "ResourceApplyAdagrad") = run {
+fun TF.resourceApplyAdagrad(_var: Output, accum: Output, lr: Output, grad: Output, use_locking: Boolean = false, update_slots: Boolean = true, name: String = "ResourceApplyAdagrad") = run {
   buildOp("ResourceApplyAdagrad", name) {
     addInput(_var, false)
     addInput(accum, false)
@@ -215,7 +215,7 @@ fun TF.resourceApplyAdagrad(_var: Tensor, accum: Tensor, lr: Tensor, grad: Tenso
   }
 }
 
-fun TF.resourceApplyAdagradDA(_var: Tensor, gradient_accumulator: Tensor, gradient_squared_accumulator: Tensor, grad: Tensor, lr: Tensor, l1: Tensor, l2: Tensor, global_step: Tensor, use_locking: Boolean = false, name: String = "ResourceApplyAdagradDA") = run {
+fun TF.resourceApplyAdagradDA(_var: Output, gradient_accumulator: Output, gradient_squared_accumulator: Output, grad: Output, lr: Output, l1: Output, l2: Output, global_step: Output, use_locking: Boolean = false, name: String = "ResourceApplyAdagradDA") = run {
   buildOp("ResourceApplyAdagradDA", name) {
     addInput(_var, false)
     addInput(gradient_accumulator, false)
@@ -229,7 +229,7 @@ fun TF.resourceApplyAdagradDA(_var: Tensor, gradient_accumulator: Tensor, gradie
   }
 }
 
-fun TF.resourceApplyAdam(_var: Tensor, m: Tensor, v: Tensor, beta1_power: Tensor, beta2_power: Tensor, lr: Tensor, beta1: Tensor, beta2: Tensor, epsilon: Tensor, grad: Tensor, use_locking: Boolean = false, use_nesterov: Boolean = false, name: String = "ResourceApplyAdam") = run {
+fun TF.resourceApplyAdam(_var: Output, m: Output, v: Output, beta1_power: Output, beta2_power: Output, lr: Output, beta1: Output, beta2: Output, epsilon: Output, grad: Output, use_locking: Boolean = false, use_nesterov: Boolean = false, name: String = "ResourceApplyAdam") = run {
   buildOp("ResourceApplyAdam", name) {
     addInput(_var, false)
     addInput(m, false)
@@ -246,7 +246,7 @@ fun TF.resourceApplyAdam(_var: Tensor, m: Tensor, v: Tensor, beta1_power: Tensor
   }
 }
 
-fun TF.resourceApplyAddSign(_var: Tensor, m: Tensor, lr: Tensor, alpha: Tensor, sign_decay: Tensor, beta: Tensor, grad: Tensor, use_locking: Boolean = false, name: String = "ResourceApplyAddSign") = run {
+fun TF.resourceApplyAddSign(_var: Output, m: Output, lr: Output, alpha: Output, sign_decay: Output, beta: Output, grad: Output, use_locking: Boolean = false, name: String = "ResourceApplyAddSign") = run {
   buildOp("ResourceApplyAddSign", name) {
     addInput(_var, false)
     addInput(m, false)
@@ -259,7 +259,7 @@ fun TF.resourceApplyAddSign(_var: Tensor, m: Tensor, lr: Tensor, alpha: Tensor, 
   }
 }
 
-fun TF.resourceApplyCenteredRMSProp(_var: Tensor, mg: Tensor, ms: Tensor, mom: Tensor, lr: Tensor, rho: Tensor, momentum: Tensor, epsilon: Tensor, grad: Tensor, use_locking: Boolean = false, name: String = "ResourceApplyCenteredRMSProp") = run {
+fun TF.resourceApplyCenteredRMSProp(_var: Output, mg: Output, ms: Output, mom: Output, lr: Output, rho: Output, momentum: Output, epsilon: Output, grad: Output, use_locking: Boolean = false, name: String = "ResourceApplyCenteredRMSProp") = run {
   buildOp("ResourceApplyCenteredRMSProp", name) {
     addInput(_var, false)
     addInput(mg, false)
@@ -274,7 +274,7 @@ fun TF.resourceApplyCenteredRMSProp(_var: Tensor, mg: Tensor, ms: Tensor, mom: T
   }
 }
 
-fun TF.resourceApplyFtrl(_var: Tensor, accum: Tensor, linear: Tensor, grad: Tensor, lr: Tensor, l1: Tensor, l2: Tensor, lr_power: Tensor, use_locking: Boolean = false, name: String = "ResourceApplyFtrl") = run {
+fun TF.resourceApplyFtrl(_var: Output, accum: Output, linear: Output, grad: Output, lr: Output, l1: Output, l2: Output, lr_power: Output, use_locking: Boolean = false, name: String = "ResourceApplyFtrl") = run {
   buildOp("ResourceApplyFtrl", name) {
     addInput(_var, false)
     addInput(accum, false)
@@ -288,7 +288,7 @@ fun TF.resourceApplyFtrl(_var: Tensor, accum: Tensor, linear: Tensor, grad: Tens
   }
 }
 
-fun TF.resourceApplyFtrlV2(_var: Tensor, accum: Tensor, linear: Tensor, grad: Tensor, lr: Tensor, l1: Tensor, l2: Tensor, l2_shrinkage: Tensor, lr_power: Tensor, use_locking: Boolean = false, name: String = "ResourceApplyFtrlV2") = run {
+fun TF.resourceApplyFtrlV2(_var: Output, accum: Output, linear: Output, grad: Output, lr: Output, l1: Output, l2: Output, l2_shrinkage: Output, lr_power: Output, use_locking: Boolean = false, name: String = "ResourceApplyFtrlV2") = run {
   buildOp("ResourceApplyFtrlV2", name) {
     addInput(_var, false)
     addInput(accum, false)
@@ -303,7 +303,7 @@ fun TF.resourceApplyFtrlV2(_var: Tensor, accum: Tensor, linear: Tensor, grad: Te
   }
 }
 
-fun TF.resourceApplyGradientDescent(_var: Tensor, alpha: Tensor, delta: Tensor, use_locking: Boolean = false, name: String = "ResourceApplyGradientDescent") = run {
+fun TF.resourceApplyGradientDescent(_var: Output, alpha: Output, delta: Output, use_locking: Boolean = false, name: String = "ResourceApplyGradientDescent") = run {
   buildOp("ResourceApplyGradientDescent", name) {
     addInput(_var, false)
     addInput(alpha, false)
@@ -312,7 +312,7 @@ fun TF.resourceApplyGradientDescent(_var: Tensor, alpha: Tensor, delta: Tensor, 
   }
 }
 
-fun TF.resourceApplyMomentum(_var: Tensor, accum: Tensor, lr: Tensor, grad: Tensor, momentum: Tensor, use_locking: Boolean = false, use_nesterov: Boolean = false, name: String = "ResourceApplyMomentum") = run {
+fun TF.resourceApplyMomentum(_var: Output, accum: Output, lr: Output, grad: Output, momentum: Output, use_locking: Boolean = false, use_nesterov: Boolean = false, name: String = "ResourceApplyMomentum") = run {
   buildOp("ResourceApplyMomentum", name) {
     addInput(_var, false)
     addInput(accum, false)
@@ -324,7 +324,7 @@ fun TF.resourceApplyMomentum(_var: Tensor, accum: Tensor, lr: Tensor, grad: Tens
   }
 }
 
-fun TF.resourceApplyPowerSign(_var: Tensor, m: Tensor, lr: Tensor, logbase: Tensor, sign_decay: Tensor, beta: Tensor, grad: Tensor, use_locking: Boolean = false, name: String = "ResourceApplyPowerSign") = run {
+fun TF.resourceApplyPowerSign(_var: Output, m: Output, lr: Output, logbase: Output, sign_decay: Output, beta: Output, grad: Output, use_locking: Boolean = false, name: String = "ResourceApplyPowerSign") = run {
   buildOp("ResourceApplyPowerSign", name) {
     addInput(_var, false)
     addInput(m, false)
@@ -337,7 +337,7 @@ fun TF.resourceApplyPowerSign(_var: Tensor, m: Tensor, lr: Tensor, logbase: Tens
   }
 }
 
-fun TF.resourceApplyProximalAdagrad(_var: Tensor, accum: Tensor, lr: Tensor, l1: Tensor, l2: Tensor, grad: Tensor, use_locking: Boolean = false, name: String = "ResourceApplyProximalAdagrad") = run {
+fun TF.resourceApplyProximalAdagrad(_var: Output, accum: Output, lr: Output, l1: Output, l2: Output, grad: Output, use_locking: Boolean = false, name: String = "ResourceApplyProximalAdagrad") = run {
   buildOp("ResourceApplyProximalAdagrad", name) {
     addInput(_var, false)
     addInput(accum, false)
@@ -349,7 +349,7 @@ fun TF.resourceApplyProximalAdagrad(_var: Tensor, accum: Tensor, lr: Tensor, l1:
   }
 }
 
-fun TF.resourceApplyProximalGradientDescent(_var: Tensor, alpha: Tensor, l1: Tensor, l2: Tensor, delta: Tensor, use_locking: Boolean = false, name: String = "ResourceApplyProximalGradientDescent") = run {
+fun TF.resourceApplyProximalGradientDescent(_var: Output, alpha: Output, l1: Output, l2: Output, delta: Output, use_locking: Boolean = false, name: String = "ResourceApplyProximalGradientDescent") = run {
   buildOp("ResourceApplyProximalGradientDescent", name) {
     addInput(_var, false)
     addInput(alpha, false)
@@ -360,7 +360,7 @@ fun TF.resourceApplyProximalGradientDescent(_var: Tensor, alpha: Tensor, l1: Ten
   }
 }
 
-fun TF.resourceApplyRMSProp(_var: Tensor, ms: Tensor, mom: Tensor, lr: Tensor, rho: Tensor, momentum: Tensor, epsilon: Tensor, grad: Tensor, use_locking: Boolean = false, name: String = "ResourceApplyRMSProp") = run {
+fun TF.resourceApplyRMSProp(_var: Output, ms: Output, mom: Output, lr: Output, rho: Output, momentum: Output, epsilon: Output, grad: Output, use_locking: Boolean = false, name: String = "ResourceApplyRMSProp") = run {
   buildOp("ResourceApplyRMSProp", name) {
     addInput(_var, false)
     addInput(ms, false)
@@ -374,7 +374,7 @@ fun TF.resourceApplyRMSProp(_var: Tensor, ms: Tensor, mom: Tensor, lr: Tensor, r
   }
 }
 
-fun TF.resourceSparseApplyAdadelta(_var: Tensor, accum: Tensor, accum_update: Tensor, lr: Tensor, rho: Tensor, epsilon: Tensor, grad: Tensor, indices: Tensor, use_locking: Boolean = false, name: String = "ResourceSparseApplyAdadelta") = run {
+fun TF.resourceSparseApplyAdadelta(_var: Output, accum: Output, accum_update: Output, lr: Output, rho: Output, epsilon: Output, grad: Output, indices: Output, use_locking: Boolean = false, name: String = "ResourceSparseApplyAdadelta") = run {
   buildOp("ResourceSparseApplyAdadelta", name) {
     addInput(_var, false)
     addInput(accum, false)
@@ -388,7 +388,7 @@ fun TF.resourceSparseApplyAdadelta(_var: Tensor, accum: Tensor, accum_update: Te
   }
 }
 
-fun TF.resourceSparseApplyAdagrad(_var: Tensor, accum: Tensor, lr: Tensor, grad: Tensor, indices: Tensor, use_locking: Boolean = false, update_slots: Boolean = true, name: String = "ResourceSparseApplyAdagrad") = run {
+fun TF.resourceSparseApplyAdagrad(_var: Output, accum: Output, lr: Output, grad: Output, indices: Output, use_locking: Boolean = false, update_slots: Boolean = true, name: String = "ResourceSparseApplyAdagrad") = run {
   buildOp("ResourceSparseApplyAdagrad", name) {
     addInput(_var, false)
     addInput(accum, false)
@@ -400,7 +400,7 @@ fun TF.resourceSparseApplyAdagrad(_var: Tensor, accum: Tensor, lr: Tensor, grad:
   }
 }
 
-fun TF.resourceSparseApplyAdagradDA(_var: Tensor, gradient_accumulator: Tensor, gradient_squared_accumulator: Tensor, grad: Tensor, indices: Tensor, lr: Tensor, l1: Tensor, l2: Tensor, global_step: Tensor, use_locking: Boolean = false, name: String = "ResourceSparseApplyAdagradDA") = run {
+fun TF.resourceSparseApplyAdagradDA(_var: Output, gradient_accumulator: Output, gradient_squared_accumulator: Output, grad: Output, indices: Output, lr: Output, l1: Output, l2: Output, global_step: Output, use_locking: Boolean = false, name: String = "ResourceSparseApplyAdagradDA") = run {
   buildOp("ResourceSparseApplyAdagradDA", name) {
     addInput(_var, false)
     addInput(gradient_accumulator, false)
@@ -415,7 +415,7 @@ fun TF.resourceSparseApplyAdagradDA(_var: Tensor, gradient_accumulator: Tensor, 
   }
 }
 
-fun TF.resourceSparseApplyCenteredRMSProp(_var: Tensor, mg: Tensor, ms: Tensor, mom: Tensor, lr: Tensor, rho: Tensor, momentum: Tensor, epsilon: Tensor, grad: Tensor, indices: Tensor, use_locking: Boolean = false, name: String = "ResourceSparseApplyCenteredRMSProp") = run {
+fun TF.resourceSparseApplyCenteredRMSProp(_var: Output, mg: Output, ms: Output, mom: Output, lr: Output, rho: Output, momentum: Output, epsilon: Output, grad: Output, indices: Output, use_locking: Boolean = false, name: String = "ResourceSparseApplyCenteredRMSProp") = run {
   buildOp("ResourceSparseApplyCenteredRMSProp", name) {
     addInput(_var, false)
     addInput(mg, false)
@@ -431,7 +431,7 @@ fun TF.resourceSparseApplyCenteredRMSProp(_var: Tensor, mg: Tensor, ms: Tensor, 
   }
 }
 
-fun TF.resourceSparseApplyFtrl(_var: Tensor, accum: Tensor, linear: Tensor, grad: Tensor, indices: Tensor, lr: Tensor, l1: Tensor, l2: Tensor, lr_power: Tensor, use_locking: Boolean = false, name: String = "ResourceSparseApplyFtrl") = run {
+fun TF.resourceSparseApplyFtrl(_var: Output, accum: Output, linear: Output, grad: Output, indices: Output, lr: Output, l1: Output, l2: Output, lr_power: Output, use_locking: Boolean = false, name: String = "ResourceSparseApplyFtrl") = run {
   buildOp("ResourceSparseApplyFtrl", name) {
     addInput(_var, false)
     addInput(accum, false)
@@ -446,7 +446,7 @@ fun TF.resourceSparseApplyFtrl(_var: Tensor, accum: Tensor, linear: Tensor, grad
   }
 }
 
-fun TF.resourceSparseApplyFtrlV2(_var: Tensor, accum: Tensor, linear: Tensor, grad: Tensor, indices: Tensor, lr: Tensor, l1: Tensor, l2: Tensor, l2_shrinkage: Tensor, lr_power: Tensor, use_locking: Boolean = false, name: String = "ResourceSparseApplyFtrlV2") = run {
+fun TF.resourceSparseApplyFtrlV2(_var: Output, accum: Output, linear: Output, grad: Output, indices: Output, lr: Output, l1: Output, l2: Output, l2_shrinkage: Output, lr_power: Output, use_locking: Boolean = false, name: String = "ResourceSparseApplyFtrlV2") = run {
   buildOp("ResourceSparseApplyFtrlV2", name) {
     addInput(_var, false)
     addInput(accum, false)
@@ -462,7 +462,7 @@ fun TF.resourceSparseApplyFtrlV2(_var: Tensor, accum: Tensor, linear: Tensor, gr
   }
 }
 
-fun TF.resourceSparseApplyMomentum(_var: Tensor, accum: Tensor, lr: Tensor, grad: Tensor, indices: Tensor, momentum: Tensor, use_locking: Boolean = false, use_nesterov: Boolean = false, name: String = "ResourceSparseApplyMomentum") = run {
+fun TF.resourceSparseApplyMomentum(_var: Output, accum: Output, lr: Output, grad: Output, indices: Output, momentum: Output, use_locking: Boolean = false, use_nesterov: Boolean = false, name: String = "ResourceSparseApplyMomentum") = run {
   buildOp("ResourceSparseApplyMomentum", name) {
     addInput(_var, false)
     addInput(accum, false)
@@ -475,7 +475,7 @@ fun TF.resourceSparseApplyMomentum(_var: Tensor, accum: Tensor, lr: Tensor, grad
   }
 }
 
-fun TF.resourceSparseApplyProximalAdagrad(_var: Tensor, accum: Tensor, lr: Tensor, l1: Tensor, l2: Tensor, grad: Tensor, indices: Tensor, use_locking: Boolean = false, name: String = "ResourceSparseApplyProximalAdagrad") = run {
+fun TF.resourceSparseApplyProximalAdagrad(_var: Output, accum: Output, lr: Output, l1: Output, l2: Output, grad: Output, indices: Output, use_locking: Boolean = false, name: String = "ResourceSparseApplyProximalAdagrad") = run {
   buildOp("ResourceSparseApplyProximalAdagrad", name) {
     addInput(_var, false)
     addInput(accum, false)
@@ -488,7 +488,7 @@ fun TF.resourceSparseApplyProximalAdagrad(_var: Tensor, accum: Tensor, lr: Tenso
   }
 }
 
-fun TF.resourceSparseApplyProximalGradientDescent(_var: Tensor, alpha: Tensor, l1: Tensor, l2: Tensor, grad: Tensor, indices: Tensor, use_locking: Boolean = false, name: String = "ResourceSparseApplyProximalGradientDescent") = run {
+fun TF.resourceSparseApplyProximalGradientDescent(_var: Output, alpha: Output, l1: Output, l2: Output, grad: Output, indices: Output, use_locking: Boolean = false, name: String = "ResourceSparseApplyProximalGradientDescent") = run {
   buildOp("ResourceSparseApplyProximalGradientDescent", name) {
     addInput(_var, false)
     addInput(alpha, false)
@@ -500,7 +500,7 @@ fun TF.resourceSparseApplyProximalGradientDescent(_var: Tensor, alpha: Tensor, l
   }
 }
 
-fun TF.resourceSparseApplyRMSProp(_var: Tensor, ms: Tensor, mom: Tensor, lr: Tensor, rho: Tensor, momentum: Tensor, epsilon: Tensor, grad: Tensor, indices: Tensor, use_locking: Boolean = false, name: String = "ResourceSparseApplyRMSProp") = run {
+fun TF.resourceSparseApplyRMSProp(_var: Output, ms: Output, mom: Output, lr: Output, rho: Output, momentum: Output, epsilon: Output, grad: Output, indices: Output, use_locking: Boolean = false, name: String = "ResourceSparseApplyRMSProp") = run {
   buildOp("ResourceSparseApplyRMSProp", name) {
     addInput(_var, false)
     addInput(ms, false)
@@ -515,7 +515,7 @@ fun TF.resourceSparseApplyRMSProp(_var: Tensor, ms: Tensor, mom: Tensor, lr: Ten
   }
 }
 
-fun TF.sparseApplyAdadelta(_var: Tensor, accum: Tensor, accum_update: Tensor, lr: Tensor, rho: Tensor, epsilon: Tensor, grad: Tensor, indices: Tensor, use_locking: Boolean = false, name: String = "SparseApplyAdadelta") = run {
+fun TF.sparseApplyAdadelta(_var: Output, accum: Output, accum_update: Output, lr: Output, rho: Output, epsilon: Output, grad: Output, indices: Output, use_locking: Boolean = false, name: String = "SparseApplyAdadelta") = run {
   buildOpTensor("SparseApplyAdadelta", name) {
     addInput(_var, true)
     addInput(accum, true)
@@ -529,7 +529,7 @@ fun TF.sparseApplyAdadelta(_var: Tensor, accum: Tensor, accum_update: Tensor, lr
   }
 }
 
-fun TF.sparseApplyAdagrad(_var: Tensor, accum: Tensor, lr: Tensor, grad: Tensor, indices: Tensor, use_locking: Boolean = false, update_slots: Boolean = true, name: String = "SparseApplyAdagrad") = run {
+fun TF.sparseApplyAdagrad(_var: Output, accum: Output, lr: Output, grad: Output, indices: Output, use_locking: Boolean = false, update_slots: Boolean = true, name: String = "SparseApplyAdagrad") = run {
   buildOpTensor("SparseApplyAdagrad", name) {
     addInput(_var, true)
     addInput(accum, true)
@@ -541,7 +541,7 @@ fun TF.sparseApplyAdagrad(_var: Tensor, accum: Tensor, lr: Tensor, grad: Tensor,
   }
 }
 
-fun TF.sparseApplyAdagradDA(_var: Tensor, gradient_accumulator: Tensor, gradient_squared_accumulator: Tensor, grad: Tensor, indices: Tensor, lr: Tensor, l1: Tensor, l2: Tensor, global_step: Tensor, use_locking: Boolean = false, name: String = "SparseApplyAdagradDA") = run {
+fun TF.sparseApplyAdagradDA(_var: Output, gradient_accumulator: Output, gradient_squared_accumulator: Output, grad: Output, indices: Output, lr: Output, l1: Output, l2: Output, global_step: Output, use_locking: Boolean = false, name: String = "SparseApplyAdagradDA") = run {
   buildOpTensor("SparseApplyAdagradDA", name) {
     addInput(_var, true)
     addInput(gradient_accumulator, true)
@@ -556,7 +556,7 @@ fun TF.sparseApplyAdagradDA(_var: Tensor, gradient_accumulator: Tensor, gradient
   }
 }
 
-fun TF.sparseApplyCenteredRMSProp(_var: Tensor, mg: Tensor, ms: Tensor, mom: Tensor, lr: Tensor, rho: Tensor, momentum: Tensor, epsilon: Tensor, grad: Tensor, indices: Tensor, use_locking: Boolean = false, name: String = "SparseApplyCenteredRMSProp") = run {
+fun TF.sparseApplyCenteredRMSProp(_var: Output, mg: Output, ms: Output, mom: Output, lr: Output, rho: Output, momentum: Output, epsilon: Output, grad: Output, indices: Output, use_locking: Boolean = false, name: String = "SparseApplyCenteredRMSProp") = run {
   buildOpTensor("SparseApplyCenteredRMSProp", name) {
     addInput(_var, true)
     addInput(mg, true)
@@ -572,7 +572,7 @@ fun TF.sparseApplyCenteredRMSProp(_var: Tensor, mg: Tensor, ms: Tensor, mom: Ten
   }
 }
 
-fun TF.sparseApplyFtrl(_var: Tensor, accum: Tensor, linear: Tensor, grad: Tensor, indices: Tensor, lr: Tensor, l1: Tensor, l2: Tensor, lr_power: Tensor, use_locking: Boolean = false, name: String = "SparseApplyFtrl") = run {
+fun TF.sparseApplyFtrl(_var: Output, accum: Output, linear: Output, grad: Output, indices: Output, lr: Output, l1: Output, l2: Output, lr_power: Output, use_locking: Boolean = false, name: String = "SparseApplyFtrl") = run {
   buildOpTensor("SparseApplyFtrl", name) {
     addInput(_var, true)
     addInput(accum, true)
@@ -587,7 +587,7 @@ fun TF.sparseApplyFtrl(_var: Tensor, accum: Tensor, linear: Tensor, grad: Tensor
   }
 }
 
-fun TF.sparseApplyFtrlV2(_var: Tensor, accum: Tensor, linear: Tensor, grad: Tensor, indices: Tensor, lr: Tensor, l1: Tensor, l2: Tensor, l2_shrinkage: Tensor, lr_power: Tensor, use_locking: Boolean = false, name: String = "SparseApplyFtrlV2") = run {
+fun TF.sparseApplyFtrlV2(_var: Output, accum: Output, linear: Output, grad: Output, indices: Output, lr: Output, l1: Output, l2: Output, l2_shrinkage: Output, lr_power: Output, use_locking: Boolean = false, name: String = "SparseApplyFtrlV2") = run {
   buildOpTensor("SparseApplyFtrlV2", name) {
     addInput(_var, true)
     addInput(accum, true)
@@ -603,7 +603,7 @@ fun TF.sparseApplyFtrlV2(_var: Tensor, accum: Tensor, linear: Tensor, grad: Tens
   }
 }
 
-fun TF.sparseApplyMomentum(_var: Tensor, accum: Tensor, lr: Tensor, grad: Tensor, indices: Tensor, momentum: Tensor, use_locking: Boolean = false, use_nesterov: Boolean = false, name: String = "SparseApplyMomentum") = run {
+fun TF.sparseApplyMomentum(_var: Output, accum: Output, lr: Output, grad: Output, indices: Output, momentum: Output, use_locking: Boolean = false, use_nesterov: Boolean = false, name: String = "SparseApplyMomentum") = run {
   buildOpTensor("SparseApplyMomentum", name) {
     addInput(_var, true)
     addInput(accum, true)
@@ -616,7 +616,7 @@ fun TF.sparseApplyMomentum(_var: Tensor, accum: Tensor, lr: Tensor, grad: Tensor
   }
 }
 
-fun TF.sparseApplyProximalAdagrad(_var: Tensor, accum: Tensor, lr: Tensor, l1: Tensor, l2: Tensor, grad: Tensor, indices: Tensor, use_locking: Boolean = false, name: String = "SparseApplyProximalAdagrad") = run {
+fun TF.sparseApplyProximalAdagrad(_var: Output, accum: Output, lr: Output, l1: Output, l2: Output, grad: Output, indices: Output, use_locking: Boolean = false, name: String = "SparseApplyProximalAdagrad") = run {
   buildOpTensor("SparseApplyProximalAdagrad", name) {
     addInput(_var, true)
     addInput(accum, true)
@@ -629,7 +629,7 @@ fun TF.sparseApplyProximalAdagrad(_var: Tensor, accum: Tensor, lr: Tensor, l1: T
   }
 }
 
-fun TF.sparseApplyProximalGradientDescent(_var: Tensor, alpha: Tensor, l1: Tensor, l2: Tensor, grad: Tensor, indices: Tensor, use_locking: Boolean = false, name: String = "SparseApplyProximalGradientDescent") = run {
+fun TF.sparseApplyProximalGradientDescent(_var: Output, alpha: Output, l1: Output, l2: Output, grad: Output, indices: Output, use_locking: Boolean = false, name: String = "SparseApplyProximalGradientDescent") = run {
   buildOpTensor("SparseApplyProximalGradientDescent", name) {
     addInput(_var, true)
     addInput(alpha, false)
@@ -641,7 +641,7 @@ fun TF.sparseApplyProximalGradientDescent(_var: Tensor, alpha: Tensor, l1: Tenso
   }
 }
 
-fun TF.sparseApplyRMSProp(_var: Tensor, ms: Tensor, mom: Tensor, lr: Tensor, rho: Tensor, momentum: Tensor, epsilon: Tensor, grad: Tensor, indices: Tensor, use_locking: Boolean = false, name: String = "SparseApplyRMSProp") = run {
+fun TF.sparseApplyRMSProp(_var: Output, ms: Output, mom: Output, lr: Output, rho: Output, momentum: Output, epsilon: Output, grad: Output, indices: Output, use_locking: Boolean = false, name: String = "SparseApplyRMSProp") = run {
   buildOpTensor("SparseApplyRMSProp", name) {
     addInput(_var, true)
     addInput(ms, true)
@@ -656,7 +656,7 @@ fun TF.sparseApplyRMSProp(_var: Tensor, ms: Tensor, mom: Tensor, lr: Tensor, rho
   }
 }
 
-fun TF.applyAdaMax(_var: Tensor, m: Tensor, v: Tensor, beta1_power: Tensor, lr: Tensor, beta1: Tensor, beta2: Tensor, epsilon: Tensor, grad: Tensor, use_locking: Boolean = false, name: String = "ApplyAdaMax") = run {
+fun TF.applyAdaMax(_var: Output, m: Output, v: Output, beta1_power: Output, lr: Output, beta1: Output, beta2: Output, epsilon: Output, grad: Output, use_locking: Boolean = false, name: String = "ApplyAdaMax") = run {
   buildOpTensor("ApplyAdaMax", name) {
     addInput(_var, true)
     addInput(m, true)
@@ -671,7 +671,7 @@ fun TF.applyAdaMax(_var: Tensor, m: Tensor, v: Tensor, beta1_power: Tensor, lr: 
   }
 }
 
-fun TF.resourceApplyAdaMax(_var: Tensor, m: Tensor, v: Tensor, beta1_power: Tensor, lr: Tensor, beta1: Tensor, beta2: Tensor, epsilon: Tensor, grad: Tensor, use_locking: Boolean = false, name: String = "ResourceApplyAdaMax") = run {
+fun TF.resourceApplyAdaMax(_var: Output, m: Output, v: Output, beta1_power: Output, lr: Output, beta1: Output, beta2: Output, epsilon: Output, grad: Output, use_locking: Boolean = false, name: String = "ResourceApplyAdaMax") = run {
   buildOp("ResourceApplyAdaMax", name) {
     addInput(_var, false)
     addInput(m, false)

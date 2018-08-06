@@ -2,7 +2,7 @@ package wumo.sim.algorithm.drl.deepq
 
 import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.algorithm.tensorflow.*
-import wumo.sim.algorithm.tensorflow.Tensor
+import wumo.sim.algorithm.tensorflow.ops.Output
 import wumo.sim.algorithm.tensorflow.Variable
 import wumo.sim.algorithm.tensorflow.ops.*
 import wumo.sim.algorithm.tensorflow.ops.gen.*
@@ -37,7 +37,7 @@ fun build_train(make_obs_ph: (String) -> TfInput,
                 q_func: Q_func,
                 num_actions: Int,
                 optimizer: Optimizer,
-                grad_norm_clipping: Tensor? = null,
+                grad_norm_clipping: Output? = null,
                 gamma: Float = 1f,
                 double_q: Boolean = true,
                 name: String = "deepq",
@@ -181,7 +181,7 @@ fun build_act_with_param_noise(make_obs_ph: (String) -> TfInput,
       val all_vars = tf.ctxVs.variable_subscopes[original_scope]!!.all_variables()
       val all_perturbed_vars = tf.ctxVs.variable_subscopes[perturbed_scope]!!.all_variables()
       assert(all_vars.size == all_perturbed_vars.size)
-      val perturb_ops = mutableListOf<Tensor>()
+      val perturb_ops = mutableListOf<Output>()
       for ((v, perturbed_var) in all_vars.zip(all_perturbed_vars)) {
         val op = if (param_noise_filter_func(perturbed_var))
         //Perturb this variable.

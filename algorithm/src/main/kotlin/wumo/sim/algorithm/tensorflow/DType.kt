@@ -21,7 +21,7 @@ private val typeCodes = mapOf(
 )
 
 fun dtypeFromClass(c: Class<*>): Int {
-  return typeCodes[c] ?: throw IllegalArgumentException("${c.name} objects cannot be used as elements in a TensorFlow Tensor")
+  return typeCodes[c] ?: throw IllegalArgumentException("${c.name} objects cannot be used as elements in a TensorFlow Output")
 }
 
 fun dtypeToClass(dtype: Int): Class<*> {

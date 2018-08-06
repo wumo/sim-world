@@ -6,6 +6,8 @@ import org.bytedeco.javacpp.SizeTPointer
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Graph.newGraph
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
 import org.bytedeco.javacpp.tensorflow.*
+import wumo.sim.algorithm.tensorflow.ops.Op
+import wumo.sim.algorithm.tensorflow.ops.Output
 import wumo.sim.algorithm.tensorflow.util.isNotNull
 import java.util.*
 
@@ -14,7 +16,7 @@ import java.util.*
  *
  * A `Graph` contains a set of [Op] objects,
  * which represent units of computation; and
- * [Tensor] objects, which represent
+ * [Output] objects, which represent
  * the units of data that flow between operations.
  */
 class Graph(val tf: TF) {
@@ -25,7 +27,7 @@ class Graph(val tf: TF) {
       opsCache.getOrPut(op.address()) { Op(this@Graph, op) }
   
   /**Set of tensors that are dangerous to feed!*/
-  private val unfeedable_tensors = mutableSetOf<Tensor>()
+  private val unfeedable_tensors = mutableSetOf<Output>()
   /**Set of operations that are dangerous to fetch!*/
   private val unfetchable_ops = mutableSetOf<Op>()
   private val functions = LinkedHashSet<String>()
@@ -57,13 +59,13 @@ class Graph(val tf: TF) {
 //    findOp(name)
 //  }
   
-  fun getTensor(name: String): Tensor {
+  fun getTensor(name: String): Output {
     val (opName, idx) = name.split(':')
     val valueIdx = idx.toInt()
     val op = findOp(opName)!!
     if(valueIdx>op.numOutputs-1)
       throw IllegalArgumentException("valueIdx > op.numOutputs - 1")
-    return Tensor(op, valueIdx)
+    return Output(op, valueIdx)
   }
   
   fun is_function(name: String) = name in functions
@@ -97,7 +99,7 @@ class Graph(val tf: TF) {
   }
   
   fun create_op(new_op_type: String,
-                new_op_inputs: MutableList<Tensor>,
+                new_op_inputs: MutableList<Output>,
                 output_types: List<Int>,
                 name: String,
                 attrs: Map<String, Any>): Op {

@@ -1,7 +1,6 @@
 package wumo.sim.algorithm.tensorflow.ops
 
 import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.Tensor
 import wumo.sim.algorithm.tensorflow.ops.gen.identity
 import wumo.sim.algorithm.tensorflow.ops.gen.maximum
 import wumo.sim.algorithm.tensorflow.ops.gen.sqrt
@@ -29,16 +28,16 @@ This operation is typically used to clip gradients before applying them with
 an optimizer.
  
  
- * @param t: A `Tensor`.
- * @param clip_norm: A 0-D (scalar) `Tensor` > 0. A maximum clipping value.
- * @param axes: A 1-D (vector) `Tensor` of type int32 containing the dimensions
+ * @param t: A `Output`.
+ * @param clip_norm: A 0-D (scalar) `Output` > 0. A maximum clipping value.
+ * @param axes: A 1-D (vector) `Output` of type int32 containing the dimensions
 to use for computing the L2-norm. If `None` (the default), uses all
 dimensions.
  * @param name: A name for the operation (optional).
  
- * @return A clipped `Tensor`.
+ * @return A clipped `Output`.
  */
-fun TF.clip_by_norm(t: Tensor, clip_norm: Tensor, axes: Tensor? = null, name: String = "clip_by_norm"): Tensor {
+fun TF.clip_by_norm(t: Output, clip_norm: Output, axes: Output? = null, name: String = "clip_by_norm"): Output {
   name_scope(name) {
     val clip_norm = tf.cast(clip_norm, t.dtype)
     // Calculate L2-norm, clip elements by ratio of clip_norm to L2-norm

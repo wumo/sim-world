@@ -1,10 +1,9 @@
-package wumo.sim.algorithm.tensorflow
+package wumo.sim.algorithm.tensorflow.ops
 
 import org.bytedeco.javacpp.PointerPointer
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
 import org.bytedeco.javacpp.tensorflow.*
-import wumo.sim.algorithm.tensorflow.ops.CondContext
-import wumo.sim.algorithm.tensorflow.ops.ControlFlowContext
+import wumo.sim.algorithm.tensorflow.Graph
 import wumo.sim.algorithm.tensorflow.ops.gradients.iterate
 import wumo.sim.algorithm.tensorflow.ops.gradients.toTensor
 
@@ -29,10 +28,10 @@ class Op(val graph: Graph, val c_op: TF_Operation) {
    * NOTE: This is for TF internal use only. Please don't use it.
    *
    * @param index the index of the input to update.
-   * @param tensor the Tensor to be used as the input at the given index.
+   * @param tensor the Output to be used as the input at the given index.
    * @param update_dtype If `False`, the type for this input is not updated.
    */
-  internal fun update_input(index: Int, tensor: Tensor, update_dtype: Boolean = true) {
+  internal fun update_input(index: Int, tensor: Output, update_dtype: Boolean = true) {
     val g = graph.c_graph
     val status = newStatus()
     UpdateEdge(g, tensor.asTF_Output(), _tf_input(index), status)
@@ -64,7 +63,7 @@ class Op(val graph: Graph, val c_op: TF_Operation) {
   fun _inputs() = run {
     val node = c_op.node()
     val numInputs = node.num_inputs()
-    val inputs = MutableList(numInputs) { Tensor(null, it) }
+    val inputs = MutableList(numInputs) { Output(null, it) }
     for (e in node.in_edges().iterate()) {
       if (e.IsControlEdge()) continue
       inputs[e.dst_input()] = toTensor(e.src(), e.src_output())
@@ -72,10 +71,10 @@ class Op(val graph: Graph, val c_op: TF_Operation) {
     inputs
   }
   
-  var inputs: List<Tensor> = _inputs()
-  val outputs: List<Tensor> by lazy {
+  var inputs: List<Output> = _inputs()
+  val outputs: List<Output> by lazy {
     List(numOutputs) {
-      Tensor(Op(graph, c_op), it)
+      Output(Op(graph, c_op), it)
     }
   }
   

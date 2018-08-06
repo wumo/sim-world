@@ -42,7 +42,7 @@ fun generateGroupFiles(path: String, group: String, opDefs: List<OpDef>, kotlinP
         | */
         |package $kotlinPackage
         |import org.bytedeco.javacpp.tensorflow.*
-        |import wumo.sim.algorithm.tensorflow.Tensor
+        |import wumo.sim.algorithm.tensorflow.ops.Output
         |import wumo.sim.util.Dimension
         |import wumo.sim.algorithm.tensorflow.TF
         |import wumo.sim.algorithm.tensorflow.buildOp
@@ -109,7 +109,7 @@ class OpGenerator(val opDef: OpDef, val sb: StringBuilder) {
   fun initialize() {
     // Process input arguments.
     opDef.inputArgList.withIndex().forEach { (index, arg) ->
-      argumentTypes[arg.name] = if (arg.numberAttr.isNotEmpty()) "list(Tensor)" else "Tensor"
+      argumentTypes[arg.name] = if (arg.numberAttr.isNotEmpty()) "list(Output)" else "Output"
       inputsRef[arg.name] = arg.isRef
       val inferrableAttrs = mutableListOf<Pair<String, String>>()
       inferrableAttrs += if (arg.typeAttr.isNotEmpty())
@@ -188,7 +188,7 @@ class OpGenerator(val opDef: OpDef, val sb: StringBuilder) {
         "bool" to "Boolean",
         "type" to "Int",
         "shape" to "Dimension",
-        "Tensor" to "Tensor",
+        "Output" to "Output",
         "tensor" to "NDArray<*>",
         "list(string)" to "Array<String>",
         "list(int)" to "Array<Long>",
@@ -197,7 +197,7 @@ class OpGenerator(val opDef: OpDef, val sb: StringBuilder) {
         "list(type)" to "Array<Long>",
         "list(shape)" to "Array<Dimension>",
         "list(tensor)" to "Array<NDArray<*>>",
-        "list(Tensor)" to "Array<Tensor>"
+        "list(Output)" to "Array<Output>"
     )
     
     /**Converts the provided TensorFlow attribute

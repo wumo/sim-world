@@ -1,36 +1,91 @@
-package wumo.sim.algorithm.tensorflow
+package wumo.sim.algorithm.tensorflow.ops
 
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
 import org.bytedeco.javacpp.tensorflow.*
+import wumo.sim.algorithm.tensorflow.Graph
+import wumo.sim.algorithm.tensorflow.TF
+import wumo.sim.algorithm.tensorflow.name
+import wumo.sim.algorithm.tensorflow.throwExceptionIfNotOk
 import wumo.sim.util.Dimension
 
-sealed class TensorLike
-class IndexedSlices : TensorLike() {
+interface OutputConvertible {
+  fun toTensor(): Output
 }
 
-class SparseTensor : TensorLike() {
+sealed class OutputLike : OutputConvertible {
+  abstract val graph: Graph
+  abstract val name: String
+  abstract val dtype: Int
+  abstract val device: String
+  abstract val op: Op?
+  abstract val consumers: Array<Input>
+}
+
+class IndexedSlices : OutputLike() {
+  override val graph: Graph
+    get() = TODO("not implemented")
+  
+  override fun toTensor(): Output {
+    TODO("not implemented")
+  }
+}
+
+class SparseOutput : OutputLike() {
+  override val graph: Graph
+    get() = TODO("not implemented")
+  
+  override fun toTensor(): Output {
+    TODO("not implemented")
+  }
 }
 
 /**
- * Represents one of the outputs of an `Op`.
+ * Represents one of the outputs of an [Op].
  *
- * `Tensor` is a symbolic handle to one of the outputs of an
- * `Op`. It does not hold the values of that findOp's output,
+ * A [Output] is a symbolic handle to one of the outputs of an
+ * [Op]. It does not hold the values of that findOp's output,
  * but instead provides a means of computing those values in a
  * TensorFlow [Session].
  *
  * This class has two primary purposes:
- * 1. A `Tensor` can be passed as an input to another `Op`.
- * This builds a dataflow connection between operations, which
- * enables TensorFlow to execute an entire `Graph` that represents a
- * large, multi-step computation.
  *
- * 2. After the graph has been launched in a session, the value of the
- * `Tensor` can be computed by passing it to@{tf.Session.run}.
- * `t.eval()` is a shortcut for calling`tf.get_default_session().run(t)`.
+ *  1. A [Output] can be passed as an input to another [Op].
+ *  This builds a dataflow connection between operations, which
+ *  enables TensorFlow to execute an entire [Graph] that represents a
+ *  large, multi-step computation.
+ *
+ *  2. After the graph has been launched in a [Session], the value of the
+ *  `Output` can be computed by passing it to@{tf.Session.run}.
+ *  `t.eval()` is a shortcut for calling`tf.get_default_session().run(t)`.
+ *
+ * In the following example, `c`, `d`, and `e` are symbolic [Output] objects,
+ * whereas `result` is a [NDArray][wumo.sim.util.ndarray.NDArray] that stores a concrete value:
+ *
+ * ```
+ * // Build a dataflow graph.
+ * val c = tf.const([[1.0, 2.0], [3.0, 4.0]])
+ * val d = tf.const([[1.0, 1.0], [0.0, 1.0]])
+ * val e = tf.matmul(c, d)
+ *
+ * //Construct a `Session` to execute the graph.
+ * val sess = tf.Session()
+ *
+ * //Execute the graph and store the value that `e` represents in `result`.
+ * val result = sess.eval(e)
+ * ```
+ *
+ * @param[op] [Op] that computes this tensor.
+ * @param[value_index] Index of the operation's endpoint that produces this tensor.
  */
-open class Tensor(val op: Op?, val value_index: Int) : TensorLike() {
-  val dtype: Int
+class Output(override val op: Op?, val value_index: Int) : OutputLike() {
+  override val graph = op!!.graph
+  override val device = op!!.device
+  override val consumers: Array<Input>
+    get() = TODO("not implemented")
+  
+  override fun toTensor() = this
+  
+  override val dtype: Int
     get() = if (op != null) {
       op.output_types[value_index]
     } else DT_INVALID
@@ -91,14 +146,14 @@ open class Tensor(val op: Op?, val value_index: Int) : TensorLike() {
   val tf: TF by lazy { op!!.graph.tf }
   
   fun asTF_Output() = TF_Output().oper(op!!.c_op).index(value_index)
-  val name: String by lazy { "${op!!.name}:$value_index" }
+  override val name: String by lazy { "${op!!.name}:$value_index" }
 //  val name: String by lazy { op!!.name }
   
   inline fun node() = op!!.c_op.node()
   
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
-    if (other !is Tensor) return false
+    if (other !is Output) return false
     
     if (op != other.op) return false
     if (value_index != other.value_index) return false
@@ -119,11 +174,11 @@ open class Tensor(val op: Op?, val value_index: Int) : TensorLike() {
    */
   open fun value() = this
   
-  open fun asRef(): Tensor = this
+  open fun asRef(): Output = this
   
   override fun toString() =
       when (op) {
-        null -> "Tensor(null)"
-        else -> """Tensor("$name", shape=$shape, dtype=${dtype.name()}, op=$op)"""
+        null -> "Output(null)"
+        else -> """Output("$name", shape=$shape, dtype=${dtype.name()}, op=$op)"""
       }
 }

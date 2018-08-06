@@ -1,7 +1,7 @@
 package wumo.sim.algorithm.tensorflow.learn_lowlevel_api
 
 import org.junit.Test
-import wumo.sim.algorithm.tensorflow.Tensor
+import wumo.sim.algorithm.tensorflow.ops.Output
 import wumo.sim.algorithm.tensorflow.base_dtype
 import wumo.sim.algorithm.tensorflow.ops.BaseTest
 import wumo.sim.algorithm.tensorflow.ops.const
@@ -22,7 +22,7 @@ class variable_initialization : BaseTest() {
       build()
     }
     
-    val vt = Tensor(v, 0)
+    val vt = Output(v, 0)
     val v_init = tf.g.nodeBuilder("Assign", "v/init").run {
       addInput(vt)
       addInput(initial_value)
@@ -36,7 +36,7 @@ class variable_initialization : BaseTest() {
       build()
     }
     
-    val wt = Tensor(w, 0)
+    val wt = Output(w, 0)
     
     val v_is_initialized = tf.is_variable_initialized(vt, "v_is_initialized")
     val v_initialized = tf.refSwitch(vt, v_is_initialized, "switch_v_initialized")[1]

@@ -1,6 +1,6 @@
 package wumo.sim.algorithm.tensorflow.layers
 
-import wumo.sim.algorithm.tensorflow.Tensor
+import wumo.sim.algorithm.tensorflow.ops.Output
 import wumo.sim.algorithm.tensorflow.ops.Initializer
 import wumo.sim.algorithm.tensorflow.ops.const
 import wumo.sim.algorithm.tensorflow.ops.gen.biasAdd
@@ -28,8 +28,8 @@ class Dense(val units: Int,
                                     activity_reqularizer = activity_regularizer,
                                     dtype = dtype) {
   lateinit var input_spec: Any
-  lateinit var kernel: Tensor
-  var bias: Tensor? = null
+  lateinit var kernel: Output
+  var bias: Output? = null
   override fun build(input_shape: Dimension) {
     if (input_shape[-1] == -1)
       throw IllegalArgumentException("The last dimension of the inputs to `Dense`" +
@@ -49,7 +49,7 @@ class Dense(val units: Int,
     built = true
   }
   
-  override fun call(input: Tensor): Tensor {
+  override fun call(input: Output): Output {
     val shape = input.shape
     var output = if (shape.rank() > 2) {
       tf.tensordot(input, kernel, tf.const(2 x 1, i(shape.rank() - 1, 0)))
