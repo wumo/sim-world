@@ -14,7 +14,7 @@ fun main(args: Array<String>) {
   // Platform-specific initialization routine
   tensorflow.InitMain("trainer", null as IntArray?, null)
   val def = GraphDef()
-//  val loc = ResourceLoader.getResource("def.pb")
+//  val loc = ResourceLoader.getResource("run.pb")
   TF_CHECK_OK(tensorflow.ReadTextProto(Env.Default(), "resources/q-network.pbtxt", def))
   val session = Session(SessionOptions())
   SetDefaultDevice("/gpu:0", def)

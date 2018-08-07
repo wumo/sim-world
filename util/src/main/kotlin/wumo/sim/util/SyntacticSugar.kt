@@ -1,7 +1,5 @@
 package wumo.sim.util
 
-inline fun <R> expr(block: () -> R) = block()
-
 /**
  * Always throws [NotImplementedError] stating that operation is not implemented.
  */

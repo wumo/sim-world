@@ -5,7 +5,7 @@ import wumo.sim.algorithm.tensorflow.ops.Output
 import wumo.sim.algorithm.tensorflow.ops.Initializer
 import wumo.sim.algorithm.tensorflow.ops.get_variable
 import wumo.sim.algorithm.tensorflow.tf
-import wumo.sim.util.Dimension
+import wumo.sim.util.Shape
 
 typealias TensorFunction = (Output) -> Output
 
@@ -16,7 +16,7 @@ open class Layer(val trainable: Boolean = true,
   var built = false
   val losses = mutableListOf<Output>()
   
-  open fun build(input_shape: Dimension) {
+  open fun build(input_shape: Shape) {
     built = true
   }
   
@@ -36,7 +36,7 @@ open class Layer(val trainable: Boolean = true,
     return outputs
   }
   
-  protected fun add_variable(shape: Dimension, dtype: Int,
+  protected fun add_variable(shape: Shape, dtype: Int,
                              initializer: Initializer,
                              regularizer: TensorFunction? = null,
                              trainable: Boolean = true,

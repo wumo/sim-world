@@ -8,7 +8,7 @@ import wumo.sim.algorithm.tensorflow.TF
 import wumo.sim.algorithm.tensorflow.ops.Output
 import wumo.sim.algorithm.tensorflow.buildOp
 import wumo.sim.algorithm.tensorflow.buildOpTensor
-import wumo.sim.util.Dimension
+import wumo.sim.util.Shape
 
 fun TF.assignAddVariableOp(resource: Output, value: Output, name: String = "AssignAddVariableOp") = run {
   buildOp("AssignAddVariableOp", name) {
@@ -129,7 +129,7 @@ fun TF.resourceScatterUpdate(resource: Output, indices: Output, updates: Output,
   }
 }
 
-fun TF.varHandleOp(dtype: Int, shape: Dimension, container: String = "", shared_name: String = "", name: String = "VarHandleOp") = run {
+fun TF.varHandleOp(dtype: Int, shape: Shape, container: String = "", shared_name: String = "", name: String = "VarHandleOp") = run {
   buildOpTensor("VarHandleOp", name) {
     attrType("dtype", dtype)
     attr("shape", shape)

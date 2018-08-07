@@ -5,7 +5,7 @@ import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
 import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.algorithm.tensorflow.ops.Op
 import wumo.sim.algorithm.tensorflow.ops.Output
-import wumo.sim.util.Dimension
+import wumo.sim.util.Shape
 import wumo.sim.util.ndarray.NDArray
 import wumo.sim.util.toByte
 
@@ -221,7 +221,7 @@ class OperationBuilder(val graph: Graph, val opType: String, val name: String) {
     throwExceptionIfNotOk(status)
   }
   
-  fun attr(name: String, value: Dimension) {
+  fun attr(name: String, value: Shape) {
     TF_SetAttrShape(c_opDesc, name, value.asLongArray(), value.rank().toInt())
   }
   
@@ -237,7 +237,7 @@ class OperationBuilder(val graph: Graph, val opType: String, val name: String) {
     attr(name, attrValue)
   }
   
-  fun attr(name: String, shapes: Array<Dimension>) {
+  fun attr(name: String, shapes: Array<Shape>) {
     val attrValue = AttrValue()
     attrValue.mutable_list().apply {
       shapes.forEach { shape ->

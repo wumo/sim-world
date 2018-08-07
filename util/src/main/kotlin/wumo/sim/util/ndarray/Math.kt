@@ -1,7 +1,6 @@
 package wumo.sim.util.ndarray
 
-import wumo.sim.util.Dimension
-import wumo.sim.util.SwitchType
+import wumo.sim.util.Shape
 import wumo.sim.util.SwitchType2
 import wumo.sim.util.ndarray.NDArray.Companion.toNDArray
 
@@ -24,7 +23,7 @@ fun <T : Any> abs(a: NDArray<T>): NDArray<T> {
   TODO()
 }
 
-val ones_like_switch = SwitchType2<Dimension, NDArray<*>>().apply {
+val ones_like_switch = SwitchType2<Shape, NDArray<*>>().apply {
   case<Float> { NDArray(_2, 1f) }
   case<Double> { NDArray(_2, 1.0) }
   case<Byte> { NDArray(_2, 1.toByte()) }

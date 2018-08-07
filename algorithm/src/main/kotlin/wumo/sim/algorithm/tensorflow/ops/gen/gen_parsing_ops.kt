@@ -8,7 +8,7 @@ import wumo.sim.algorithm.tensorflow.TF
 import wumo.sim.algorithm.tensorflow.ops.Output
 import wumo.sim.algorithm.tensorflow.buildOpTensor
 import wumo.sim.algorithm.tensorflow.buildOpTensors
-import wumo.sim.util.Dimension
+import wumo.sim.util.Shape
 
 fun TF.decodeCSV(records: Output, record_defaults: Output, field_delim: String = ",", use_quote_delim: Boolean = true, na_value: String = "", select_cols: Array<Long> = arrayOf(), name: String = "DecodeCSV") = run {
   buildOpTensors("DecodeCSV", name) {
@@ -42,7 +42,7 @@ fun TF.decodeRaw(bytes: Output, out_type: Int, little_endian: Boolean = true, na
   }
 }
 
-fun TF.parseExample(serialized: Output, names: Output, sparse_keys: Array<Output>, dense_keys: Array<Output>, dense_defaults: Output, sparse_types: Array<Long>, dense_shapes: Array<Dimension>, name: String = "ParseExample") = run {
+fun TF.parseExample(serialized: Output, names: Output, sparse_keys: Array<Output>, dense_keys: Array<Output>, dense_defaults: Output, sparse_types: Array<Long>, dense_shapes: Array<Shape>, name: String = "ParseExample") = run {
   buildOpTensors("ParseExample", name) {
     addInput(serialized, false)
     addInput(names, false)
@@ -54,7 +54,7 @@ fun TF.parseExample(serialized: Output, names: Output, sparse_keys: Array<Output
   }
 }
 
-fun TF.parseSingleExample(serialized: Output, dense_defaults: Output, num_sparse: Long, sparse_keys: Array<String>, dense_keys: Array<String>, sparse_types: Array<Long>, dense_shapes: Array<Dimension>, name: String = "ParseSingleExample") = run {
+fun TF.parseSingleExample(serialized: Output, dense_defaults: Output, num_sparse: Long, sparse_keys: Array<String>, dense_keys: Array<String>, sparse_types: Array<Long>, dense_shapes: Array<Shape>, name: String = "ParseSingleExample") = run {
   buildOpTensors("ParseSingleExample", name) {
     addInput(serialized, false)
     addInput(dense_defaults, false)
@@ -66,7 +66,7 @@ fun TF.parseSingleExample(serialized: Output, dense_defaults: Output, num_sparse
   }
 }
 
-fun TF.parseSingleSequenceExample(serialized: Output, feature_list_dense_missing_assumed_empty: Output, context_sparse_keys: Array<Output>, context_dense_keys: Array<Output>, feature_list_sparse_keys: Array<Output>, feature_list_dense_keys: Array<Output>, context_dense_defaults: Output, debug_name: Output, context_sparse_types: Array<Long> = arrayOf(), feature_list_dense_types: Array<Long> = arrayOf(), context_dense_shapes: Array<Dimension> = arrayOf(), feature_list_sparse_types: Array<Long> = arrayOf(), feature_list_dense_shapes: Array<Dimension> = arrayOf(), name: String = "ParseSingleSequenceExample") = run {
+fun TF.parseSingleSequenceExample(serialized: Output, feature_list_dense_missing_assumed_empty: Output, context_sparse_keys: Array<Output>, context_dense_keys: Array<Output>, feature_list_sparse_keys: Array<Output>, feature_list_dense_keys: Array<Output>, context_dense_defaults: Output, debug_name: Output, context_sparse_types: Array<Long> = arrayOf(), feature_list_dense_types: Array<Long> = arrayOf(), context_dense_shapes: Array<Shape> = arrayOf(), feature_list_sparse_types: Array<Long> = arrayOf(), feature_list_dense_shapes: Array<Shape> = arrayOf(), name: String = "ParseSingleSequenceExample") = run {
   buildOpTensors("ParseSingleSequenceExample", name) {
     addInput(serialized, false)
     addInput(feature_list_dense_missing_assumed_empty, false)

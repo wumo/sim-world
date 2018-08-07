@@ -6,7 +6,7 @@ import wumo.sim.algorithm.tensorflow.Graph
 import wumo.sim.algorithm.tensorflow.TF
 import wumo.sim.algorithm.tensorflow.name
 import wumo.sim.algorithm.tensorflow.throwExceptionIfNotOk
-import wumo.sim.util.Dimension
+import wumo.sim.util.Shape
 
 interface OutputConvertible {
   fun toTensor(): Output
@@ -22,6 +22,16 @@ sealed class OutputLike : OutputConvertible {
 }
 
 class IndexedSlices : OutputLike() {
+  override val name: String
+    get() = TODO("not implemented")
+  override val dtype: Int
+    get() = TODO("not implemented")
+  override val device: String
+    get() = TODO("not implemented")
+  override val op: Op?
+    get() = TODO("not implemented")
+  override val consumers: Array<Input>
+    get() = TODO("not implemented")
   override val graph: Graph
     get() = TODO("not implemented")
   
@@ -31,6 +41,16 @@ class IndexedSlices : OutputLike() {
 }
 
 class SparseOutput : OutputLike() {
+  override val name: String
+    get() = TODO("not implemented")
+  override val dtype: Int
+    get() = TODO("not implemented")
+  override val device: String
+    get() = TODO("not implemented")
+  override val op: Op?
+    get() = TODO("not implemented")
+  override val consumers: Array<Input>
+    get() = TODO("not implemented")
   override val graph: Graph
     get() = TODO("not implemented")
   
@@ -90,17 +110,18 @@ class Output(override val op: Op?, val value_index: Int) : OutputLike() {
       op.output_types[value_index]
     } else DT_INVALID
   
-  val shape: Dimension
+  val shape: Shape
     get() {
       val c_graph = op!!.graph.c_graph
       val output = asTF_Output()
       val status = newStatus()
       val numDims = TF_GraphGetTensorNumDims(c_graph, output, status)
+      if (numDims < 0) return Shape(unknow_rank = true)
       throwExceptionIfNotOk(status)
       val dims = LongArray(numDims)
       TF_GraphGetTensorShape(c_graph, output, dims, numDims, status)
       throwExceptionIfNotOk(status)
-      return Dimension(dims)
+      return Shape(dims)
     }
   
   /**
@@ -119,12 +140,12 @@ class Output(override val op: Op?, val value_index: Int) : OutputLike() {
   # The height and width dimensions of `image` are data dependent, and
   # cannot be computed without executing the op.
   print(image.shape)
-  ==> TensorShape([Dimension(None), Dimension(None), Dimension(3)])
+  ==> TensorShape([Shape(None), Shape(None), Shape(3)])
   
   # We know that each image in this dataset is 28 x 28 pixels.
   image.set_shape([28, 28, 3])
   print(image.shape)
-  ==> TensorShape([Dimension(28), Dimension(28), Dimension(3)])
+  ==> TensorShape([Shape(28), Shape(28), Shape(3)])
   ```
    
    * @param shape: A `TensorShape` representing the shape of this tensor, a
@@ -134,7 +155,7 @@ class Output(override val op: Op?, val value_index: Int) : OutputLike() {
   ValueError: If `shape` is not compatible with the current shape of
   this tensor.
    */
-  fun set_shape(shape: Dimension) {
+  fun set_shape(shape: Shape) {
     assert(this.shape.isCompatibleWith(shape))
     op!!
     val dims = shape.asLongArray()

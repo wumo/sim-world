@@ -5,13 +5,13 @@ import wumo.sim.algorithm.tensorflow.ops.Output
 import wumo.sim.algorithm.tensorflow.Variable
 import wumo.sim.algorithm.tensorflow.ops.*
 import wumo.sim.algorithm.tensorflow.tf
-import wumo.sim.util.Dimension
+import wumo.sim.util.Shape
 
 fun create_slot_var(primary: Output,
                     initializer: Initializer,
                     name: String,
                     validate_shape: Boolean,
-                    shape: Dimension,
+                    shape: Shape,
                     dtype: Int): Variable {
   //TODO partition
   return tf.variable(shape, dtype, initializer, name, trainable = false, validate_shape = validate_shape)
@@ -37,7 +37,7 @@ fun create_slot(primary: Output, v: Output, name: String, colocate_with_primary:
  */
 fun create_slot_with_initializer(primary: Output,
                                  initializer: Initializer,
-                                 shape: Dimension, dtype: Int,
+                                 shape: Shape, dtype: Int,
                                  name: String,
                                  colocate_with_primary: Boolean): Variable {
   val validate_shape = shape.is_fully_defined

@@ -17,14 +17,14 @@ interface Buf<T> {
   val size: Int
 }
 
-open class NDArray<T : Any>(val shape: Dimension, val raw: Buf<T>, val dtype: Class<*> = raw[0]::class.java) : Iterable<T> {
+open class NDArray<T : Any>(val shape: Shape, val raw: Buf<T>, val dtype: Class<*> = raw[0]::class.java) : Iterable<T> {
   
   companion object {
     fun zeros(shape: Int): NDArray<Float> {
       return NDArray(dim(shape), FloatArray(shape))
     }
     
-    fun zeros(shape: Dimension): NDArray<Float> {
+    fun zeros(shape: Shape): NDArray<Float> {
       return NDArray(shape, FloatArray(shape.numElements()))
     }
     
@@ -134,24 +134,23 @@ open class NDArray<T : Any>(val shape: Dimension, val raw: Buf<T>, val dtype: Cl
     operator fun invoke(value: Array<Long>) = NDArray(dim(value.size), value.toLongArray())
     operator fun invoke(value: Array<String>) = NDArray(dim(value.size), value)
     
-    operator fun invoke(shape: Dimension, value: FloatArray) = NDArray(shape, FloatArrayBuf(value), Float::class.java)
-    operator fun invoke(shape: Dimension, value: DoubleArray) = NDArray(shape, DoubleArrayBuf(value), Double::class.java)
-    operator fun invoke(shape: Dimension, value: BooleanArray) = NDArray(shape, BooleanArrayBuf(value), Boolean::class.java)
-    operator fun invoke(shape: Dimension, value: ByteArray) = NDArray(shape, ByteArrayBuf(value), Byte::class.java)
-    operator fun invoke(shape: Dimension, value: ShortArray) = NDArray(shape, ShortArrayBuf(value), Short::class.java)
-    operator fun invoke(shape: Dimension, value: IntArray) = NDArray(shape, IntArrayBuf(value), Int::class.java)
-    operator fun invoke(shape: Dimension, value: LongArray) = NDArray(shape, LongArrayBuf(value), Long::class.java)
-    operator fun invoke(shape: Dimension, value: Array<String>) = NDArray(shape, ArrayBuf(value), String::class.java)
+    operator fun invoke(shape: Shape, value: FloatArray) = NDArray(shape, FloatArrayBuf(value), Float::class.java)
+    operator fun invoke(shape: Shape, value: DoubleArray) = NDArray(shape, DoubleArrayBuf(value), Double::class.java)
+    operator fun invoke(shape: Shape, value: BooleanArray) = NDArray(shape, BooleanArrayBuf(value), Boolean::class.java)
+    operator fun invoke(shape: Shape, value: ByteArray) = NDArray(shape, ByteArrayBuf(value), Byte::class.java)
+    operator fun invoke(shape: Shape, value: ShortArray) = NDArray(shape, ShortArrayBuf(value), Short::class.java)
+    operator fun invoke(shape: Shape, value: IntArray) = NDArray(shape, IntArrayBuf(value), Int::class.java)
+    operator fun invoke(shape: Shape, value: LongArray) = NDArray(shape, LongArrayBuf(value), Long::class.java)
+    operator fun invoke(shape: Shape, value: Array<String>) = NDArray(shape, ArrayBuf(value), String::class.java)
     
-    operator fun invoke(shape: Dimension, initvalue: Float) = NDArray(shape, FloatArray(shape.numElements()) { initvalue })
-    operator fun invoke(shape: Dimension, initvalue: Double) = NDArray(shape, DoubleArray(shape.numElements()) { initvalue })
-    operator fun invoke(shape: Dimension, initvalue: Boolean) = NDArray(shape, BooleanArray(shape.numElements()) { initvalue })
-    operator fun invoke(shape: Dimension, initvalue: Byte) = NDArray(shape, ByteArray(shape.numElements()) { initvalue })
-    operator fun invoke(shape: Dimension, initvalue: Short) = NDArray(shape, ShortArray(shape.numElements()) { initvalue })
-    operator fun invoke(shape: Dimension, initvalue: Int) = NDArray(shape, IntArray(shape.numElements()) { initvalue })
-    operator fun invoke(shape: Dimension, initvalue: Long) = NDArray(shape, LongArray(shape.numElements()) { initvalue })
-    operator fun invoke(shape: Dimension, initvalue: String) = NDArray(shape, Array(shape.numElements()) { initvalue })
-    
+    operator fun invoke(shape: Shape, initvalue: Float) = NDArray(shape, FloatArray(shape.numElements()) { initvalue })
+    operator fun invoke(shape: Shape, initvalue: Double) = NDArray(shape, DoubleArray(shape.numElements()) { initvalue })
+    operator fun invoke(shape: Shape, initvalue: Boolean) = NDArray(shape, BooleanArray(shape.numElements()) { initvalue })
+    operator fun invoke(shape: Shape, initvalue: Byte) = NDArray(shape, ByteArray(shape.numElements()) { initvalue })
+    operator fun invoke(shape: Shape, initvalue: Short) = NDArray(shape, ShortArray(shape.numElements()) { initvalue })
+    operator fun invoke(shape: Shape, initvalue: Int) = NDArray(shape, IntArray(shape.numElements()) { initvalue })
+    operator fun invoke(shape: Shape, initvalue: Long) = NDArray(shape, LongArray(shape.numElements()) { initvalue })
+    operator fun invoke(shape: Shape, initvalue: String) = NDArray(shape, Array(shape.numElements()) { initvalue })
   }
   
   private val stride: IntArray
@@ -162,7 +161,7 @@ open class NDArray<T : Any>(val shape: Dimension, val raw: Buf<T>, val dtype: Cl
   
   init {
     stride = IntArray(numDims)
-    dims = shape.asIntArray()
+    dims = shape.asIntArray()!!
     if (dims.isNotEmpty()) {
       stride[stride.lastIndex] = 1
       for (a in stride.lastIndex - 1 downTo 0)
@@ -299,5 +298,4 @@ open class NDArray<T : Any>(val shape: Dimension, val raw: Buf<T>, val dtype: Cl
   operator fun component4() = raw[3]
   operator fun component5() = raw[4]
   operator fun component6() = raw[5]
-  
 }

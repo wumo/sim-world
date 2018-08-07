@@ -7,7 +7,7 @@ import wumo.sim.algorithm.tensorflow.TF
 import wumo.sim.algorithm.tensorflow.ops.Output
 import wumo.sim.algorithm.tensorflow.buildOp
 import wumo.sim.algorithm.tensorflow.buildOpTensor
-import wumo.sim.util.Dimension
+import wumo.sim.util.Shape
 
 fun TF.assign(_ref: Output, value: Output, validate_shape: Boolean = true, use_locking: Boolean = true, name: String = "Assign") = run {
   buildOpTensor("Assign", name) {
@@ -170,7 +170,7 @@ fun TF.scatterUpdate(_ref: Output, indices: Output, updates: Output, use_locking
   }
 }
 
-fun TF.temporaryVariable(shape: Dimension, dtype: Int, var_name: String = "", name: String = "TemporaryVariable") = run {
+fun TF.temporaryVariable(shape: Shape, dtype: Int, var_name: String = "", name: String = "TemporaryVariable") = run {
   buildOpTensor("TemporaryVariable", name) {
     attr("shape", shape)
     attrType("dtype", dtype)
@@ -178,7 +178,7 @@ fun TF.temporaryVariable(shape: Dimension, dtype: Int, var_name: String = "", na
   }
 }
 
-fun TF.variableV2(shape: Dimension, dtype: Int, container: String = "", shared_name: String = "", name: String = "VariableV2") = run {
+fun TF.variableV2(shape: Shape, dtype: Int, container: String = "", shared_name: String = "", name: String = "VariableV2") = run {
   buildOpTensor("VariableV2", name) {
     attr("shape", shape)
     attrType("dtype", dtype)

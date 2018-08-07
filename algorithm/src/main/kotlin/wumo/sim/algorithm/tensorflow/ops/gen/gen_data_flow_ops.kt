@@ -5,7 +5,7 @@ package wumo.sim.algorithm.tensorflow.ops.gen
 
 import wumo.sim.algorithm.tensorflow.*
 import wumo.sim.algorithm.tensorflow.ops.Output
-import wumo.sim.util.Dimension
+import wumo.sim.util.Shape
 
 fun TF.accumulatorApplyGradient(handle: Output, local_step: Output, gradient: Output, name: String = "AccumulatorApplyGradient") = run {
   buildOp("AccumulatorApplyGradient", name) {
@@ -36,7 +36,7 @@ fun TF.accumulatorTakeGradient(handle: Output, num_required: Output, dtype: Int,
   }
 }
 
-fun TF.barrier(component_types: Array<Long>, shapes: Array<Dimension> = arrayOf(), capacity: Long = -1L, container: String = "", shared_name: String = "", name: String = "Barrier") = run {
+fun TF.barrier(component_types: Array<Long>, shapes: Array<Shape> = arrayOf(), capacity: Long = -1L, container: String = "", shared_name: String = "", name: String = "Barrier") = run {
   buildOpTensor("Barrier", name) {
     attr("component_types", component_types)
     attr("shapes", shapes)
@@ -85,7 +85,7 @@ fun TF.barrierTakeMany(handle: Output, num_elements: Output, component_types: Ar
   }
 }
 
-fun TF.conditionalAccumulator(dtype: Int, shape: Dimension, container: String = "", shared_name: String = "", name: String = "ConditionalAccumulator") = run {
+fun TF.conditionalAccumulator(dtype: Int, shape: Shape, container: String = "", shared_name: String = "", name: String = "ConditionalAccumulator") = run {
   buildOpTensor("ConditionalAccumulator", name) {
     attrType("dtype", dtype)
     attr("shape", shape)
@@ -115,7 +115,7 @@ fun TF.dynamicStitch(indices: Array<Output>, data: Array<Output>, name: String =
   }
 }
 
-fun TF.fIFOQueueV2(component_types: Array<Long>, shapes: Array<Dimension> = arrayOf(), capacity: Long = -1L, container: String = "", shared_name: String = "", name: String = "FIFOQueueV2") = run {
+fun TF.fIFOQueueV2(component_types: Array<Long>, shapes: Array<Shape> = arrayOf(), capacity: Long = -1L, container: String = "", shared_name: String = "", name: String = "FIFOQueueV2") = run {
   buildOpTensor("FIFOQueueV2", name) {
     attr("component_types", component_types)
     attr("shapes", shapes)
@@ -300,7 +300,7 @@ fun TF.orderedMapUnstageNoKey(indices: Output, dtypes: Array<Long>, capacity: Lo
   }
 }
 
-fun TF.paddingFIFOQueueV2(component_types: Array<Long>, shapes: Array<Dimension> = arrayOf(), capacity: Long = -1L, container: String = "", shared_name: String = "", name: String = "PaddingFIFOQueueV2") = run {
+fun TF.paddingFIFOQueueV2(component_types: Array<Long>, shapes: Array<Shape> = arrayOf(), capacity: Long = -1L, container: String = "", shared_name: String = "", name: String = "PaddingFIFOQueueV2") = run {
   buildOpTensor("PaddingFIFOQueueV2", name) {
     attr("component_types", component_types)
     attr("shapes", shapes)
@@ -317,7 +317,7 @@ fun TF.parallelDynamicStitch(indices: Array<Output>, data: Array<Output>, name: 
   }
 }
 
-fun TF.priorityQueueV2(shapes: Array<Dimension>, component_types: Array<Long> = arrayOf(), capacity: Long = -1L, container: String = "", shared_name: String = "", name: String = "PriorityQueueV2") = run {
+fun TF.priorityQueueV2(shapes: Array<Shape>, component_types: Array<Long> = arrayOf(), capacity: Long = -1L, container: String = "", shared_name: String = "", name: String = "PriorityQueueV2") = run {
   buildOpTensor("PriorityQueueV2", name) {
     attr("shapes", shapes)
     attr("component_types", component_types)
@@ -394,7 +394,7 @@ fun TF.queueSizeV2(handle: Output, name: String = "QueueSizeV2") = run {
   }
 }
 
-fun TF.randomShuffleQueueV2(component_types: Array<Long>, shapes: Array<Dimension> = arrayOf(), capacity: Long = -1L, min_after_dequeue: Long = 0L, seed: Long = 0L, seed2: Long = 0L, container: String = "", shared_name: String = "", name: String = "RandomShuffleQueueV2") = run {
+fun TF.randomShuffleQueueV2(component_types: Array<Long>, shapes: Array<Shape> = arrayOf(), capacity: Long = -1L, min_after_dequeue: Long = 0L, seed: Long = 0L, seed2: Long = 0L, container: String = "", shared_name: String = "", name: String = "RandomShuffleQueueV2") = run {
   buildOpTensor("RandomShuffleQueueV2", name) {
     attr("component_types", component_types)
     attr("shapes", shapes)
@@ -438,7 +438,7 @@ fun TF.sparseAccumulatorTakeGradient(handle: Output, num_required: Output, dtype
   }
 }
 
-fun TF.sparseConditionalAccumulator(dtype: Int, shape: Dimension, container: String = "", shared_name: String = "", name: String = "SparseConditionalAccumulator") = run {
+fun TF.sparseConditionalAccumulator(dtype: Int, shape: Shape, container: String = "", shared_name: String = "", name: String = "SparseConditionalAccumulator") = run {
   buildOpTensor("SparseConditionalAccumulator", name) {
     attrType("dtype", dtype)
     attr("shape", shape)
@@ -494,7 +494,7 @@ fun TF.tensorArrayCloseV3(handle: Output, name: String = "TensorArrayCloseV3") =
   }
 }
 
-fun TF.tensorArrayConcatV3(handle: Output, flow_in: Output, dtype: Int, element_shape_except0: Dimension = Dimension(unknow_rank = true), name: String = "TensorArrayConcatV3") = run {
+fun TF.tensorArrayConcatV3(handle: Output, flow_in: Output, dtype: Int, element_shape_except0: Shape = Shape(unknow_rank = true), name: String = "TensorArrayConcatV3") = run {
   buildOpTensors("TensorArrayConcatV3", name) {
     addInput(handle, false)
     addInput(flow_in, false)
@@ -503,7 +503,7 @@ fun TF.tensorArrayConcatV3(handle: Output, flow_in: Output, dtype: Int, element_
   }
 }
 
-fun TF.tensorArrayGatherV3(handle: Output, indices: Output, flow_in: Output, dtype: Int, element_shape: Dimension = Dimension(unknow_rank = true), name: String = "TensorArrayGatherV3") = run {
+fun TF.tensorArrayGatherV3(handle: Output, indices: Output, flow_in: Output, dtype: Int, element_shape: Shape = Shape(unknow_rank = true), name: String = "TensorArrayGatherV3") = run {
   buildOpTensor("TensorArrayGatherV3", name) {
     addInput(handle, false)
     addInput(indices, false)
@@ -564,7 +564,7 @@ fun TF.tensorArraySplitV3(handle: Output, value: Output, lengths: Output, flow_i
   }
 }
 
-fun TF.tensorArrayV3(size: Output, dtype: Int, element_shape: Dimension = Dimension(unknow_rank = true), dynamic_size: Boolean = false, clear_after_read: Boolean = true, identical_element_shapes: Boolean = false, tensor_array_name: String = "", name: String = "TensorArrayV3") = run {
+fun TF.tensorArrayV3(size: Output, dtype: Int, element_shape: Shape = Shape(unknow_rank = true), dynamic_size: Boolean = false, clear_after_read: Boolean = true, identical_element_shapes: Boolean = false, tensor_array_name: String = "", name: String = "TensorArrayV3") = run {
   buildOpTensors("TensorArrayV3", name) {
     addInput(size, false)
     attrType("dtype", dtype)

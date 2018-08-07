@@ -8,7 +8,7 @@ import wumo.sim.algorithm.tensorflow.ops.gen.matMul
 import wumo.sim.algorithm.tensorflow.ops.tensordot
 import wumo.sim.algorithm.tensorflow.ops.zeros_initializer
 import wumo.sim.algorithm.tensorflow.tf
-import wumo.sim.util.Dimension
+import wumo.sim.util.Shape
 import wumo.sim.util.dim
 import wumo.sim.util.i
 import wumo.sim.util.x
@@ -30,7 +30,7 @@ class Dense(val units: Int,
   lateinit var input_spec: Any
   lateinit var kernel: Output
   var bias: Output? = null
-  override fun build(input_shape: Dimension) {
+  override fun build(input_shape: Shape) {
     if (input_shape[-1] == -1)
       throw IllegalArgumentException("The last dimension of the inputs to `Dense`" +
                                          "should be defined. Found `None`.")

@@ -10,7 +10,7 @@ import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Tensor.allocateTensor
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Tensor.newTensor
 import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.util.*
-import wumo.sim.util.Dimension
+import wumo.sim.util.Shape
 import wumo.sim.util.ndarray.Buf
 import wumo.sim.util.ndarray.NDArray
 import wumo.sim.util.ndarray.implementation.*
@@ -18,7 +18,7 @@ import java.nio.*
 
 abstract class TensorBuffer<T : Any> protected constructor(c_tensor: TF_Tensor) : Buf<T> {
   companion object {
-    private val convert_switch = SwitchType2<Dimension, TensorBuffer<*>>().apply {
+    private val convert_switch = SwitchType2<Shape, TensorBuffer<*>>().apply {
       case<FloatArrayBuf> { TensorBuffer(_2, _1.raw) }
       case<DoubleArrayBuf> { TensorBuffer(_2, _1.raw) }
       case<BooleanArrayBuf> { TensorBuffer(_2, _1.raw) }
@@ -29,7 +29,7 @@ abstract class TensorBuffer<T : Any> protected constructor(c_tensor: TF_Tensor) 
       case<ArrayBuf<*>> { TensorBuffer(_2, Array(_1.raw.size) { _1[it].toString() }) }
     }
     
-    fun <T : Any> toNDArray(tb: TensorBuffer<T>) = NDArray(Dimension(tb.dims), tb, dtypeToClass(tb.dtype.base_dtype))
+    fun <T : Any> toNDArray(tb: TensorBuffer<T>) = NDArray(Shape(tb.dims), tb, dtypeToClass(tb.dtype.base_dtype))
     fun <T : Any> toNDArray(c_tensor: TF_Tensor) = toNDArray(invoke<T>(c_tensor))
     fun <T : Any> fromNDArray(ndarray: NDArray<T>) = (if (ndarray.raw is TensorBuffer<*>) ndarray.raw
     else convert_switch(ndarray.raw, ndarray.shape)) as TensorBuffer<T>
@@ -66,21 +66,21 @@ abstract class TensorBuffer<T : Any> protected constructor(c_tensor: TF_Tensor) 
     operator fun invoke(value: LongArray) = invoke(dim(value.size), value)
     operator fun invoke(value: Array<String>) = invoke(dim(value.size), value)
     
-    operator fun invoke(shape: Dimension, value: FloatArray) = FloatTensorBuffer(create(shape, FloatPointer(*value), DT_FLOAT))
-    operator fun invoke(shape: Dimension, value: DoubleArray) = DoubleTensorBuffer(create(shape, DoublePointer(*value), DT_DOUBLE))
-    operator fun invoke(shape: Dimension, value: BooleanArray) = BooleanTensorBuffer(create(shape, BytePointer(*ByteArray(value.size) { if (value[it]) 1 else 0 }), DT_BOOL))
-    operator fun invoke(shape: Dimension, value: ByteArray) = ByteTensorBuffer(create(shape, BytePointer(*value), DT_INT8))
-    operator fun invoke(shape: Dimension, value: ShortArray) = ShortTensorBuffer(create(shape, ShortPointer(*value), DT_INT16))
-    operator fun invoke(shape: Dimension, value: IntArray) = IntTensorBuffer(create(shape, IntPointer(*value), DT_INT32))
-    operator fun invoke(shape: Dimension, value: LongArray) = LongTensorBuffer(create(shape, LongPointer(*value), DT_INT64))
-    operator fun invoke(shape: Dimension, array: Array<String>): StringTensorBuffer {
+    operator fun invoke(shape: Shape, value: FloatArray) = FloatTensorBuffer(create(shape, FloatPointer(*value), DT_FLOAT))
+    operator fun invoke(shape: Shape, value: DoubleArray) = DoubleTensorBuffer(create(shape, DoublePointer(*value), DT_DOUBLE))
+    operator fun invoke(shape: Shape, value: BooleanArray) = BooleanTensorBuffer(create(shape, BytePointer(*ByteArray(value.size) { if (value[it]) 1 else 0 }), DT_BOOL))
+    operator fun invoke(shape: Shape, value: ByteArray) = ByteTensorBuffer(create(shape, BytePointer(*value), DT_INT8))
+    operator fun invoke(shape: Shape, value: ShortArray) = ShortTensorBuffer(create(shape, ShortPointer(*value), DT_INT16))
+    operator fun invoke(shape: Shape, value: IntArray) = IntTensorBuffer(create(shape, IntPointer(*value), DT_INT32))
+    operator fun invoke(shape: Shape, value: LongArray) = LongTensorBuffer(create(shape, LongPointer(*value), DT_INT64))
+    operator fun invoke(shape: Shape, array: Array<String>): StringTensorBuffer {
       val data = TFStringArray.encode(array)
       val t = newTensor(DT_STRING, shape.asLongArray(), data)
       return StringTensorBuffer(t, array)
     }
     
     
-    internal fun create(shape: Dimension, array: Pointer, dtype: Int) =
+    internal fun create(shape: Shape, array: Pointer, dtype: Int) =
         create(shape.asLongArray(), array, dtype)
     
     internal fun create(dims: LongArray, array: Pointer, dtype: Int): TF_Tensor {

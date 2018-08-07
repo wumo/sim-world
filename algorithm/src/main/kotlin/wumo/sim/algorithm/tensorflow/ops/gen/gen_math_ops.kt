@@ -8,7 +8,7 @@ import wumo.sim.algorithm.tensorflow.TF
 import wumo.sim.algorithm.tensorflow.ops.Output
 import wumo.sim.algorithm.tensorflow.buildOpTensor
 import wumo.sim.algorithm.tensorflow.buildOpTensors
-import wumo.sim.util.Dimension
+import wumo.sim.util.Shape
 
 fun TF.abs(x: Output, name: String = "Abs") = run {
   buildOpTensor("Abs", name) {
@@ -16,7 +16,7 @@ fun TF.abs(x: Output, name: String = "Abs") = run {
   }
 }
 
-fun TF.accumulateNV2(inputs: Array<Output>, shape: Dimension, name: String = "AccumulateNV2") = run {
+fun TF.accumulateNV2(inputs: Array<Output>, shape: Shape, name: String = "AccumulateNV2") = run {
   buildOpTensor("AccumulateNV2", name) {
     addInput(inputs, false)
     attr("shape", shape)

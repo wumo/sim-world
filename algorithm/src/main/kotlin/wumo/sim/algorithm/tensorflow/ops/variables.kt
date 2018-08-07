@@ -2,7 +2,7 @@ package wumo.sim.algorithm.tensorflow.ops
 
 import org.bytedeco.javacpp.tensorflow.DT_FLOAT
 import wumo.sim.algorithm.tensorflow.Variable
-import wumo.sim.util.Dimension
+import wumo.sim.util.Shape
 
 /**
  * Gets an existing model variable with these parameters or creates a new one.
@@ -18,7 +18,7 @@ applying it on a newly created variable will be added to the collection
  
  * @return:The created or existing variable.
  */
-fun model_variable(name: String, shape: Dimension, dtype: Int = DT_FLOAT,
+fun model_variable(name: String, shape: Shape, dtype: Int = DT_FLOAT,
                    initializer: Initializer,
                    trainable: Boolean = true): Variable {
   TODO()

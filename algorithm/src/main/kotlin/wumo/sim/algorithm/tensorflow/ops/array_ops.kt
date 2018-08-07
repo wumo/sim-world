@@ -4,7 +4,7 @@ import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.algorithm.tensorflow.TF
 import wumo.sim.algorithm.tensorflow.ops.gen.*
 import wumo.sim.algorithm.tensorflow.orUse
-import wumo.sim.util.Dimension
+import wumo.sim.util.Shape
 import wumo.sim.algorithm.tensorflow.ops.gen.oneHot as _oneHot
 import wumo.sim.algorithm.tensorflow.ops.gen.rank as _rank
 import wumo.sim.algorithm.tensorflow.ops.gen.shape as _shape
@@ -14,7 +14,7 @@ fun TF.oneHot(indices: Output, depth: Output, on_value: Output = const(1f, "on_v
               off_value: Output = const(0f, "off_value"), axis: Long = -1L, name: String = "OneHot") =
     _oneHot(indices, depth, on_value, off_value, axis, name)
 
-inline fun TF.placeholder(shape: Dimension = Dimension(unknow_rank = true),
+inline fun TF.placeholder(shape: Shape = Shape(unknow_rank = true),
                           dtype: Int = DT_FLOAT, name: String = "Placeholder"): Output =
     placeholder(dtype, shape, name)
 
@@ -31,7 +31,7 @@ fun TF.zeros(shape: Output, dtype: Int = DT_FLOAT, name: String = "Ones"): Outpu
   TODO()
 }
 
-fun TF.zeros(shape: Dimension, dtype: Int = DT_FLOAT, name: String = "Ones"): Output {
+fun TF.zeros(shape: Shape, dtype: Int = DT_FLOAT, name: String = "Ones"): Output {
   name_scope(name) {
     val zero = when (dtype) {
       DT_STRING -> ""
@@ -46,7 +46,7 @@ fun TF.zeros(shape: Dimension, dtype: Int = DT_FLOAT, name: String = "Ones"): Ou
   }
 }
 
-fun TF.ones(shape: Dimension, dtype: Int = DT_FLOAT, name: String = "Ones"): Output {
+fun TF.ones(shape: Shape, dtype: Int = DT_FLOAT, name: String = "Ones"): Output {
   name_scope(name) {
     return if (shape.numElements() < 1000)
       const(shape, dtype, 1, ctxNs.scopeName)

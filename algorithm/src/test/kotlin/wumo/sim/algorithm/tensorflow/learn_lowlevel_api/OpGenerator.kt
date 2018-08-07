@@ -43,7 +43,7 @@ fun generateGroupFiles(path: String, group: String, opDefs: List<OpDef>, kotlinP
         |package $kotlinPackage
         |import org.bytedeco.javacpp.tensorflow.*
         |import wumo.sim.algorithm.tensorflow.ops.Output
-        |import wumo.sim.util.Dimension
+        |import wumo.sim.util.Shape
         |import wumo.sim.algorithm.tensorflow.TF
         |import wumo.sim.algorithm.tensorflow.buildOp
         |import wumo.sim.algorithm.tensorflow.buildOpTensor
@@ -187,7 +187,7 @@ class OpGenerator(val opDef: OpDef, val sb: StringBuilder) {
         "float" to "Float",
         "bool" to "Boolean",
         "type" to "Int",
-        "shape" to "Dimension",
+        "shape" to "Shape",
         "Output" to "Output",
         "tensor" to "NDArray<*>",
         "list(string)" to "Array<String>",
@@ -195,7 +195,7 @@ class OpGenerator(val opDef: OpDef, val sb: StringBuilder) {
         "list(float)" to "Array<Float>",
         "list(bool)" to "Array<Boolean>",
         "list(type)" to "Array<Long>",
-        "list(shape)" to "Array<Dimension>",
+        "list(shape)" to "Array<Shape>",
         "list(tensor)" to "Array<NDArray<*>>",
         "list(Output)" to "Array<Output>"
     )
@@ -219,8 +219,8 @@ class OpGenerator(val opDef: OpDef, val sb: StringBuilder) {
         "type" -> value.type.name
         "shape" -> {
           val s = value.shape
-          if (s.unknownRank) "Dimension(unknow_rank = true)"
-          else "Dimension(longArrayOf(${value.shape.dimList.joinToString(", ")}))"
+          if (s.unknownRank) "Shape()"
+          else "Shape(longArrayOf(${value.shape.dimList.joinToString(", ")}))"
         }
         "tensor" -> {
 //          "${"\"\"\""}${TextFormat.shortDebugString(value.tensor)}${"\"\"\""}"
@@ -251,8 +251,8 @@ class OpGenerator(val opDef: OpDef, val sb: StringBuilder) {
                 value.list.typeList.joinToString(", ") { "${it.number}" }
               value.list.shapeCount > 0 ->
                 value.list.shapeList.joinToString(", ") {
-                  if (it.unknownRank) "Dimension(unknow_rank = true)"
-                  else "Dimension(longArrayOf(${it.dimList.joinToString(", ")}))"
+                  if (it.unknownRank) "Shape()"
+                  else "Shape(longArrayOf(${it.dimList.joinToString(", ")}))"
                 }
               value.list.tensorCount > 0 ->
                 "arrayOf(" + value.list.tensorList.joinToString(", ") {

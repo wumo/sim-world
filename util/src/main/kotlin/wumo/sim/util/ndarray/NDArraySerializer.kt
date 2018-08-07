@@ -2,7 +2,7 @@ package wumo.sim.util.ndarray
 
 import okio.BufferedSink
 import okio.BufferedSource
-import wumo.sim.util.Dimension
+import wumo.sim.util.Shape
 import wumo.sim.util.SwitchType3
 import wumo.sim.util.SwitchValue2
 import wumo.sim.util.ndarray.implementation.*
@@ -74,7 +74,7 @@ private val loadSwtich = SwitchValue2<Int, BufferedSource, Int, Buf<*>>().apply 
 }
 
 fun BufferedSource.decodeNDArray(): NDArray<*> {
-  val shape = Dimension(decodeIntArray())
+  val shape = Shape(decodeIntArray())
   val size = shape.numElements()
   val type = readInt()
   val buf = loadSwtich(type, this, size)

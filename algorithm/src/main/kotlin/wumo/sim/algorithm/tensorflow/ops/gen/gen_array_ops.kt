@@ -6,7 +6,7 @@ package wumo.sim.algorithm.tensorflow.ops.gen
 import org.bytedeco.javacpp.tensorflow.DT_INT32
 import wumo.sim.algorithm.tensorflow.*
 import wumo.sim.algorithm.tensorflow.ops.Output
-import wumo.sim.util.Dimension
+import wumo.sim.util.Shape
 
 fun TF.batchToSpace(input: Output, crops: Output, block_size: Long, name: String = "BatchToSpace") = run {
   buildOpTensor("BatchToSpace", name) {
@@ -261,7 +261,7 @@ fun TF.identityN(input: Output, name: String = "IdentityN") = run {
   }
 }
 
-fun TF.immutableConst(dtype: Int, shape: Dimension, memory_region_name: String, name: String = "ImmutableConst") = run {
+fun TF.immutableConst(dtype: Int, shape: Shape, memory_region_name: String, name: String = "ImmutableConst") = run {
   buildOpTensor("ImmutableConst", name) {
     attrType("dtype", dtype)
     attr("shape", shape)
@@ -380,21 +380,21 @@ fun TF.padV2(input: Output, paddings: Output, constant_values: Output, name: Str
   }
 }
 
-fun TF.parallelConcat(values: Array<Output>, shape: Dimension, name: String = "ParallelConcat") = run {
+fun TF.parallelConcat(values: Array<Output>, shape: Shape, name: String = "ParallelConcat") = run {
   buildOpTensor("ParallelConcat", name) {
     addInput(values, false)
     attr("shape", shape)
   }
 }
 
-fun TF.placeholder(dtype: Int, shape: Dimension = Dimension(unknow_rank = true), name: String = "Placeholder") = run {
+fun TF.placeholder(dtype: Int, shape: Shape = Shape(unknow_rank = true), name: String = "Placeholder") = run {
   buildOpTensor("Placeholder", name) {
     attrType("dtype", dtype)
     attr("shape", shape)
   }
 }
 
-fun TF.placeholderWithDefault(input: Output, shape: Dimension, name: String = "PlaceholderWithDefault") = run {
+fun TF.placeholderWithDefault(input: Output, shape: Shape, name: String = "PlaceholderWithDefault") = run {
   buildOpTensor("PlaceholderWithDefault", name) {
     addInput(input, false)
     attr("shape", shape)

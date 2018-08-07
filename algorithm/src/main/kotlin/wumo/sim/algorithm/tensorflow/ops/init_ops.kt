@@ -3,11 +3,11 @@ package wumo.sim.algorithm.tensorflow.ops
 import org.bytedeco.javacpp.tensorflow.DT_FLOAT
 import wumo.sim.algorithm.tensorflow.TF
 import wumo.sim.algorithm.tensorflow.tf
-import wumo.sim.util.Dimension
+import wumo.sim.util.Shape
 
 class Initializer(val dtype: Int, val name: String,
-                  val init: (Dimension, Int, String) -> Output) {
-  operator fun invoke(shape: Dimension, dtype: Int = this.dtype, name: String = this.name) =
+                  val init: (Shape, Int, String) -> Output) {
+  operator fun invoke(shape: Shape, dtype: Int = this.dtype, name: String = this.name) =
       tf.name_scope(name) { init(shape, dtype, tf.ctxNs.scopeName) }
 }
 

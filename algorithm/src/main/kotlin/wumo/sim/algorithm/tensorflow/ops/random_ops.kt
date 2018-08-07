@@ -5,7 +5,7 @@ import wumo.sim.algorithm.tensorflow.TF
 import wumo.sim.algorithm.tensorflow.is_integer
 import wumo.sim.algorithm.tensorflow.ops.gen.*
 import wumo.sim.algorithm.tensorflow.tf
-import wumo.sim.util.Dimension
+import wumo.sim.util.Shape
 import wumo.sim.util.scalarDimension
 
 fun TF.random_normal(shape: Output, dtype: Int = DT_FLOAT,
@@ -54,7 +54,7 @@ fun TF.random_uniform(shape: Output, dtype: Int = DT_FLOAT,
   }
 }
 
-fun TF.random_uniform(shape: Dimension,
+fun TF.random_uniform(shape: Shape,
                       min: Float, max: Float,
                       name: String = "random_uniform"): Output {
   name_scope(name) {

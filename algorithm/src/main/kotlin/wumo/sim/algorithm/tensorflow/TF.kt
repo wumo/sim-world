@@ -289,6 +289,10 @@ class TF {
   }
 }
 
+internal fun TF_Status.check() {
+  throwExceptionIfNotOk(this)
+}
+
 internal fun throwExceptionIfNotOk(status: TF_Status) {
   val code = TF_GetCode(status)
   if (code == TF_OK) return

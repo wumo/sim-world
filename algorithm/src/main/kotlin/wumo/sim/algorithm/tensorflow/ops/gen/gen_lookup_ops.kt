@@ -5,7 +5,7 @@ package wumo.sim.algorithm.tensorflow.ops.gen
 
 import wumo.sim.algorithm.tensorflow.*
 import wumo.sim.algorithm.tensorflow.ops.Output
-import wumo.sim.util.Dimension
+import wumo.sim.util.Shape
 
 fun TF.hashTableV2(key_dtype: Int, value_dtype: Int, container: String = "", shared_name: String = "", use_node_name_sharing: Boolean = false, name: String = "HashTableV2") = run {
   buildOpTensor("HashTableV2", name) {
@@ -74,7 +74,7 @@ fun TF.lookupTableSizeV2(table_handle: Output, name: String = "LookupTableSizeV2
   }
 }
 
-fun TF.mutableDenseHashTableV2(empty_key: Output, value_dtype: Int, container: String = "", shared_name: String = "", use_node_name_sharing: Boolean = false, value_shape: Dimension = Dimension(longArrayOf()), initial_num_buckets: Long = 131072L, max_load_factor: Float = 0.8f, name: String = "MutableDenseHashTableV2") = run {
+fun TF.mutableDenseHashTableV2(empty_key: Output, value_dtype: Int, container: String = "", shared_name: String = "", use_node_name_sharing: Boolean = false, value_shape: Shape = Shape(longArrayOf()), initial_num_buckets: Long = 131072L, max_load_factor: Float = 0.8f, name: String = "MutableDenseHashTableV2") = run {
   buildOpTensor("MutableDenseHashTableV2", name) {
     addInput(empty_key, false)
     attrType("value_dtype", value_dtype)
@@ -87,7 +87,7 @@ fun TF.mutableDenseHashTableV2(empty_key: Output, value_dtype: Int, container: S
   }
 }
 
-fun TF.mutableHashTableOfTensorsV2(key_dtype: Int, value_dtype: Int, container: String = "", shared_name: String = "", use_node_name_sharing: Boolean = false, value_shape: Dimension = Dimension(longArrayOf()), name: String = "MutableHashTableOfTensorsV2") = run {
+fun TF.mutableHashTableOfTensorsV2(key_dtype: Int, value_dtype: Int, container: String = "", shared_name: String = "", use_node_name_sharing: Boolean = false, value_shape: Shape = Shape(longArrayOf()), name: String = "MutableHashTableOfTensorsV2") = run {
   buildOpTensor("MutableHashTableOfTensorsV2", name) {
     attrType("key_dtype", key_dtype)
     attrType("value_dtype", value_dtype)

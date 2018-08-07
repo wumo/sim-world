@@ -6,7 +6,7 @@ import wumo.sim.util.ndarray.NDArray
 
 class Box(val low: NDArray<Float>, val high: NDArray<Float>) : Space<NDArray<Float>> {
   override val n = low.size
-  val shape: Dimension = low.shape
+  val shape: Shape = low.shape
   val dtype: Int = 1
   
   init {
