@@ -6,10 +6,13 @@ import wumo.sim.algorithm.tensorflow.Variable
 import wumo.sim.algorithm.tensorflow.defaut
 import wumo.sim.algorithm.tensorflow.ops.*
 import wumo.sim.algorithm.tensorflow.ops.Output
+import wumo.sim.algorithm.tensorflow.ops.control_flow_ops.cond
+import wumo.sim.algorithm.tensorflow.ops.control_flow_ops.group
 import wumo.sim.algorithm.tensorflow.ops.gen.*
 import wumo.sim.algorithm.tensorflow.tf
 import wumo.sim.algorithm.tensorflow.training.Optimizer
 import wumo.sim.util.*
+import wumo.sim.util.Shape
 import wumo.sim.util.ndarray.NDArray
 
 /**
@@ -56,11 +59,11 @@ fun build_train(make_obs_ph: (String) -> TfInput,
   tf.variable_scope(name) {
     //set up placeholders
     val obs_t_input = make_obs_ph("obs_t")
-    val act_t_ph = tf.placeholder(dim(-1), DT_INT32, name = "action")
-    val rew_t_ph = tf.placeholder(dim(-1), DT_FLOAT, name = "reward")
+    val act_t_ph = tf.placeholder(Shape(-1), DT_INT32, name = "action")
+    val rew_t_ph = tf.placeholder(Shape(-1), DT_FLOAT, name = "reward")
     val obs_tp1_input = make_obs_ph("obs_tp1")
-    val done_mask_ph = tf.placeholder(dim(-1), DT_FLOAT, name = "done")
-    val importance_weights_ph = tf.placeholder(dim(-1), DT_FLOAT, name = "weight")
+    val done_mask_ph = tf.placeholder(Shape(-1), DT_FLOAT, name = "done")
+    val importance_weights_ph = tf.placeholder(Shape(-1), DT_FLOAT, name = "weight")
     //q network evaluation
     val q_t = q_func(obs_t_input.get(), num_actions, "q_func", true)
     val q_func_vars = tf.ctxVs.variable_subscopes["q_func"]!!.all_variables()

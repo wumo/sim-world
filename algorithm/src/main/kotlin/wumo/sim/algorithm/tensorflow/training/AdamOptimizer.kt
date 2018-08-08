@@ -2,6 +2,7 @@ package wumo.sim.algorithm.tensorflow.training
 
 import wumo.sim.algorithm.tensorflow.*
 import wumo.sim.algorithm.tensorflow.ops.*
+import wumo.sim.algorithm.tensorflow.ops.control_flow_ops.group
 import wumo.sim.algorithm.tensorflow.ops.gen.applyAdam
 import wumo.sim.util.tuple2
 

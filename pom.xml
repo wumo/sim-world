@@ -74,8 +74,8 @@
 
     <properties>
         <junit.version>4.12</junit.version>
-        <slf4jVersion>1.7.7</slf4jVersion>
-        <logbackVersion>1.1.2</logbackVersion>
+        <slf4jVersion>1.7.25</slf4jVersion>
+        <logbackVersion>1.2.3</logbackVersion>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.9</maven.compiler.source>
         <maven.compiler.target>1.9</maven.compiler.target>

@@ -1,8 +1,12 @@
-package wumo.sim.algorithm.tensorflow.ops
+package wumo.sim.algorithm.tensorflow.ops.variables
 
 import org.bytedeco.javacpp.tensorflow.DT_FLOAT
 import wumo.sim.algorithm.tensorflow.Variable
+import wumo.sim.algorithm.tensorflow.layers.TensorFunction
+import wumo.sim.algorithm.tensorflow.ops.Initializer
 import wumo.sim.util.Shape
+
+typealias Regularizer = TensorFunction
 
 /**
  * Gets an existing model variable with these parameters or creates a new one.

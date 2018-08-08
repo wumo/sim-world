@@ -3,24 +3,29 @@ package wumo.sim.algorithm.tensorflow.ops
 import org.bytedeco.javacpp.PointerPointer
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
 import org.bytedeco.javacpp.tensorflow.*
-import wumo.sim.algorithm.tensorflow.Graph
-import wumo.sim.algorithm.tensorflow.ops.gradients.iterate
-import wumo.sim.algorithm.tensorflow.ops.gradients.toTensor
+import wumo.sim.algorithm.tensorflow.core.Graph
+import wumo.sim.algorithm.tensorflow.ops.control_flow_ops.CondContext
+import wumo.sim.algorithm.tensorflow.ops.control_flow_ops.ControlFlowContext
+import wumo.sim.algorithm.tensorflow.ops.ops.COLOCATION_OPS_ATTRIBUTE_NAME
+import wumo.sim.algorithm.tensorflow.ops.ops.COLOCATION_OPS_ATTRIBUTE_PREFIX
+import java.util.Collections.emptySet as emptyMutableSet
+
+class OpSpecification(name: String, opType: String, device: String)
 
 class Op(val graph: Graph, val c_op: TF_Operation) {
   init {
-    graph.opsCache[c_op.address()] = this
+    graph.cache(c_op)
   }
   
   val name: String by lazy { TF_OperationName(c_op).string }
-  val device: String by lazy { TF_OperationDevice(c_op).string }
+  val device: String get() = TF_OperationDevice(c_op).string
   val opType: String by lazy { TF_OperationOpType(c_op).string }
   val node: Node by lazy { c_op.node() }
   val attrs: AttrSlice by lazy { node.attrs() }
   
-  var control_flow_context: ControlFlowContext? = null
+  var controlFlowContext: ControlFlowContext? = null
   fun set_control_flow_context(condContext: CondContext) {
-    this.control_flow_context = condContext
+    this.controlFlowContext = condContext
   }
   
   /**
@@ -31,15 +36,22 @@ class Op(val graph: Graph, val c_op: TF_Operation) {
    * @param tensor the Output to be used as the input at the given index.
    * @param update_dtype If `False`, the type for this input is not updated.
    */
-  internal fun update_input(index: Int, tensor: Output, update_dtype: Boolean = true) {
-    val g = graph.c_graph
+  internal fun updateInput(index: Int, tensor: Output, update_dtype: Boolean = true) {
     val status = newStatus()
-    UpdateEdge(g, tensor.asTF_Output(), _tf_input(index), status)
-    inputs = _inputs()
+    UpdateEdge(graph.c_graph, tensor.asTF_Output(), asTF_Input(index), status)
+    inputs = _loadInputs()
   }
   
-  internal fun _tf_input(input_idx: Int) = run {
+  internal fun asTF_Input(input_idx: Int) = run {
     TF_Input().oper(c_op).index(input_idx)
+  }
+  
+  /**
+   * Add a new control input to this findOp.
+   */
+  internal fun addControlInput(op: Op) {
+    AddControlInput(graph.c_graph, c_op, op.c_op)
+    controlInputs = _loadControlInputs()
   }
   
   override fun equals(other: Any?): Boolean {
@@ -53,37 +65,56 @@ class Op(val graph: Graph, val c_op: TF_Operation) {
   
   override fun hashCode() = c_op.hashCode()
   
-  private var _numInputs = TF_OperationNumInputs(c_op)
-  
-  val numInputs
-    get() = _numInputs
   val numOutputs
     get() = TF_OperationNumOutputs(c_op)
-  
-  fun _inputs() = run {
-    val node = c_op.node()
-    val numInputs = node.num_inputs()
-    val inputs = MutableList(numInputs) { Output(null, it) }
-    for (e in node.in_edges().iterate()) {
-      if (e.IsControlEdge()) continue
-      inputs[e.dst_input()] = toTensor(e.src(), e.src_output())
-    }
-    inputs
-  }
-  
-  var inputs: List<Output> = _inputs()
-  val outputs: List<Output> by lazy {
-    List(numOutputs) {
+  val outputs: List<Output>
+    get() = List(numOutputs) {
       Output(Op(graph, c_op), it)
     }
+  
+  /** Number of inputs to this op (i.e., number of tensors fed as input to this op). */
+  var numInputs = 0
+    private set
+  /** Inputs of this op. Note that these inputs are outputs of other ops and thus have type [[Output]]. */
+  var inputs = _loadInputs()
+    private set
+  
+  internal fun _loadInputs() = run {
+    numInputs = TF_OperationNumInputs(c_op)
+    List(numInputs) {
+      val output = TF_OperationInput(asTF_Input(it))
+      Output(graph.cache(output.oper()), output.index())
+    }
   }
   
-  /**
-   * Add a new control input to this findOp.
-   */
-  fun addControlInput(op: Op) {
-    val g = graph.c_graph
-    AddControlInput(g, c_op, op.c_op)
+  var numControlInputs = 0
+    private set
+  var controlInputs = _loadControlInputs()
+    private set
+  
+  internal fun _loadControlInputs() = run {
+    numControlInputs = TF_OperationNumControlInputs(c_op)
+    val control_ops = PointerPointer<TF_Operation>(numControlInputs.toLong())
+    TF_OperationGetControlInputs(c_op, control_ops, numControlInputs)
+    List(numControlInputs) {
+      graph.cache(control_ops.get(TF_Operation::class.java, it.toLong()))
+    }
+  }
+  
+  var colocationOps = _loadColocationOps()
+    private set
+  
+  /** Colocation ops for this op (i.e., ops guaranteed to be placed on the same device). */
+  fun _loadColocationOps() = run {
+    val class_attr = attrStringList(COLOCATION_OPS_ATTRIBUTE_NAME)
+    if (class_attr != null) {
+      val colocationOps = hashSetOf<Op>()
+      for (class_name in class_attr)
+        if (class_name.startsWith(COLOCATION_OPS_ATTRIBUTE_PREFIX))
+          colocationOps += graph.findOp(class_name.substring(COLOCATION_OPS_ATTRIBUTE_PREFIX.length))!!
+      colocationOps.toTypedArray()
+    } else
+      emptyArray()
   }
   
   fun set_attr(key: String, value: AttrValue) {
@@ -93,15 +124,6 @@ class Op(val graph: Graph, val c_op: TF_Operation) {
     SetAttr(graph.c_graph, c_op, key, buf, status)
   }
   
-  val control_inputs: List<Op>
-    get() {
-      val numControlOps = TF_OperationNumControlInputs(c_op)
-      val control_ops = PointerPointer<TF_Operation>(numControlOps.toLong())
-      TF_OperationGetControlInputs(c_op, control_ops, numControlOps)
-      return List(numControlOps) {
-        Op(graph, control_ops.get(TF_Operation::class.java, it.toLong()))
-      }
-    }
   val output_types: List<Int> by lazy {
     val numOutputs = TF_OperationNumOutputs(c_op)
     
@@ -169,9 +191,5 @@ class Op(val graph: Graph, val c_op: TF_Operation) {
   
   override fun toString(): String {
     return """"Op("$name", op=$opType, dev=$device, run=${c_op.node().DebugString().string})"""
-  }
-  
-  companion object {
-    fun test(){}
   }
 }

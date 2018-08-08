@@ -1,42 +1,28 @@
-package wumo.sim.algorithm.tensorflow
+package wumo.sim.algorithm.tensorflow.ops
 
-import org.bytedeco.javacpp.Loader
 import org.bytedeco.javacpp.tensorflow
-import org.bytedeco.javacpp.tensorflow.*
 import org.tensorflow.framework.GraphDef
+import wumo.sim.algorithm.tensorflow.Session
+import wumo.sim.algorithm.tensorflow.Variable
 import wumo.sim.algorithm.tensorflow.core.Graph
-import wumo.sim.algorithm.tensorflow.ops.*
-import wumo.sim.algorithm.tensorflow.ops.Output
 import wumo.sim.algorithm.tensorflow.ops.control_flow_ops.CondContext
 import wumo.sim.algorithm.tensorflow.ops.control_flow_ops.ControlFlowContext
 import wumo.sim.algorithm.tensorflow.ops.control_flow_ops.group
 import wumo.sim.algorithm.tensorflow.scope.NameScope
 import wumo.sim.algorithm.tensorflow.scope.VariableScope
+import wumo.sim.algorithm.tensorflow.scopeChar
+import wumo.sim.algorithm.tensorflow.tf
+import wumo.sim.util.lazyLogger
 import wumo.sim.util.println
 import java.util.*
 
-var tf = TF()
-inline fun <R> defaut(_tf: TF, block: () -> R): R {
-  val tmp = tf
-  tf = _tf
-  try {
-    return block()
-  } finally {
-    tf = tmp
-  }
-}
-
-const val scopeChar = '$'
-
-class TF {
-  companion object {
-    init {
-      Loader.load(tensorflow::class.java)
-      tensorflow.InitMain("trainer", null as IntArray?, null)
-    }
-    
-    val version = TF_Version().string!!
-  }
+object ops {
+  val logger by lazyLogger()
+  
+  val COLOCATION_OPS_ATTRIBUTE_NAME = "_class"
+  val COLOCATION_OPS_ATTRIBUTE_PREFIX = "loc:@"
+  val VALID_OP_NAME_REGEX = Regex("^[A-Za-z0-9.][A-Za-z0-9_.\\-/]*$")
+  val VALID_NAME_SCOPE_REGEX = Regex("^[A-Za-z0-9_.\\-/]*$")
   
   val g = Graph()
   val trainables = mutableListOf<Variable>()
@@ -47,11 +33,11 @@ class TF {
   var ctxNs = rootNs
   var ctxVs = rootVs
   
-  var control_flow_context: ControlFlowContext? = null
+  var currentControlFlowContext: ControlFlowContext? = null
   var device: String = ""
   var colocate_with = ArrayDeque<Op>()
   val control_ops = ArrayDeque<Op>()
-  val attr_scope_map = hashMapOf<String, AttrValue>()
+  val attr_scope_map = hashMapOf<String, tensorflow.AttrValue>()
   
   lateinit var session: Session
   /**
@@ -151,8 +137,8 @@ class TF {
     }
   }
   
-  inline fun <R> attr_scope(vararg attrs: Pair<String, AttrValue>, block: () -> R): R {
-    val saved_attrs = hashMapOf<String, AttrValue>()
+  inline fun <R> attr_scope(vararg attrs: Pair<String, tensorflow.AttrValue>, block: () -> R): R {
+    val saved_attrs = hashMapOf<String, tensorflow.AttrValue>()
     attrs.forEach { (key, value) ->
       attr_scope_map.compute(key) { k, v ->
         if (v != null) saved_attrs[k] = v
@@ -181,7 +167,7 @@ class TF {
   }
   
   fun global_variable_initializer(): Op {
-    return group(global_variables, name = "init")
+    return tf.group(global_variables, name = "init")
   }
   
   private var tmpDev = ""
@@ -195,12 +181,12 @@ class TF {
   }
   
   inline fun <R> condContext(pred: Output, pivot: Output, branch: Int, block: (CondContext) -> R): R {
-    val tmp = control_flow_context
-    control_flow_context = CondContext(pred, pivot, branch)
+    val tmp = currentControlFlowContext
+    currentControlFlowContext = CondContext(pred, pivot, branch)
     try {
-      return block(control_flow_context as CondContext)
+      return block(currentControlFlowContext as CondContext)
     } finally {
-      control_flow_context = tmp
+      currentControlFlowContext = tmp
     }
   }
   
@@ -290,23 +276,5 @@ class TF {
           control_ops.removeLast()
         }
     }
-  }
-}
-
-internal fun TF_Status.check() {
-  throwExceptionIfNotOk(this)
-}
-
-internal fun throwExceptionIfNotOk(status: TF_Status) {
-  val code = TF_GetCode(status)
-  if (code == TF_OK) return
-  val msg = TF_Message(status).string
-  throw when (code) {
-    TF_INVALID_ARGUMENT -> IllegalArgumentException(msg)
-    TF_UNAUTHENTICATED, TF_PERMISSION_DENIED -> SecurityException(msg)
-    TF_RESOURCE_EXHAUSTED, TF_FAILED_PRECONDITION -> IllegalStateException(msg)
-    TF_OUT_OF_RANGE -> IndexOutOfBoundsException(msg)
-    TF_UNIMPLEMENTED -> UnsupportedOperationException(msg)
-    else -> Exception(msg)
   }
 }

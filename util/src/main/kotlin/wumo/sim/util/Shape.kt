@@ -2,13 +2,26 @@
 
 package wumo.sim.util
 
-infix fun Int.x(a: Int) = dim(this, a)
-infix fun Shape.x(a: Int) = dim(*asIntArray()!!, a)
-infix fun Int.x(shape: Shape) = dim(this, *shape.asIntArray()!!)
-
-inline fun dim(vararg d: Int) = Shape(d)
-
 val scalarDimension = Shape()
+infix fun Int.x(a: Int) = Shape(this, a)
+infix fun Shape.x(a: Int) = run {
+  val dims = asIntArray()
+  if (dims == null) Shape()
+  else Shape(*dims, a)
+}
+
+infix fun Int.x(shape: Shape) = run {
+  val dims = shape.asIntArray()
+  if (dims == null) Shape()
+  else Shape(this, *dims)
+}
+
+infix fun Shape.x(shape: Shape) = run {
+  val dims1 = asIntArray()
+  val dims2 = shape.asIntArray()
+  if (dims1 == null || dims2 == null) Shape()
+  else Shape(*dims1, *dims2)
+}
 
 /** Represents the shape of a tensor computed by an op.
  *
@@ -30,12 +43,16 @@ val scalarDimension = Shape()
 class Shape(private val dims: IntArray? = null) : Iterable<Int> {
   constructor(elements: LongArray) : this(IntArray(elements.size) { elements[it].toInt() })
   
+  companion object {
+    operator fun invoke(vararg d: Int) = Shape(d)
+  }
+  
   fun asLongArray() =
       LongArray(dims!!.size) { dims[it].toLong() }
   
   fun asIntArray() = dims
   
-  fun rank() = dims?.size ?: -1
+  val rank = dims?.size ?: -1
   
   val is_fully_defined: Boolean
     get() = dims?.all { it >= 0 } ?: false
@@ -55,16 +72,15 @@ class Shape(private val dims: IntArray? = null) : Iterable<Int> {
         dims!![idx]
   
   operator fun get(idx: IntRange) = run {
-    val size = (idx.endInclusive - idx.start) / idx.step
-    val iter = idx.iterator()
-    Shape(IntArray(size) {
-      this[iter.nextInt()]
-    })
+    if (dims == null) Shape()
+    else {
+      val size = (idx.endInclusive - idx.start) / idx.step
+      val iter = idx.iterator()
+      Shape(IntArray(size) {
+        this[iter.nextInt()]
+      })
+    }
   }
-
-//  operator fun plusAssign(d: Int) {
-//    dims!! += d
-//  }
   
   override fun iterator() = dims!!.iterator()
   
@@ -80,18 +96,14 @@ class Shape(private val dims: IntArray? = null) : Iterable<Int> {
     return sb.toString()
   }
   
-  fun isCompatibleWith(other: Shape): Boolean {
-    if (rank() != other.rank()) return false
-    for (i in 0 until rank()) {
-      if (!compatible(this[i], other[i]))
-        return false
+  fun isCompatibleWith(other: Shape) = run {
+    when {
+      rank == -1 || other.rank == -1 -> true
+      rank != other.rank -> false
+      else -> (0 until rank).all { compatible(this[it], other[it]) }
     }
-    return true
   }
   
-  fun compatible(d1: Int, d2: Int) = when {
-    d1 == d2 -> true
-    d1 == -1 || d2 == -1 -> true
-    else -> false
-  }
+  inline fun compatible(d1: Int, d2: Int) =
+      d1 == -1 || d2 == -1 || d1 == d2
 }

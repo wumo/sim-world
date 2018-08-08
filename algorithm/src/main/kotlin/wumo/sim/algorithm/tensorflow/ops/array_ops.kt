@@ -14,7 +14,7 @@ fun TF.oneHot(indices: Output, depth: Output, on_value: Output = const(1f, "on_v
               off_value: Output = const(0f, "off_value"), axis: Long = -1L, name: String = "OneHot") =
     _oneHot(indices, depth, on_value, off_value, axis, name)
 
-inline fun TF.placeholder(shape: Shape = Shape(unknow_rank = true),
+inline fun TF.placeholder(shape: Shape = Shape(),
                           dtype: Int = DT_FLOAT, name: String = "Placeholder"): Output =
     placeholder(dtype, shape, name)
 
@@ -66,7 +66,7 @@ fun TF.shape(input: Output, out_type: Int = DT_INT32, name: String = "Shape", op
   //TODO SparseOutput
   val input_shape = input.shape
   if (optimize && input_shape.is_fully_defined)
-    return const(input_shape.asIntArray(), name)
+    return const(input_shape.asIntArray()!!, name)
   return _shape(input, out_type, name)
 }
 
@@ -158,7 +158,7 @@ fun TF.rank(input: Output, name: String = "Rank", optimize: Boolean = true): Out
   //TODO SparseOutput
   val input_shape = input.shape
   if (optimize && input_shape.is_fully_defined)
-    return const(input_shape.rank(), name)
+    return const(input_shape.rank, name)
   return _rank(input, name)
 }
 

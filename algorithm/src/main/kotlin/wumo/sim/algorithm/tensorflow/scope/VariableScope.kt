@@ -3,9 +3,15 @@ package wumo.sim.algorithm.tensorflow.scope
 import wumo.sim.algorithm.tensorflow.Variable
 
 /**
+ * Variable scope allows you to create new variables and to share already created
+ * ones while providing checks to not create or share by accident.
+ *
  * @param namescope 此[VariableScope]对应的[NameScope]，通常是复用的
  */
 class VariableScope(val name: String, val namescope: NameScope) : enter_exit {
+  fun getVariable() {
+  }
+  
   override fun enter() {
     var_scope_count.clear()
   }

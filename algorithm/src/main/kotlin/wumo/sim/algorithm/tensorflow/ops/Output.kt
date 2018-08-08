@@ -2,8 +2,8 @@ package wumo.sim.algorithm.tensorflow.ops
 
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
 import org.bytedeco.javacpp.tensorflow.*
-import wumo.sim.algorithm.tensorflow.Graph
 import wumo.sim.algorithm.tensorflow.TF
+import wumo.sim.algorithm.tensorflow.core.Graph
 import wumo.sim.algorithm.tensorflow.name
 import wumo.sim.algorithm.tensorflow.throwExceptionIfNotOk
 import wumo.sim.util.Shape
@@ -18,7 +18,7 @@ sealed class OutputLike : OutputConvertible {
   abstract val dtype: Int
   abstract val device: String
   abstract val op: Op?
-  abstract val consumers: Array<Input>
+  abstract val consumers: Array<Op>
 }
 
 class IndexedSlices : OutputLike() {
@@ -30,7 +30,7 @@ class IndexedSlices : OutputLike() {
     get() = TODO("not implemented")
   override val op: Op?
     get() = TODO("not implemented")
-  override val consumers: Array<Input>
+  override val consumers: Array<Op>
     get() = TODO("not implemented")
   override val graph: Graph
     get() = TODO("not implemented")
@@ -49,7 +49,7 @@ class SparseOutput : OutputLike() {
     get() = TODO("not implemented")
   override val op: Op?
     get() = TODO("not implemented")
-  override val consumers: Array<Input>
+  override val consumers: Array<Op>
     get() = TODO("not implemented")
   override val graph: Graph
     get() = TODO("not implemented")
@@ -100,8 +100,16 @@ class SparseOutput : OutputLike() {
 class Output(override val op: Op?, val value_index: Int) : OutputLike() {
   override val graph = op!!.graph
   override val device = op!!.device
-  override val consumers: Array<Input>
-    get() = TODO("not implemented")
+  override val consumers: Array<Op>
+    get() {
+      val tf_output = asTF_Output()
+      val numConsumers = TF_OperationOutputNumConsumers(tf_output)
+      val consumers = TF_Input(numConsumers.toLong())
+      TF_OperationOutputConsumers(tf_output, consumers, numConsumers)
+      return Array(numConsumers) {
+        graph.cache(consumers.position(it.toLong()).oper())
+      }
+    }
   
   override fun toTensor() = this
   
@@ -116,7 +124,7 @@ class Output(override val op: Op?, val value_index: Int) : OutputLike() {
       val output = asTF_Output()
       val status = newStatus()
       val numDims = TF_GraphGetTensorNumDims(c_graph, output, status)
-      if (numDims < 0) return Shape(unknow_rank = true)
+      if (numDims < 0) return Shape()
       throwExceptionIfNotOk(status)
       val dims = LongArray(numDims)
       TF_GraphGetTensorShape(c_graph, output, dims, numDims, status)
@@ -164,7 +172,7 @@ class Output(override val op: Op?, val value_index: Int) : OutputLike() {
     throwExceptionIfNotOk(status)
   }
   
-  val tf: TF by lazy { op!!.graph.tf }
+  val tf: TF by lazy { TODO("op!!.graph.tf") }
   
   fun asTF_Output() = TF_Output().oper(op!!.c_op).index(value_index)
   override val name: String by lazy { "${op!!.name}:$value_index" }

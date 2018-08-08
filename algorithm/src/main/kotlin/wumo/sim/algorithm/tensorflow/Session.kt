@@ -94,7 +94,7 @@ class Session(val c_graph: TF_Graph) {
     throwExceptionIfNotOk(status)
     clear()
     return Array(noutputs) {
-      TensorBuffer.toNDArray<Any>(output_values.get(TF_Tensor::class.java, it.toLong()))
+      Tensor.toNDArray<Any>(output_values.get(TF_Tensor::class.java, it.toLong()))
     }
   }
   
@@ -115,7 +115,7 @@ class Session(val c_graph: TF_Graph) {
     throwExceptionIfNotOk(status)
     clear()
     return Array(noutputs) {
-      TensorBuffer.toNDArray<Any>(output_values.get(TF_Tensor::class.java, it.toLong()))
+      Tensor.toNDArray<Any>(output_values.get(TF_Tensor::class.java, it.toLong()))
     }
   }
   
@@ -126,7 +126,7 @@ class Session(val c_graph: TF_Graph) {
     for ((i, pair) in feed_dict.withIndex()) {
       val (input, input_value) = pair
       inputs.position(i.toLong()).oper(input.op!!.c_op).index(input.value_index)
-      input_values.position(i.toLong()).put(TensorBuffer.fromNDArray(input_value).c_tensor)
+      input_values.position(i.toLong()).put(Tensor.fromNDArray(input_value).c_tensor)
     }
     inputs.position(0L)
     input_values.position(0L)
@@ -173,7 +173,7 @@ class Session(val c_graph: TF_Graph) {
       val (_input, input_value) = pair
       val input = tf.g.getTensor(_input)
       inputs.position(i.toLong()).oper(input.op!!.c_op).index(input.value_index)
-      input_values.position(i.toLong()).put(TensorBuffer.fromNDArray(input_value).c_tensor)
+      input_values.position(i.toLong()).put(Tensor.fromNDArray(input_value).c_tensor)
     }
     inputs.position(0L)
     input_values.position(0L)
@@ -202,7 +202,7 @@ class Session(val c_graph: TF_Graph) {
     throwExceptionIfNotOk(status)
     clear()
     return Array(noutputs) {
-      TensorBuffer.toNDArray<Any>(output_values.get(TF_Tensor::class.java, it.toLong()))
+      Tensor.toNDArray<Any>(output_values.get(TF_Tensor::class.java, it.toLong()))
     }
   }
   
@@ -215,7 +215,7 @@ class Session(val c_graph: TF_Graph) {
     for ((i, pair) in feed_dict.entries.withIndex()) {
       val (input, input_value) = pair
       inputs.position(i.toLong()).oper(input.op!!.c_op).index(input.value_index)
-      input_values.position(i.toLong()).put(TensorBuffer.fromNDArray(input_value).c_tensor)
+      input_values.position(i.toLong()).put(Tensor.fromNDArray(input_value).c_tensor)
     }
     inputs.position(0L)
     input_values.position(0L)
@@ -246,7 +246,7 @@ class Session(val c_graph: TF_Graph) {
     throwExceptionIfNotOk(status)
     clear()
     return Array(noutputs) {
-      TensorBuffer.toNDArray<Any>(output_values.get(TF_Tensor::class.java, it.toLong()))
+      Tensor.toNDArray<Any>(output_values.get(TF_Tensor::class.java, it.toLong()))
     }
   }
 }

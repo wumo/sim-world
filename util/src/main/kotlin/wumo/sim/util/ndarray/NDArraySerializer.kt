@@ -82,7 +82,7 @@ fun BufferedSource.decodeNDArray(): NDArray<*> {
 }
 
 fun BufferedSink.encode(obj: NDArray<*>) {
-  encode(obj.shape.asIntArray())
+  encode(obj.shape.asIntArray()!!)
   val first = obj.first()
   saveSwtich(first, this, obj)
 }

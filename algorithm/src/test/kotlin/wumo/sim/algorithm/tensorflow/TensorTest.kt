@@ -6,11 +6,11 @@ import wumo.sim.util.f
 import wumo.sim.util.ndarray.NDArray
 import wumo.sim.util.x
 
-class TensorBufferTest {
+class TensorTest {
   @Test
   fun `get set`() {
     tf
-    val _t = TensorBuffer(2 x 2, f(1f, 2f, 3f, 4f))
+    val _t = Tensor(2 x 2, f(1f, 2f, 3f, 4f))
     val t = NDArray(2 x 2, _t, Float::class.java)
     println(t)
     t[0, 0] = 3f
@@ -19,9 +19,9 @@ class TensorBufferTest {
     t_c[0, 0] = 6f
     println(t)
     println(t_c)
-    val t2 = TensorBuffer<Float>(_t.c_tensor)
+    val t2 = Tensor<Float>(_t.c_tensor)
     println(t2)
-    val t3 = TensorBuffer(1)
+    val t3 = Tensor(1)
     println(t3)
     val a = tf.const(t3)
     tf.printGraph()

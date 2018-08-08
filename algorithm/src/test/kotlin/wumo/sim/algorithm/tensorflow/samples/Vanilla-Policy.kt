@@ -73,7 +73,7 @@ class VanillaPolicyTest : BaseTest() {
         val s = env.reset()
         var running_reward = 0f
         for (j in 0 until max_ep) {
-//          feed(state_in to TensorBuffer(f(s)))
+//          feed(state_in to Tensor(f(s)))
 //          output.eval()
         }
       }

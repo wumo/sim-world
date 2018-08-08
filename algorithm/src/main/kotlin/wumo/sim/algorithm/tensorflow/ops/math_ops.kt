@@ -1,9 +1,11 @@
 package wumo.sim.algorithm.tensorflow.ops
 
 import org.bytedeco.javacpp.tensorflow.*
-import wumo.sim.algorithm.tensorflow.*
+import wumo.sim.algorithm.tensorflow.TF
 import wumo.sim.algorithm.tensorflow.Variable
+import wumo.sim.algorithm.tensorflow.base_dtype
 import wumo.sim.algorithm.tensorflow.ops.gen.*
+import wumo.sim.algorithm.tensorflow.tf
 import wumo.sim.util.arange
 import wumo.sim.util.i
 import wumo.sim.algorithm.tensorflow.ops.gen.cast as _cast
@@ -34,7 +36,7 @@ operator fun Output.plus(b: Any) =
 operator fun Output.plus(b: Output) = tf.add(this, b)
 
 fun TF.cast(x: Output, dstT: Int, name: String = "Cast") = run {
-  val x = (x as? Variable)?.value() ?: x
+  val x = (x as? Variable)?.value ?: x
   if (x.dtype == dstT) x
   else _cast(x, dstT, name)
 }
@@ -67,7 +69,7 @@ fun TF.greaterEqual(a: Output, b: Any, name: String = "GreaterEqual") =
 fun TF.reductionDims(x: Output, axis: Output?): Output {
   if (axis != null) return axis
   //Fast path: avoid creating Rank and Range ops if ndims is known.
-  return const(arange(x.shape.rank()), name = "reduction_indices")
+  return const(arange(x.shape.rank), name = "reduction_indices")
   //TODO SparseOutput
   // Otherwise, we rely on Range and Rank to do the right thing at run-time.
   return range(const(0), rank(x))

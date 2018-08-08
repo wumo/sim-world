@@ -1,10 +1,70 @@
 package wumo.sim.algorithm.tensorflow
 
 import wumo.sim.algorithm.tensorflow.ops.*
+import wumo.sim.algorithm.tensorflow.ops.control_flow_ops.cond
 import wumo.sim.algorithm.tensorflow.ops.gen.identity
+import wumo.sim.algorithm.tensorflow.ops.variables.VariableLike
+import wumo.sim.algorithm.tensorflow.types.DataType
 import wumo.sim.util.a
 
-class Variable(op: Op, value_index: Int) : OutputConvertible {
+class Variable(
+    override val dataType: DataType<*>,
+    private val variable: Output,
+    private val initializeOp: Op,
+    private val cachedValue: Output,
+    op: Op, value_index: Int) : VariableLike {
+  /** Graph where this variable is defined. */
+  override val graph = variable.graph
+  /** Name of this variable. */
+  override val name
+    get() = variable.op!!.name
+  val device = variable.device
+  override val shape = variable.shape
+  override val value
+    get() = snapshot
+  override val initializer: Op
+    get() = TODO("not implemented")
+  override val isInitialized: Output
+    get() = TODO("not implemented")
+  
+  override val initializedValue: Output
+    get() =
+      ops.init_scope {
+        tf.cond(is_variable_initialized(), { read_value() }, { initial_value })
+      }
+  
+  override fun read(name: String): Output {
+    TODO("not implemented")
+  }
+  
+  override fun gather(indices: Output, name: String): Output {
+    TODO("not implemented")
+  }
+  
+  override fun assign(value: Output, name: String): Output {
+    TODO("not implemented")
+  }
+  
+  override fun assignAdd(value: Output, name: String): Output {
+    TODO("not implemented")
+  }
+  
+  override fun assignSub(value: Output, name: String): Output {
+    TODO("not implemented")
+  }
+  
+  override fun assignScatter(indices: Output, values: Output, name: String): Output {
+    TODO("not implemented")
+  }
+  
+  override fun assignScatterAdd(indices: Output, values: Output, name: String): Output {
+    TODO("not implemented")
+  }
+  
+  override fun assignScatterSub(indices: Output, values: Output, name: String): Output {
+    TODO("not implemented")
+  }
+  
   override fun toTensor(): Output {
     TODO("not implemented")
   }
@@ -67,7 +127,7 @@ class Variable(op: Op, value_index: Int) : OutputConvertible {
       for (op_input in op.inputs)
         if (has_cycle(op_input.op!!, path))
           return true
-      for (op_control_input in op.control_inputs)
+      for (op_control_input in op.controlInputs)
         if (has_cycle(op_control_input, path))
           return true
       path.remove(op.name)
@@ -150,6 +210,4 @@ class Variable(op: Op, value_index: Int) : OutputConvertible {
         return v.initialized_value()
     return null
   }
-  
-  override fun value() = snapshot
 }

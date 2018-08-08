@@ -9,7 +9,6 @@ import wumo.sim.algorithm.tensorflow.ops.gen.variableV2
 import wumo.sim.algorithm.tensorflow.scope.NameScope
 import wumo.sim.util.Shape
 import wumo.sim.util.SwitchType3
-import wumo.sim.util.dim
 import wumo.sim.util.scalarDimension
 import wumo.sim.algorithm.tensorflow.ops.gen.assign as _assign
 import wumo.sim.algorithm.tensorflow.ops.gen.isVariableInitialized as _isVariableInitialized
@@ -47,14 +46,14 @@ fun TF.variable(initial_value: Short, name: String = "Variable", trainable: Bool
 fun TF.variable(initial_value: Int, name: String = "Variable", trainable: Boolean = true) = variable(scalarDimension, initial_value, name, trainable)
 fun TF.variable(initial_value: Long, name: String = "Variable", trainable: Boolean = true) = variable(scalarDimension, initial_value, name, trainable)
 fun TF.variable(initial_value: String, name: String = "Variable", trainable: Boolean = true) = variable(scalarDimension, initial_value, name, trainable)
-fun TF.variable(initial_value: FloatArray, name: String = "Variable", trainable: Boolean = true) = _variable({ const(dim(initial_value.size), initial_value, it) }, name, trainable)
-fun TF.variable(initial_value: DoubleArray, name: String = "Variable", trainable: Boolean = true) = _variable({ const(dim(initial_value.size), initial_value, it) }, name, trainable)
-fun TF.variable(initial_value: BooleanArray, name: String = "Variable", trainable: Boolean = true) = _variable({ const(dim(initial_value.size), initial_value, it) }, name, trainable)
-fun TF.variable(initial_value: ByteArray, name: String = "Variable", trainable: Boolean = true) = _variable({ const(dim(initial_value.size), initial_value, it) }, name, trainable)
-fun TF.variable(initial_value: ShortArray, name: String = "Variable", trainable: Boolean = true) = _variable({ const(dim(initial_value.size), initial_value, it) }, name, trainable)
-fun TF.variable(initial_value: IntArray, name: String = "Variable", trainable: Boolean = true) = _variable({ const(dim(initial_value.size), initial_value, it) }, name, trainable)
-fun TF.variable(initial_value: LongArray, name: String = "Variable", trainable: Boolean = true) = _variable({ const(dim(initial_value.size), initial_value, it) }, name, trainable)
-fun TF.variable(initial_value: Array<String>, name: String = "Variable", trainable: Boolean = true) = _variable({ const(dim(initial_value.size), initial_value, it) }, name, trainable)
+fun TF.variable(initial_value: FloatArray, name: String = "Variable", trainable: Boolean = true) = _variable({ const(Shape(initial_value.size), initial_value, it) }, name, trainable)
+fun TF.variable(initial_value: DoubleArray, name: String = "Variable", trainable: Boolean = true) = _variable({ const(Shape(initial_value.size), initial_value, it) }, name, trainable)
+fun TF.variable(initial_value: BooleanArray, name: String = "Variable", trainable: Boolean = true) = _variable({ const(Shape(initial_value.size), initial_value, it) }, name, trainable)
+fun TF.variable(initial_value: ByteArray, name: String = "Variable", trainable: Boolean = true) = _variable({ const(Shape(initial_value.size), initial_value, it) }, name, trainable)
+fun TF.variable(initial_value: ShortArray, name: String = "Variable", trainable: Boolean = true) = _variable({ const(Shape(initial_value.size), initial_value, it) }, name, trainable)
+fun TF.variable(initial_value: IntArray, name: String = "Variable", trainable: Boolean = true) = _variable({ const(Shape(initial_value.size), initial_value, it) }, name, trainable)
+fun TF.variable(initial_value: LongArray, name: String = "Variable", trainable: Boolean = true) = _variable({ const(Shape(initial_value.size), initial_value, it) }, name, trainable)
+fun TF.variable(initial_value: Array<String>, name: String = "Variable", trainable: Boolean = true) = _variable({ const(Shape(initial_value.size), initial_value, it) }, name, trainable)
 fun TF.variable(shape: Shape, initial_value: FloatArray, name: String = "Variable", trainable: Boolean = true) = _variable({ const(shape, initial_value, it) }, name, trainable)
 fun TF.variable(shape: Shape, initial_value: DoubleArray, name: String = "Variable", trainable: Boolean = true) = _variable({ const(shape, initial_value, it) }, name, trainable)
 fun TF.variable(shape: Shape, initial_value: BooleanArray, name: String = "Variable", trainable: Boolean = true) = _variable({ const(shape, initial_value, it) }, name, trainable)
@@ -133,14 +132,14 @@ fun TF.get_variable(initial_value: Short, name: String = "Variable", trainable: 
 fun TF.get_variable(initial_value: Int, name: String = "Variable", trainable: Boolean = true) = get_variable(scalarDimension, initial_value, name, trainable)
 fun TF.get_variable(initial_value: Long, name: String = "Variable", trainable: Boolean = true) = get_variable(scalarDimension, initial_value, name, trainable)
 fun TF.get_variable(initial_value: String, name: String = "Variable", trainable: Boolean = true) = get_variable(scalarDimension, initial_value, name, trainable)
-fun TF.get_variable(initial_value: FloatArray, name: String = "Variable", trainable: Boolean = true) = get_variable({ const(dim(initial_value.size), initial_value, it) }, name, trainable)
-fun TF.get_variable(initial_value: DoubleArray, name: String = "Variable", trainable: Boolean = true) = get_variable({ const(dim(initial_value.size), initial_value, it) }, name, trainable)
-fun TF.get_variable(initial_value: BooleanArray, name: String = "Variable", trainable: Boolean = true) = get_variable({ const(dim(initial_value.size), initial_value, it) }, name, trainable)
-fun TF.get_variable(initial_value: ByteArray, name: String = "Variable", trainable: Boolean = true) = get_variable({ const(dim(initial_value.size), initial_value, it) }, name, trainable)
-fun TF.get_variable(initial_value: ShortArray, name: String = "Variable", trainable: Boolean = true) = get_variable({ const(dim(initial_value.size), initial_value, it) }, name, trainable)
-fun TF.get_variable(initial_value: IntArray, name: String = "Variable", trainable: Boolean = true) = get_variable({ const(dim(initial_value.size), initial_value, it) }, name, trainable)
-fun TF.get_variable(initial_value: LongArray, name: String = "Variable", trainable: Boolean = true) = get_variable({ const(dim(initial_value.size), initial_value, it) }, name, trainable)
-fun TF.get_variable(initial_value: Array<String>, name: String = "Variable", trainable: Boolean = true) = get_variable({ const(dim(initial_value.size), initial_value, it) }, name, trainable)
+fun TF.get_variable(initial_value: FloatArray, name: String = "Variable", trainable: Boolean = true) = get_variable({ const(Shape(initial_value.size), initial_value, it) }, name, trainable)
+fun TF.get_variable(initial_value: DoubleArray, name: String = "Variable", trainable: Boolean = true) = get_variable({ const(Shape(initial_value.size), initial_value, it) }, name, trainable)
+fun TF.get_variable(initial_value: BooleanArray, name: String = "Variable", trainable: Boolean = true) = get_variable({ const(Shape(initial_value.size), initial_value, it) }, name, trainable)
+fun TF.get_variable(initial_value: ByteArray, name: String = "Variable", trainable: Boolean = true) = get_variable({ const(Shape(initial_value.size), initial_value, it) }, name, trainable)
+fun TF.get_variable(initial_value: ShortArray, name: String = "Variable", trainable: Boolean = true) = get_variable({ const(Shape(initial_value.size), initial_value, it) }, name, trainable)
+fun TF.get_variable(initial_value: IntArray, name: String = "Variable", trainable: Boolean = true) = get_variable({ const(Shape(initial_value.size), initial_value, it) }, name, trainable)
+fun TF.get_variable(initial_value: LongArray, name: String = "Variable", trainable: Boolean = true) = get_variable({ const(Shape(initial_value.size), initial_value, it) }, name, trainable)
+fun TF.get_variable(initial_value: Array<String>, name: String = "Variable", trainable: Boolean = true) = get_variable({ const(Shape(initial_value.size), initial_value, it) }, name, trainable)
 fun TF.get_variable(shape: Shape, initial_value: FloatArray, name: String = "Variable", trainable: Boolean = true) = get_variable({ const(shape, initial_value, it) }, name, trainable)
 fun TF.get_variable(shape: Shape, initial_value: DoubleArray, name: String = "Variable", trainable: Boolean = true) = get_variable({ const(shape, initial_value, it) }, name, trainable)
 fun TF.get_variable(shape: Shape, initial_value: BooleanArray, name: String = "Variable", trainable: Boolean = true) = get_variable({ const(shape, initial_value, it) }, name, trainable)

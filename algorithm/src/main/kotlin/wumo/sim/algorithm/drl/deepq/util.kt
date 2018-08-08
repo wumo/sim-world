@@ -4,7 +4,6 @@ package wumo.sim.algorithm.drl.deepq
 
 import org.bytedeco.javacpp.tensorflow.DT_FLOAT
 import org.bytedeco.javacpp.tensorflow.DT_INT32
-import wumo.sim.algorithm.tensorflow.ops.Output
 import wumo.sim.algorithm.tensorflow.ops.*
 import wumo.sim.algorithm.tensorflow.ops.gen.abs
 import wumo.sim.algorithm.tensorflow.ops.gen.less
@@ -14,13 +13,11 @@ import wumo.sim.algorithm.tensorflow.tf
 import wumo.sim.core.Space
 import wumo.sim.spaces.Box
 import wumo.sim.spaces.Discrete
+import wumo.sim.util.Shape
 import wumo.sim.util.a
-import wumo.sim.util.dim
 import wumo.sim.util.ndarray.NDArray
 import wumo.sim.util.tuple2
 import wumo.sim.util.x
-
-inline fun <reified T> emptyArray() = Array<T>(0) { throw NotImplementedError() }
 
 interface Function {
   operator fun invoke(vararg args: Any): Array<NDArray<*>>
@@ -125,7 +122,7 @@ open class PlaceholderTfInput(val placeholder: Output) : TfInput(placeholder.nam
 fun observation_input(ob_space: Space<*>, batch_size: Int = -1, name: String = "Ob") =
     when (ob_space) {
       is Discrete -> {
-        val input_x = tf.placeholder(shape = dim(batch_size), dtype = DT_INT32, name = name)
+        val input_x = tf.placeholder(shape = Shape(batch_size), dtype = DT_INT32, name = name)
         val processed_x = tf.cast(tf.oneHot(input_x, tf.const(ob_space.n), tf.const(0), tf.const(1)), DT_FLOAT)
         tuple2(input_x, processed_x)
       }

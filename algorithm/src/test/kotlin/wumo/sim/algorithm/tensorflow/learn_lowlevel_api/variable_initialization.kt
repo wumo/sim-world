@@ -9,7 +9,7 @@ import wumo.sim.algorithm.tensorflow.ops.gen.identity
 import wumo.sim.algorithm.tensorflow.ops.gen.refSwitch
 import wumo.sim.algorithm.tensorflow.ops.gen.switch
 import wumo.sim.algorithm.tensorflow.ops.is_variable_initialized
-import wumo.sim.algorithm.tensorflow.ops.merge
+import wumo.sim.algorithm.tensorflow.ops.control_flow_ops.merge
 import wumo.sim.algorithm.tensorflow.tf
 
 class variable_initialization : BaseTest() {

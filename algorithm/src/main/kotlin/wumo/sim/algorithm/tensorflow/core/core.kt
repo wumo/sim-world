@@ -1,5 +1,6 @@
 package wumo.sim.algorithm.tensorflow.core
 
+class ShapeMismatchException(msg: String) : Exception(msg)
 class CancelledException(msg: String) : Exception(msg)
 class UnknownException(msg: String) : Exception(msg)
 class InvalidArgumentException(msg: String) : Exception(msg)

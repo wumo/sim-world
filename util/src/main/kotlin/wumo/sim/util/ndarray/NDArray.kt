@@ -21,7 +21,7 @@ open class NDArray<T : Any>(val shape: Shape, val raw: Buf<T>, val dtype: Class<
   
   companion object {
     fun zeros(shape: Int): NDArray<Float> {
-      return NDArray(dim(shape), FloatArray(shape))
+      return NDArray(Shape(shape), FloatArray(shape))
     }
     
     fun zeros(shape: Shape): NDArray<Float> {
@@ -86,12 +86,12 @@ open class NDArray<T : Any>(val shape: Shape, val raw: Buf<T>, val dtype: Class<
       val first = c.first()
       val shape = size x first.shape
       val firstElement = first.first()
-      val buf = collectionNDArraySwitch(firstElement!!, shape.numElements()) as Buf<Any>
+      val buf = collectionNDArraySwitch(firstElement, shape.numElements()) as Buf<Any>
       
       var i = 0
       for (ndarray in c)
         for (element in ndarray) {
-          buf[i++] = element!!
+          buf[i++] = element
         }
       return NDArray(shape, buf, firstElement::class.java)
     }
@@ -118,21 +118,21 @@ open class NDArray<T : Any>(val shape: Shape, val raw: Buf<T>, val dtype: Class<
     operator fun invoke(value: Long) = invoke(scalarDimension, l(value))
     operator fun invoke(value: String) = invoke(scalarDimension, a(value))
     
-    operator fun invoke(value: FloatArray) = NDArray(dim(value.size), value)
-    operator fun invoke(value: Array<Float>) = NDArray(dim(value.size), value.toFloatArray())
-    operator fun invoke(value: DoubleArray) = NDArray(dim(value.size), value)
-    operator fun invoke(value: Array<Double>) = NDArray(dim(value.size), value.toDoubleArray())
-    operator fun invoke(value: BooleanArray) = NDArray(dim(value.size), value)
-    operator fun invoke(value: Array<Boolean>) = NDArray(dim(value.size), value.toBooleanArray())
-    operator fun invoke(value: ByteArray) = NDArray(dim(value.size), value)
-    operator fun invoke(value: Array<Byte>) = NDArray(dim(value.size), value.toByteArray())
-    operator fun invoke(value: ShortArray) = NDArray(dim(value.size), value)
-    operator fun invoke(value: Array<Short>) = NDArray(dim(value.size), value.toShortArray())
-    operator fun invoke(value: IntArray) = NDArray(dim(value.size), value)
-    operator fun invoke(value: Array<Int>) = NDArray(dim(value.size), value.toIntArray())
-    operator fun invoke(value: LongArray) = NDArray(dim(value.size), value)
-    operator fun invoke(value: Array<Long>) = NDArray(dim(value.size), value.toLongArray())
-    operator fun invoke(value: Array<String>) = NDArray(dim(value.size), value)
+    operator fun invoke(value: FloatArray) = NDArray(Shape(value.size), value)
+    operator fun invoke(value: Array<Float>) = NDArray(Shape(value.size), value.toFloatArray())
+    operator fun invoke(value: DoubleArray) = NDArray(Shape(value.size), value)
+    operator fun invoke(value: Array<Double>) = NDArray(Shape(value.size), value.toDoubleArray())
+    operator fun invoke(value: BooleanArray) = NDArray(Shape(value.size), value)
+    operator fun invoke(value: Array<Boolean>) = NDArray(Shape(value.size), value.toBooleanArray())
+    operator fun invoke(value: ByteArray) = NDArray(Shape(value.size), value)
+    operator fun invoke(value: Array<Byte>) = NDArray(Shape(value.size), value.toByteArray())
+    operator fun invoke(value: ShortArray) = NDArray(Shape(value.size), value)
+    operator fun invoke(value: Array<Short>) = NDArray(Shape(value.size), value.toShortArray())
+    operator fun invoke(value: IntArray) = NDArray(Shape(value.size), value)
+    operator fun invoke(value: Array<Int>) = NDArray(Shape(value.size), value.toIntArray())
+    operator fun invoke(value: LongArray) = NDArray(Shape(value.size), value)
+    operator fun invoke(value: Array<Long>) = NDArray(Shape(value.size), value.toLongArray())
+    operator fun invoke(value: Array<String>) = NDArray(Shape(value.size), value)
     
     operator fun invoke(shape: Shape, value: FloatArray) = NDArray(shape, FloatArrayBuf(value), Float::class.java)
     operator fun invoke(shape: Shape, value: DoubleArray) = NDArray(shape, DoubleArrayBuf(value), Double::class.java)
@@ -157,7 +157,7 @@ open class NDArray<T : Any>(val shape: Shape, val raw: Buf<T>, val dtype: Class<
   private val dims: IntArray
   /**number of elements*/
   val size: Int
-  val numDims = shape.rank()
+  val numDims = shape.rank
   
   init {
     stride = IntArray(numDims)

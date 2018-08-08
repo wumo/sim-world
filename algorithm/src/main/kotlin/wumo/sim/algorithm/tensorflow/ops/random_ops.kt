@@ -58,7 +58,7 @@ fun TF.random_uniform(shape: Shape,
                       min: Float, max: Float,
                       name: String = "random_uniform"): Output {
   name_scope(name) {
-    val shape_t = tf.const(shape.asIntArray(), "shape")
+    val shape_t = tf.const(shape.asIntArray()!!, "shape")
     val minval = const(min, "min")
     val maxval = const(max, "max")
     val rand = randomUniform(shape_t, DT_FLOAT)

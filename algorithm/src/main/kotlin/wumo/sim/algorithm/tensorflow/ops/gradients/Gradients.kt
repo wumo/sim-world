@@ -1,27 +1,15 @@
 package wumo.sim.algorithm.tensorflow.ops.gradients
 
 import org.bytedeco.javacpp.tensorflow.*
-import wumo.sim.algorithm.tensorflow.ops.Op
 import wumo.sim.algorithm.tensorflow.TF
+import wumo.sim.algorithm.tensorflow.ops.*
 import wumo.sim.algorithm.tensorflow.ops.Output
 import wumo.sim.algorithm.tensorflow.ops.gen.addN
-import wumo.sim.algorithm.tensorflow.ops.register_array_grad
-import wumo.sim.algorithm.tensorflow.ops.register_math_grad
-import wumo.sim.algorithm.tensorflow.ops.register_nn_grad
 import wumo.sim.algorithm.tensorflow.tf
 import java.util.*
 import kotlin.collections.HashMap
 import kotlin.collections.HashSet
-import kotlin.collections.Iterator
-import kotlin.collections.List
-import kotlin.collections.MutableCollection
-import kotlin.collections.MutableList
-import kotlin.collections.contains
-import kotlin.collections.isNotEmpty
-import kotlin.collections.iterator
-import kotlin.collections.mutableListOf
 import kotlin.collections.set
-import kotlin.collections.toTypedArray
 import wumo.sim.algorithm.tensorflow.ops.gen.onesLike as _onesLike
 import wumo.sim.algorithm.tensorflow.ops.gen.zerosLike as _zerosLike
 
@@ -153,7 +141,7 @@ class SymbolicGradientBuilder(val tf: TF,
     while (queue.isNotEmpty()) {
       val n = queue.removeFirst()
       for (i in 0 until n.num_outputs())
-        backprops_[toTensor(n, i)] = BackproppedGradients()
+        backprops_[toOutput(n, i)] = BackproppedGradients()
       var num_expected_backprops = 0
       if (n.id() !in stop_backprop_nodes) {
         // Internal node: continue BFS along connected outputs.
@@ -304,13 +292,13 @@ class SymbolicGradientBuilder(val tf: TF,
       
       // dy[i] is the sum of i-th output's backpropped gradients.
       val num_y = n.num_outputs()
-      val dy = MutableList(num_y) { toTensor(null, 0) }
+      val dy = MutableList(num_y) { toOutput(null, 0) }
       val no_grad_dy_indices = mutableListOf<Int>()
       for (i in 0 until num_y) {
-        dy[i] = sumGradients(toTensor(n, i))
+        dy[i] = sumGradients(toOutput(n, i))
         if (dy[i] == noGradient)
           no_grad_dy_indices.add(i)
-        val id = input_nodes_[toTensor(n, i)]
+        val id = input_nodes_[toOutput(n, i)]
         if (id != null) {
           // Return gradients for Output in 'grad_outputs_'.
           grad_outputs_[id] = dy[i]
@@ -321,7 +309,7 @@ class SymbolicGradientBuilder(val tf: TF,
       var stop_node = true
       for (e in n.in_edges().iterate()) {
         if (e.IsControlEdge()) continue
-        if (backprops_.contains(toTensor(e.src(), e.src_output()))) {
+        if (backprops_.contains(toOutput(e.src(), e.src_output()))) {
           stop_node = false
           break
         }
@@ -346,7 +334,7 @@ class SymbolicGradientBuilder(val tf: TF,
         // Backprop 'NoGradient' along the in edges.
         for (e in n.in_edges().iterate()) {
           if (e.IsControlEdge()) continue
-          backpropAlongEdge(noGradient, toTensor(e.src(), e.src_output()))
+          backpropAlongEdge(noGradient, toOutput(e.src(), e.src_output()))
         }
         continue
       }
@@ -359,7 +347,7 @@ class SymbolicGradientBuilder(val tf: TF,
         // zero-filled Constant node of appropriate shape.
         
         for (dy_index in no_grad_dy_indices)
-          dy[dy_index] = tf._zerosLike(toTensor(n, dy_index))
+          dy[dy_index] = tf._zerosLike(toOutput(n, dy_index))
       }
       
       // TODO(andydavis) Add option to encapsulate grad function in
@@ -377,7 +365,7 @@ class SymbolicGradientBuilder(val tf: TF,
         if (e.IsControlEdge()) continue
         if (dx_index == dx.size)
           throw Exception("Invalid gradient output index: $dx_index size: ${dx.size}")
-        backpropAlongEdge(dx[dx_index++], toTensor(e.src(), e.src_output()))
+        backpropAlongEdge(dx[dx_index++], toOutput(e.src(), e.src_output()))
       }
     }
     
@@ -443,8 +431,8 @@ class SymbolicGradientBuilder(val tf: TF,
   }
 }
 
-val noGradient = toTensor(null, -1)
-fun toTensor(n: Node?, v: Int) =
+val noGradient = toOutput(null, -1)
+fun toOutput(n: Node?, v: Int) =
     if (n == null) Output(null, v)
     else
       Output(n.toOperation(), v)
