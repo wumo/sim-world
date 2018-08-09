@@ -3,15 +3,18 @@ package wumo.sim.tensorflow.ops
 import org.bytedeco.javacpp.tensorflow
 import org.tensorflow.framework.GraphDef
 import wumo.sim.tensorflow.Session
-import wumo.sim.tensorflow.Variable
+import wumo.sim.tensorflow.ops.variables.Variable
 import wumo.sim.tensorflow.core.Graph
+import wumo.sim.tensorflow.core.core
 import wumo.sim.tensorflow.ops.control_flow_ops.CondContext
 import wumo.sim.tensorflow.ops.control_flow_ops.ControlFlowContext
 import wumo.sim.tensorflow.ops.control_flow_ops.group
+import wumo.sim.tensorflow.ops.variables.VariableScope
+import wumo.sim.tensorflow.scope.GraphConstructionScope
 import wumo.sim.tensorflow.scope.NameScope
-import wumo.sim.tensorflow.scope.VariableScope
 import wumo.sim.tensorflow.scopeChar
 import wumo.sim.tensorflow.tf
+import wumo.sim.util.DynamicVariable
 import wumo.sim.util.lazyLogger
 import wumo.sim.util.println
 import java.util.*
@@ -19,10 +22,30 @@ import java.util.*
 object ops {
   val logger by lazyLogger()
   
-  val COLOCATION_OPS_ATTRIBUTE_NAME = "_class"
-  val COLOCATION_OPS_ATTRIBUTE_PREFIX = "loc:@"
+  const val COLOCATION_OPS_ATTRIBUTE_NAME = "_class"
+  const val COLOCATION_OPS_ATTRIBUTE_PREFIX = "loc:@"
   val VALID_OP_NAME_REGEX = Regex("^[A-Za-z0-9.][A-Za-z0-9_.\\-/]*$")
   val VALID_NAME_SCOPE_REGEX = Regex("^[A-Za-z0-9_.\\-/]*$")
+  
+  internal val graphConstructionScope = DynamicVariable(GraphConstructionScope(core.defaultGraph))
+  /** Returns the graph of the current op creation context. */
+  internal val currentGraph get() = graphConstructionScope.value.graph
+  /** Returns the name scope of the current op creation context. */
+  internal val currentNameScope get() = graphConstructionScope.value.nameScope
+  /** Returns the device of the current op creation context. */
+  internal val currentDevice get() = graphConstructionScope.value.device
+  /** Returns the device function of the current op creation context. */
+  internal val currentDeviceFunction get() = graphConstructionScope.value.deviceFunction
+  /** Returns the colocation ops of the current op creation context. */
+  internal val currentColocationOps get() = graphConstructionScope.value.colocationOps
+  /** Returns the control dependencies of the current op creation context. */
+  internal val currentControlDependencies get() = graphConstructionScope.value.controlDependencies
+  /** Returns the attributes of the current op creation context. */
+  internal val currentAttributes get() = graphConstructionScope.value.attributes
+  /** Returns the container of the current op creation context. */
+  internal val currentContainer get() = graphConstructionScope.value.container
+  /** Returns the control flow context of the current op creation context. */
+  internal val currentControlFlowContext get() = graphConstructionScope.value.controlFlowContext
   
   val g = Graph()
   val trainables = mutableListOf<Variable>()
@@ -33,7 +56,6 @@ object ops {
   var ctxNs = rootNs
   var ctxVs = rootVs
   
-  var currentControlFlowContext: ControlFlowContext? = null
   var device: String = ""
   var colocate_with = ArrayDeque<Op>()
   val control_ops = ArrayDeque<Op>()
@@ -45,8 +67,8 @@ object ops {
   
   There is often a need to lift variable initialization ops out of control-flow
   scopes, function-building graphs, and gradient tapes. Entering an
-  `init_scope` is a mechanism for satisfying these desiderata. In particular,
-  entering an `init_scope` has three effects:
+  [init_scope] is a mechanism for satisfying these desiderata. In particular,
+  entering an [init_scope] has three effects:
   
   (1) All control dependencies are cleared the moment the scope is entered;
   this is equivalent to entering the context manager returned from

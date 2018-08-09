@@ -6,6 +6,7 @@ import org.bytedeco.javacpp.tensorflow
 import wumo.sim.tensorflow.*
 import wumo.sim.tensorflow.ops.gen.identity
 import wumo.sim.tensorflow.ops.gen.variableV2
+import wumo.sim.tensorflow.ops.variables.Variable
 import wumo.sim.tensorflow.scope.NameScope
 import wumo.sim.util.Shape
 import wumo.sim.util.SwitchType3

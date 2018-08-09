@@ -1,7 +1,7 @@
 package wumo.sim.tensorflow.training
 
 import wumo.sim.tensorflow.ops.Output
-import wumo.sim.tensorflow.Variable
+import wumo.sim.tensorflow.ops.variables.Variable
 import wumo.sim.tensorflow.ops.cast
 import wumo.sim.tensorflow.ops.const
 import wumo.sim.tensorflow.ops.gen.applyGradientDescent

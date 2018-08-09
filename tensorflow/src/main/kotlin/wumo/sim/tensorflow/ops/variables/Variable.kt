@@ -1,10 +1,13 @@
-package wumo.sim.tensorflow
+package wumo.sim.tensorflow.ops.variables
 
+import wumo.sim.tensorflow.core.Graph
 import wumo.sim.tensorflow.ops.*
 import wumo.sim.tensorflow.ops.control_flow_ops.cond
 import wumo.sim.tensorflow.ops.gen.identity
-import wumo.sim.tensorflow.ops.variables.VariableLike
+import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.types.DataType
+import wumo.sim.tensorflow.types.types
+import wumo.sim.util.Shape
 import wumo.sim.util.a
 
 class Variable(
@@ -209,5 +212,24 @@ class Variable(
       if (v.op!!.name == var_names)
         return v.initialized_value()
     return null
+  }
+  
+  interface VariableGetter {
+    operator fun invoke(
+        name: String,
+        dataType: DataType<*>? = types.FLOAT32,
+        shape: Shape? = null,
+        initializer: Initializer? = null,
+        regularizer: Regularizer? = null,
+        trainable: Boolean = true,
+        reuse: Reuse = ReuseOrCreateNew,
+        collections: Set<Graph.Key<Variable>> = emptySet(),
+        cachingDevice: DeviceFunction? = null,
+        underlyingGetter: VariableGetter? = null
+    ): Variable
+  }
+  
+  companion object {
+  
   }
 }

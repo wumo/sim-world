@@ -2,7 +2,7 @@ package wumo.sim.tensorflow.training
 
 import wumo.sim.tensorflow.ops.Op
 import wumo.sim.tensorflow.ops.Output
-import wumo.sim.tensorflow.Variable
+import wumo.sim.tensorflow.ops.variables.Variable
 import wumo.sim.tensorflow.ops.gradients
 import wumo.sim.tensorflow.ops.control_flow_ops.group
 import wumo.sim.tensorflow.ops.variable

@@ -7,7 +7,7 @@ import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.base_dtype
 import wumo.sim.tensorflow.layers.Dense
 import wumo.sim.tensorflow.layers.TensorFunction
-import wumo.sim.tensorflow.layers.xavier_initializer
+import wumo.sim.tensorflow.ops.variables.xavier_initializer
 import wumo.sim.tensorflow.ops.*
 import wumo.sim.tensorflow.ops.gen.oneHot
 import wumo.sim.tensorflow.ops.gen.relu

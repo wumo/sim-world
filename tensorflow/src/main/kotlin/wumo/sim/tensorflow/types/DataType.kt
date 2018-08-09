@@ -2,7 +2,7 @@ package wumo.sim.tensorflow.types
 
 import wumo.sim.tensorflow.TF
 
-interface DataType<ScalaType> {
+interface DataType<KotlinType> {
   //region Data Type Properties
   val name: String
   val cValue: Int
@@ -12,9 +12,9 @@ interface DataType<ScalaType> {
   //endregion Data Type Properties
   
   //region Data Type Set Helper Methods
-  fun zero(): ScalaType
+  fun zero(): KotlinType
   
-  fun one(): ScalaType
+  fun one(): KotlinType
   
   /** Returns `true` if this data type represents a quantized data type. */
   val isQuantized: Boolean

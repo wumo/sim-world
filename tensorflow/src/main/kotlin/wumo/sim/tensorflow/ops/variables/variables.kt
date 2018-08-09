@@ -1,9 +1,10 @@
 package wumo.sim.tensorflow.ops.variables
 
 import org.bytedeco.javacpp.tensorflow.DT_FLOAT
-import wumo.sim.tensorflow.Variable
 import wumo.sim.tensorflow.layers.TensorFunction
 import wumo.sim.tensorflow.ops.Initializer
+import wumo.sim.tensorflow.types.DataType
+import wumo.sim.tensorflow.types.types
 import wumo.sim.util.Shape
 
 typealias Regularizer = TensorFunction
@@ -26,4 +27,11 @@ fun model_variable(name: String, shape: Shape, dtype: Int = DT_FLOAT,
                    initializer: Initializer,
                    trainable: Boolean = true): Variable {
   TODO()
+}
+
+object variables {
+  fun defaultInitializer(name: String, dataType: DataType<*> = types.FLOAT32) {
+    if (dataType.isFloatingPoint)
+    
+  }
 }

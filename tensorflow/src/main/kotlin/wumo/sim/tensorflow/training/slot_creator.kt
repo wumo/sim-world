@@ -2,7 +2,7 @@ package wumo.sim.tensorflow.training
 
 import org.bytedeco.javacpp.tensorflow.DT_INVALID
 import wumo.sim.tensorflow.ops.Output
-import wumo.sim.tensorflow.Variable
+import wumo.sim.tensorflow.ops.variables.Variable
 import wumo.sim.tensorflow.ops.*
 import wumo.sim.tensorflow.tf
 import wumo.sim.util.Shape

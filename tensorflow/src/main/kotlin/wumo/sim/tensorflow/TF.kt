@@ -10,8 +10,9 @@ import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.ops.control_flow_ops.CondContext
 import wumo.sim.tensorflow.ops.control_flow_ops.ControlFlowContext
 import wumo.sim.tensorflow.ops.control_flow_ops.group
+import wumo.sim.tensorflow.ops.variables.Variable
 import wumo.sim.tensorflow.scope.NameScope
-import wumo.sim.tensorflow.scope.VariableScope
+import wumo.sim.tensorflow.ops.variables.VariableScope
 import wumo.sim.util.println
 import java.util.*
 

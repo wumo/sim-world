@@ -1,5 +1,9 @@
 package wumo.sim.tensorflow.core
 
+object core {
+  internal val defaultGraph = Graph()
+}
+
 class ShapeMismatchException(msg: String) : Exception(msg)
 class CancelledException(msg: String) : Exception(msg)
 class UnknownException(msg: String) : Exception(msg)

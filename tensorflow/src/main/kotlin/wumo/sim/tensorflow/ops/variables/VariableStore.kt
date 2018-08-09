@@ -1,14 +1,14 @@
 package wumo.sim.tensorflow.ops.variables
 
-import wumo.sim.tensorflow.Variable
 import wumo.sim.tensorflow.core.Graph
+import wumo.sim.tensorflow.core.InvalidDataTypeException
 import wumo.sim.tensorflow.core.ShapeMismatchException
+import wumo.sim.tensorflow.ops.DeviceFunction
 import wumo.sim.tensorflow.ops.Initializer
-import wumo.sim.tensorflow.ops.OpSpecification
+import wumo.sim.tensorflow.ops.ops
 import wumo.sim.tensorflow.types.DataType
 import wumo.sim.tensorflow.types.FLOAT32
 import wumo.sim.util.Shape
-
 /**
  * Variable store that carries a number of named Variables.
  */
@@ -56,7 +56,7 @@ internal class VariableStore {
       trainable: Boolean = true,
       reuse: Reuse = ReuseOrCreateNew,
       collections: Set<Graph.Key<Variable>> = emptySet(),
-      cachingDevice: ((OpSpecification) -> String)? = null
+      cachingDevice: DeviceFunction? = null
   ): Variable {
     // Single variable case.
     if ("$name/part_0" in variables)
@@ -74,7 +74,26 @@ internal class VariableStore {
         throw ShapeMismatchException(
             "Trying to share variable '$name', but the specified shape '$shape' is not compatible with the " +
                 "existing variable shape '${foundVariable.shape}'.")
+      if (dataType != foundVariable.dataType)
+        throw InvalidDataTypeException(
+            "Trying to share variable '$name', but the specified data type '$dataType' is not compatible with the " +
+                "existing variable data type '${foundVariable.dataType}'.")
+      foundVariable
+    } else {
+      // Here we handle the case of creating a new variable.
+      if (reuse == ReuseExistingOnly)
+        throw IllegalArgumentException(
+            "Variable '$name' does not exist, but variable scope re-use was set to 'ReuseExistingOnly'.")
+      if (shape != null && !shape.is_fully_defined)
+        throw IllegalArgumentException(
+            "The shape of a new variable ('$name') must be fully defined, but instead it was set to '$shape'.")
+//      val acutalInitializer=
+      if(initializer==null)
     }
     TODO()
+  }
+  
+  companion object {
+    val current get() = ops.currentGraph.variableStore
   }
 }

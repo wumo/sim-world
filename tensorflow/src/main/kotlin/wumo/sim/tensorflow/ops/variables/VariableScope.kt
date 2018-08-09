@@ -1,6 +1,12 @@
-package wumo.sim.tensorflow.scope
+package wumo.sim.tensorflow.ops.variables
 
-import wumo.sim.tensorflow.Variable
+import wumo.sim.tensorflow.ops.DeviceFunction
+import wumo.sim.tensorflow.ops.Initializer
+import wumo.sim.tensorflow.ops.variables.Variable.VariableGetter
+import wumo.sim.tensorflow.scope.NameScope
+import wumo.sim.tensorflow.scope.enter_exit
+import wumo.sim.tensorflow.types.DataType
+import wumo.sim.tensorflow.types.types
 
 /**
  * Variable scope allows you to create new variables and to share already created
@@ -8,7 +14,16 @@ import wumo.sim.tensorflow.Variable
  *
  * @param namescope 此[VariableScope]对应的[NameScope]，通常是复用的
  */
-class VariableScope(val name: String, val namescope: NameScope) : enter_exit {
+class VariableScope(
+    val reuse: Reuse,
+    val name: String = "",
+    val dataType: DataType<*>? = types.FLOAT16,
+    val initializer: Initializer? = null,
+    val regularizer: Regularizer? = null,
+    val cachingDevice: DeviceFunction? = null,
+    val partitioner: Partitioner? = null,
+    val namescope: NameScope = NameScope(""),
+    val underlyingGetter: VariableGetter? = null) : enter_exit {
   fun getVariable() {
   }
   
@@ -22,7 +37,6 @@ class VariableScope(val name: String, val namescope: NameScope) : enter_exit {
   
   /**是否允许重复进入[VariableScope]时自动递增后缀*/
   var reenter_increment = false
-  var reuse = false
   /***/
   private val var_scope_count = HashMap<String, Int>()
   /**这一层存储的所有变量*/

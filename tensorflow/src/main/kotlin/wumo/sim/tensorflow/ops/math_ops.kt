@@ -2,7 +2,7 @@ package wumo.sim.tensorflow.ops
 
 import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.tensorflow.TF
-import wumo.sim.tensorflow.Variable
+import wumo.sim.tensorflow.ops.variables.Variable
 import wumo.sim.tensorflow.base_dtype
 import wumo.sim.tensorflow.ops.gen.*
 import wumo.sim.tensorflow.tf

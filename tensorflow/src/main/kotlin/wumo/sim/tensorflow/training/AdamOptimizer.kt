@@ -4,6 +4,7 @@ import wumo.sim.tensorflow.*
 import wumo.sim.tensorflow.ops.*
 import wumo.sim.tensorflow.ops.control_flow_ops.group
 import wumo.sim.tensorflow.ops.gen.applyAdam
+import wumo.sim.tensorflow.ops.variables.Variable
 import wumo.sim.util.tuple2
 
 /**

@@ -10,7 +10,8 @@ import wumo.sim.tensorflow.ops.ops.COLOCATION_OPS_ATTRIBUTE_NAME
 import wumo.sim.tensorflow.ops.ops.COLOCATION_OPS_ATTRIBUTE_PREFIX
 import java.util.Collections.emptySet as emptyMutableSet
 
-class OpSpecification(name: String, opType: String, device: String)
+class OpSpecification(val name: String, val opType: String, val device: String)
+typealias DeviceFunction = (OpSpecification) -> String
 
 class Op(val graph: Graph, val c_op: TF_Operation) {
   init {

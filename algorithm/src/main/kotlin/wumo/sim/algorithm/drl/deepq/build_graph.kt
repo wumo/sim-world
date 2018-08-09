@@ -2,7 +2,7 @@ package wumo.sim.algorithm.drl.deepq
 
 import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.tensorflow.TF
-import wumo.sim.tensorflow.Variable
+import wumo.sim.tensorflow.ops.variables.Variable
 import wumo.sim.tensorflow.defaut
 import wumo.sim.tensorflow.ops.*
 import wumo.sim.tensorflow.ops.Output

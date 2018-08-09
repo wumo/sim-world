@@ -1,7 +1,7 @@
 package wumo.sim.tensorflow.ops.control_flow_ops
 
 import wumo.sim.tensorflow.TF
-import wumo.sim.tensorflow.Variable
+import wumo.sim.tensorflow.ops.variables.Variable
 import wumo.sim.tensorflow.core.InvalidArgumentException
 import wumo.sim.tensorflow.is_ref_dytpe
 import wumo.sim.tensorflow.ops.Op

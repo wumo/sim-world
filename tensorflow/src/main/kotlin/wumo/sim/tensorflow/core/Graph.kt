@@ -11,9 +11,12 @@ import wumo.sim.tensorflow.ops.Op
 import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.ops.Resource
 import wumo.sim.tensorflow.ops.variables.Saver
+import wumo.sim.tensorflow.ops.variables.Variable.VariableGetter
+import wumo.sim.tensorflow.ops.variables.VariableScopeStore
 import wumo.sim.tensorflow.ops.variables.VariableStore
 import wumo.sim.tensorflow.throwExceptionIfNotOk
 import wumo.sim.tensorflow.util.isNotNull
+import wumo.sim.util.DynamicVariable
 import java.util.*
 
 /**
@@ -46,13 +49,18 @@ class Graph {
    * from the native library. */
   internal val opsCache = hashMapOf<Long, Op>()
   
-  /** Variable store object of this graph, used to store created variables and keep track of variable scope usages. */
-  internal val variableStore = VariableStore()
-  
   internal fun cache(op: TF_Operation) = opsCache[op]
   operator fun HashMap<Long, Op>.get(op: TF_Operation) =
       getOrPut(op.address()) { Op(this@Graph, op) }
   
+  /** Variable store object of this graph, used to store created variables and keep track of variable scope usages. */
+  internal val variableStore = VariableStore()
+  /** Variable scope store object of this graph. */
+  internal val variableScopeStore = DynamicVariable(VariableScopeStore())
+  internal val variableGetters = DynamicVariable(listOf<VariableGetter>())
+  
+  /** Map from collection key to set of values in that collection. */
+  private val collections: MutableMap<Graph.Key<*>, MutableSet<*>> = mutableMapOf()
   /**Set of tensors that are dangerous to feed!*/
   private val unfeedableOutputs = mutableSetOf<Output>()
   /**Set of operations that are dangerous to fetch!*/

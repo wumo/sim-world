@@ -4,7 +4,7 @@ package wumo.sim.tensorflow.scope
 
 import wumo.sim.tensorflow.scopeChar
 
-class NameScope(val name: String, parentScope: NameScope?) : enter_exit {
+class NameScope(val name: String, parentScope: NameScope? = null) : enter_exit {
   /**这一层已使用的name，[subscopes]的name是[name_map]的子集*/
   private val name_map = HashMap<String, Int>()
   /**下一层的[NameScope]*/
