@@ -1,6 +1,6 @@
 package wumo.sim.tensorflow.types
 
-import wumo.sim.algorithm.tensorflow.TF
+import wumo.sim.tensorflow.TF
 
 interface DataType<ScalaType> {
   //region Data Type Properties

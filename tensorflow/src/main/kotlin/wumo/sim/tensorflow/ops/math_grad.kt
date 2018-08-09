@@ -1,16 +1,16 @@
 package wumo.sim.tensorflow.ops
 
 import org.bytedeco.javacpp.tensorflow.*
-import wumo.sim.algorithm.tensorflow.ops.gen.*
-import wumo.sim.algorithm.tensorflow.ops.gradients.append
-import wumo.sim.algorithm.tensorflow.ops.gradients.noGradient
-import wumo.sim.algorithm.tensorflow.ops.gradients.register_gradient_op
-import wumo.sim.algorithm.tensorflow.ops.gradients.register_no_gradient_op
-import wumo.sim.algorithm.tensorflow.tf
+import wumo.sim.tensorflow.ops.gen.*
+import wumo.sim.tensorflow.ops.gradients.append
+import wumo.sim.tensorflow.ops.gradients.noGradient
+import wumo.sim.tensorflow.ops.gradients.register_gradient_op
+import wumo.sim.tensorflow.ops.gradients.register_no_gradient_op
+import wumo.sim.tensorflow.tf
 import wumo.sim.util.a
 import wumo.sim.util.i
-import wumo.sim.algorithm.tensorflow.ops.gen.onesLike as _onesLike
-import wumo.sim.algorithm.tensorflow.ops.gen.zerosLike as _zerosLike
+import wumo.sim.tensorflow.ops.gen.onesLike as _onesLike
+import wumo.sim.tensorflow.ops.gen.zerosLike as _zerosLike
 
 fun register_math_grad() {
   register_no_gradient_op("Less",

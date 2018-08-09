@@ -4,10 +4,10 @@
 package wumo.sim.tensorflow.ops.gen
 
 import org.bytedeco.javacpp.tensorflow.*
-import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.ops.Output
-import wumo.sim.algorithm.tensorflow.buildOpTensor
-import wumo.sim.algorithm.tensorflow.buildOpTensors
+import wumo.sim.tensorflow.TF
+import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.buildOpTensor
+import wumo.sim.tensorflow.buildOpTensors
 
 fun TF.avgPool(value: Output, ksize: Array<Long>, strides: Array<Long>, padding: String, data_format: String = "NHWC", name: String = "AvgPool") = run {
   buildOpTensor("AvgPool", name) {

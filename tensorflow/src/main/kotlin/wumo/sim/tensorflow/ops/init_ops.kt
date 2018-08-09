@@ -1,8 +1,8 @@
 package wumo.sim.tensorflow.ops
 
 import org.bytedeco.javacpp.tensorflow.DT_FLOAT
-import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.tf
+import wumo.sim.tensorflow.TF
+import wumo.sim.tensorflow.tf
 import wumo.sim.util.Shape
 
 class Initializer(val dtype: Int, val name: String,

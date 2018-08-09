@@ -3,8 +3,8 @@
  */
 package wumo.sim.tensorflow.ops.gen
 
-import wumo.sim.algorithm.tensorflow.*
-import wumo.sim.algorithm.tensorflow.ops.Output
+import wumo.sim.tensorflow.*
+import wumo.sim.tensorflow.ops.Output
 import wumo.sim.util.Shape
 
 fun TF.hashTableV2(key_dtype: Int, value_dtype: Int, container: String = "", shared_name: String = "", use_node_name_sharing: Boolean = false, name: String = "HashTableV2") = run {

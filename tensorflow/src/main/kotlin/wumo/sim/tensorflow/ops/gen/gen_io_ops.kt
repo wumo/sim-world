@@ -3,8 +3,8 @@
  */
 package wumo.sim.tensorflow.ops.gen
 
-import wumo.sim.algorithm.tensorflow.*
-import wumo.sim.algorithm.tensorflow.ops.Output
+import wumo.sim.tensorflow.*
+import wumo.sim.tensorflow.ops.Output
 
 fun TF.fixedLengthRecordReaderV2(record_bytes: Long, header_bytes: Long = 0L, footer_bytes: Long = 0L, hop_bytes: Long = 0L, container: String = "", shared_name: String = "", encoding: String = "", name: String = "FixedLengthRecordReaderV2") = run {
   buildOpTensor("FixedLengthRecordReaderV2", name) {

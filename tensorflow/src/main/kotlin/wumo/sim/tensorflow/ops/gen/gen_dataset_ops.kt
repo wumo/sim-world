@@ -4,8 +4,8 @@
 package wumo.sim.tensorflow.ops.gen
 
 import org.bytedeco.javacpp.tensorflow.NameAttrList
-import wumo.sim.algorithm.tensorflow.*
-import wumo.sim.algorithm.tensorflow.ops.Output
+import wumo.sim.tensorflow.*
+import wumo.sim.tensorflow.ops.Output
 import wumo.sim.util.Shape
 
 fun TF.anonymousIterator(output_types: Array<Long>, output_shapes: Array<Shape>, name: String = "AnonymousIterator") = run {

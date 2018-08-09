@@ -2,16 +2,16 @@ package wumo.sim.tensorflow.contrib
 
 import org.bytedeco.javacpp.tensorflow.DT_INT32
 import org.bytedeco.javacpp.tensorflow.DT_INT64
-import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.ops.Output
-import wumo.sim.algorithm.tensorflow.base_dtype
-import wumo.sim.algorithm.tensorflow.layers.Dense
-import wumo.sim.algorithm.tensorflow.layers.TensorFunction
-import wumo.sim.algorithm.tensorflow.layers.xavier_initializer
-import wumo.sim.algorithm.tensorflow.ops.*
-import wumo.sim.algorithm.tensorflow.ops.gen.oneHot
-import wumo.sim.algorithm.tensorflow.ops.gen.relu
-import wumo.sim.algorithm.tensorflow.tf
+import wumo.sim.tensorflow.TF
+import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.base_dtype
+import wumo.sim.tensorflow.layers.Dense
+import wumo.sim.tensorflow.layers.TensorFunction
+import wumo.sim.tensorflow.layers.xavier_initializer
+import wumo.sim.tensorflow.ops.*
+import wumo.sim.tensorflow.ops.gen.oneHot
+import wumo.sim.tensorflow.ops.gen.relu
+import wumo.sim.tensorflow.tf
 
 @Suppress("NAME_SHADOWING")
 fun TF.one_hot_encoding(labels: Output,

@@ -4,10 +4,10 @@
 package wumo.sim.tensorflow.ops.gen
 
 import org.bytedeco.javacpp.tensorflow.DT_FLOAT
-import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.ops.Output
-import wumo.sim.algorithm.tensorflow.buildOpTensor
-import wumo.sim.algorithm.tensorflow.buildOpTensors
+import wumo.sim.tensorflow.TF
+import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.buildOpTensor
+import wumo.sim.tensorflow.buildOpTensors
 import wumo.sim.util.Shape
 
 fun TF.decodeCSV(records: Output, record_defaults: Output, field_delim: String = ",", use_quote_delim: Boolean = true, na_value: String = "", select_cols: Array<Long> = arrayOf(), name: String = "DecodeCSV") = run {

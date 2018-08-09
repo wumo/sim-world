@@ -4,10 +4,10 @@
 package wumo.sim.tensorflow.ops.gen
 
 import org.bytedeco.javacpp.tensorflow.DT_STRING
-import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.ops.Output
-import wumo.sim.algorithm.tensorflow.buildOpTensor
-import wumo.sim.algorithm.tensorflow.buildOpTensors
+import wumo.sim.tensorflow.TF
+import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.buildOpTensor
+import wumo.sim.tensorflow.buildOpTensors
 
 fun TF.addManySparseToTensorsMap(sparse_indices: Output, sparse_values: Output, sparse_shape: Output, container: String = "", shared_name: String = "", name: String = "AddManySparseToTensorsMap") = run {
   buildOpTensor("AddManySparseToTensorsMap", name) {

@@ -4,7 +4,7 @@ import org.bytedeco.javacpp.Pointer
 import org.bytedeco.javacpp.tensorflow.TF_GetAllOpList
 import org.junit.Test
 import org.tensorflow.framework.OpList
-import wumo.sim.algorithm.tensorflow.TF
+import wumo.sim.tensorflow.TF
 
 class protobuf_test {
   @Test

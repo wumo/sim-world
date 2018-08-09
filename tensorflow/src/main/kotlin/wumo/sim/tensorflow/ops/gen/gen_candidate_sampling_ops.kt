@@ -3,9 +3,9 @@
  */
 package wumo.sim.tensorflow.ops.gen
 
-import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.ops.Output
-import wumo.sim.algorithm.tensorflow.buildOpTensors
+import wumo.sim.tensorflow.TF
+import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.buildOpTensors
 
 fun TF.allCandidateSampler(true_classes: Output, num_true: Long, num_sampled: Long, unique: Boolean, seed: Long = 0L, seed2: Long = 0L, name: String = "AllCandidateSampler") = run {
   buildOpTensors("AllCandidateSampler", name) {

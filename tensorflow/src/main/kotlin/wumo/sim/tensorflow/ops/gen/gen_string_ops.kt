@@ -3,10 +3,10 @@
  */
 package wumo.sim.tensorflow.ops.gen
 
-import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.ops.Output
-import wumo.sim.algorithm.tensorflow.buildOpTensor
-import wumo.sim.algorithm.tensorflow.buildOpTensors
+import wumo.sim.tensorflow.TF
+import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.buildOpTensor
+import wumo.sim.tensorflow.buildOpTensors
 
 fun TF.asString(input: Output, precision: Long = -1L, scientific: Boolean = false, shortest: Boolean = false, width: Long = -1L, fill: String = "", name: String = "AsString") = run {
   buildOpTensor("AsString", name) {

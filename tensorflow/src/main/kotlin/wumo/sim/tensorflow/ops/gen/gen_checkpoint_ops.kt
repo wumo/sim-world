@@ -3,10 +3,10 @@
  */
 package wumo.sim.tensorflow.ops.gen
 
-import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.ops.Output
-import wumo.sim.algorithm.tensorflow.buildOpTensor
-import wumo.sim.algorithm.tensorflow.buildOpTensors
+import wumo.sim.tensorflow.TF
+import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.buildOpTensor
+import wumo.sim.tensorflow.buildOpTensors
 
 fun TF.generateVocabRemapping(new_vocab_file: Output, old_vocab_file: Output, new_vocab_offset: Long, num_new_vocab: Long, old_vocab_size: Long = -1L, name: String = "GenerateVocabRemapping") = run {
   buildOpTensors("GenerateVocabRemapping", name) {

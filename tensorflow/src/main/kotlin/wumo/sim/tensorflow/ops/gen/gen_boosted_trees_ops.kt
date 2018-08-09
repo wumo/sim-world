@@ -3,8 +3,8 @@
  */
 package wumo.sim.tensorflow.ops.gen
 
-import wumo.sim.algorithm.tensorflow.*
-import wumo.sim.algorithm.tensorflow.ops.Output
+import wumo.sim.tensorflow.*
+import wumo.sim.tensorflow.ops.Output
 
 fun TF.boostedTreesCalculateBestGainsPerFeature(node_id_range: Output, stats_summary_list: Array<Output>, l1: Output, l2: Output, tree_complexity: Output, min_node_weight: Output, max_splits: Long, name: String = "BoostedTreesCalculateBestGainsPerFeature") = run {
   buildOpTensors("BoostedTreesCalculateBestGainsPerFeature", name) {

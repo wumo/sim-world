@@ -5,10 +5,10 @@ package wumo.sim.tensorflow.ops.gen
 
 import org.bytedeco.javacpp.tensorflow.DT_INT32
 import org.bytedeco.javacpp.tensorflow.DT_UINT8
-import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.ops.Output
-import wumo.sim.algorithm.tensorflow.buildOpTensor
-import wumo.sim.algorithm.tensorflow.buildOpTensors
+import wumo.sim.tensorflow.TF
+import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.buildOpTensor
+import wumo.sim.tensorflow.buildOpTensors
 
 fun TF.adjustContrastv2(images: Output, contrast_factor: Output, name: String = "AdjustContrastv2") = run {
   buildOpTensor("AdjustContrastv2", name) {

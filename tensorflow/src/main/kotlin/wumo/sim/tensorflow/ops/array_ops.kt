@@ -1,14 +1,14 @@
 package wumo.sim.tensorflow.ops
 
 import org.bytedeco.javacpp.tensorflow.*
-import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.ops.gen.*
-import wumo.sim.algorithm.tensorflow.orUse
+import wumo.sim.tensorflow.TF
+import wumo.sim.tensorflow.ops.gen.*
+import wumo.sim.tensorflow.orUse
 import wumo.sim.util.Shape
-import wumo.sim.algorithm.tensorflow.ops.gen.oneHot as _oneHot
-import wumo.sim.algorithm.tensorflow.ops.gen.rank as _rank
-import wumo.sim.algorithm.tensorflow.ops.gen.shape as _shape
-import wumo.sim.algorithm.tensorflow.ops.gen.zerosLike as _zerosLike
+import wumo.sim.tensorflow.ops.gen.oneHot as _oneHot
+import wumo.sim.tensorflow.ops.gen.rank as _rank
+import wumo.sim.tensorflow.ops.gen.shape as _shape
+import wumo.sim.tensorflow.ops.gen.zerosLike as _zerosLike
 
 fun TF.oneHot(indices: Output, depth: Output, on_value: Output = const(1f, "on_value"),
               off_value: Output = const(0f, "off_value"), axis: Long = -1L, name: String = "OneHot") =

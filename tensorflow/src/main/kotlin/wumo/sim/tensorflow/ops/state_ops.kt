@@ -3,15 +3,15 @@
 package wumo.sim.tensorflow.ops
 
 import org.bytedeco.javacpp.tensorflow
-import wumo.sim.algorithm.tensorflow.*
-import wumo.sim.algorithm.tensorflow.ops.gen.identity
-import wumo.sim.algorithm.tensorflow.ops.gen.variableV2
-import wumo.sim.algorithm.tensorflow.scope.NameScope
+import wumo.sim.tensorflow.*
+import wumo.sim.tensorflow.ops.gen.identity
+import wumo.sim.tensorflow.ops.gen.variableV2
+import wumo.sim.tensorflow.scope.NameScope
 import wumo.sim.util.Shape
 import wumo.sim.util.SwitchType3
 import wumo.sim.util.scalarDimension
-import wumo.sim.algorithm.tensorflow.ops.gen.assign as _assign
-import wumo.sim.algorithm.tensorflow.ops.gen.isVariableInitialized as _isVariableInitialized
+import wumo.sim.tensorflow.ops.gen.assign as _assign
+import wumo.sim.tensorflow.ops.gen.isVariableInitialized as _isVariableInitialized
 
 private val variable_switch = SwitchType3<String, Boolean, Variable>().apply {
   case<Float> { tf.variable(_1, _2, _3) }

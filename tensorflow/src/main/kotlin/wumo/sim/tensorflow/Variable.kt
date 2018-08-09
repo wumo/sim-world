@@ -1,10 +1,10 @@
 package wumo.sim.tensorflow
 
-import wumo.sim.algorithm.tensorflow.ops.*
-import wumo.sim.algorithm.tensorflow.ops.control_flow_ops.cond
-import wumo.sim.algorithm.tensorflow.ops.gen.identity
-import wumo.sim.algorithm.tensorflow.ops.variables.VariableLike
-import wumo.sim.algorithm.tensorflow.types.DataType
+import wumo.sim.tensorflow.ops.*
+import wumo.sim.tensorflow.ops.control_flow_ops.cond
+import wumo.sim.tensorflow.ops.gen.identity
+import wumo.sim.tensorflow.ops.variables.VariableLike
+import wumo.sim.tensorflow.types.DataType
 import wumo.sim.util.a
 
 class Variable(

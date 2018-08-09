@@ -1,10 +1,10 @@
 package wumo.sim.tensorflow.ops
 
 import org.bytedeco.javacpp.tensorflow.DT_FLOAT
-import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.is_integer
-import wumo.sim.algorithm.tensorflow.ops.gen.*
-import wumo.sim.algorithm.tensorflow.tf
+import wumo.sim.tensorflow.TF
+import wumo.sim.tensorflow.is_integer
+import wumo.sim.tensorflow.ops.gen.*
+import wumo.sim.tensorflow.tf
 import wumo.sim.util.Shape
 import wumo.sim.util.scalarDimension
 

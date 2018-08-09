@@ -6,14 +6,14 @@ import org.bytedeco.javacpp.SizeTPointer
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Graph.newGraph
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
 import org.bytedeco.javacpp.tensorflow.*
-import wumo.sim.algorithm.tensorflow.OperationBuilder
-import wumo.sim.algorithm.tensorflow.ops.Op
-import wumo.sim.algorithm.tensorflow.ops.Output
-import wumo.sim.algorithm.tensorflow.ops.Resource
-import wumo.sim.algorithm.tensorflow.ops.variables.Saver
-import wumo.sim.algorithm.tensorflow.ops.variables.VariableStore
-import wumo.sim.algorithm.tensorflow.throwExceptionIfNotOk
-import wumo.sim.algorithm.tensorflow.util.isNotNull
+import wumo.sim.tensorflow.OperationBuilder
+import wumo.sim.tensorflow.ops.Op
+import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.ops.Resource
+import wumo.sim.tensorflow.ops.variables.Saver
+import wumo.sim.tensorflow.ops.variables.VariableStore
+import wumo.sim.tensorflow.throwExceptionIfNotOk
+import wumo.sim.tensorflow.util.isNotNull
 import java.util.*
 
 /**

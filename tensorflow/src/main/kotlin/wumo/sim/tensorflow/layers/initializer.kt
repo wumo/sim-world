@@ -1,13 +1,13 @@
 package wumo.sim.tensorflow.layers
 
 import org.bytedeco.javacpp.tensorflow.DT_FLOAT
-import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.layers.mode.*
-import wumo.sim.algorithm.tensorflow.ops.Initializer
-import wumo.sim.algorithm.tensorflow.ops.const
-import wumo.sim.algorithm.tensorflow.ops.random_uniform
-import wumo.sim.algorithm.tensorflow.ops.truncatedNormal
-import wumo.sim.algorithm.tensorflow.tf
+import wumo.sim.tensorflow.TF
+import wumo.sim.tensorflow.layers.mode.*
+import wumo.sim.tensorflow.ops.Initializer
+import wumo.sim.tensorflow.ops.const
+import wumo.sim.tensorflow.ops.random_uniform
+import wumo.sim.tensorflow.ops.truncatedNormal
+import wumo.sim.tensorflow.tf
 import kotlin.math.sqrt
 
 /**

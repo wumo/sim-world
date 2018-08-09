@@ -1,9 +1,9 @@
 package wumo.sim.tensorflow.ops
 
 import org.junit.Test
-import wumo.sim.algorithm.tensorflow.ops.gen.mul
-import wumo.sim.algorithm.tensorflow.tf
-import wumo.sim.algorithm.tensorflow.training.GradientDescentOptimizer
+import wumo.sim.tensorflow.ops.gen.mul
+import wumo.sim.tensorflow.tf
+import wumo.sim.tensorflow.training.GradientDescentOptimizer
 
 class GradientsKtTest : BaseTest() {
   

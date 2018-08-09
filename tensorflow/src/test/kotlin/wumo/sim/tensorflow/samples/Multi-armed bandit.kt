@@ -3,15 +3,12 @@ package wumo.sim.tensorflow.samples
 import org.bytedeco.javacpp.tensorflow.DT_FLOAT
 import org.bytedeco.javacpp.tensorflow.DT_INT32
 import org.junit.Test
-import wumo.sim.algorithm.tensorflow.ops.*
-import wumo.sim.algorithm.tensorflow.ops.gen.log
-import wumo.sim.algorithm.tensorflow.ops.gen.slice
-import wumo.sim.algorithm.tensorflow.tf
-import wumo.sim.algorithm.tensorflow.training.GradientDescentOptimizer
-import wumo.sim.util.Rand
-import wumo.sim.util.dim
-import wumo.sim.util.f
-import wumo.sim.util.i
+import wumo.sim.tensorflow.ops.*
+import wumo.sim.tensorflow.ops.gen.log
+import wumo.sim.tensorflow.ops.gen.slice
+import wumo.sim.tensorflow.tf
+import wumo.sim.tensorflow.training.GradientDescentOptimizer
+import wumo.sim.util.*
 import wumo.sim.util.ndarray.NDArray
 import java.util.*
 
@@ -26,11 +23,11 @@ class `Multi-armed bandit` : BaseTest() {
     }
     
     //https://medium.com/@awjuliani/super-simple-reinforcement-learning-tutorial-part-1-fd544fab149
-    val weights = tf.variable(dim(4), 1f, name = "weights")
+    val weights = tf.variable(Shape(4), 1f, name = "weights")
     val chosen_action = tf.argmax(weights, 0, name = "chosen_action")
     
-    val reward_holder = tf.placeholder(dim(1), dtype = DT_FLOAT, name = "reward_holder")
-    val action_holder = tf.placeholder(dim(1), dtype = DT_INT32, name = "action_holder")
+    val reward_holder = tf.placeholder(Shape(1), dtype = DT_FLOAT, name = "reward_holder")
+    val action_holder = tf.placeholder(Shape(1), dtype = DT_INT32, name = "action_holder")
     
     val responsible_weight = tf.slice(weights, action_holder, tf.const(i(1)), name = "responsible_weight")
     val loss = -(tf.log(responsible_weight) * reward_holder)
@@ -52,8 +49,8 @@ class `Multi-armed bandit` : BaseTest() {
         else
           eval<Int>(chosen_action).get()
         val reward = pullBandit(bandit_arms[action])//Get our reward from picking one of the bandits.
-        feed(reward_holder to NDArray(dim(1), f(reward)),
-             action_holder to NDArray(dim(1), i(action)))
+        feed(reward_holder to NDArray(Shape(1), f(reward)),
+             action_holder to NDArray(Shape(1), i(action)))
         train.run()
         total_reward[action] += reward
         if (i % 50 == 0)

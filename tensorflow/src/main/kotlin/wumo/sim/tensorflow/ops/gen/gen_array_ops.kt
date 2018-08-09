@@ -4,8 +4,8 @@
 package wumo.sim.tensorflow.ops.gen
 
 import org.bytedeco.javacpp.tensorflow.DT_INT32
-import wumo.sim.algorithm.tensorflow.*
-import wumo.sim.algorithm.tensorflow.ops.Output
+import wumo.sim.tensorflow.*
+import wumo.sim.tensorflow.ops.Output
 import wumo.sim.util.Shape
 
 fun TF.batchToSpace(input: Output, crops: Output, block_size: Long, name: String = "BatchToSpace") = run {

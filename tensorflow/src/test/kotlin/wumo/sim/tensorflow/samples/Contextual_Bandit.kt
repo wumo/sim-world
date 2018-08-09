@@ -3,15 +3,15 @@ package wumo.sim.tensorflow.samples
 import org.bytedeco.javacpp.tensorflow
 import org.bytedeco.javacpp.tensorflow.DT_INT32
 import org.junit.Test
-import wumo.sim.algorithm.tensorflow.contrib.fully_connected
-import wumo.sim.algorithm.tensorflow.contrib.one_hot_encoding
-import wumo.sim.algorithm.tensorflow.ops.*
-import wumo.sim.algorithm.tensorflow.ops.gen.log
-import wumo.sim.algorithm.tensorflow.ops.gen.reshape
-import wumo.sim.algorithm.tensorflow.ops.gen.sigmoid
-import wumo.sim.algorithm.tensorflow.ops.gen.slice
-import wumo.sim.algorithm.tensorflow.tf
-import wumo.sim.algorithm.tensorflow.training.GradientDescentOptimizer
+import wumo.sim.tensorflow.contrib.fully_connected
+import wumo.sim.tensorflow.contrib.one_hot_encoding
+import wumo.sim.tensorflow.ops.*
+import wumo.sim.tensorflow.ops.gen.log
+import wumo.sim.tensorflow.ops.gen.reshape
+import wumo.sim.tensorflow.ops.gen.sigmoid
+import wumo.sim.tensorflow.ops.gen.slice
+import wumo.sim.tensorflow.tf
+import wumo.sim.tensorflow.training.GradientDescentOptimizer
 import wumo.sim.util.*
 import wumo.sim.util.ndarray.NDArray
 
@@ -36,7 +36,7 @@ class Contextual_Bandit : BaseTest() {
       return if (Rand().nextGaussian() > bandit) 1f else -1f
     }
     
-    val state_in = tf.placeholder(dim(1), dtype = DT_INT32, name = "state_in")
+    val state_in = tf.placeholder(Shape(1), dtype = DT_INT32, name = "state_in")
     val state_in_OH = tf.one_hot_encoding(state_in, num_bandits)
     var output = tf.fully_connected(state_in_OH, num_actions,
                                     biases_initializer = null,
@@ -45,8 +45,8 @@ class Contextual_Bandit : BaseTest() {
     output = tf.reshape(output, tf.const(i(-1)), name = "output")
     val chosen_action = tf.argmax(output, 0, name = "chosen_action")
     
-    val reward_holder = tf.placeholder(dim(1), dtype = tensorflow.DT_FLOAT, name = "reward_holder")
-    val action_holder = tf.placeholder(dim(1), dtype = DT_INT32, name = "action_holder")
+    val reward_holder = tf.placeholder(Shape(1), dtype = tensorflow.DT_FLOAT, name = "reward_holder")
+    val action_holder = tf.placeholder(Shape(1), dtype = DT_INT32, name = "action_holder")
     
     val responsible_output = tf.slice(output, action_holder, tf.const(i(1)), name = "responsible_weight")
     val loss = -(tf.log(responsible_output) * reward_holder)
@@ -58,7 +58,7 @@ class Contextual_Bandit : BaseTest() {
     printGraph()
     val weights = tf.trainables[0]
     val total_episodes = 10000
-    val total_reward = NDArray.zeros(dim(num_bandits))
+    val total_reward = NDArray.zeros(Shape(num_bandits))
     val e = 0.1
     tf.session {
       init.run()
@@ -69,14 +69,14 @@ class Contextual_Bandit : BaseTest() {
         val action = if (Rand().nextDouble() < e)
           Rand().nextInt(num_actions)
         else {
-          feed(state_in to NDArray(dim(1), i(s)))
+          feed(state_in to NDArray(Shape(1), i(s)))
           eval<Int>(chosen_action).get()
         }
         val reward = pullArm(action)
         
-        feed(reward_holder to NDArray(dim(1), f(reward)),
-             action_holder to NDArray(dim(1), i(action)),
-             state_in to NDArray(dim(1), i(s)))
+        feed(reward_holder to NDArray(Shape(1), f(reward)),
+             action_holder to NDArray(Shape(1), i(action)),
+             state_in to NDArray(Shape(1), i(s)))
         target(train)
         ww = eval(weights)
         

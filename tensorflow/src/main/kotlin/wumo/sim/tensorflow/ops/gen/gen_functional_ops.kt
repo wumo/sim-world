@@ -4,9 +4,9 @@
 package wumo.sim.tensorflow.ops.gen
 
 import org.bytedeco.javacpp.tensorflow.NameAttrList
-import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.ops.Output
-import wumo.sim.algorithm.tensorflow.buildOpTensors
+import wumo.sim.tensorflow.TF
+import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.buildOpTensors
 
 fun TF._for(start: Output, limit: Output, delta: Output, input: Output, body: NameAttrList, name: String = "For") = run {
   buildOpTensors("For", name) {

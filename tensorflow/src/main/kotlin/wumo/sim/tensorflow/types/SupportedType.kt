@@ -1,6 +1,6 @@
 package wumo.sim.tensorflow.types
 
-import wumo.sim.algorithm.tensorflow.core.InvalidDataTypeException
+import wumo.sim.tensorflow.core.InvalidDataTypeException
 
 sealed class SupportedType<out T, D : DataType<*>> {
   abstract val dataType: D

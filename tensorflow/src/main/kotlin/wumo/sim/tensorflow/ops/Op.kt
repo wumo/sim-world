@@ -3,11 +3,11 @@ package wumo.sim.tensorflow.ops
 import org.bytedeco.javacpp.PointerPointer
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
 import org.bytedeco.javacpp.tensorflow.*
-import wumo.sim.algorithm.tensorflow.core.Graph
-import wumo.sim.algorithm.tensorflow.ops.control_flow_ops.CondContext
-import wumo.sim.algorithm.tensorflow.ops.control_flow_ops.ControlFlowContext
-import wumo.sim.algorithm.tensorflow.ops.ops.COLOCATION_OPS_ATTRIBUTE_NAME
-import wumo.sim.algorithm.tensorflow.ops.ops.COLOCATION_OPS_ATTRIBUTE_PREFIX
+import wumo.sim.tensorflow.core.Graph
+import wumo.sim.tensorflow.ops.control_flow_ops.CondContext
+import wumo.sim.tensorflow.ops.control_flow_ops.ControlFlowContext
+import wumo.sim.tensorflow.ops.ops.COLOCATION_OPS_ATTRIBUTE_NAME
+import wumo.sim.tensorflow.ops.ops.COLOCATION_OPS_ATTRIBUTE_PREFIX
 import java.util.Collections.emptySet as emptyMutableSet
 
 class OpSpecification(name: String, opType: String, device: String)

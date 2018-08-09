@@ -1,7 +1,7 @@
 package wumo.sim.tensorflow.ops
 
-import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.ops.gradients.addSymbolicGradients
+import wumo.sim.tensorflow.TF
+import wumo.sim.tensorflow.ops.gradients.addSymbolicGradients
 
 fun TF.gradients(y: Output, xs: Collection<Output>): List<Output> {
   return addSymbolicGradients(listOf(y), xs.toList())

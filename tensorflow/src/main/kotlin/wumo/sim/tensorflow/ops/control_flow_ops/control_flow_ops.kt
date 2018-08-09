@@ -1,17 +1,17 @@
 package wumo.sim.tensorflow.ops.control_flow_ops
 
-import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.Variable
-import wumo.sim.algorithm.tensorflow.core.InvalidArgumentException
-import wumo.sim.algorithm.tensorflow.is_ref_dytpe
-import wumo.sim.algorithm.tensorflow.ops.Op
-import wumo.sim.algorithm.tensorflow.ops.Output
-import wumo.sim.algorithm.tensorflow.ops.gen.*
-import wumo.sim.algorithm.tensorflow.tf
+import wumo.sim.tensorflow.TF
+import wumo.sim.tensorflow.Variable
+import wumo.sim.tensorflow.core.InvalidArgumentException
+import wumo.sim.tensorflow.is_ref_dytpe
+import wumo.sim.tensorflow.ops.Op
+import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.ops.gen.*
+import wumo.sim.tensorflow.tf
 import wumo.sim.util.a
 import kotlin.collections.component1
 import kotlin.collections.component2
-import wumo.sim.algorithm.tensorflow.ops.gen.merge as _merge
+import wumo.sim.tensorflow.ops.gen.merge as _merge
 
 object control_flow_ops {
   /** Returns `true` if the provided op is within a cond statement. */

@@ -2,7 +2,7 @@
 
 package wumo.sim.tensorflow.scope
 
-import wumo.sim.algorithm.tensorflow.scopeChar
+import wumo.sim.tensorflow.scopeChar
 
 class NameScope(val name: String, parentScope: NameScope?) : enter_exit {
   /**这一层已使用的name，[subscopes]的name是[name_map]的子集*/

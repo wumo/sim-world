@@ -1,16 +1,16 @@
 package wumo.sim.tensorflow.learn_lowlevel_api
 
 import org.junit.Test
-import wumo.sim.algorithm.tensorflow.ops.Output
-import wumo.sim.algorithm.tensorflow.base_dtype
-import wumo.sim.algorithm.tensorflow.ops.BaseTest
-import wumo.sim.algorithm.tensorflow.ops.const
-import wumo.sim.algorithm.tensorflow.ops.gen.identity
-import wumo.sim.algorithm.tensorflow.ops.gen.refSwitch
-import wumo.sim.algorithm.tensorflow.ops.gen.switch
-import wumo.sim.algorithm.tensorflow.ops.is_variable_initialized
-import wumo.sim.algorithm.tensorflow.ops.control_flow_ops.merge
-import wumo.sim.algorithm.tensorflow.tf
+import wumo.sim.tensorflow.base_dtype
+import wumo.sim.tensorflow.ops.BaseTest
+import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.ops.const
+import wumo.sim.tensorflow.ops.control_flow_ops.merge
+import wumo.sim.tensorflow.ops.gen.identity
+import wumo.sim.tensorflow.ops.gen.refSwitch
+import wumo.sim.tensorflow.ops.gen.switch
+import wumo.sim.tensorflow.ops.is_variable_initialized
+import wumo.sim.tensorflow.tf
 
 class variable_initialization : BaseTest() {
   @Test

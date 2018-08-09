@@ -1,10 +1,10 @@
 package wumo.sim.tensorflow.layers
 
 import org.bytedeco.javacpp.tensorflow.DT_INVALID
-import wumo.sim.algorithm.tensorflow.ops.Output
-import wumo.sim.algorithm.tensorflow.ops.Initializer
-import wumo.sim.algorithm.tensorflow.ops.get_variable
-import wumo.sim.algorithm.tensorflow.tf
+import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.ops.Initializer
+import wumo.sim.tensorflow.ops.get_variable
+import wumo.sim.tensorflow.tf
 import wumo.sim.util.Shape
 
 typealias TensorFunction = (Output) -> Output

@@ -1,8 +1,8 @@
 package wumo.sim.tensorflow.ops.control_flow_ops
 
-import wumo.sim.algorithm.tensorflow.ops.Op
-import wumo.sim.algorithm.tensorflow.ops.Output
-import wumo.sim.algorithm.tensorflow.ops.ops
+import wumo.sim.tensorflow.ops.Op
+import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.ops.ops
 import java.util.*
 
 /**

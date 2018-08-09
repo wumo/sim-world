@@ -3,8 +3,8 @@
  */
 package wumo.sim.tensorflow.ops.gen
 
-import wumo.sim.algorithm.tensorflow.*
-import wumo.sim.algorithm.tensorflow.ops.Output
+import wumo.sim.tensorflow.*
+import wumo.sim.tensorflow.ops.Output
 import wumo.sim.util.Shape
 
 fun TF.accumulatorApplyGradient(handle: Output, local_step: Output, gradient: Output, name: String = "AccumulatorApplyGradient") = run {

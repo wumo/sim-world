@@ -1,9 +1,9 @@
 package wumo.sim.tensorflow
 
 import org.junit.Test
-import wumo.sim.algorithm.tensorflow.ops.BaseTest
+import wumo.sim.tensorflow.ops.BaseTest
 
-import wumo.sim.algorithm.tensorflow.ops.const
+import wumo.sim.tensorflow.ops.const
 import wumo.sim.util.a
 import wumo.sim.util.f
 import wumo.sim.util.x

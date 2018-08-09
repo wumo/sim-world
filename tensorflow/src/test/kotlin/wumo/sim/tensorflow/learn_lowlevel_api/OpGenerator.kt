@@ -5,7 +5,7 @@ import opGroups
 import org.tensorflow.framework.AttrValue
 import org.tensorflow.framework.OpDef
 import org.tensorflow.framework.OpList
-import wumo.sim.algorithm.tensorflow.TF
+import wumo.sim.tensorflow.TF
 import wumo.sim.util.readString
 import wumo.sim.util.sink
 import java.io.File
@@ -14,7 +14,7 @@ import java.util.*
 
 fun main(args: Array<String>) {
   TF
-  generateFiles("algorithm/src/main/kotlin", "wumo.sim.algorithm.tensorflow.ops.gen", opGroups)
+  generateFiles("algorithm/src/main/kotlin", "wumo.sim.tensorflow.ops.gen", opGroups)
 }
 
 fun generateFiles(path: String, kotlinPackage: String, opCategory: Map<String, Array<String>>) {
@@ -42,13 +42,13 @@ fun generateGroupFiles(path: String, group: String, opDefs: List<OpDef>, kotlinP
         | */
         |package $kotlinPackage
         |import org.bytedeco.javacpp.tensorflow.*
-        |import wumo.sim.algorithm.tensorflow.ops.Output
+        |import wumo.sim.tensorflow.ops.Output
         |import wumo.sim.util.Shape
-        |import wumo.sim.algorithm.tensorflow.TF
-        |import wumo.sim.algorithm.tensorflow.buildOp
-        |import wumo.sim.algorithm.tensorflow.buildOpTensor
-        |import wumo.sim.algorithm.tensorflow.buildOpTensors
-        |import wumo.sim.algorithm.tensorflow.tf
+        |import wumo.sim.tensorflow.TF
+        |import wumo.sim.tensorflow.buildOp
+        |import wumo.sim.tensorflow.buildOpTensor
+        |import wumo.sim.tensorflow.buildOpTensors
+        |import wumo.sim.tensorflow.tf
         |import wumo.sim.util.ndarray.NDArray
         |
         """.trimMargin())

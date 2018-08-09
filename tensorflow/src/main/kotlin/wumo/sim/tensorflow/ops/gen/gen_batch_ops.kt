@@ -4,10 +4,10 @@
 package wumo.sim.tensorflow.ops.gen
 
 import org.bytedeco.javacpp.tensorflow.NameAttrList
-import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.ops.Output
-import wumo.sim.algorithm.tensorflow.buildOpTensor
-import wumo.sim.algorithm.tensorflow.buildOpTensors
+import wumo.sim.tensorflow.TF
+import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.buildOpTensor
+import wumo.sim.tensorflow.buildOpTensors
 
 fun TF.batch(in_tensors: Output, num_batch_threads: Long, max_batch_size: Long, batch_timeout_micros: Long, grad_timeout_micros: Long, max_enqueued_batches: Long = 10L, allowed_batch_sizes: Array<Long> = arrayOf(), container: String = "", shared_name: String = "", batching_queue: String = "", name: String = "Batch") = run {
   buildOpTensors("Batch", name) {

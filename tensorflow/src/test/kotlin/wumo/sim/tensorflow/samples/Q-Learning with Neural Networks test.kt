@@ -1,11 +1,11 @@
 package wumo.sim.tensorflow.samples
 
 import org.junit.Test
-import wumo.sim.algorithm.tensorflow.ops.*
-import wumo.sim.algorithm.tensorflow.ops.gen.matMul
-import wumo.sim.algorithm.tensorflow.ops.gen.square
-import wumo.sim.algorithm.tensorflow.tf
-import wumo.sim.algorithm.tensorflow.training.GradientDescentOptimizer
+import wumo.sim.tensorflow.ops.*
+import wumo.sim.tensorflow.ops.gen.matMul
+import wumo.sim.tensorflow.ops.gen.square
+import wumo.sim.tensorflow.tf
+import wumo.sim.tensorflow.training.GradientDescentOptimizer
 import wumo.sim.envs.toy_text.FrozenLake
 import wumo.sim.util.Rand
 import wumo.sim.util.f

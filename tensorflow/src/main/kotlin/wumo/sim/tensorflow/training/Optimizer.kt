@@ -1,12 +1,12 @@
 package wumo.sim.tensorflow.training
 
-import wumo.sim.algorithm.tensorflow.ops.Op
-import wumo.sim.algorithm.tensorflow.ops.Output
-import wumo.sim.algorithm.tensorflow.Variable
-import wumo.sim.algorithm.tensorflow.ops.gradients
-import wumo.sim.algorithm.tensorflow.ops.control_flow_ops.group
-import wumo.sim.algorithm.tensorflow.ops.variable
-import wumo.sim.algorithm.tensorflow.tf
+import wumo.sim.tensorflow.ops.Op
+import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.Variable
+import wumo.sim.tensorflow.ops.gradients
+import wumo.sim.tensorflow.ops.control_flow_ops.group
+import wumo.sim.tensorflow.ops.variable
+import wumo.sim.tensorflow.tf
 import wumo.sim.util.tuple2
 
 /**

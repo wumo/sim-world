@@ -7,8 +7,8 @@ import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Session.newSession
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_SessionOptions.newSessionOptions
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
 import org.bytedeco.javacpp.tensorflow.*
-import wumo.sim.algorithm.tensorflow.ops.Op
-import wumo.sim.algorithm.tensorflow.ops.Output
+import wumo.sim.tensorflow.ops.Op
+import wumo.sim.tensorflow.ops.Output
 import wumo.sim.util.ndarray.NDArray
 import wumo.sim.util.tuple2
 import wumo.sim.util.tuple3

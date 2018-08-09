@@ -1,6 +1,6 @@
 package wumo.sim.tensorflow.framework
 
-import wumo.sim.algorithm.tensorflow.ops.Output
+import wumo.sim.tensorflow.ops.Output
 
 /**
 Converts the given `value` to a `Output`.

@@ -2,12 +2,12 @@ package wumo.sim.tensorflow.ops
 
 import org.bytedeco.javacpp.tensorflow.DT_FLOAT
 import org.bytedeco.javacpp.tensorflow.DT_HALF
-import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.ops.gen.rsqrt
-import wumo.sim.algorithm.tensorflow.ops.gen.squaredDifference
-import wumo.sim.algorithm.tensorflow.ops.gen.squeeze
-import wumo.sim.algorithm.tensorflow.ops.gen.stopGradient
-import wumo.sim.algorithm.tensorflow.tf
+import wumo.sim.tensorflow.TF
+import wumo.sim.tensorflow.ops.gen.rsqrt
+import wumo.sim.tensorflow.ops.gen.squaredDifference
+import wumo.sim.tensorflow.ops.gen.squeeze
+import wumo.sim.tensorflow.ops.gen.stopGradient
+import wumo.sim.tensorflow.tf
 import wumo.sim.util.a
 
 /**

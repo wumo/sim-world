@@ -2,16 +2,16 @@ package wumo.sim.tensorflow.ops
 
 import org.bytedeco.javacpp.tensorflow
 import org.tensorflow.framework.GraphDef
-import wumo.sim.algorithm.tensorflow.Session
-import wumo.sim.algorithm.tensorflow.Variable
-import wumo.sim.algorithm.tensorflow.core.Graph
-import wumo.sim.algorithm.tensorflow.ops.control_flow_ops.CondContext
-import wumo.sim.algorithm.tensorflow.ops.control_flow_ops.ControlFlowContext
-import wumo.sim.algorithm.tensorflow.ops.control_flow_ops.group
-import wumo.sim.algorithm.tensorflow.scope.NameScope
-import wumo.sim.algorithm.tensorflow.scope.VariableScope
-import wumo.sim.algorithm.tensorflow.scopeChar
-import wumo.sim.algorithm.tensorflow.tf
+import wumo.sim.tensorflow.Session
+import wumo.sim.tensorflow.Variable
+import wumo.sim.tensorflow.core.Graph
+import wumo.sim.tensorflow.ops.control_flow_ops.CondContext
+import wumo.sim.tensorflow.ops.control_flow_ops.ControlFlowContext
+import wumo.sim.tensorflow.ops.control_flow_ops.group
+import wumo.sim.tensorflow.scope.NameScope
+import wumo.sim.tensorflow.scope.VariableScope
+import wumo.sim.tensorflow.scopeChar
+import wumo.sim.tensorflow.tf
 import wumo.sim.util.lazyLogger
 import wumo.sim.util.println
 import java.util.*

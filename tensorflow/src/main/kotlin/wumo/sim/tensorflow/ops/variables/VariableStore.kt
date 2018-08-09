@@ -1,12 +1,12 @@
 package wumo.sim.tensorflow.ops.variables
 
-import wumo.sim.algorithm.tensorflow.Variable
-import wumo.sim.algorithm.tensorflow.core.Graph
-import wumo.sim.algorithm.tensorflow.core.ShapeMismatchException
-import wumo.sim.algorithm.tensorflow.ops.Initializer
-import wumo.sim.algorithm.tensorflow.ops.OpSpecification
-import wumo.sim.algorithm.tensorflow.types.DataType
-import wumo.sim.algorithm.tensorflow.types.FLOAT32
+import wumo.sim.tensorflow.Variable
+import wumo.sim.tensorflow.core.Graph
+import wumo.sim.tensorflow.core.ShapeMismatchException
+import wumo.sim.tensorflow.ops.Initializer
+import wumo.sim.tensorflow.ops.OpSpecification
+import wumo.sim.tensorflow.types.DataType
+import wumo.sim.tensorflow.types.FLOAT32
 import wumo.sim.util.Shape
 
 /**

@@ -3,8 +3,8 @@
  */
 package wumo.sim.tensorflow.ops.gen
 
-import wumo.sim.algorithm.tensorflow.*
-import wumo.sim.algorithm.tensorflow.ops.Output
+import wumo.sim.tensorflow.*
+import wumo.sim.tensorflow.ops.Output
 
 fun TF.sdcaFprint(input: Output, name: String = "SdcaFprint") = run {
   buildOpTensor("SdcaFprint", name) {

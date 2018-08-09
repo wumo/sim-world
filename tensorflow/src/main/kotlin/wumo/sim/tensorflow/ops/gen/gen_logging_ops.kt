@@ -3,10 +3,10 @@
  */
 package wumo.sim.tensorflow.ops.gen
 
-import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.ops.Output
-import wumo.sim.algorithm.tensorflow.buildOp
-import wumo.sim.algorithm.tensorflow.buildOpTensor
+import wumo.sim.tensorflow.TF
+import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.buildOp
+import wumo.sim.tensorflow.buildOpTensor
 import wumo.sim.util.ndarray.NDArray
 
 fun TF.assert(condition: Output, data: Output, summarize: Long = 3L, name: String = "Assert") = run {

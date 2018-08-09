@@ -1,11 +1,11 @@
 package wumo.sim.tensorflow.ops.control_flow_ops
 
-import wumo.sim.algorithm.tensorflow.ops.IndexedSlices
-import wumo.sim.algorithm.tensorflow.ops.Op
-import wumo.sim.algorithm.tensorflow.ops.Output
-import wumo.sim.algorithm.tensorflow.ops.SparseOutput
-import wumo.sim.algorithm.tensorflow.ops.control_flow_ops.control_flow_ops.isLoopExit
-import wumo.sim.algorithm.tensorflow.tf
+import wumo.sim.tensorflow.ops.IndexedSlices
+import wumo.sim.tensorflow.ops.Op
+import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.ops.SparseOutput
+import wumo.sim.tensorflow.ops.control_flow_ops.control_flow_ops.isLoopExit
+import wumo.sim.tensorflow.tf
 
 class CondContext(val pred: Output,
                   val pivot: Output,

@@ -3,8 +3,8 @@
  */
 package wumo.sim.tensorflow.ops.gen
 
-import wumo.sim.algorithm.tensorflow.*
-import wumo.sim.algorithm.tensorflow.ops.Output
+import wumo.sim.tensorflow.*
+import wumo.sim.tensorflow.ops.Output
 
 fun TF.abort(error_msg: String = "", exit_without_error: Boolean = false, name: String = "Abort") = run {
   buildOp("Abort", name) {

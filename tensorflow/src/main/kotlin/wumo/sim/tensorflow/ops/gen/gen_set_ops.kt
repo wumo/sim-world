@@ -3,10 +3,10 @@
  */
 package wumo.sim.tensorflow.ops.gen
 
-import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.ops.Output
-import wumo.sim.algorithm.tensorflow.buildOpTensor
-import wumo.sim.algorithm.tensorflow.buildOpTensors
+import wumo.sim.tensorflow.TF
+import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.buildOpTensor
+import wumo.sim.tensorflow.buildOpTensors
 
 fun TF.denseToDenseSetOperation(set1: Output, set2: Output, set_operation: String, validate_indices: Boolean = true, name: String = "DenseToDenseSetOperation") = run {
   buildOpTensors("DenseToDenseSetOperation", name) {

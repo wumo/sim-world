@@ -2,10 +2,10 @@ package wumo.sim.tensorflow.ops
 
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
 import org.bytedeco.javacpp.tensorflow.*
-import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.core.Graph
-import wumo.sim.algorithm.tensorflow.name
-import wumo.sim.algorithm.tensorflow.throwExceptionIfNotOk
+import wumo.sim.tensorflow.TF
+import wumo.sim.tensorflow.core.Graph
+import wumo.sim.tensorflow.name
+import wumo.sim.tensorflow.throwExceptionIfNotOk
 import wumo.sim.util.Shape
 
 interface OutputConvertible {

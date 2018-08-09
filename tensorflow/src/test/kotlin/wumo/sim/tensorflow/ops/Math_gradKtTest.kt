@@ -2,8 +2,8 @@ package wumo.sim.tensorflow.ops
 
 import org.bytedeco.javacpp.tensorflow.DT_FLOAT
 import org.junit.Test
-import wumo.sim.algorithm.tensorflow.ops.gen.relu
-import wumo.sim.algorithm.tensorflow.tf
+import wumo.sim.tensorflow.ops.gen.relu
+import wumo.sim.tensorflow.tf
 import wumo.sim.util.ndarray.NDArray
 import wumo.sim.util.scalarDimension
 

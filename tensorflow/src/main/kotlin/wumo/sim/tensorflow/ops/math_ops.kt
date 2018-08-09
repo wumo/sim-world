@@ -1,19 +1,19 @@
 package wumo.sim.tensorflow.ops
 
 import org.bytedeco.javacpp.tensorflow.*
-import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.Variable
-import wumo.sim.algorithm.tensorflow.base_dtype
-import wumo.sim.algorithm.tensorflow.ops.gen.*
-import wumo.sim.algorithm.tensorflow.tf
+import wumo.sim.tensorflow.TF
+import wumo.sim.tensorflow.Variable
+import wumo.sim.tensorflow.base_dtype
+import wumo.sim.tensorflow.ops.gen.*
+import wumo.sim.tensorflow.tf
 import wumo.sim.util.arange
 import wumo.sim.util.i
-import wumo.sim.algorithm.tensorflow.ops.gen.cast as _cast
-import wumo.sim.algorithm.tensorflow.ops.gen.conj as _conj
-import wumo.sim.algorithm.tensorflow.ops.gen.greaterEqual as _greaterEqual
-import wumo.sim.algorithm.tensorflow.ops.gen.range as _range
-import wumo.sim.algorithm.tensorflow.ops.gen.realDiv as _realDiv
-import wumo.sim.algorithm.tensorflow.ops.gen.sum as _sum
+import wumo.sim.tensorflow.ops.gen.cast as _cast
+import wumo.sim.tensorflow.ops.gen.conj as _conj
+import wumo.sim.tensorflow.ops.gen.greaterEqual as _greaterEqual
+import wumo.sim.tensorflow.ops.gen.range as _range
+import wumo.sim.tensorflow.ops.gen.realDiv as _realDiv
+import wumo.sim.tensorflow.ops.gen.sum as _sum
 
 fun TF.argmax(a: Output, axis: Int = 0, output_type: Int = DT_INT64, name: String = "ArgMax") =
     name_scope(name) {

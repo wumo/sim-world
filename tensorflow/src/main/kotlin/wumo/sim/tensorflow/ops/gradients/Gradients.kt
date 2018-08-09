@@ -1,17 +1,17 @@
 package wumo.sim.tensorflow.ops.gradients
 
 import org.bytedeco.javacpp.tensorflow.*
-import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.ops.*
-import wumo.sim.algorithm.tensorflow.ops.Output
-import wumo.sim.algorithm.tensorflow.ops.gen.addN
-import wumo.sim.algorithm.tensorflow.tf
+import wumo.sim.tensorflow.TF
+import wumo.sim.tensorflow.ops.*
+import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.ops.gen.addN
+import wumo.sim.tensorflow.tf
 import java.util.*
 import kotlin.collections.HashMap
 import kotlin.collections.HashSet
 import kotlin.collections.set
-import wumo.sim.algorithm.tensorflow.ops.gen.onesLike as _onesLike
-import wumo.sim.algorithm.tensorflow.ops.gen.zerosLike as _zerosLike
+import wumo.sim.tensorflow.ops.gen.onesLike as _onesLike
+import wumo.sim.tensorflow.ops.gen.zerosLike as _zerosLike
 
 fun TF.addSymbolicGradients(outputs: List<Output>,
                             inputs: List<Output>): MutableList<Output> {

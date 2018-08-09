@@ -1,10 +1,10 @@
 package wumo.sim.tensorflow.ops
 
-import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.ops.gen.identity
-import wumo.sim.algorithm.tensorflow.ops.gen.maximum
-import wumo.sim.algorithm.tensorflow.ops.gen.sqrt
-import wumo.sim.algorithm.tensorflow.tf
+import wumo.sim.tensorflow.TF
+import wumo.sim.tensorflow.ops.gen.identity
+import wumo.sim.tensorflow.ops.gen.maximum
+import wumo.sim.tensorflow.ops.gen.sqrt
+import wumo.sim.tensorflow.tf
 
 /**
  * Clips tensor values to a maximum L2-norm.

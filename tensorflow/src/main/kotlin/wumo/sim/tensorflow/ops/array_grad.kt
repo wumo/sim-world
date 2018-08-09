@@ -1,10 +1,10 @@
 package wumo.sim.tensorflow.ops
 
-import wumo.sim.algorithm.tensorflow.ops.gen.*
-import wumo.sim.algorithm.tensorflow.ops.gradients.noGradient
-import wumo.sim.algorithm.tensorflow.ops.gradients.register_gradient_op
-import wumo.sim.algorithm.tensorflow.ops.gradients.register_no_gradient_op
-import wumo.sim.algorithm.tensorflow.tf
+import wumo.sim.tensorflow.ops.gen.*
+import wumo.sim.tensorflow.ops.gradients.noGradient
+import wumo.sim.tensorflow.ops.gradients.register_gradient_op
+import wumo.sim.tensorflow.ops.gradients.register_no_gradient_op
+import wumo.sim.tensorflow.tf
 import wumo.sim.util.i
 
 fun register_array_grad() {

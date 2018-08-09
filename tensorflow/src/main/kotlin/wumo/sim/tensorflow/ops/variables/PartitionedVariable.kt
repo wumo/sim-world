@@ -1,9 +1,9 @@
 package wumo.sim.tensorflow.ops.variables
 
-import wumo.sim.algorithm.tensorflow.core.Graph
-import wumo.sim.algorithm.tensorflow.ops.Op
-import wumo.sim.algorithm.tensorflow.ops.Output
-import wumo.sim.algorithm.tensorflow.types.DataType
+import wumo.sim.tensorflow.core.Graph
+import wumo.sim.tensorflow.ops.Op
+import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.types.DataType
 import wumo.sim.util.Shape
 
 class PartitionedVariable : VariableLike {

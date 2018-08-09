@@ -2,10 +2,10 @@ package wumo.sim.tensorflow.scope
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import wumo.sim.algorithm.tensorflow.ops.const
-import wumo.sim.algorithm.tensorflow.ops.get_variable
-import wumo.sim.algorithm.tensorflow.ops.variable
-import wumo.sim.algorithm.tensorflow.tf
+import wumo.sim.tensorflow.ops.const
+import wumo.sim.tensorflow.ops.get_variable
+import wumo.sim.tensorflow.ops.variable
+import wumo.sim.tensorflow.tf
 import wumo.sim.util.f
 
 class VariableScopeTest {

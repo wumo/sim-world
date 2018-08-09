@@ -1,8 +1,8 @@
 package wumo.sim.tensorflow.ops
 
 import org.bytedeco.javacpp.tensorflow.*
-import wumo.sim.algorithm.tensorflow.*
-import wumo.sim.algorithm.tensorflow.Tensor
+import wumo.sim.tensorflow.*
+import wumo.sim.tensorflow.Tensor
 import wumo.sim.util.Shape
 import wumo.sim.util.SwitchValue3
 import wumo.sim.util.ndarray.NDArray

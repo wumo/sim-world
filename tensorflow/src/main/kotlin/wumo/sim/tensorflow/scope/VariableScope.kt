@@ -1,6 +1,6 @@
 package wumo.sim.tensorflow.scope
 
-import wumo.sim.algorithm.tensorflow.Variable
+import wumo.sim.tensorflow.Variable
 
 /**
  * Variable scope allows you to create new variables and to share already created

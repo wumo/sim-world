@@ -3,9 +3,9 @@
  */
 package wumo.sim.tensorflow.ops.gen
 
-import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.ops.Output
-import wumo.sim.algorithm.tensorflow.buildOpTensors
+import wumo.sim.tensorflow.TF
+import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.buildOpTensors
 
 fun TF.cTCBeamSearchDecoder(inputs: Output, sequence_length: Output, beam_width: Long, top_paths: Long, merge_repeated: Boolean = true, name: String = "CTCBeamSearchDecoder") = run {
   buildOpTensors("CTCBeamSearchDecoder", name) {

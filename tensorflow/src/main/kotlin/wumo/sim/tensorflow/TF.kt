@@ -4,14 +4,14 @@ import org.bytedeco.javacpp.Loader
 import org.bytedeco.javacpp.tensorflow
 import org.bytedeco.javacpp.tensorflow.*
 import org.tensorflow.framework.GraphDef
-import wumo.sim.algorithm.tensorflow.core.Graph
-import wumo.sim.algorithm.tensorflow.ops.*
-import wumo.sim.algorithm.tensorflow.ops.Output
-import wumo.sim.algorithm.tensorflow.ops.control_flow_ops.CondContext
-import wumo.sim.algorithm.tensorflow.ops.control_flow_ops.ControlFlowContext
-import wumo.sim.algorithm.tensorflow.ops.control_flow_ops.group
-import wumo.sim.algorithm.tensorflow.scope.NameScope
-import wumo.sim.algorithm.tensorflow.scope.VariableScope
+import wumo.sim.tensorflow.core.Graph
+import wumo.sim.tensorflow.ops.*
+import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.ops.control_flow_ops.CondContext
+import wumo.sim.tensorflow.ops.control_flow_ops.ControlFlowContext
+import wumo.sim.tensorflow.ops.control_flow_ops.group
+import wumo.sim.tensorflow.scope.NameScope
+import wumo.sim.tensorflow.scope.VariableScope
 import wumo.sim.util.println
 import java.util.*
 
