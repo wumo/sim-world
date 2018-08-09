@@ -2,9 +2,9 @@ package wumo.sim.algorithm.drl.deepq
 
 import okio.BufferedSink
 import okio.BufferedSource
-import wumo.sim.algorithm.tensorflow.*
-import wumo.sim.algorithm.tensorflow.ops.*
-import wumo.sim.algorithm.tensorflow.ops.control_flow_ops.group
+import wumo.sim.tensorflow.*
+import wumo.sim.tensorflow.ops.*
+import wumo.sim.tensorflow.ops.control_flow_ops.group
 import wumo.sim.util.buffer
 import wumo.sim.util.ndarray.*
 import wumo.sim.util.sink

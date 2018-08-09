@@ -1,16 +1,16 @@
 package wumo.sim.algorithm.drl.deepq
 
 import org.bytedeco.javacpp.tensorflow.*
-import wumo.sim.algorithm.tensorflow.TF
-import wumo.sim.algorithm.tensorflow.Variable
-import wumo.sim.algorithm.tensorflow.defaut
-import wumo.sim.algorithm.tensorflow.ops.*
-import wumo.sim.algorithm.tensorflow.ops.Output
-import wumo.sim.algorithm.tensorflow.ops.control_flow_ops.cond
-import wumo.sim.algorithm.tensorflow.ops.control_flow_ops.group
-import wumo.sim.algorithm.tensorflow.ops.gen.*
-import wumo.sim.algorithm.tensorflow.tf
-import wumo.sim.algorithm.tensorflow.training.Optimizer
+import wumo.sim.tensorflow.TF
+import wumo.sim.tensorflow.Variable
+import wumo.sim.tensorflow.defaut
+import wumo.sim.tensorflow.ops.*
+import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.ops.control_flow_ops.cond
+import wumo.sim.tensorflow.ops.control_flow_ops.group
+import wumo.sim.tensorflow.ops.gen.*
+import wumo.sim.tensorflow.tf
+import wumo.sim.tensorflow.training.Optimizer
 import wumo.sim.util.*
 import wumo.sim.util.Shape
 import wumo.sim.util.ndarray.NDArray

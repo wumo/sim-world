@@ -4,7 +4,7 @@ import org.junit.Test
 import wumo.sim.algorithm.drl.deepq.learn
 import wumo.sim.algorithm.drl.deepq.loadModel
 import wumo.sim.algorithm.drl.deepq.mlp
-import wumo.sim.algorithm.tensorflow.defaut
+import wumo.sim.tensorflow.defaut
 import wumo.sim.envs.classic_control.MountainCar
 import wumo.sim.util.ndarray.NDArray
 import wumo.sim.util.ndarray.newaxis

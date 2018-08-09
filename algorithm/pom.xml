@@ -12,59 +12,14 @@
     <artifactId>algorithm</artifactId>
 
     <properties>
-        <tensorflow.version>1.10.0-rc1</tensorflow.version>
-        <javacpp.version>1.4.3-SNAPSHOT</javacpp.version>
-        <javacpp-resets-tensorflow.version>${tensorflow.version}-${javacpp.version}</javacpp-resets-tensorflow.version>
-        <javacpp-resets-cuda.version>9.2-7.1-${javacpp.version}</javacpp-resets-cuda.version>
-        <atomicfu.version>0.10.3</atomicfu.version>
     </properties>
 
     <dependencies>
-        <!-- https://mvnrepository.com/artifact/com.squareup.okio/okio -->
-        <dependency>
-            <groupId>com.squareup.okio</groupId>
-            <artifactId>okio</artifactId>
-        </dependency>
         <dependency>
             <groupId>wumo.sim</groupId>
-            <artifactId>util</artifactId>
+            <artifactId>tensorflow</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.7</version>
-        </dependency>
-        <dependency>
-            <groupId>org.tensorflow</groupId>
-            <artifactId>proto</artifactId>
-            <version>1.9.0</version>
-            <!--<root>test</root>-->
-        </dependency>
-
-        <dependency>
-            <groupId>org.bytedeco.javacpp-presets</groupId>
-            <artifactId>tensorflow-platform</artifactId>
-            <version>${javacpp-resets-tensorflow.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.bytedeco.javacpp-presets</groupId>
-            <artifactId>tensorflow</artifactId>
-            <version>${javacpp-resets-tensorflow.version}</version>
-            <classifier>windows-x86_64</classifier>
-        </dependency>
-        <!--<dependency>-->
-        <!--<groupId>org.bytedeco.javacpp-presets</groupId>-->
-        <!--<artifactId>tensorflow</artifactId>-->
-        <!--<version>${javacpp-resets-tensorflow.version}</version>-->
-        <!--<classifier>windows-x86_64-gpu</classifier>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.bytedeco.javacpp-presets</groupId>-->
-            <!--<artifactId>cuda</artifactId>-->
-            <!--<version>${javacpp-resets-cuda.version}</version>-->
-            <!--<classifier>windows-x86_64-redist</classifier>-->
-        <!--</dependency>-->
 
         <dependency>
             <groupId>wumo.sim</groupId>

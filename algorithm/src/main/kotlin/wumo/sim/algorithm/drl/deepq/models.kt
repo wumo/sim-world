@@ -1,10 +1,10 @@
 package wumo.sim.algorithm.drl.deepq
 
-import wumo.sim.algorithm.tensorflow.ops.Output
-import wumo.sim.algorithm.tensorflow.contrib.fully_connected
-import wumo.sim.algorithm.tensorflow.contrib.layer_norm
-import wumo.sim.algorithm.tensorflow.ops.gen.relu
-import wumo.sim.algorithm.tensorflow.tf
+import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.contrib.fully_connected
+import wumo.sim.tensorflow.contrib.layer_norm
+import wumo.sim.tensorflow.ops.gen.relu
+import wumo.sim.tensorflow.tf
 
 typealias Q_func = (Output, Int, String, Boolean) -> Output
 

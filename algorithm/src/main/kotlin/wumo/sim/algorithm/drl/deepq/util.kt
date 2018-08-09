@@ -4,12 +4,12 @@ package wumo.sim.algorithm.drl.deepq
 
 import org.bytedeco.javacpp.tensorflow.DT_FLOAT
 import org.bytedeco.javacpp.tensorflow.DT_INT32
-import wumo.sim.algorithm.tensorflow.ops.*
-import wumo.sim.algorithm.tensorflow.ops.gen.abs
-import wumo.sim.algorithm.tensorflow.ops.gen.less
-import wumo.sim.algorithm.tensorflow.ops.gen.oneHot
-import wumo.sim.algorithm.tensorflow.ops.gen.square
-import wumo.sim.algorithm.tensorflow.tf
+import wumo.sim.tensorflow.ops.*
+import wumo.sim.tensorflow.ops.gen.abs
+import wumo.sim.tensorflow.ops.gen.less
+import wumo.sim.tensorflow.ops.gen.oneHot
+import wumo.sim.tensorflow.ops.gen.square
+import wumo.sim.tensorflow.tf
 import wumo.sim.core.Space
 import wumo.sim.spaces.Box
 import wumo.sim.spaces.Discrete

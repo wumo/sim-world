@@ -1,9 +1,9 @@
 package wumo.sim.algorithm.drl.deepq
 
-import wumo.sim.algorithm.tensorflow.Variable
-import wumo.sim.algorithm.tensorflow.ops.const
-import wumo.sim.algorithm.tensorflow.tf
-import wumo.sim.algorithm.tensorflow.training.AdamOptimizer
+import wumo.sim.tensorflow.Variable
+import wumo.sim.tensorflow.ops.const
+import wumo.sim.tensorflow.tf
+import wumo.sim.tensorflow.training.AdamOptimizer
 import wumo.sim.core.Env
 import wumo.sim.util.ndarray.NDArray.Companion.toNDArray
 import wumo.sim.util.ndarray.abs
