@@ -47,4 +47,18 @@ class NameScope(val name: String, parentScope: NameScope? = null) : enter_exit {
     assert(name.isNotEmpty() && !name.startsWith(scopeChar))
     return subscopes.computeIfAbsent(name) { NameScope(name, this) }
   }
+  
+  companion object {
+    /**
+     * Converts the provided name scope to a valid op name, by removing a trailing "/" if there exists one.
+     * @param scopeName scope Name to convert
+     * @return Name obtained from the provided name scope.
+     * @see "tensorflow.python.framework.ops._name_from_scope_name"
+     */
+    fun nameFromScopeName(scopeName: String) =
+        if (scopeName.endsWith('/'))
+          scopeName.substring(0, scopeName.lastIndex)
+        else
+          scopeName
+  }
 }

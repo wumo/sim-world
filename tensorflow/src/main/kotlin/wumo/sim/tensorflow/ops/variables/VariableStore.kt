@@ -1,21 +1,24 @@
 package wumo.sim.tensorflow.ops.variables
 
-import wumo.sim.tensorflow.core.Graph
+import wumo.sim.tensorflow.core.Graph.Graph
 import wumo.sim.tensorflow.core.InvalidDataTypeException
 import wumo.sim.tensorflow.core.ShapeMismatchException
 import wumo.sim.tensorflow.ops.DeviceFunction
-import wumo.sim.tensorflow.ops.Initializer
 import wumo.sim.tensorflow.ops.ops
+import wumo.sim.tensorflow.ops.ops.colocate_with
+import wumo.sim.tensorflow.ops.variables.variables.defaultInitializer
+import wumo.sim.tensorflow.ops.variables.variables.makeGetter
 import wumo.sim.tensorflow.types.DataType
 import wumo.sim.tensorflow.types.FLOAT32
 import wumo.sim.util.Shape
+
 /**
  * Variable store that carries a number of named Variables.
  */
 internal class VariableStore {
+  
   /** Map with variable names as keys and the corresponding variables as values. */
   private val variables = hashMapOf<String, Variable>()
-  
   /** Map with partitioned variable names as keys and the corresponding partitioned variables as values. */
   private val partitionedVariables = hashMapOf<String, PartitionedVariable>()
   
@@ -57,7 +60,7 @@ internal class VariableStore {
       reuse: Reuse = ReuseOrCreateNew,
       collections: Set<Graph.Key<Variable>> = emptySet(),
       cachingDevice: DeviceFunction? = null
-  ): Variable {
+  ): Variable = run {
     // Single variable case.
     if ("$name/part_0" in variables)
       throw IllegalArgumentException(
@@ -88,9 +91,24 @@ internal class VariableStore {
         throw IllegalArgumentException(
             "The shape of a new variable ('$name') must be fully defined, but instead it was set to '$shape'.")
 //      val acutalInitializer=
-      if(initializer==null)
+      val actualInitializer = ops.init_scope {
+        initializer ?: defaultInitializer(name, dataType)
+      }
+      val variable = makeGetter()(name, dataType, shape, actualInitializer,
+                                  regularizer, trainable, reuse, collections, cachingDevice, null)
+      variables[name] = variable
+      // Run the regularizer if specified and save the resulting loss.
+      if (regularizer != null) {
+        colocate_with(variable.op) {
+          val loss = ops.name_scope("$name/Regularizer") {
+            regularizer(variable.value)
+          }
+          if (loss != null)
+            ops.currentGraph.addToCollection(loss, Graph.Keys.REGULARIZATION_LOSSES)
+        }
+      }
+      variable
     }
-    TODO()
   }
   
   companion object {

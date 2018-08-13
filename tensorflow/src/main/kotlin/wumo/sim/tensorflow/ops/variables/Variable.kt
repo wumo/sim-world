@@ -1,11 +1,18 @@
 package wumo.sim.tensorflow.ops.variables
 
-import wumo.sim.tensorflow.core.Graph
+import org.bytedeco.javacpp.tensorflow
+import wumo.sim.tensorflow.base_dtype
+import wumo.sim.tensorflow.core.Graph.Graph
+import wumo.sim.tensorflow.core.ShapeMismatchException
+import wumo.sim.tensorflow.fullName
 import wumo.sim.tensorflow.ops.*
 import wumo.sim.tensorflow.ops.control_flow_ops.cond
 import wumo.sim.tensorflow.ops.gen.identity
+import wumo.sim.tensorflow.ops.gen.variableV2
+import wumo.sim.tensorflow.scope.NameScope.Companion.nameFromScopeName
 import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.types.DataType
+import wumo.sim.tensorflow.types.FLOAT32
 import wumo.sim.tensorflow.types.types
 import wumo.sim.util.Shape
 import wumo.sim.util.a
@@ -14,8 +21,8 @@ class Variable(
     override val dataType: DataType<*>,
     private val variable: Output,
     private val initializeOp: Op,
-    private val cachedValue: Output,
-    op: Op, value_index: Int) : VariableLike {
+    private val cachedValue: Output) : VariableLike {
+  
   /** Graph where this variable is defined. */
   override val graph = variable.graph
   /** Name of this variable. */
@@ -23,6 +30,7 @@ class Variable(
     get() = variable.op!!.name
   val device = variable.device
   override val shape = variable.shape
+  val op = variable.op!!
   override val value
     get() = snapshot
   override val initializer: Op
@@ -217,7 +225,7 @@ class Variable(
   interface VariableGetter {
     operator fun invoke(
         name: String,
-        dataType: DataType<*>? = types.FLOAT32,
+        dataType: DataType<*> = types.FLOAT32,
         shape: Shape? = null,
         initializer: Initializer? = null,
         regularizer: Regularizer? = null,
@@ -230,6 +238,83 @@ class Variable(
   }
   
   companion object {
-  
+    /** Gets an existing variable with the specified name or creates a new one.
+     *
+     * This function prefixes the name with the current variable scope and performs variable reuse checks.
+     *
+     * TODO: Add example.
+     *
+     * @param  name          Variable name.
+     * @param  dataType      Data type for the value of the created variable. If not provided, its value is inferred from
+     *                       the provided initial value. If it cannot be inferred, then it will default to `FLOAT32`.
+     * @param  shape         Shape for the value of the created variable. If `null`, an attempt will be made to infer the
+     *                       shape of the variable from the provided initializer.
+     * @param  initializer   Variable initializer. If `initializer` is `null` (the default), the default initializer
+     *                       passed in the constructor is used. If that one is `null` too, then we use a new
+     *                       `glorotUniformInitializer`. The initializer will be called for each part of the partitioned
+     *                       variable separately.
+     * @param  regularizer   Variable regularizer.
+     * @param  trainable     If `true`, the default, the variable is added to the graph collection
+     *                       `Graph.Keys.TRAINABLE_VARIABLES`. This collection is used as the default set of variables
+     *                       to use by the optimizers.
+     * @param  reuse         [[Reuse]] value indicating whether to re-use an existing variable with the same name, create
+     *                       a new variable, or do either.
+     * @param  collections   Set of graph collections keys. The variable is added to these collections. Defaults to
+     *                       `Set(Graph.Keys.GLOBAL_VARIABLES)`.
+     * @param  cachingDevice Device specification describing where the variable should be cached for reading. Defaults
+     *                       to the variable's device. Typical use is to cache on the device where the ops using the
+     *                       variable reside, to deduplicate copying through `Switch` and other conditional statements.
+     * @return Requested variable.
+     */
+    internal fun getVariable(
+        name: String,
+        shape: Shape? = null,
+        dataType: DataType<*>? = null,
+        initializer: Initializer? = null,
+        regularizer: Regularizer? = null,
+        trainable: Boolean = true,
+        reuse: Reuse = ReuseOrCreateNew,
+        collections: Set<Graph.Key<Variable>> = emptySet(),
+        cachingDevice: DeviceFunction? = null
+    ): Variable =
+        VariableScope.current.getVariable(
+            VariableStore.current, name, shape, dataType, initializer, regularizer, trainable, reuse, collections,
+            cachingDevice)
+    
+    /**
+     * @see "tensorflow.python.ops.variables.Variable#__init__"
+     */
+    internal operator fun invoke(
+        initializer: Initializer,
+        shape: Shape? = null,
+        dataType: DataType<*>? = null,
+        trainable: Boolean = true,
+        collections: Set<Graph.Key<Variable>> = emptySet(),
+        cachingDevice: DeviceFunction? = null,
+        name: String = "Variable"
+    ): Variable {
+      ops.init_scope {
+        ops.name_scope(name) {
+          val inferredDataType = dataType ?: initializer.dtype ?: FLOAT32
+          val inferredShape = shape ?: initializer.shape ?: throw ShapeMismatchException(
+              "No shape was provided for the new variable and it could not be inferred from the provided initializer.")
+          val scopeName = ops.currentNameScope.scopeName
+          val trueName = nameFromScopeName(scopeName)
+//          //Use attr_scope and device(None) to simulate the behavior of
+//          //colocate_with when the _variable we want to colocate with doesn't
+//          //yet exist.
+//          val attr = tensorflow.AttrValue()
+//          attr.mutable_list().apply {
+//            add_s("loc:@$trueName")
+//          }
+          val variableHandle = tf.variableV2(inferredShape, inferredDataType.cValue.base_dtype, name = scopeName)
+          val initialValue = ops.name_scope("Initializer") {
+            initializer(inferredShape, inferredDataType)
+          }
+          
+        }
+      }
+      TODO()
+    }
   }
 }

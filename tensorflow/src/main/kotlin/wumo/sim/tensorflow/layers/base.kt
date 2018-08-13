@@ -2,12 +2,12 @@ package wumo.sim.tensorflow.layers
 
 import org.bytedeco.javacpp.tensorflow.DT_INVALID
 import wumo.sim.tensorflow.ops.Output
-import wumo.sim.tensorflow.ops.Initializer
 import wumo.sim.tensorflow.ops.get_variable
+import wumo.sim.tensorflow.ops.variables.Initializer
 import wumo.sim.tensorflow.tf
 import wumo.sim.util.Shape
 
-typealias TensorFunction = (Output) -> Output
+typealias TensorFunction = (Output) -> Output?
 
 open class Layer(val trainable: Boolean = true,
                  val activity_reqularizer: Any? = null,

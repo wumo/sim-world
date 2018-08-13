@@ -6,7 +6,6 @@ import wumo.sim.tensorflow.ops.ops
  */
 class VariableScopeStore {
   var scope = VariableScope(CreateNewOnly)
-  
   /** Map with variable scope names as keys and the corresponding use counts as values. */
   var variableScopeCounts = mutableMapOf<String, Int>()
   
@@ -24,6 +23,7 @@ class VariableScopeStore {
   fun variableScopeCount(scope: String) = variableScopeCounts.getOrDefault(scope, 0)
   
   companion object {
+    /**Returns the variable scope store for current thread.*/
     val current get() = ops.currentGraph.variableScopeStore.value
   }
 }

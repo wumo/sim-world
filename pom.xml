@@ -15,6 +15,7 @@
         <module>algorithm</module>
         <module>util</module>
         <module>tensorflow</module>
+        <module>tensorflow-ops-generator</module>
     </modules>
 
     <developers>
@@ -36,17 +37,6 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
-        <repository>
-            <id>kotlin-eap</id>
-            <name>kotlin-eap</name>
-            <url>https://dl.bintray.com/kotlin/kotlin-eap</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
     </repositories>
     <pluginRepositories>
         <pluginRepository>
@@ -60,18 +50,22 @@
                 <enabled>false</enabled>
             </snapshots>
         </pluginRepository>
-        <pluginRepository>
-            <id>kotlin-eap</id>
-            <name>kotlin-eap</name>
-            <url>https://dl.bintray.com/kotlin/kotlin-eap</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </pluginRepository>
     </pluginRepositories>
+
+    <profiles>
+        <profile>
+            <id>linux-x86_64</id>
+            <properties>
+                <platform>linux-x86_64</platform>
+            </properties>
+        </profile>
+        <profile>
+            <id>windows-x86_64</id>
+            <properties>
+                <platform>windows-x86_64</platform>
+            </properties>
+        </profile>
+    </profiles>
 
     <properties>
         <junit.version>4.12</junit.version>

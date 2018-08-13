@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>tensorflow</artifactId>
+    <artifactId>tensorflow-ops-generator</artifactId>
 
     <properties>
         <javacpp.version>1.4.3-SNAPSHOT</javacpp.version>
@@ -38,8 +38,7 @@
         <dependency>
             <groupId>org.tensorflow</groupId>
             <artifactId>proto</artifactId>
-            <version>1.9.0</version>
-            <!--<root>test</root>-->
+            <version>${tensorflow.version}</version>
         </dependency>
 
         <dependency>
@@ -54,10 +53,10 @@
             <classifier>${platform}</classifier>
         </dependency>
         <!--<dependency>-->
-            <!--<groupId>org.bytedeco.javacpp-presets</groupId>-->
-            <!--<artifactId>tensorflow</artifactId>-->
-            <!--<version>${javacpp-resets-tensorflow.version}</version>-->
-            <!--<classifier>${platform}-gpu</classifier>-->
+        <!--<groupId>org.bytedeco.javacpp-presets</groupId>-->
+        <!--<artifactId>tensorflow</artifactId>-->
+        <!--<version>${javacpp-resets-tensorflow.version}</version>-->
+        <!--<classifier>${platform}-gpu</classifier>-->
         <!--</dependency>-->
         <!--<dependency>-->
         <!--<groupId>org.bytedeco.javacpp-presets</groupId>-->
@@ -71,12 +70,6 @@
         <!--<version>${javacpp-resets-cuda.version}</version>-->
         <!--<classifier>${platform}-redist</classifier>-->
         <!--</dependency>-->
-
-        <dependency>
-            <groupId>wumo.sim</groupId>
-            <artifactId>world</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-stdlib</artifactId>

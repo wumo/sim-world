@@ -9,6 +9,7 @@ import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.ops.control_flow_ops.control_flow_ops.checkInputFromValidContext
 import wumo.sim.tensorflow.ops.ops
 import wumo.sim.tensorflow.ops.ops.logger
+import wumo.sim.tensorflow.scope.NameScope.Companion.nameFromScopeName
 import wumo.sim.util.Shape
 import wumo.sim.util.ndarray.NDArray
 import wumo.sim.util.toByte
@@ -21,7 +22,7 @@ val String.fullName
 
 fun TF.buildOp(op: String, name: String, setAttr: OperationBuilder.() -> Unit = {}) = run {
   name_scope(name) {
-    val builder = g.nodeBuilder(op, ctxNs.scopeName.fullName)
+    val builder = g.nodeBuilder(op, nameFromScopeName(ctxNs.scopeName))
     setAttr(builder)
     builder.build()
   }
@@ -29,7 +30,7 @@ fun TF.buildOp(op: String, name: String, setAttr: OperationBuilder.() -> Unit = 
 
 fun TF.buildOpTensor(op: String, name: String, setAttr: OperationBuilder.() -> Unit = {}) = run {
   name_scope(name) {
-    val builder = g.nodeBuilder(op, ctxNs.scopeName.fullName)
+    val builder = g.nodeBuilder(op, nameFromScopeName(ctxNs.scopeName))
     setAttr(builder)
     val _op = builder.build()
     assert(_op.c_op.node().num_outputs() == 1) { "${_op.c_op.node().DebugString()} outputs > 1, use naryOps instead." }
@@ -39,7 +40,7 @@ fun TF.buildOpTensor(op: String, name: String, setAttr: OperationBuilder.() -> U
 
 fun TF.buildOpTensors(op: String, name: String, setAttr: OperationBuilder.() -> Unit = {}) = run {
   name_scope(name) {
-    val builder = g.nodeBuilder(op, ctxNs.scopeName.fullName)
+    val builder = g.nodeBuilder(op, nameFromScopeName(ctxNs.scopeName))
     setAttr(builder)
     val _op = builder.build()
     val outputs = _op.c_op.node().num_outputs()
