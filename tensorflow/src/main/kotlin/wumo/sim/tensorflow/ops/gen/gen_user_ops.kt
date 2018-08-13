@@ -3,10 +3,19 @@
  */
 package wumo.sim.tensorflow.ops.gen
 
+import org.bytedeco.javacpp.tensorflow.*
+import wumo.sim.tensorflow.ops.Output
+import wumo.sim.util.Shape
 import wumo.sim.tensorflow.TF
+import wumo.sim.tensorflow.buildOp
 import wumo.sim.tensorflow.buildOpTensor
+import wumo.sim.tensorflow.buildOpTensors
+import wumo.sim.tensorflow.tf
+import wumo.sim.util.ndarray.NDArray
 
-fun TF.fact(name: String = "Fact") = run {
-  buildOpTensor("Fact", name) {
+interface gen_user_ops {
+  fun _fact(name: String = "Fact") = run {
+    buildOpTensor("Fact", name) {
+    }
   }
 }

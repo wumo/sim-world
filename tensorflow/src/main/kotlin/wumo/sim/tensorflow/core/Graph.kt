@@ -5,14 +5,17 @@ package wumo.sim.tensorflow.core
 import org.bytedeco.javacpp.BytePointer
 import org.bytedeco.javacpp.Pointer
 import org.bytedeco.javacpp.SizeTPointer
+import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Buffer.newBuffer
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Graph.newGraph
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
+import org.bytedeco.javacpp.tensorflow
 import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.tensorflow.OperationBuilder
 import wumo.sim.tensorflow.ops.Op
 import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.ops.Resource
 import wumo.sim.tensorflow.ops.variables.Saver
+import wumo.sim.tensorflow.ops.variables.Variable
 import wumo.sim.tensorflow.ops.variables.Variable.VariableGetter
 import wumo.sim.tensorflow.ops.variables.VariableScopeStore
 import wumo.sim.tensorflow.ops.variables.VariableStore
@@ -57,8 +60,8 @@ class Graph {
    * from the native library. */
   internal val opsCache = hashMapOf<Long, Op>()
   
-  internal fun cache(op: TF_Operation) = opsCache[op]
-  operator fun HashMap<Long, Op>.get(op: TF_Operation) =
+  internal fun cache(op: tensorflow.TF_Operation) = opsCache[op]
+  operator fun HashMap<Long, Op>.get(op: tensorflow.TF_Operation) =
       getOrPut(op.address()) { Op(this@Graph, op) }
   
   /** Variable store object of this graph, used to store created variables and keep track of variable scope usages. */
@@ -100,8 +103,18 @@ class Graph {
     }
   }
   
+  /** Gets the set of values contained in the collection with name `key`.
+   *
+   * Note that this method returns an immutable copy of the set.
+   *
+   * @param  key Collection name.
+   * @return Set of values contained in the collection with name `collection`.
+   */
+  fun <K> getCollection(key: Graph.Key<K>) =
+      collections.getOrDefault(key, mutableSetOf<K>()) as MutableSet<K>
+  
   fun num_node_ids() = c_graph.graph().num_node_ids()
-  fun nodeBuilder(opType: String, name: String) = OperationBuilder(this, opType, name)
+  fun nodeBuilder(opType: String, name: String) = OperationBuilder(opType, name)
   fun isFetchable(op: Op) {
   }
   
@@ -138,8 +151,8 @@ class Graph {
   
   fun is_function(name: String) = name in functions
   fun toGraphDef(): ByteArray {
-    val buf = TF_NewBuffer()
-    val status = TF_NewStatus()
+    val buf = newBuffer()
+    val status = newStatus()
     TF_GraphToGraphDef(c_graph, buf, status)
     throwExceptionIfNotOk(status)
     val len = buf.length()
@@ -148,8 +161,6 @@ class Graph {
     d.capacity<Pointer>(len)
     val data = d.asByteBuffer()
     data.get(bytes)
-    TF_DeleteStatus(status)
-    TF_DeleteBuffer(buf)
     return bytes
   }
   

@@ -1,12 +1,10 @@
 package wumo.sim.tensorflow.ops.variables
 
-import org.bytedeco.javacpp.tensorflow
 import wumo.sim.tensorflow.base_dtype
+import wumo.sim.tensorflow.buildOp
 import wumo.sim.tensorflow.core.Graph.Graph
 import wumo.sim.tensorflow.core.ShapeMismatchException
-import wumo.sim.tensorflow.fullName
 import wumo.sim.tensorflow.ops.*
-import wumo.sim.tensorflow.ops.control_flow_ops.cond
 import wumo.sim.tensorflow.ops.gen.identity
 import wumo.sim.tensorflow.ops.gen.variableV2
 import wumo.sim.tensorflow.scope.NameScope.Companion.nameFromScopeName
@@ -307,14 +305,139 @@ class Variable(
 //          attr.mutable_list().apply {
 //            add_s("loc:@$trueName")
 //          }
-          val variableHandle = tf.variableV2(inferredShape, inferredDataType.cValue.base_dtype, name = scopeName)
+          val variableHandle = tf._variableV2(inferredShape, inferredDataType.cValue.base_dtype, name = scopeName)
           val initialValue = ops.name_scope("Initializer") {
-            initializer(inferredShape, inferredDataType)
+            ops.colocate_with(variableHandle.op!!) {
+              initializer(inferredShape, inferredDataType)
+            }
           }
+          val initializeOp = tf.assign(variableHandle,
+                                       tryGuardAgainstUninitializedDependencies(name, initialValue))
           
         }
       }
       TODO()
+    }
+    
+    /**
+     * Attempt to guard against dependencies on uninitialized variables.
+     *
+     * Replace references to variables in `initial_value` with references to the
+     * variable's initialized values. The initialized values are essentially
+     * conditional TensorFlow graphs that return a variable's value if it is
+     * initialized or its `initial_value` if it hasn't been initialized. This
+     * replacement is done on a best effort basis:
+     *
+     * - If the [initial_value] graph contains cycles, we don't do any
+     * replacements for that graph.
+     * - If the variables that [initial_value] depends on are not present in the
+     * `GLOBAL_VARIABLES` or `LOCAL_VARIABLES` we don't replace them.
+     *
+     * In these cases, it is up to the caller to ensure that the `initial_value`
+     * graph uses initialized variables or that they guard access to variables
+     * using their `initialized_value` method.
+     * @param initial_value The initial value.
+     * @return A [Output] suitable to initialize a variable.
+     *
+     * @see "tensorflow.python.ops.variables.Variable#_try_guard_against_uninitialized_dependencies"
+     */
+    private fun tryGuardAgainstUninitializedDependencies(variableName: String, initial_value: Output): Output {
+      /**Detect cycles in the dependencies of [initial_value].*/
+      fun has_cycle(op: Op, path: MutableSet<String>): Boolean {
+        if (op.name in path) return true
+        path += op.name
+        for (op_input in op.inputs)
+          if (has_cycle(op_input.op!!, path))
+            return true
+        for (op_control_input in op.controlInputs)
+          if (has_cycle(op_control_input, path))
+            return true
+        path.remove(op.name)
+        return false
+      }
+      
+      //Don't modify initial_value if it contains any cyclic dependencies.
+      return if (has_cycle(initial_value.op!!, path = mutableSetOf()))
+        initial_value
+      else safe_initial_value_from_tensor(variableName, initial_value, mutableMapOf())
+    }
+    
+    /**
+     * Replace dependencies on variables with their initialized values.
+     * @param initialValue A [Output]. The tensor to replace.
+     * @param op_cache A dict mapping findOp names to [Op]s. Used to memoize
+     * the results so as to avoid creating redundant operations.
+     * @return A [Output] compatible with [initialValue]. Any inputs that lead to variable
+     * values will be replaced with a corresponding graph that uses the
+     * variable's initialized values. This is done on a best-effort basis. If no
+     * modifications need to be made then [initialValue] will be returned unchanged.
+     */
+    private fun safe_initial_value_from_tensor(variableName: String, initialValue: Output, op_cache: MutableMap<String, Op>): Output {
+      val op = initialValue.op
+      val new_op = op_cache.compute(op!!.name) { _, new_op ->
+        new_op ?: safe_initial_value_from_op(variableName, op, op_cache)
+      }!!
+      return new_op.outputs[initialValue.value_index]
+    }
+    
+    /**
+     * Replace dependencies on variables with their initialized values.
+     * @param op A [Op]. The tensor to replace.
+     * @param op_cache A dict mapping findOp names to [Op]s. Used to memoize
+     * the results so as to avoid creating redundant operations.
+     * @return A [Output] compatible with [op]. Any inputs that lead to variable
+     * values will be replaced with a corresponding graph that uses the
+     * variable's initialized values. This is done on a best-effort basis. If no
+     * modifications need to be made then [op] will be returned unchanged.
+     */
+    private fun safe_initial_value_from_op(variableName: String, op: Op, op_cache: MutableMap<String, Op>): Op {
+      val op_type = op.opType
+      if (op_type in a("IsVariableInitialized", "VarIsInitializedOp", "ReadVariableOp"))
+        return op
+      if (op_type in a("Variable", "VariableV2", "VarHandleOp")) {
+        //Attempt to find the initialized_value of any variable reference / handles.
+        val initialized_value = find_initialized_value_for_variable(op)
+        return initialized_value?.op ?: op
+      }
+      //Recursively build initializer expressions for inputs.
+      var modified = false
+      val new_op_inputs = mutableListOf<Output>()
+      for (op_input in op.inputs) {
+        val new_op_input = safe_initial_value_from_tensor(variableName, op_input, op_cache)
+        new_op_inputs += new_op_input
+        modified = modified || (new_op_input != op_input)
+      }
+      //If at least one input was modified, replace the op.
+      if (modified) {
+        var new_op_type = op_type
+        if (new_op_type == "RefSwitch")
+          new_op_type = "Switch"
+        val new_op_name = "${op.name}_$variableName".replace(":", "_")
+        return buildOp(new_op_type, new_op_name) {
+          new_op_inputs.forEach { addInput(it) }
+          op.toNodeDef().attr().forEach { key, attrValue -> attr(key, attrValue) }
+        }
+      }
+      return op
+    }
+    
+    /**
+     * Find the initialized value for a variable op.
+     *
+     * To do so, lookup the variable op in the variables collection.
+     * @param variable_op
+     * @return A [Output] representing the initialized value for the variable or `null`
+     * if the initialized value could not be found.
+     */
+    private fun find_initialized_value_for_variable(variable_op: Op): Output? {
+      val variables = variable_op.graph.getCollection(Graph.Keys.GLOBAL_VARIABLES)
+          .asSequence() + variable_op.graph.getCollection(Graph.Keys.LOCAL_VARIABLES)
+      val var_names = variable_op.name
+      val output_name = variable_op.outputs[0].name
+      for (v in variables)
+        if (v.name == var_names || v.name == output_name)
+          return v.initialized_value()
+      return null
     }
   }
 }

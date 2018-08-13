@@ -3,186 +3,192 @@
  */
 package wumo.sim.tensorflow.ops.gen
 
-import wumo.sim.tensorflow.TF
+import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.tensorflow.ops.Output
+import wumo.sim.util.Shape
+import wumo.sim.tensorflow.TF
 import wumo.sim.tensorflow.buildOp
 import wumo.sim.tensorflow.buildOpTensor
-import wumo.sim.util.Shape
+import wumo.sim.tensorflow.buildOpTensors
+import wumo.sim.tensorflow.tf
+import wumo.sim.util.ndarray.NDArray
 
-fun TF.assign(_ref: Output, value: Output, validate_shape: Boolean = true, use_locking: Boolean = true, name: String = "Assign") = run {
-  buildOpTensor("Assign", name) {
-    addInput(_ref, true)
-    addInput(value, false)
-    attr("validate_shape", validate_shape)
-    attr("use_locking", use_locking)
+interface gen_state_ops {
+  fun _assign(_ref: Output, value: Output, validate_shape: Boolean = true, use_locking: Boolean = true, name: String = "Assign") = run {
+    buildOpTensor("Assign", name) {
+      addInput(_ref, true)
+      addInput(value, false)
+      attr("validate_shape", validate_shape)
+      attr("use_locking", use_locking)
+    }
   }
-}
-
-fun TF.assignAdd(_ref: Output, value: Output, use_locking: Boolean = false, name: String = "AssignAdd") = run {
-  buildOpTensor("AssignAdd", name) {
-    addInput(_ref, true)
-    addInput(value, false)
-    attr("use_locking", use_locking)
+  
+  fun _assignAdd(_ref: Output, value: Output, use_locking: Boolean = false, name: String = "AssignAdd") = run {
+    buildOpTensor("AssignAdd", name) {
+      addInput(_ref, true)
+      addInput(value, false)
+      attr("use_locking", use_locking)
+    }
   }
-}
-
-fun TF.assignSub(_ref: Output, value: Output, use_locking: Boolean = false, name: String = "AssignSub") = run {
-  buildOpTensor("AssignSub", name) {
-    addInput(_ref, true)
-    addInput(value, false)
-    attr("use_locking", use_locking)
+  
+  fun _assignSub(_ref: Output, value: Output, use_locking: Boolean = false, name: String = "AssignSub") = run {
+    buildOpTensor("AssignSub", name) {
+      addInput(_ref, true)
+      addInput(value, false)
+      attr("use_locking", use_locking)
+    }
   }
-}
-
-fun TF.countUpTo(_ref: Output, limit: Long, name: String = "CountUpTo") = run {
-  buildOpTensor("CountUpTo", name) {
-    addInput(_ref, true)
-    attr("limit", limit)
+  
+  fun _countUpTo(_ref: Output, limit: Long, name: String = "CountUpTo") = run {
+    buildOpTensor("CountUpTo", name) {
+      addInput(_ref, true)
+      attr("limit", limit)
+    }
   }
-}
-
-fun TF.destroyTemporaryVariable(_ref: Output, var_name: String, name: String = "DestroyTemporaryVariable") = run {
-  buildOpTensor("DestroyTemporaryVariable", name) {
-    addInput(_ref, true)
-    attr("var_name", var_name)
+  
+  fun _destroyTemporaryVariable(_ref: Output, var_name: String, name: String = "DestroyTemporaryVariable") = run {
+    buildOpTensor("DestroyTemporaryVariable", name) {
+      addInput(_ref, true)
+      attr("var_name", var_name)
+    }
   }
-}
-
-fun TF.isVariableInitialized(_ref: Output, name: String = "IsVariableInitialized") = run {
-  buildOpTensor("IsVariableInitialized", name) {
-    addInput(_ref, true)
+  
+  fun _isVariableInitialized(_ref: Output, name: String = "IsVariableInitialized") = run {
+    buildOpTensor("IsVariableInitialized", name) {
+      addInput(_ref, true)
+    }
   }
-}
-
-fun TF.resourceCountUpTo(resource: Output, limit: Long, t: Int, name: String = "ResourceCountUpTo") = run {
-  buildOpTensor("ResourceCountUpTo", name) {
-    addInput(resource, false)
-    attr("limit", limit)
-    attrType("T", t)
+  
+  fun _resourceCountUpTo(resource: Output, limit: Long, t: Int, name: String = "ResourceCountUpTo") = run {
+    buildOpTensor("ResourceCountUpTo", name) {
+      addInput(resource, false)
+      attr("limit", limit)
+      attrType("T", t)
+    }
   }
-}
-
-fun TF.resourceScatterNdAdd(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = true, name: String = "ResourceScatterNdAdd") = run {
-  buildOp("ResourceScatterNdAdd", name) {
-    addInput(_ref, false)
-    addInput(indices, false)
-    addInput(updates, false)
-    attr("use_locking", use_locking)
+  
+  fun _resourceScatterNdAdd(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = true, name: String = "ResourceScatterNdAdd") = run {
+    buildOp("ResourceScatterNdAdd", name) {
+      addInput(_ref, false)
+      addInput(indices, false)
+      addInput(updates, false)
+      attr("use_locking", use_locking)
+    }
   }
-}
-
-fun TF.resourceScatterNdUpdate(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = true, name: String = "ResourceScatterNdUpdate") = run {
-  buildOp("ResourceScatterNdUpdate", name) {
-    addInput(_ref, false)
-    addInput(indices, false)
-    addInput(updates, false)
-    attr("use_locking", use_locking)
+  
+  fun _resourceScatterNdUpdate(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = true, name: String = "ResourceScatterNdUpdate") = run {
+    buildOp("ResourceScatterNdUpdate", name) {
+      addInput(_ref, false)
+      addInput(indices, false)
+      addInput(updates, false)
+      attr("use_locking", use_locking)
+    }
   }
-}
-
-fun TF.scatterAdd(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = false, name: String = "ScatterAdd") = run {
-  buildOpTensor("ScatterAdd", name) {
-    addInput(_ref, true)
-    addInput(indices, false)
-    addInput(updates, false)
-    attr("use_locking", use_locking)
+  
+  fun _scatterAdd(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = false, name: String = "ScatterAdd") = run {
+    buildOpTensor("ScatterAdd", name) {
+      addInput(_ref, true)
+      addInput(indices, false)
+      addInput(updates, false)
+      attr("use_locking", use_locking)
+    }
   }
-}
-
-fun TF.scatterDiv(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = false, name: String = "ScatterDiv") = run {
-  buildOpTensor("ScatterDiv", name) {
-    addInput(_ref, true)
-    addInput(indices, false)
-    addInput(updates, false)
-    attr("use_locking", use_locking)
+  
+  fun _scatterDiv(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = false, name: String = "ScatterDiv") = run {
+    buildOpTensor("ScatterDiv", name) {
+      addInput(_ref, true)
+      addInput(indices, false)
+      addInput(updates, false)
+      attr("use_locking", use_locking)
+    }
   }
-}
-
-fun TF.scatterMax(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = false, name: String = "ScatterMax") = run {
-  buildOpTensor("ScatterMax", name) {
-    addInput(_ref, true)
-    addInput(indices, false)
-    addInput(updates, false)
-    attr("use_locking", use_locking)
+  
+  fun _scatterMax(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = false, name: String = "ScatterMax") = run {
+    buildOpTensor("ScatterMax", name) {
+      addInput(_ref, true)
+      addInput(indices, false)
+      addInput(updates, false)
+      attr("use_locking", use_locking)
+    }
   }
-}
-
-fun TF.scatterMin(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = false, name: String = "ScatterMin") = run {
-  buildOpTensor("ScatterMin", name) {
-    addInput(_ref, true)
-    addInput(indices, false)
-    addInput(updates, false)
-    attr("use_locking", use_locking)
+  
+  fun _scatterMin(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = false, name: String = "ScatterMin") = run {
+    buildOpTensor("ScatterMin", name) {
+      addInput(_ref, true)
+      addInput(indices, false)
+      addInput(updates, false)
+      attr("use_locking", use_locking)
+    }
   }
-}
-
-fun TF.scatterMul(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = false, name: String = "ScatterMul") = run {
-  buildOpTensor("ScatterMul", name) {
-    addInput(_ref, true)
-    addInput(indices, false)
-    addInput(updates, false)
-    attr("use_locking", use_locking)
+  
+  fun _scatterMul(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = false, name: String = "ScatterMul") = run {
+    buildOpTensor("ScatterMul", name) {
+      addInput(_ref, true)
+      addInput(indices, false)
+      addInput(updates, false)
+      attr("use_locking", use_locking)
+    }
   }
-}
-
-fun TF.scatterNdAdd(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = false, name: String = "ScatterNdAdd") = run {
-  buildOpTensor("ScatterNdAdd", name) {
-    addInput(_ref, true)
-    addInput(indices, false)
-    addInput(updates, false)
-    attr("use_locking", use_locking)
+  
+  fun _scatterNdAdd(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = false, name: String = "ScatterNdAdd") = run {
+    buildOpTensor("ScatterNdAdd", name) {
+      addInput(_ref, true)
+      addInput(indices, false)
+      addInput(updates, false)
+      attr("use_locking", use_locking)
+    }
   }
-}
-
-fun TF.scatterNdSub(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = false, name: String = "ScatterNdSub") = run {
-  buildOpTensor("ScatterNdSub", name) {
-    addInput(_ref, true)
-    addInput(indices, false)
-    addInput(updates, false)
-    attr("use_locking", use_locking)
+  
+  fun _scatterNdSub(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = false, name: String = "ScatterNdSub") = run {
+    buildOpTensor("ScatterNdSub", name) {
+      addInput(_ref, true)
+      addInput(indices, false)
+      addInput(updates, false)
+      attr("use_locking", use_locking)
+    }
   }
-}
-
-fun TF.scatterNdUpdate(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = true, name: String = "ScatterNdUpdate") = run {
-  buildOpTensor("ScatterNdUpdate", name) {
-    addInput(_ref, true)
-    addInput(indices, false)
-    addInput(updates, false)
-    attr("use_locking", use_locking)
+  
+  fun _scatterNdUpdate(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = true, name: String = "ScatterNdUpdate") = run {
+    buildOpTensor("ScatterNdUpdate", name) {
+      addInput(_ref, true)
+      addInput(indices, false)
+      addInput(updates, false)
+      attr("use_locking", use_locking)
+    }
   }
-}
-
-fun TF.scatterSub(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = false, name: String = "ScatterSub") = run {
-  buildOpTensor("ScatterSub", name) {
-    addInput(_ref, true)
-    addInput(indices, false)
-    addInput(updates, false)
-    attr("use_locking", use_locking)
+  
+  fun _scatterSub(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = false, name: String = "ScatterSub") = run {
+    buildOpTensor("ScatterSub", name) {
+      addInput(_ref, true)
+      addInput(indices, false)
+      addInput(updates, false)
+      attr("use_locking", use_locking)
+    }
   }
-}
-
-fun TF.scatterUpdate(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = true, name: String = "ScatterUpdate") = run {
-  buildOpTensor("ScatterUpdate", name) {
-    addInput(_ref, true)
-    addInput(indices, false)
-    addInput(updates, false)
-    attr("use_locking", use_locking)
+  
+  fun _scatterUpdate(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = true, name: String = "ScatterUpdate") = run {
+    buildOpTensor("ScatterUpdate", name) {
+      addInput(_ref, true)
+      addInput(indices, false)
+      addInput(updates, false)
+      attr("use_locking", use_locking)
+    }
   }
-}
-
-fun TF.temporaryVariable(shape: Shape, dtype: Int, var_name: String = "", name: String = "TemporaryVariable") = run {
-  buildOpTensor("TemporaryVariable", name) {
-    attr("shape", shape)
-    attrType("dtype", dtype)
-    attr("var_name", var_name)
+  
+  fun _temporaryVariable(shape: Shape, dtype: Int, var_name: String = "", name: String = "TemporaryVariable") = run {
+    buildOpTensor("TemporaryVariable", name) {
+      attr("shape", shape)
+      attrType("dtype", dtype)
+      attr("var_name", var_name)
+    }
   }
-}
-
-fun TF.variableV2(shape: Shape, dtype: Int, container: String = "", shared_name: String = "", name: String = "VariableV2") = run {
-  buildOpTensor("VariableV2", name) {
-    attr("shape", shape)
-    attrType("dtype", dtype)
-    attr("container", container)
-    attr("shared_name", shared_name)
+  
+  fun _variableV2(shape: Shape, dtype: Int, container: String = "", shared_name: String = "", name: String = "VariableV2") = run {
+    buildOpTensor("VariableV2", name) {
+      attr("shape", shape)
+      attrType("dtype", dtype)
+      attr("container", container)
+      attr("shared_name", shared_name)
+    }
   }
 }

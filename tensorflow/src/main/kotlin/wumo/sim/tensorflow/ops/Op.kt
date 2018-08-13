@@ -1,8 +1,11 @@
 package wumo.sim.tensorflow.ops
 
+import org.bytedeco.javacpp.Pointer
 import org.bytedeco.javacpp.PointerPointer
+import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Buffer.newBuffer
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
 import org.bytedeco.javacpp.tensorflow.*
+import wumo.sim.tensorflow.check
 import wumo.sim.tensorflow.core.Graph
 import wumo.sim.tensorflow.ops.control_flow_ops.CondContext
 import wumo.sim.tensorflow.ops.control_flow_ops.ControlFlowContext
@@ -187,10 +190,27 @@ class Op(val graph: Graph, val c_op: TF_Operation) {
   
   val attr: Map<String, Any>
     get() {
+      
       TODO()
     }
   
   override fun toString(): String {
     return """"Op("$name", op=$opType, dev=$device, run=${c_op.node().DebugString().string})"""
+  }
+  
+  fun toNodeDef() =
+      node.def()!!
+  
+}
+
+internal inline fun StringAttrValueMap.forEach(block: (String, AttrValue) -> Unit) {
+  val iter = StringAttrValueMap.Iterator(begin())
+  val end = StringAttrValueMap.Iterator(end())
+  while (!iter.equals(end)) {
+    val key = iter.first().string
+    val value = iter.second()
+    block(key, value)
+    
+    iter.increment()
   }
 }

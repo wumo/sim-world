@@ -172,7 +172,7 @@ class Output(override val op: Op?, val value_index: Int) : OutputLike() {
     throwExceptionIfNotOk(status)
   }
   
-  val tf: TF by lazy { TODO("op!!.graph.tf") }
+//  val tf: TF by lazy { TODO("op!!.graph.tf") }
   
   fun asTF_Output() = TF_Output().oper(op!!.c_op).index(value_index)
   override val name: String by lazy { "${op!!.name}:$value_index" }

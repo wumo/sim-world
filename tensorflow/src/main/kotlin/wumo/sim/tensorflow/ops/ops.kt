@@ -9,6 +9,7 @@ import wumo.sim.tensorflow.core.core
 import wumo.sim.tensorflow.ops.control_flow_ops.CondContext
 import wumo.sim.tensorflow.ops.control_flow_ops.ControlFlowContext
 import wumo.sim.tensorflow.ops.control_flow_ops.group
+import wumo.sim.tensorflow.ops.gen.gen_ops
 import wumo.sim.tensorflow.ops.variables.VariableScope
 import wumo.sim.tensorflow.scope.GraphConstructionScope
 import wumo.sim.tensorflow.scope.NameScope
@@ -46,20 +47,20 @@ object ops {
   internal val currentContainer get() = graphConstructionScope.value.container
   /** Returns the control flow context of the current op creation context. */
   internal val currentControlFlowContext get() = graphConstructionScope.value.controlFlowContext
-  
-  val g = Graph()
-  val trainables = mutableListOf<Variable>()
-  val global_variables = mutableListOf<Variable>()
-  val train_ops = mutableListOf<Op>()
-  private val rootNs = NameScope("$", null)
-  private val rootVs = VariableScope("$", rootNs)
-  var ctxNs = rootNs
-  var ctxVs = rootVs
-  
-  var device: String = ""
-  var colocate_with = ArrayDeque<Op>()
-  val control_ops = ArrayDeque<Op>()
-  val attr_scope_map = hashMapOf<String, tensorflow.AttrValue>()
+
+//  val g = Graph()
+//  val trainables = mutableListOf<Variable>()
+//  val global_variables = mutableListOf<Variable>()
+//  val train_ops = mutableListOf<Op>()
+//  private val rootNs = NameScope("$", null)
+//  private val rootVs = VariableScope("$", rootNs)
+//  var ctxNs = rootNs
+//  var ctxVs = rootVs
+
+//  var device: String = ""
+//  var colocate_with = ArrayDeque<Op>()
+//  val control_ops = ArrayDeque<Op>()
+//  val attr_scope_map = hashMapOf<String, tensorflow.AttrValue>()
   
   lateinit var session: Session
   /**
@@ -100,15 +101,16 @@ object ops {
   }
   
   inline fun <R> with(sub: NameScope, block: () -> R): R {
-    val parentNs = ctxNs
-    ctxNs = sub
-    try {
-      ctxNs.enter()
-      return block()
-    } finally {
-      ctxNs.exit()
-      ctxNs = parentNs
-    }
+    TODO()
+//    val parentNs = ctxNs
+//    ctxNs = sub
+//    try {
+//      ctxNs.enter()
+//      return block()
+//    } finally {
+//      ctxNs.exit()
+//      ctxNs = parentNs
+//    }
   }
   
   /**
@@ -118,18 +120,19 @@ object ops {
    * [block]执行结束后，恢复[ctxNs]为调用[name_scope]之前的[NameScope]
    */
   inline fun <R> name_scope(name: String, block: () -> R): R {
-    if (name.startsWith(scopeChar))//already in scope
-      return block()
-    val parentNs = ctxNs
-    val sub = parentNs.new_subscope(name)
-    ctxNs = sub
-    try {
-      ctxNs.enter()
-      return block()
-    } finally {
-      ctxNs.exit()
-      ctxNs = parentNs
-    }
+    TODO()
+//    if (name.startsWith(scopeChar))//already in scope
+//      return block()
+//    val parentNs = ctxNs
+//    val sub = parentNs.new_subscope(name)
+//    ctxNs = sub
+//    try {
+//      ctxNs.enter()
+//      return block()
+//    } finally {
+//      ctxNs.exit()
+//      ctxNs = parentNs
+//    }
   }
   
   /**
@@ -141,85 +144,90 @@ object ops {
    * @param reuse 是否重用[Variable]
    */
   inline fun <R> variable_scope(name: String, block: () -> R): R {
-    val parentVs = ctxVs
-    val parentNs = ctxNs
-    val s = parentVs.variable_scope(name, ctxVs.reuse, ctxVs.reenter_increment)
-    val subNs = parentNs.new_subscope(name)
-    ctxVs = s
-    ctxNs = subNs
-    try {
-      ctxNs.enter()
-      ctxVs.enter()
-      return block()
-    } finally {
-      ctxVs.exit()
-      ctxNs.exit()
-      ctxVs = parentVs
-      ctxNs = parentNs
-    }
+    TODO()
+//    val parentVs = ctxVs
+//    val parentNs = ctxNs
+//    val s = parentVs.variable_scope(name, ctxVs.reuse, ctxVs.reenter_increment)
+//    val subNs = parentNs.new_subscope(name)
+//    ctxVs = s
+//    ctxNs = subNs
+//    try {
+//      ctxNs.enter()
+//      ctxVs.enter()
+//      return block()
+//    } finally {
+//      ctxVs.exit()
+//      ctxNs.exit()
+//      ctxVs = parentVs
+//      ctxNs = parentNs
+//    }
   }
   
   inline fun <R> attr_scope(vararg attrs: Pair<String, tensorflow.AttrValue>, block: () -> R): R {
-    val saved_attrs = hashMapOf<String, tensorflow.AttrValue>()
-    attrs.forEach { (key, value) ->
-      attr_scope_map.compute(key) { k, v ->
-        if (v != null) saved_attrs[k] = v
-        value
-      }
-    }
-    try {
-      return block()
-    } finally {
-      attrs.forEach { (key, _) ->
-        attr_scope_map.compute(key) { k, v ->
-          saved_attrs[k]
-        }
-      }
-    }
+    TODO()
+//    val saved_attrs = hashMapOf<String, tensorflow.AttrValue>()
+//    attrs.forEach { (key, value) ->
+//      attr_scope_map.compute(key) { k, v ->
+//        if (v != null) saved_attrs[k] = v
+//        value
+//      }
+//    }
+//    try {
+//      return block()
+//    } finally {
+//      attrs.forEach { (key, _) ->
+//        attr_scope_map.compute(key) { k, v ->
+//          saved_attrs[k]
+//        }
+//      }
+//    }
   }
   
-  fun debugString() = GraphDef.parseFrom(g.toGraphDef()).toString()
+  fun debugString() = GraphDef.parseFrom(currentGraph.toGraphDef()).toString()
   fun printGraph() {
-    tf.debugString().println()
+    debugString().println()
   }
   
   fun session(block: Session.() -> Unit) {
-    session = Session(g.c_graph)
+    session = Session(currentGraph.c_graph)
     block(session)
   }
   
   fun global_variable_initializer(): Op {
-    return tf.group(global_variables, name = "init")
+    TODO()
+//    return tf.group(global_variables, name = "init")
   }
   
   private var tmpDev = ""
-  fun begin_device(device: String) {
-    tmpDev = this.device
-    this.device = device
-  }
-  
-  fun end_device() {
-    this.device = tmpDev
-  }
+//  fun begin_device(device: String) {
+//    tmpDev = this.device
+//    this.device = device
+//  }
+//
+//  fun end_device() {
+//    this.device = tmpDev
+//  }
   
   inline fun <R> condContext(pred: Output, pivot: Output, branch: Int, block: (CondContext) -> R): R {
-    val tmp = currentControlFlowContext
-    currentControlFlowContext = CondContext(pred, pivot, branch)
-    try {
-      return block(currentControlFlowContext as CondContext)
-    } finally {
-      currentControlFlowContext = tmp
-    }
+//    val tmp = currentControlFlowContext
+//    currentControlFlowContext = CondContext(pred, pivot, branch)
+//    try {
+//      return block(currentControlFlowContext as CondContext)
+//    } finally {
+//      currentControlFlowContext = tmp
+//    }
+    TODO()
   }
   
   inline fun <R> on_device(dev: String, block: () -> R): R {
-    val tmp = device
-    device = dev
-    try {
-      return block()
-    } finally {
-      device = tmp
-    }
+//    val tmp = device
+//    device = dev
+//    try {
+//      return block()
+//    } finally {
+//      device = tmp
+//    }
+    TODO()
   }
   
   inline fun <R> control_dependencies(control_inputs: Output, block: () -> R) =
@@ -232,20 +240,21 @@ object ops {
       colocate_with(listOf(op), ignore_existing, block)
   
   inline fun <R> colocate_with(op: List<Op>, ignore_existing: Boolean = false, block: () -> R): R {
-    val current_stack: Collection<Op> =
-        if (ignore_existing) colocate_with.clone().apply { colocate_with.clear() }
-        else Collections.emptyList()
-    val size = op.size
-    op.forEach { colocate_with.addLast(it) }
-    try {
-      return block()
-    } finally {
-      repeat(size) {
-        colocate_with.removeLast()
-      }
-      if (ignore_existing)
-        colocate_with.addAll(current_stack)
-    }
+//    val current_stack: Collection<Op> =
+//        if (ignore_existing) colocate_with.clone().apply { colocate_with.clear() }
+//        else Collections.emptyList()
+//    val size = op.size
+//    op.forEach { colocate_with.addLast(it) }
+//    try {
+//      return block()
+//    } finally {
+//      repeat(size) {
+//        colocate_with.removeLast()
+//      }
+//      if (ignore_existing)
+//        colocate_with.addAll(current_stack)
+//    }
+    TODO()
   }
   
   inline fun <R> colocate_with_tensors(op: Array<Output>, ignore_existing: Boolean = false, block: () -> R): R {
@@ -257,46 +266,50 @@ object ops {
   }
   
   inline fun <R> control_dependencies(vararg control_inputs: Op, block: () -> R): R {
-    var tmpctx: ControlFlowContext? = null
-    val tmp = if (control_inputs.isEmpty()) {
-      tmpctx = tf.control_flow_context
-      tf.control_flow_context = null
-      control_ops.clone()
-    } else null
-    val size = control_inputs.size
-    if (size == 0)
-      control_ops.clear()
-    else
-      control_ops += control_inputs
-    try {
-      return block()
-    } finally {
-      if (size == 0) {
-        tf.control_flow_context = tmpctx
-        control_ops.addAll(tmp!!)
-      } else
-        repeat(size) {
-          control_ops.removeLast()
-        }
-    }
+//    var tmpctx: ControlFlowContext? = null
+//    val tmp = if (control_inputs.isEmpty()) {
+//      tmpctx = tf.control_flow_context
+//      tf.control_flow_context = null
+//      control_ops.clone()
+//    } else null
+//    val size = control_inputs.size
+//    if (size == 0)
+//      control_ops.clear()
+//    else
+//      control_ops += control_inputs
+//    try {
+//      return block()
+//    } finally {
+//      if (size == 0) {
+//        tf.control_flow_context = tmpctx
+//        control_ops.addAll(tmp!!)
+//      } else
+//        repeat(size) {
+//          control_ops.removeLast()
+//        }
+//    }
+    TODO()
   }
   
   inline fun <R> control_dependencies(control_inputs: List<Op>, block: () -> R): R {
-    val tmp = if (control_inputs.isEmpty()) control_ops.clone() else null
-    val size = control_inputs.size
-    if (size == 0)
-      control_ops.clear()
-    else
-      control_ops += control_inputs
-    try {
-      return block()
-    } finally {
-      if (size == 0)
-        control_ops.addAll(tmp!!)
-      else
-        repeat(size) {
-          control_ops.removeLast()
-        }
-    }
+//    val tmp = if (control_inputs.isEmpty()) control_ops.clone() else null
+//    val size = control_inputs.size
+//    if (size == 0)
+//      control_ops.clear()
+//    else
+//      control_ops += control_inputs
+//    try {
+//      return block()
+//    } finally {
+//      if (size == 0)
+//        control_ops.addAll(tmp!!)
+//      else
+//        repeat(size) {
+//          control_ops.removeLast()
+//        }
+//    }
+    TODO()
   }
+  
+  interface API : const_ops, math_ops, state_ops, gen_ops
 }

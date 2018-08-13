@@ -16,7 +16,7 @@ import wumo.sim.tensorflow.ops.variables.VariableScope
 import wumo.sim.util.println
 import java.util.*
 
-var tf = TF()
+//var tf = TF()
 inline fun <R> defaut(_tf: TF, block: () -> R): R {
   val tmp = tf
   tf = _tf

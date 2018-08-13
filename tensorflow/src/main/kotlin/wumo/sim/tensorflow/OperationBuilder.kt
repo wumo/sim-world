@@ -8,6 +8,7 @@ import wumo.sim.tensorflow.ops.Op
 import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.ops.control_flow_ops.control_flow_ops.checkInputFromValidContext
 import wumo.sim.tensorflow.ops.ops
+import wumo.sim.tensorflow.ops.ops.graphConstructionScope
 import wumo.sim.tensorflow.ops.ops.logger
 import wumo.sim.tensorflow.scope.NameScope.Companion.nameFromScopeName
 import wumo.sim.util.Shape
@@ -20,17 +21,17 @@ import java.util.Collections.emptySet as emptyMutableSet
 val String.fullName
   get() = substring(2)
 
-fun TF.buildOp(op: String, name: String, setAttr: OperationBuilder.() -> Unit = {}) = run {
-  name_scope(name) {
-    val builder = g.nodeBuilder(op, nameFromScopeName(ctxNs.scopeName))
+fun buildOp(op: String, name: String, setAttr: OperationBuilder.() -> Unit = {}) = run {
+  ops.name_scope(name) {
+    val builder = ops.currentGraph.nodeBuilder(op, nameFromScopeName(ops.currentNameScope.scopeName))
     setAttr(builder)
     builder.build()
   }
 }
 
-fun TF.buildOpTensor(op: String, name: String, setAttr: OperationBuilder.() -> Unit = {}) = run {
-  name_scope(name) {
-    val builder = g.nodeBuilder(op, nameFromScopeName(ctxNs.scopeName))
+fun buildOpTensor(op: String, name: String, setAttr: OperationBuilder.() -> Unit = {}) = run {
+  ops.name_scope(name) {
+    val builder = ops.currentGraph.nodeBuilder(op, nameFromScopeName(ops.currentNameScope.scopeName))
     setAttr(builder)
     val _op = builder.build()
     assert(_op.c_op.node().num_outputs() == 1) { "${_op.c_op.node().DebugString()} outputs > 1, use naryOps instead." }
@@ -38,9 +39,9 @@ fun TF.buildOpTensor(op: String, name: String, setAttr: OperationBuilder.() -> U
   }
 }
 
-fun TF.buildOpTensors(op: String, name: String, setAttr: OperationBuilder.() -> Unit = {}) = run {
-  name_scope(name) {
-    val builder = g.nodeBuilder(op, nameFromScopeName(ctxNs.scopeName))
+fun buildOpTensors(op: String, name: String, setAttr: OperationBuilder.() -> Unit = {}) = run {
+  ops.name_scope(name) {
+    val builder = ops.currentGraph.nodeBuilder(op, nameFromScopeName(ops.currentNameScope.scopeName))
     setAttr(builder)
     val _op = builder.build()
     val outputs = _op.c_op.node().num_outputs()
@@ -48,7 +49,9 @@ fun TF.buildOpTensors(op: String, name: String, setAttr: OperationBuilder.() -> 
   }
 }
 
-class OperationBuilder(val graph: Graph, val opType: String, val name: String) {
+class OperationBuilder(val opType: String, val name: String) {
+  private val scope = graphConstructionScope.value
+  private val graph = scope.graph
   private val c_op_desc: TF_OperationDescription = TF_NewOperation(graph.c_graph, opType, name)
   private val inputFunctions = mutableListOf<() -> Unit>()
   private val inputs = mutableListOf<Output>()
@@ -79,10 +82,10 @@ class OperationBuilder(val graph: Graph, val opType: String, val name: String) {
    *strongly connected component indicates equivalent colocationOps
    */
   private fun processColocate() {
-    if (tf.colocate_with.isEmpty()) return
+    if (scope.colocationOps.isEmpty()) return
     val colcated = hashSetOf<Op>()
     val visited = hashSetOf<Op>()
-    val queue = ArrayDeque(tf.colocate_with)
+    val queue = ArrayDeque(scope.colocationOps)
     while (queue.isNotEmpty()) {
       val op = queue.pop()
       if (op !in visited) {
@@ -94,7 +97,7 @@ class OperationBuilder(val graph: Graph, val opType: String, val name: String) {
           dep.forEach { if (it !in visited) queue += dep }
       }
     }
-    val opDevice = ops.device
+    val opDevice = scope.device
     colcated.asSequence().sortedBy { it.name }.forEach { op ->
       if (opDevice != "" && op.device != "" && opDevice != op.device)
         logger.warn {
@@ -110,7 +113,7 @@ class OperationBuilder(val graph: Graph, val opType: String, val name: String) {
   }
   
   private fun processAttributes() {
-    ops.attr_scope_map.forEach { key, value ->
+    scope.attributes.forEach { key, value ->
       if (key !in attributes)
         attributes[key] = { attr(key, value) }
     }
@@ -125,7 +128,7 @@ class OperationBuilder(val graph: Graph, val opType: String, val name: String) {
   }
   
   private fun processControlInput() {
-    val controlDependencies = HashSet(tf.control_ops)
+    val controlDependencies = HashSet(scope.controlDependencies)
     input_ops.forEach {
       pruneControlDependencies(controlDependencies, it)
     }
