@@ -3,6 +3,7 @@ package wumo.sim.tensorflow.ops.control_flow_ops
 import wumo.sim.tensorflow.ops.Op
 import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.ops.ops
+import wumo.sim.tensorflow.tf
 import java.util.*
 
 /**
@@ -24,7 +25,7 @@ import java.util.*
  */
 abstract class ControlFlowContext {
   /** Control flow context containing this context. */
-  val outerContext = ops.currentControlFlowContext
+  val outerContext = tf.currentControlFlowContext
   /**Set of values that have already been seen in this context.*/
   val values = hashSetOf<String>()
   /**Set of values referenced by but external to this context.*/

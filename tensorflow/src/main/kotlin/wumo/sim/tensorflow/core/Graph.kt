@@ -19,7 +19,6 @@ import wumo.sim.tensorflow.ops.variables.Variable
 import wumo.sim.tensorflow.ops.variables.Variable.VariableGetter
 import wumo.sim.tensorflow.ops.variables.VariableScopeStore
 import wumo.sim.tensorflow.ops.variables.VariableStore
-import wumo.sim.tensorflow.throwExceptionIfNotOk
 import wumo.sim.tensorflow.util.isNotNull
 import wumo.sim.util.DynamicVariable
 import java.util.*
@@ -154,7 +153,7 @@ class Graph {
     val buf = newBuffer()
     val status = newStatus()
     TF_GraphToGraphDef(c_graph, buf, status)
-    throwExceptionIfNotOk(status)
+    status.check()
     val len = buf.length()
     val bytes = ByteArray(len.toInt())
     val d = buf.data()
@@ -171,7 +170,7 @@ class Graph {
     if (prefix.isNotBlank())
       TF_ImportGraphDefOptionsSetPrefix(opt, prefix)
     TF_GraphImportGraphDef(c_graph, buf, opt, status)
-    throwExceptionIfNotOk(status)
+    status.check()
     TF_DeleteImportGraphDefOptions(opt)
     TF_DeleteBuffer(buf)
   }

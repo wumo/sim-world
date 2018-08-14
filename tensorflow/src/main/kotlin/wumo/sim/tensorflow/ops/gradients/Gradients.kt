@@ -1,31 +1,27 @@
 package wumo.sim.tensorflow.ops.gradients
 
 import org.bytedeco.javacpp.tensorflow.*
-import wumo.sim.tensorflow.TF
 import wumo.sim.tensorflow.ops.*
 import wumo.sim.tensorflow.ops.Output
-import wumo.sim.tensorflow.ops.gen.addN
 import wumo.sim.tensorflow.tf
 import java.util.*
 import kotlin.collections.HashMap
 import kotlin.collections.HashSet
 import kotlin.collections.set
-import wumo.sim.tensorflow.ops.gen.onesLike as _onesLike
-import wumo.sim.tensorflow.ops.gen.zerosLike as _zerosLike
 
-fun TF.addSymbolicGradients(outputs: List<Output>,
-                            inputs: List<Output>): MutableList<Output> {
+fun addSymbolicGradients(outputs: List<Output>,
+                         inputs: List<Output>): MutableList<Output> {
   val grad_inputs = MutableList(outputs.size) {
-    _onesLike(outputs[it])
+    tf._onesLike(outputs[it])
   }
   return addSymbolicGradients(outputs, inputs, grad_inputs)
 }
 
-fun TF.addSymbolicGradients(outputs: List<Output>,
-                            inputs: List<Output>,
-                            grad_inputs: List<Output>): MutableList<Output> {
+fun addSymbolicGradients(outputs: List<Output>,
+                         inputs: List<Output>,
+                         grad_inputs: List<Output>): MutableList<Output> {
   val out = MutableList(inputs.size) { noGradient }
-  val builder = SymbolicGradientBuilder(this, outputs, inputs, grad_inputs, out)
+  val builder = SymbolicGradientBuilder(outputs, inputs, grad_inputs, out)
   builder.addGradients()
   return out
 }
@@ -71,11 +67,11 @@ fun register_gradient_op_uniq(name: String, fn: GradFunc) {
   GradOpRegistry[name] = fn
 }
 
-class SymbolicGradientBuilder(val tf: TF,
-                              val outputs_: List<Output>,
+class SymbolicGradientBuilder(val outputs_: List<Output>,
                               val inputs_: List<Output>,
                               val grad_inputs_: List<Output>,
                               val grad_outputs_: MutableList<Output>) {
+  
   /**
    * backprops_ is a map from a node output to its accumulated
    * gradients.  When a node output has accumulated all its
@@ -123,7 +119,7 @@ class SymbolicGradientBuilder(val tf: TF,
     
     // TODO(andydavis) Consider a more efficient data structure for `pending_` to
     // handle computing gradients over small subgraphs from a very large graph.
-    pending_ = MutableList(tf.g.num_node_ids()) { 0 }
+    pending_ = MutableList(tf.currentGraph.num_node_ids()) { 0 }
     backprops_.clear()
     val visited = HashSet<Node>()
     val queue = ArrayDeque<Node>()
@@ -253,7 +249,7 @@ class SymbolicGradientBuilder(val tf: TF,
    * from outputs_. Keyed by node id.
    */
   private fun getReachableNodes(): List<Boolean> {
-    val num_node_ids = tf.g.c_graph.graph().num_node_ids()
+    val num_node_ids = tf.currentGraph.c_graph.graph().num_node_ids()
     val reachable_nodes = MutableList(num_node_ids) { false }
     val queue = ArrayDeque<Node>()
     val visited = MutableList(num_node_ids) { false }
@@ -422,10 +418,11 @@ class SymbolicGradientBuilder(val tf: TF,
       grads_to_keep.size == 1 ->
         // Just one backprop edge.
         grads_to_keep[0]
+      
       else -> {
         // Otherwise, adds backprop-ed gradients.
         // TODO(andydavis) Use a better accumulator here.
-        tf.addN(grads_to_keep.toTypedArray())
+        tf._addN(grads_to_keep.toTypedArray())
       }
     }
   }
@@ -437,7 +434,7 @@ fun toOutput(n: Node?, v: Int) =
     else
       Output(n.toOperation(), v)
 
-fun Node.toOperation() = Op(tf.g, TF_Operation(this))
+fun Node.toOperation() = Op(tf.currentGraph, TF_Operation(this))
 
 internal fun EdgeSet.iterate() = object : Iterator<Edge> {
   val iter = EdgeSetIterator(begin())

@@ -4,10 +4,9 @@ import wumo.sim.tensorflow.core.Graph.Graph
 import wumo.sim.tensorflow.core.InvalidDataTypeException
 import wumo.sim.tensorflow.core.ShapeMismatchException
 import wumo.sim.tensorflow.ops.DeviceFunction
-import wumo.sim.tensorflow.ops.ops
-import wumo.sim.tensorflow.ops.ops.colocate_with
 import wumo.sim.tensorflow.ops.variables.variables.defaultInitializer
 import wumo.sim.tensorflow.ops.variables.variables.makeGetter
+import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.types.DataType
 import wumo.sim.tensorflow.types.FLOAT32
 import wumo.sim.util.Shape
@@ -91,7 +90,7 @@ internal class VariableStore {
         throw IllegalArgumentException(
             "The shape of a new variable ('$name') must be fully defined, but instead it was set to '$shape'.")
 //      val acutalInitializer=
-      val actualInitializer = ops.init_scope {
+      val actualInitializer = tf.init_scope {
         initializer ?: defaultInitializer(name, dataType)
       }
       val variable = makeGetter()(name, dataType, shape, actualInitializer,
@@ -99,12 +98,12 @@ internal class VariableStore {
       variables[name] = variable
       // Run the regularizer if specified and save the resulting loss.
       if (regularizer != null) {
-        colocate_with(variable.op) {
-          val loss = ops.name_scope("$name/Regularizer") {
+        tf.colocate_with(variable.op) {
+          val loss = tf.name_scope("$name/Regularizer") {
             regularizer(variable.value)
           }
           if (loss != null)
-            ops.currentGraph.addToCollection(loss, Graph.Keys.REGULARIZATION_LOSSES)
+            tf.currentGraph.addToCollection(loss, Graph.Keys.REGULARIZATION_LOSSES)
         }
       }
       variable
@@ -112,6 +111,6 @@ internal class VariableStore {
   }
   
   companion object {
-    val current get() = ops.currentGraph.variableStore
+    val current get() = tf.currentGraph.variableStore
   }
 }

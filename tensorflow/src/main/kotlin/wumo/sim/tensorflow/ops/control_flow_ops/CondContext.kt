@@ -80,7 +80,7 @@ class CondContext(val pred: Output,
   fun buildCondTensor(v: Any): Output {
     return when (v) {
       is Op -> {//Use pivot as the proxy for this op.
-        with_dependencies(v, output_tensor = pivot)
+        tf.with_dependencies(v, output_tensor = pivot)
       }
       is IndexedSlices, is SparseOutput -> {
         TODO()

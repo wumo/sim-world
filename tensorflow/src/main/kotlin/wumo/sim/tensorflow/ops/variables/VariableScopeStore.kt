@@ -1,11 +1,13 @@
 package wumo.sim.tensorflow.ops.variables
 
 import wumo.sim.tensorflow.ops.ops
+import wumo.sim.tensorflow.tf
 
 /** A thread-local score for the current variable scope and scope counts.
  */
 class VariableScopeStore {
-  var scope = VariableScope(CreateNewOnly)
+  
+  internal var scope = VariableScope(CreateNewOnly)
   /** Map with variable scope names as keys and the corresponding use counts as values. */
   var variableScopeCounts = mutableMapOf<String, Int>()
   
@@ -24,6 +26,6 @@ class VariableScopeStore {
   
   companion object {
     /**Returns the variable scope store for current thread.*/
-    val current get() = ops.currentGraph.variableScopeStore.value
+    val current get() = tf.currentGraph.variableScopeStore.value
   }
 }

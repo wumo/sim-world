@@ -1,14 +1,17 @@
 package wumo.sim.tensorflow.ops
 
-import wumo.sim.tensorflow.TF
 import wumo.sim.tensorflow.ops.gradients.addSymbolicGradients
 
-fun TF.gradients(y: Output, xs: Collection<Output>): List<Output> {
-  return addSymbolicGradients(listOf(y), xs.toList())
-}
-
-fun TF.gradients(ys: List<Output>, xs: Collection<Output>): List<Output> {
-  return addSymbolicGradients(ys, xs.toList())
+object gradient_ops {
+  interface API {
+    fun gradients(y: Output, xs: Collection<Output>): List<Output> {
+      return addSymbolicGradients(listOf(y), xs.toList())
+    }
+    
+    fun gradients(ys: List<Output>, xs: Collection<Output>): List<Output> {
+      return addSymbolicGradients(ys, xs.toList())
+    }
+  }
 }
 
 //fun TF.gradients(y: Output, xs: Collection<Output>): List<Output> {

@@ -1,6 +1,6 @@
 package wumo.sim.tensorflow.ops.variables
 
-import wumo.sim.tensorflow.core.Graph
+import wumo.sim.tensorflow.core.Graph.Graph
 import wumo.sim.tensorflow.core.InvalidDataTypeException
 import wumo.sim.tensorflow.core.ShapeMismatchException
 import wumo.sim.tensorflow.ops.DeviceFunction
@@ -8,6 +8,7 @@ import wumo.sim.tensorflow.ops.ops
 import wumo.sim.tensorflow.ops.variables.Variable.VariableGetter
 import wumo.sim.tensorflow.scope.NameScope
 import wumo.sim.tensorflow.scope.enter_exit
+import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.types.DataType
 import wumo.sim.tensorflow.types.*
 import wumo.sim.tensorflow.types.types
@@ -79,18 +80,18 @@ internal class VariableScope(
       store: VariableStore,
       name: String,
       shape: Shape? = null,
-      dataType: DataType<*>? = FLOAT32,
+      dataType: DataType<*> = FLOAT32,
       initializer: Initializer? = null,
       regularizer: Regularizer? = null,
       trainable: Boolean = true,
       reuse: Reuse = ReuseOrCreateNew,
-      collections: Set<Graph.Graph.Key<Variable>> = emptySet(),
+      collections: Set<Graph.Key<Variable>> = emptySet(),
       cachingDevice: DeviceFunction? = null
   ): Variable {
     val fullName = if (this.name != null && this.name != "") "${this.name}/$name" else name
     // Variable names only depend on the variable scope and not the name scope,
     // so we reset it below for the time of variable creation.
-    return ops.name_scope("") {
+    return tf.name_scope("") {
       store.getVariable(fullName, shape, dataType, initializer, regularizer, trainable, reuse, collections, cachingDevice)
     }
   }
@@ -100,6 +101,96 @@ internal class VariableScope(
     val current: VariableScope
       get() = VariableScopeStore.current.scope
     
+    /** Sets the variable scope to use for op creation context, for all code in `block`.
+     *
+     * @param  name             Variable scope name, that may also change the name scope of the op creation context,
+     *                          depending on the value of [isPure].
+     * @param  reuse            [Reuse] value indicating whether to re-use an existing variable with the same name, or
+     * do either. Note that this argument cannot be set to [CreateNewOnly] in this function.If set to [[ReuseOrCreateNew]],
+     * then the parent variable scope `reuse` value is used (i.e., propagated).
+     * @param  dataType         Default data type for variables within the scope.
+     * @param  initializer      Default initializer for variables within the scope.
+     * @param  regularizer      Default regularizer for variables within the scope.
+     * @param  partitioner      Default partitioner for variables within the scope.
+     * @param  cachingDevice    Default caching device for variables within the scope.
+     * @param  underlyingGetter Default variable getter for variables within the scope.
+     * @param  isDefaultName    Boolean value indicating whether `name` is a default name or not. If `true`, then `name`
+     *                          will be made unique before being used. `isDefaultName` cannot be set to `true` when
+     *                          `reuse` is set to [[ReuseExistingOnly]].
+     * @param  isPure           Boolean value indicating whether to use a "pure" variable scope. That is, a variable
+     *                          scope that does not affect the name scope of the current op creation context.
+     * @param  block            Code block to run using the provided options.
+     * @return Return value of the code block.
+     */
+    internal fun <R> scope(
+        name: String,
+        reuse: Reuse = ReuseOrCreateNew,
+        dataType: DataType<*>? = null,
+        initializer: Initializer? = null,
+        regularizer: Regularizer? = null,
+        cachingDevice: DeviceFunction? = null,
+        partitioner: Partitioner? = null,
+        underlyingGetter: VariableGetter? = null,
+        isDefaultName: Boolean = false,
+        isPure: Boolean = false,
+        block: () -> R
+    ): R {
+      val variableScopeStore = VariableScopeStore.current
+      val oldVariableScope = variableScopeStore.scope
+      val newName = run {
+        val uniqueName = if (isDefaultName) name else name
+        if (oldVariableScope.name != null && oldVariableScope.name != "")
+          "${oldVariableScope.name}/$uniqueName"
+        else
+          uniqueName
+      }
+      variableScopeStore.enterVariableScope(newName)
+      
+      val newVariableScope = VariableScope(
+          reuse = if (reuse == ReuseOrCreateNew) oldVariableScope.reuse else reuse,
+          name = newName,
+          dataType = dataType ?: oldVariableScope.dataType,
+          initializer = initializer ?: oldVariableScope.initializer,
+          regularizer = regularizer ?: oldVariableScope.regularizer,
+          cachingDevice = cachingDevice ?: oldVariableScope.cachingDevice,
+          partitioner = partitioner ?: oldVariableScope.partitioner,
+          namescope = NameScope(name),
+          underlyingGetter = if (underlyingGetter == null) oldVariableScope.underlyingGetter
+          else maybeWrapCustomVariableGetter(underlyingGetter, oldVariableScope.underlyingGetter)
+      )
+      variableScopeStore.scope = newVariableScope
+      val result = if (isPure) block() else tf.name_scope(name) { block() }
+      variableScopeStore.closeVariableSubScopes(newName)
+      variableScopeStore.scope = oldVariableScope
+      return result
+    }
+    
+    /**
+     * If a new getter is provided, it wraps around the old one and the new wrapped getter is returned. Otherwise, the
+     * old getter is returned.
+     * @see "tensorflow.python.ops.variable_scope._maybe_wrap_custom_getter"
+     */
+    private fun maybeWrapCustomVariableGetter(getter: VariableGetter, oldGetter: VariableGetter?): VariableGetter {
+      if (oldGetter == null)
+        return getter
+      
+      return object : VariableGetter {
+        override fun invoke(
+            name: String,
+            dataType: DataType<*>,
+            shape: Shape?,
+            initializer: Initializer?,
+            regularizer: Regularizer?,
+            trainable: Boolean, reuse: Reuse,
+            collections: Set<Graph.Key<Variable>>,
+            cachingDevice: DeviceFunction?,
+            underlyingGetter: VariableGetter?): Variable {
+          val baseGetter = object : VariableGetter by oldGetter {}
+          return getter(name, dataType, shape, initializer, regularizer,
+                        trainable, reuse, collections, cachingDevice, baseGetter)
+        }
+      }
+    }
   }
 
 //  override fun enter() {

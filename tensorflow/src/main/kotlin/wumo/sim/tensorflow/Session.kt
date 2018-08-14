@@ -7,8 +7,11 @@ import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Session.newSession
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_SessionOptions.newSessionOptions
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
 import org.bytedeco.javacpp.tensorflow.*
+import wumo.sim.tensorflow.core.check
 import wumo.sim.tensorflow.ops.Op
 import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.ops.ops
+import wumo.sim.tensorflow.ops.variables.Variable
 import wumo.sim.util.ndarray.NDArray
 import wumo.sim.util.tuple2
 import wumo.sim.util.tuple3
@@ -21,7 +24,7 @@ class Session(val c_graph: TF_Graph) {
   init {
     val status = newStatus()
     c_session = newSession(c_graph, newSessionOptions(), newStatus())
-    throwExceptionIfNotOk(status)
+    status.check()
   }
   
   val feed_dict = mutableListOf<Pair<Output, NDArray<*>>>()
@@ -91,7 +94,7 @@ class Session(val c_graph: TF_Graph) {
                   outputs, output_values, noutputs,
                   target_opers, ntargets,
                   null, status)
-    throwExceptionIfNotOk(status)
+    status.check()
     clear()
     return Array(noutputs) {
       Tensor.toNDArray<Any>(output_values.get(TF_Tensor::class.java, it.toLong()))
@@ -112,7 +115,7 @@ class Session(val c_graph: TF_Graph) {
                   outputs, output_values, noutputs,
                   target_opers, ntargets,
                   null, status)
-    throwExceptionIfNotOk(status)
+    status.check()
     clear()
     return Array(noutputs) {
       Tensor.toNDArray<Any>(output_values.get(TF_Tensor::class.java, it.toLong()))
@@ -142,6 +145,7 @@ class Session(val c_graph: TF_Graph) {
     return tuple2(target_opers, ntargets.toInt())
   }
   
+  fun Variable.eval() = toOutput().eval()
   fun Output.eval() {
     print(eval<Any>(this))
   }
@@ -171,7 +175,7 @@ class Session(val c_graph: TF_Graph) {
     val input_values = PointerPointer<TF_Tensor>(ninputs.toLong())
     for ((i, pair) in feed_dict.entries.withIndex()) {
       val (_input, input_value) = pair
-      val input = tf.g.getTensor(_input)
+      val input = tf.currentGraph.getTensor(_input)
       inputs.position(i.toLong()).oper(input.op!!.c_op).index(input.value_index)
       input_values.position(i.toLong()).put(Tensor.fromNDArray(input_value).c_tensor)
     }
@@ -181,7 +185,7 @@ class Session(val c_graph: TF_Graph) {
     val ntargets = updates.size
     val target_opers = PointerPointer<TF_Operation>(ntargets.toLong())
     for ((i, op) in updates.withIndex()) {
-      val op = tf.g.getTensor(op).op!!
+      val op = tf.currentGraph.getTensor(op).op!!
       target_opers.position(i.toLong()).put(op.c_op)
     }
     target_opers.position(0L)
@@ -191,7 +195,7 @@ class Session(val c_graph: TF_Graph) {
     val outputs = TF_Output(noutputs.toLong())
     val output_values = PointerPointer<TF_Tensor>(noutputs.toLong())
     for ((i, _f) in fetch.withIndex()) {
-      val f = tf.g.getTensor(_f)
+      val f = tf.currentGraph.getTensor(_f)
       outputs.position(i.toLong()).oper(f.op!!.c_op).index(f.value_index)
     }
     outputs.position(0L)
@@ -199,7 +203,7 @@ class Session(val c_graph: TF_Graph) {
                   outputs, output_values, noutputs,
                   target_opers, ntargets,
                   null, status)
-    throwExceptionIfNotOk(status)
+    status.check()
     clear()
     return Array(noutputs) {
       Tensor.toNDArray<Any>(output_values.get(TF_Tensor::class.java, it.toLong()))
@@ -243,7 +247,7 @@ class Session(val c_graph: TF_Graph) {
                   outputs, output_values, noutputs,
                   target_opers, ntargets,
                   null, status)
-    throwExceptionIfNotOk(status)
+    status.check()
     clear()
     return Array(noutputs) {
       Tensor.toNDArray<Any>(output_values.get(TF_Tensor::class.java, it.toLong()))

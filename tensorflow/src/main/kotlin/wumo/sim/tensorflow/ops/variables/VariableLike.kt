@@ -98,35 +98,6 @@ interface VariableLike : OutputConvertible {
    */
   fun assignSub(value: Output, name: String = "AssignAdd"): Output
   
-  /** Creates an op that applies updates the provided sparse value updates to this variable and returns its value.
-   *
-   * @param  indices Indices corresponding to the `values` used for the update.
-   * @param  values  Values to use for updating, corresponding to the provided `indices`.
-   * @param  name    Name for created op.
-   * @return Variable value read op, after the addition.
-   */
-  fun assignScatter(indices: Output, values: Output, name: String = "AssignScatter"): Output
-  
-  /** Creates an op that adds the provided sparse value to the current value of the variable and returns its value.
-   *
-   * @param  indices Indices corresponding to the `values` being added.
-   * @param  values  Values to be added, corresponding to the provided `indices`.
-   * @param  name    Name for created op.
-   * @return Variable value read op, after the addition.
-   */
-  fun assignScatterAdd(indices: Output, values: Output, name: String = "AssignScatterAdd"): Output
-  
-  /** Creates an op that subtracts the provided sparse value from the current value of the variable and returns its
-   * value.
-   *
-   * @param  indices Indices corresponding to the `values` being subtracted.
-   * @param  values  Values to be subtracted, corresponding to the provided `indices`.
-   * @param  name    Name for created op.
-   * @return Variable value read op, after the subtraction.
-   */
-  fun assignScatterSub(indices: Output, values: Output, name: String = "AssignScatterSub"): Output
-  
   /** Converts this variable to an op output. This function simply returns an op corresponding to the variable value. */
-  val toOutput: Output
-    get() = value
+  override fun toOutput() = value
 }

@@ -5,7 +5,6 @@ import org.bytedeco.javacpp.PointerPointer
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Buffer.newBuffer
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
 import org.bytedeco.javacpp.tensorflow.*
-import wumo.sim.tensorflow.check
 import wumo.sim.tensorflow.core.Graph
 import wumo.sim.tensorflow.ops.control_flow_ops.CondContext
 import wumo.sim.tensorflow.ops.control_flow_ops.ControlFlowContext

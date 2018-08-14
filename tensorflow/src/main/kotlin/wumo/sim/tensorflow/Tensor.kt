@@ -9,6 +9,7 @@ import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Tensor.allocateTensor
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Tensor.newTensor
 import org.bytedeco.javacpp.tensorflow.*
+import wumo.sim.tensorflow.core.check
 import wumo.sim.util.*
 import wumo.sim.util.Shape
 import wumo.sim.util.ndarray.Buf
@@ -79,7 +80,6 @@ abstract class Tensor<T : Any> protected constructor(c_tensor: TF_Tensor) : Buf<
       return StringTensor(t, array)
     }
     
-    
     internal fun create(shape: Shape, array: Pointer, dtype: Int) =
         create(shape.asLongArray(), array, dtype)
     
@@ -119,7 +119,6 @@ abstract class Tensor<T : Any> protected constructor(c_tensor: TF_Tensor) : Buf<
     }
     numElements = n
   }
-  
   
   @Suppress("IMPLICIT_CAST_TO_ANY")
   protected fun <B : Buffer> createBuffer(): B {
@@ -272,13 +271,13 @@ object TFStringArray {
       offsetBuf.position(offsets).put(dst - data_start)
       offsets++
       val consumed = TF_StringEncode(s, s.length.toLong(), base.position(dst), dst_len, status)
-      throwExceptionIfNotOk(status)
+      status.check()
       dst += consumed
       dst_len -= consumed
     }
     if (dst != size)
       throw IllegalArgumentException("invalid string tensor encoding (decoded $dst " +
-                                     "bytes, but the tensor is encoded in $size bytes")
+                                         "bytes, but the tensor is encoded in $size bytes")
     return base.position(0L)
   }
   
@@ -299,7 +298,7 @@ object TFStringArray {
       val p = BytePointer(1L)
       val srcp = data_start + offset
       TF_StringDecode(input.position(srcp), limit - srcp, p, len, status)
-      throwExceptionIfNotOk(status)
+      status.check()
       p.limit(len.get()).string
     }
   }

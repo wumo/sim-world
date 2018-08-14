@@ -1,11 +1,12 @@
 package wumo.sim.tensorflow.ops.variables
 
 import org.bytedeco.javacpp.tensorflow.DT_FLOAT
-import wumo.sim.tensorflow.core.Graph
-import wumo.sim.tensorflow.layers.TensorFunction
+import wumo.sim.tensorflow.core.Graph.Graph
+import wumo.sim.tensorflow.core.TensorFunction
 import wumo.sim.tensorflow.ops.DeviceFunction
 import wumo.sim.tensorflow.ops.ops
 import wumo.sim.tensorflow.ops.variables.Variable.VariableGetter
+import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.types.DataType
 import wumo.sim.tensorflow.types.types
 import wumo.sim.util.Shape
@@ -33,6 +34,35 @@ fun model_variable(name: String, shape: Shape, dtype: Int = DT_FLOAT,
 }
 
 object variables {
+  interface API {
+    fun variable(
+        name: String,
+        shape: Shape? = null,
+        dataType: DataType<*>? = null,
+        initializer: Initializer? = null,
+        regularizer: Regularizer? = null,
+        trainable: Boolean = true,
+        reuse: Reuse = ReuseOrCreateNew,
+        collections: Set<Graph.Key<Variable>> = emptySet(),
+        cachingDevice: DeviceFunction? = null
+    ): Variable =
+        Variable.getVariable(
+            name, shape, dataType, initializer, regularizer, trainable, reuse, collections, cachingDevice)
+    
+    fun variableScope(
+        name: String,
+        reuse: Reuse,
+        dataType: DataType<*>? = null,
+        initializer: Initializer? = null,
+        regularizer: Regularizer? = null,
+        cachingDevice: DeviceFunction? = null,
+        partitioner: Partitioner? = null,
+        underlyingGetter: VariableGetter? = null
+    ) {
+    
+    }
+  }
+  
   fun variable() {
   
   }
@@ -63,7 +93,7 @@ object variables {
         collections: Set<Graph.Key<Variable>>,
         cachingDevice: DeviceFunction?,
         underlyingGetter: VariableGetter?): Variable {
-      val acutalInitializer = ops.init_scope {
+      val acutalInitializer = tf.init_scope {
         initializer ?: defaultInitializer(name, dataType)
       }
       TODO()
@@ -73,7 +103,7 @@ object variables {
   
   internal fun makeGetter(): VariableGetter {
     var currentGetter = defaultVariableCreator
-    ops.currentGraph.variableCreatorStack.value.forEach { g ->
+    tf.currentGraph.variableCreatorStack.value.forEach { g ->
       currentGetter = object : VariableGetter {
         override fun invoke(name: String, dataType: DataType<*>, shape: Shape?,
                             initializer: Initializer?, regularizer: Regularizer?,

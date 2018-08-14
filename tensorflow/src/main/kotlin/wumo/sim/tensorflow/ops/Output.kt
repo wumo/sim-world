@@ -2,14 +2,13 @@ package wumo.sim.tensorflow.ops
 
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
 import org.bytedeco.javacpp.tensorflow.*
-import wumo.sim.tensorflow.TF
 import wumo.sim.tensorflow.core.Graph
+import wumo.sim.tensorflow.core.check
 import wumo.sim.tensorflow.name
-import wumo.sim.tensorflow.throwExceptionIfNotOk
 import wumo.sim.util.Shape
 
 interface OutputConvertible {
-  fun toTensor(): Output
+  fun toOutput(): Output
 }
 
 sealed class OutputLike : OutputConvertible {
@@ -35,7 +34,7 @@ class IndexedSlices : OutputLike() {
   override val graph: Graph
     get() = TODO("not implemented")
   
-  override fun toTensor(): Output {
+  override fun toOutput(): Output {
     TODO("not implemented")
   }
 }
@@ -54,7 +53,7 @@ class SparseOutput : OutputLike() {
   override val graph: Graph
     get() = TODO("not implemented")
   
-  override fun toTensor(): Output {
+  override fun toOutput(): Output {
     TODO("not implemented")
   }
 }
@@ -98,6 +97,7 @@ class SparseOutput : OutputLike() {
  * @param[value_index] Index of the operation's endpoint that produces this tensor.
  */
 class Output(override val op: Op?, val value_index: Int) : OutputLike() {
+  
   override val graph = op!!.graph
   override val device = op!!.device
   override val consumers: Array<Op>
@@ -111,7 +111,7 @@ class Output(override val op: Op?, val value_index: Int) : OutputLike() {
       }
     }
   
-  override fun toTensor() = this
+  override fun toOutput() = this
   
   override val dtype: Int
     get() = if (op != null) {
@@ -125,10 +125,10 @@ class Output(override val op: Op?, val value_index: Int) : OutputLike() {
       val status = newStatus()
       val numDims = TF_GraphGetTensorNumDims(c_graph, output, status)
       if (numDims < 0) return Shape()
-      throwExceptionIfNotOk(status)
+      status.check()
       val dims = LongArray(numDims)
       TF_GraphGetTensorShape(c_graph, output, dims, numDims, status)
-      throwExceptionIfNotOk(status)
+      status.check()
       return Shape(dims)
     }
   
@@ -169,9 +169,9 @@ class Output(override val op: Op?, val value_index: Int) : OutputLike() {
     val dims = shape.asLongArray()
     val status = newStatus()
     TF_GraphSetTensorShape(op.graph.c_graph, asTF_Output(), dims, dims.size, status)
-    throwExceptionIfNotOk(status)
+    status.check()
   }
-  
+
 //  val tf: TF by lazy { TODO("op!!.graph.tf") }
   
   fun asTF_Output() = TF_Output().oper(op!!.c_op).index(value_index)

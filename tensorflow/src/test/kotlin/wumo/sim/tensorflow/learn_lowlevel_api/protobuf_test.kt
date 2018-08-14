@@ -4,12 +4,12 @@ import org.bytedeco.javacpp.Pointer
 import org.bytedeco.javacpp.tensorflow.TF_GetAllOpList
 import org.junit.Test
 import org.tensorflow.framework.OpList
-import wumo.sim.tensorflow.TF
+import wumo.sim.tensorflow.tf
 
 class protobuf_test {
   @Test
   fun use_protobuf_api() {
-    TF
+    tf
     val opdef = TF_GetAllOpList()
     val data = opdef.data()
     data.limit<Pointer>(opdef.length())

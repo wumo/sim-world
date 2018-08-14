@@ -6,7 +6,6 @@ package wumo.sim.tensorflow.ops.gen
 import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.tensorflow.ops.Output
 import wumo.sim.util.Shape
-import wumo.sim.tensorflow.TF
 import wumo.sim.tensorflow.buildOp
 import wumo.sim.tensorflow.buildOpTensor
 import wumo.sim.tensorflow.buildOpTensors

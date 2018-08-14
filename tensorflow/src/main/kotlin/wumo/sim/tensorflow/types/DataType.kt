@@ -1,6 +1,7 @@
 package wumo.sim.tensorflow.types
 
-import wumo.sim.tensorflow.TF
+import wumo.sim.tensorflow.ops.ops
+import wumo.sim.tensorflow.tf
 
 interface DataType<KotlinType> {
   //region Data Type Properties
@@ -118,7 +119,7 @@ interface DataType<KotlinType> {
         RESOURCE.cValue -> RESOURCE
         VARIANT.cValue -> VARIANT
         else -> throw IllegalArgumentException(
-            "Data type C value '$cValue' is not recognized in Scala (TensorFlow version ${TF.version}).")
+            "Data type C value '$cValue' is not recognized in Scala (TensorFlow version ${tf.version}).")
       }
       dataType as D
     }
@@ -155,7 +156,7 @@ interface DataType<KotlinType> {
         "RESOURCE" -> RESOURCE
         "VARIANT" -> VARIANT
         else -> throw IllegalArgumentException(
-            "Data type name '$name' is not recognized in Scala (TensorFlow version ${TF.version}).")
+            "Data type name '$name' is not recognized in Scala (TensorFlow version ${tf.version}).")
       }
       dataType as D
     }

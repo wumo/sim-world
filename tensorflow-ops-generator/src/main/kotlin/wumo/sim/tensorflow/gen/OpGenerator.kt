@@ -66,7 +66,6 @@ fun generateGroupFiles(path: String, group: String, opDefs: List<OpDef>, kotlinP
         |import org.bytedeco.javacpp.tensorflow.*
         |import wumo.sim.tensorflow.ops.Output
         |import wumo.sim.util.Shape
-        |import wumo.sim.tensorflow.TF
         |import wumo.sim.tensorflow.buildOp
         |import wumo.sim.tensorflow.buildOpTensor
         |import wumo.sim.tensorflow.buildOpTensors
@@ -83,7 +82,7 @@ fun generateGroupFiles(path: String, group: String, opDefs: List<OpDef>, kotlinP
 }
 
 class OpGenerator(val opDef: OpDef, val sb: StringBuilder) {
-  val name = processName(opDef.name)
+  val name = processName(opDef.name).let { n -> if (n.startsWith("_")) n else "_$n" }
   val argumentTypes = hashMapOf<String, String>()
   val inputs = mutableListOf<Pair<String, String>>()
   val inputsRef = hashMapOf<String, Boolean>()
@@ -123,7 +122,7 @@ class OpGenerator(val opDef: OpDef, val sb: StringBuilder) {
       else -> "buildOpTensors"
     }
     with(sb) {
-      append("fun _$name($kotlinArguments) = run {\n")
+      append("fun $name($kotlinArguments) = run {\n")
       append("$buildFunc(\"${opDef.name}\", name){\n")
       if (addInput.isNotBlank()) append(addInput).append('\n')
       if (addAttr.isNotBlank()) append(addAttr).append('\n')

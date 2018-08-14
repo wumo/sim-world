@@ -44,19 +44,7 @@ class PartitionedVariable : VariableLike {
     TODO("not implemented")
   }
   
-  override fun assignScatter(indices: Output, values: Output, name: String): Output {
-    TODO("not implemented")
-  }
-  
-  override fun assignScatterAdd(indices: Output, values: Output, name: String): Output {
-    TODO("not implemented")
-  }
-  
-  override fun assignScatterSub(indices: Output, values: Output, name: String): Output {
-    TODO("not implemented")
-  }
-  
-  override fun toTensor(): Output {
+  override fun toOutput(): Output {
     TODO("not implemented")
   }
 }

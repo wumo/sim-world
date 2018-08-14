@@ -1,5 +1,8 @@
 package wumo.sim.tensorflow.core
 
+import org.bytedeco.javacpp.tensorflow
+import wumo.sim.tensorflow.ops.Output
+
 object core {
   internal val defaultGraph = Graph()
 }
@@ -22,3 +25,19 @@ class InternalException(msg: String) : Exception(msg)
 class UnavailableException(msg: String) : Exception(msg)
 class DataLossException(msg: String) : Exception(msg)
 class InvalidDataTypeException(msg: String) : Exception(msg)
+
+internal fun tensorflow.TF_Status.check() {
+  val code = tensorflow.TF_GetCode(this)
+  if (code == tensorflow.TF_OK) return
+  val msg = tensorflow.TF_Message(this).string
+  throw when (code) {
+    tensorflow.TF_INVALID_ARGUMENT -> IllegalArgumentException(msg)
+    tensorflow.TF_UNAUTHENTICATED, tensorflow.TF_PERMISSION_DENIED -> SecurityException(msg)
+    tensorflow.TF_RESOURCE_EXHAUSTED, tensorflow.TF_FAILED_PRECONDITION -> IllegalStateException(msg)
+    tensorflow.TF_OUT_OF_RANGE -> IndexOutOfBoundsException(msg)
+    tensorflow.TF_UNIMPLEMENTED -> UnsupportedOperationException(msg)
+    else -> Exception(msg)
+  }
+}
+
+typealias TensorFunction = (Output) -> Output?

@@ -2,8 +2,6 @@
 
 package wumo.sim.tensorflow.scope
 
-import wumo.sim.tensorflow.scopeChar
-
 class NameScope(val name: String, parentScope: NameScope? = null) : enter_exit {
   /**这一层已使用的name，[subscopes]的name是[name_map]的子集*/
   private val name_map = HashMap<String, Int>()
@@ -33,7 +31,7 @@ class NameScope(val name: String, parentScope: NameScope? = null) : enter_exit {
    * @param name subscope的名字，不能为空
    */
   fun new_subscope(name: String): NameScope {
-    assert(name.isNotEmpty() && !name.startsWith(scopeChar))
+    assert(name.isNotEmpty() && !name.startsWith(""))
     val subname = getUniqueName(name)
     val sub = NameScope(subname, this)
     subscopes[subname] = sub
@@ -44,7 +42,7 @@ class NameScope(val name: String, parentScope: NameScope? = null) : enter_exit {
    * 寻找名为[name]的subscope，如果存在则直接返回，否则新建subscope，并重命名
    */
   internal fun reuse_or_new_subscope(name: String): NameScope {
-    assert(name.isNotEmpty() && !name.startsWith(scopeChar))
+    assert(name.isNotEmpty() && !name.startsWith(""))
     return subscopes.computeIfAbsent(name) { NameScope(name, this) }
   }
   

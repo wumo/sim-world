@@ -3,7 +3,7 @@ package wumo.sim.tensorflow
 import org.bytedeco.javacpp.BytePointer
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
 import org.bytedeco.javacpp.tensorflow.*
-import wumo.sim.tensorflow.core.Graph
+import wumo.sim.tensorflow.core.check
 import wumo.sim.tensorflow.ops.Op
 import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.ops.control_flow_ops.control_flow_ops.checkInputFromValidContext
@@ -22,16 +22,16 @@ val String.fullName
   get() = substring(2)
 
 fun buildOp(op: String, name: String, setAttr: OperationBuilder.() -> Unit = {}) = run {
-  ops.name_scope(name) {
-    val builder = ops.currentGraph.nodeBuilder(op, nameFromScopeName(ops.currentNameScope.scopeName))
+  tf.name_scope(name) {
+    val builder = tf.currentGraph.nodeBuilder(op, nameFromScopeName(tf.currentNameScope.scopeName))
     setAttr(builder)
     builder.build()
   }
 }
 
 fun buildOpTensor(op: String, name: String, setAttr: OperationBuilder.() -> Unit = {}) = run {
-  ops.name_scope(name) {
-    val builder = ops.currentGraph.nodeBuilder(op, nameFromScopeName(ops.currentNameScope.scopeName))
+  tf.name_scope(name) {
+    val builder = tf.currentGraph.nodeBuilder(op, nameFromScopeName(tf.currentNameScope.scopeName))
     setAttr(builder)
     val _op = builder.build()
     assert(_op.c_op.node().num_outputs() == 1) { "${_op.c_op.node().DebugString()} outputs > 1, use naryOps instead." }
@@ -40,8 +40,8 @@ fun buildOpTensor(op: String, name: String, setAttr: OperationBuilder.() -> Unit
 }
 
 fun buildOpTensors(op: String, name: String, setAttr: OperationBuilder.() -> Unit = {}) = run {
-  ops.name_scope(name) {
-    val builder = ops.currentGraph.nodeBuilder(op, nameFromScopeName(ops.currentNameScope.scopeName))
+  tf.name_scope(name) {
+    val builder = tf.currentGraph.nodeBuilder(op, nameFromScopeName(tf.currentNameScope.scopeName))
     setAttr(builder)
     val _op = builder.build()
     val outputs = _op.c_op.node().num_outputs()
@@ -65,7 +65,7 @@ class OperationBuilder(val opType: String, val name: String) {
     processAttributes()
     val c_op = finishOp()
     val op = Op(graph, c_op)
-    op.controlFlowContext = ops.currentControlFlowContext
+    op.controlFlowContext = tf.currentControlFlowContext
     op.inputs.forEach { }
     control_flow_post_processing(op)
     return op
@@ -74,7 +74,7 @@ class OperationBuilder(val opType: String, val name: String) {
   fun finishOp(): TF_Operation {
     val status = newStatus()
     val nativeOp = TF_FinishOperation(c_op_desc, status)
-    throwExceptionIfNotOk(status)
+    status.check()
     return nativeOp
   }
   
@@ -301,7 +301,7 @@ class OperationBuilder(val opType: String, val name: String) {
     attributes[name] = {
       val status = newStatus()
       TF_SetAttrTensor(c_op_desc, name, value.c_tensor, status)
-      throwExceptionIfNotOk(status)
+      status.check()
     }
   }
   
@@ -315,7 +315,7 @@ class OperationBuilder(val opType: String, val name: String) {
     attributes[name] = {
       val status = newStatus()
       TF_SetAttrTensor(c_op_desc, name, Tensor.fromNDArray(value).c_tensor, status)
-      throwExceptionIfNotOk(status)
+      status.check()
     }
   }
   
@@ -356,7 +356,7 @@ class OperationBuilder(val opType: String, val name: String) {
       val status = newStatus()
       val buf = attrValue.SerializeAsString()
       TF_SetAttrValueProto(c_op_desc, name, buf, buf.limit(), status)
-      throwExceptionIfNotOk(status)
+      status.check()
     }
   }
   
@@ -365,7 +365,7 @@ class OperationBuilder(val opType: String, val name: String) {
       val status = newStatus()
       val buf = tensor_shape_proto.SerializeAsString()
       TF_SetAttrTensorShapeProto(c_op_desc, name, buf, buf.limit(), status)
-      throwExceptionIfNotOk(status)
+      status.check()
     }
   }
 }
