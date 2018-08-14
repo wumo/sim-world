@@ -28,19 +28,19 @@ class VariableScopeTest {
   
   @Test
   fun `variable scope test 2`() {
-//    tf.name_scope("L1") {
-//      val d = tf.const(1, name = "c")
-//      tf.name_scope("L2") {
-//        val a = tf.const(1, name = "a")
-//        tf.variable_scope("L1") {
-//          val c = tf.get_variable(f(1f), "c")
-//          val g = tf.const(1, name = "g")
-//          assertEquals("L1/L2/a", a.name)
-//          assertEquals("L1/c_1", c.name)
-//          assertEquals("L1/L2/L1/g", g.name)
-//        }
-//      }
-//    }
+    tf.name_scope("L1") {
+      val d = tf.const(1, name = "c")
+      tf.name_scope("L2") {
+        val a = tf.const(1, name = "a")
+        tf.variable_scope("L1") {
+          val c = tf.variable(f(1f), "c")
+          val g = tf.const(1, name = "g")
+          assertEquals("L1/L2/a", a.name)
+          assertEquals("L1/c_1", c.name)
+          assertEquals("L1/L2/L1/g", g.name)
+        }
+      }
+    }
     
   }
 }

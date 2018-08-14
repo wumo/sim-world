@@ -12,6 +12,7 @@ import wumo.sim.tensorflow.types.FLOAT32
 import wumo.sim.tensorflow.types.types
 import wumo.sim.util.Shape
 import wumo.sim.util.a
+import wumo.sim.util.emptyMutableSet
 
 class Variable(
     override val dataType: DataType<*>,
@@ -72,7 +73,7 @@ class Variable(
         regularizer: Regularizer? = null,
         trainable: Boolean = true,
         reuse: Reuse = ReuseOrCreateNew,
-        collections: Set<Graph.Key<Variable>> = emptySet(),
+        collections: MutableSet<Graph.Key<Variable>> = emptyMutableSet(),
         cachingDevice: DeviceFunction? = null,
         underlyingGetter: VariableGetter? = null
     ): Variable

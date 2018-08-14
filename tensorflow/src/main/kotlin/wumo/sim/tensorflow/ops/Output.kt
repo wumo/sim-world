@@ -5,6 +5,7 @@ import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.tensorflow.core.Graph
 import wumo.sim.tensorflow.core.check
 import wumo.sim.tensorflow.name
+import wumo.sim.tensorflow.types.DataType
 import wumo.sim.util.Shape
 
 interface OutputConvertible {
@@ -14,7 +15,7 @@ interface OutputConvertible {
 sealed class OutputLike : OutputConvertible {
   abstract val graph: Graph
   abstract val name: String
-  abstract val dtype: Int
+  abstract val dtype: DataType<*>
   abstract val device: String
   abstract val op: Op?
   abstract val consumers: Array<Op>
@@ -23,7 +24,7 @@ sealed class OutputLike : OutputConvertible {
 class IndexedSlices : OutputLike() {
   override val name: String
     get() = TODO("not implemented")
-  override val dtype: Int
+  override val dtype: DataType<*>
     get() = TODO("not implemented")
   override val device: String
     get() = TODO("not implemented")
@@ -42,7 +43,7 @@ class IndexedSlices : OutputLike() {
 class SparseOutput : OutputLike() {
   override val name: String
     get() = TODO("not implemented")
-  override val dtype: Int
+  override val dtype: DataType<*>
     get() = TODO("not implemented")
   override val device: String
     get() = TODO("not implemented")
@@ -113,10 +114,10 @@ class Output(override val op: Op?, val value_index: Int) : OutputLike() {
   
   override fun toOutput() = this
   
-  override val dtype: Int
+  override val dtype: DataType<*>
     get() = if (op != null) {
-      op.output_types[value_index]
-    } else DT_INVALID
+      op.outputs[value_index].dtype
+    } else throw NullPointerException("op is null")
   
   val shape: Shape
     get() {
@@ -208,6 +209,6 @@ class Output(override val op: Op?, val value_index: Int) : OutputLike() {
   override fun toString() =
       when (op) {
         null -> "Output(null)"
-        else -> """Output("$name", shape=$shape, dtype=${dtype.name()}, op=$op)"""
+        else -> """Output("$name", shape=$shape, dtype=$dtype, op=$op)"""
       }
 }

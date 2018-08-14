@@ -10,6 +10,7 @@ import wumo.sim.tensorflow.ops.control_flow_ops.CondContext
 import wumo.sim.tensorflow.ops.control_flow_ops.ControlFlowContext
 import wumo.sim.tensorflow.ops.ops.COLOCATION_OPS_ATTRIBUTE_NAME
 import wumo.sim.tensorflow.ops.ops.COLOCATION_OPS_ATTRIBUTE_PREFIX
+import wumo.sim.tensorflow.types.DataType
 import java.util.Collections.emptySet as emptyMutableSet
 
 class OpSpecification(val name: String, val opType: String, val device: String)
@@ -127,11 +128,11 @@ class Op(val graph: Graph, val c_op: TF_Operation) {
     SetAttr(graph.c_graph, c_op, key, buf, status)
   }
   
-  val output_types: List<Int> by lazy {
+  val output_types: List<DataType<*>> by lazy {
     val numOutputs = TF_OperationNumOutputs(c_op)
     
     List(numOutputs) {
-      TF_OperationOutputType(TF_Output().oper(c_op).index(it))
+      DataType.fromCValue<DataType<*>>(TF_OperationOutputType(TF_Output().oper(c_op).index(it)))
     }
   }
   

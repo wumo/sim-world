@@ -90,13 +90,13 @@ object variables {
         regularizer: Regularizer?,
         trainable: Boolean,
         reuse: Reuse,
-        collections: Set<Graph.Key<Variable>>,
+        collections: MutableSet<Graph.Key<Variable>>,
         cachingDevice: DeviceFunction?,
         underlyingGetter: VariableGetter?): Variable {
       val acutalInitializer = tf.init_scope {
         initializer ?: defaultInitializer(name, dataType)
       }
-      TODO()
+      return Variable(acutalInitializer, shape, dataType, trainable, collections, cachingDevice, name)
     }
     
   }
@@ -107,7 +107,7 @@ object variables {
       currentGetter = object : VariableGetter {
         override fun invoke(name: String, dataType: DataType<*>, shape: Shape?,
                             initializer: Initializer?, regularizer: Regularizer?,
-                            trainable: Boolean, reuse: Reuse, collections: Set<Graph.Key<Variable>>,
+                            trainable: Boolean, reuse: Reuse, collections: MutableSet<Graph.Key<Variable>>,
                             cachingDevice: DeviceFunction?, underlyingGetter: VariableGetter?): Variable =
             g(name, dataType, shape, initializer, regularizer,
               trainable, reuse, collections, cachingDevice, currentGetter)

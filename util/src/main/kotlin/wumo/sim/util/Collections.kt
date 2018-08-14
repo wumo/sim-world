@@ -2,6 +2,8 @@
 
 package wumo.sim.util
 
+import java.util.*
+
 inline fun f(vararg elements: Float) = elements
 inline fun f(size: Int, init: (Int) -> Float) = FloatArray(size) { init(it) }
 inline fun d(vararg elements: Double) = elements
@@ -23,3 +25,5 @@ fun arange(stop: Int) = IntArray(stop) { it }
 inline fun arrayCopy(src: Any, dst: Any, n: Int) {
   System.arraycopy(src, 0, dst, 0, n)
 }
+
+inline fun <R> emptyMutableSet() = Collections.emptySet<R>()

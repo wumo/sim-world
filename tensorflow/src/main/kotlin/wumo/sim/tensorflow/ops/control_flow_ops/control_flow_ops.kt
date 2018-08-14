@@ -220,7 +220,7 @@ object control_flow_ops {
                            pred: Output,
                            name: String = "Switch"): Array<Output> =
         tf.colocate_with(data, ignore_existing = true) {
-          if (data.dtype.is_ref_dytpe)
+          if (data.dtype.cValue.is_ref_dytpe)
             tf._refSwitch(data, pred, name)
           else
             tf._switch(data, pred, name)
