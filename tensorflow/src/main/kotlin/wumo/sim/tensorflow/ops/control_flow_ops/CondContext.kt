@@ -7,17 +7,17 @@ import wumo.sim.tensorflow.ops.SparseOutput
 import wumo.sim.tensorflow.ops.control_flow_ops.control_flow_ops.isLoopExit
 import wumo.sim.tensorflow.tf
 
-class CondContext(val pred: Output,
+class CondContext(val predicate: Output,
                   val pivot: Output,
                   val branch: Int) : ControlFlowContext() {
   override val gradState: GradientLoopState?
     get() = TODO("not implemented")
   
   init {
-    //Values considered to have been already seen in this context. pred is not
+    //Values considered to have been already seen in this context. predicate is not
     //included in this context.
-    values += pred.name
-    external_values[pred.name] = pred
+    values += predicate.name
+    external_values[predicate.name] = predicate
     values += pivot.name
     pivot.op!!.set_control_flow_context(this)
   }
@@ -67,7 +67,7 @@ class CondContext(val pred: Output,
         external_values[result.name] = result
       }
       tf.control_dependencies {
-        result = tf._switchRefOrTensor(result, pred)[branch]
+        result = tf._switchRefOrTensor(result, predicate)[branch]
       }
       result.op!!.graph.prevent_fetching(result.op!!)
       
@@ -100,7 +100,7 @@ class CondContext(val pred: Output,
     var real_v = v
     if (v.name !in values) {
       values += v.name
-      real_v = tf._switchRefOrTensor(v, pred)[branch]
+      real_v = tf._switchRefOrTensor(v, predicate)[branch]
       external_values[v.name] = real_v
     } else {
       val external_v = external_values[v.name]

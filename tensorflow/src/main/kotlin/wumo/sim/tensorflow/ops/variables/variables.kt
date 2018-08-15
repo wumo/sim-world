@@ -49,18 +49,22 @@ object variables {
         Variable.getVariable(
             name, shape, dataType, initializer, regularizer, trainable, reuse, collections, cachingDevice)
     
-    fun variableScope(
+    fun <R> variableScope(
         name: String,
-        reuse: Reuse,
+        reuse: Reuse = ReuseOrCreateNew,
         dataType: DataType<*>? = null,
         initializer: Initializer? = null,
         regularizer: Regularizer? = null,
         cachingDevice: DeviceFunction? = null,
         partitioner: Partitioner? = null,
-        underlyingGetter: VariableGetter? = null
-    ) {
-    
-    }
+        underlyingGetter: VariableGetter? = null,
+        isDefaultName: Boolean = false,
+        isPure: Boolean = false,
+        block: () -> R
+    ): R = VariableScope.scope(
+        name, reuse, dataType, initializer, regularizer,
+        cachingDevice, partitioner, underlyingGetter, isDefaultName,
+        isPure, block)
   }
   
   fun variable() {
@@ -71,9 +75,9 @@ object variables {
    * Provide a default initializer and a corresponding value.
    *
    */
-  fun defaultInitializer(name: String, dataType: DataType<*> = types.FLOAT): Initializer =
+  fun defaultInitializer(name: String, dataType: DataType<*>? = types.FLOAT): Initializer =
       when {
-        dataType.isFloatingPoint -> TODO()
+        dataType!!.isFloatingPoint -> TODO()
         dataType.isInteger || dataType.isUnsigned || dataType.isBoolean -> ZerosInitializer()
         else -> throw IllegalArgumentException("A default initializer for variable '$name' of" +
                                                    " type '$dataType' is required.")
@@ -84,7 +88,7 @@ object variables {
   val defaultVariableCreator: VariableGetter = object : VariableGetter {
     override fun invoke(
         name: String,
-        dataType: DataType<*>,
+        dataType: DataType<*>?,
         shape: Shape?,
         initializer: Initializer?,
         regularizer: Regularizer?,
@@ -105,7 +109,7 @@ object variables {
     var currentGetter = defaultVariableCreator
     tf.currentGraph.variableCreatorStack.value.forEach { g ->
       currentGetter = object : VariableGetter {
-        override fun invoke(name: String, dataType: DataType<*>, shape: Shape?,
+        override fun invoke(name: String, dataType: DataType<*>?, shape: Shape?,
                             initializer: Initializer?, regularizer: Regularizer?,
                             trainable: Boolean, reuse: Reuse, collections: MutableSet<Graph.Key<Variable>>,
                             cachingDevice: DeviceFunction?, underlyingGetter: VariableGetter?): Variable =

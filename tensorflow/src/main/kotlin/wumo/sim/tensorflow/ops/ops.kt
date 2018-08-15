@@ -1,13 +1,11 @@
 package wumo.sim.tensorflow.ops
 
 import org.bytedeco.javacpp.tensorflow
+import org.bytedeco.javacpp.tensorflow.AttrValue
 import org.bytedeco.javacpp.tensorflow.TF_Version
 import org.tensorflow.framework.GraphDef
 import wumo.sim.tensorflow.Session
-import wumo.sim.tensorflow.core.Graph
-import wumo.sim.tensorflow.core.GraphMismatchException
-import wumo.sim.tensorflow.core.IllegalNameException
-import wumo.sim.tensorflow.core.core
+import wumo.sim.tensorflow.core.*
 import wumo.sim.tensorflow.ops.control_flow_ops.CondContext
 import wumo.sim.tensorflow.ops.control_flow_ops.ControlFlowContext
 import wumo.sim.tensorflow.ops.control_flow_ops.control_flow_ops
@@ -438,13 +436,33 @@ object ops {
                  device: String = "", deviceFunction: DeviceFunction = { it.device },
                  colocationsOps: Set<Op>? = null,
                  controlDependencies: Set<Op>? = null,
-                 atributes: Map<String, tensorflow.AttrValue>? = null,
+                 attributes: Map<String, tensorflow.AttrValue>? = null,
                  container: String? = null,
                  block: () -> R): R {
       // TODO: Move this to a separate scope class.
       // TODO: !!! The order of the updates matters here so let's make sure everything is fine.
-      
-      TODO()
+      var updatedContext = graphConstructionScope.value
+      val newGraph = mergeGraph(graph, updatedContext)
+      updatedContext = updatedContext.copy(graph = newGraph, outerContext = updatedContext)
+      val newNameScope = mergeNameScope(nameScope, updatedContext.nameScope) { updatedContext.graph.uniqueName(it) }
+      updatedContext = updatedContext.copy(nameScope = newNameScope, outerContext = updatedContext)
+      val newDevice = mergeDevice(device, updatedContext.device)
+      updatedContext = updatedContext.copy(device = newDevice, outerContext = updatedContext)
+      val newDeviceFn = mergeDeviceFunction(deviceFunction, updatedContext.deviceFunction, updatedContext.device)
+      updatedContext = updatedContext.copy(deviceFunction = newDeviceFn, outerContext = updatedContext)
+      val newColocationsOps = mergeColocationOps(colocationsOps, updatedContext)
+      updatedContext = updatedContext.copy(colocationOps = newColocationsOps, outerContext = updatedContext)
+      val (newControlDependencies, newCOntrolFlowContext) = mergeControlDependencies(controlDependencies, updatedContext)
+      updatedContext = updatedContext.copy(controlDependencies = newControlDependencies,
+                                           controlFlowContext = newCOntrolFlowContext,
+                                           outerContext = updatedContext)
+      val newAttributes = mergeAttributes(attributes, updatedContext)
+      updatedContext = updatedContext.copy(attributes = newAttributes, outerContext = updatedContext)
+      val newContainer = mergeContainer(container, updatedContext)
+      updatedContext = updatedContext.copy(container = newContainer, outerContext = updatedContext)
+      return graphConstructionScope.with(updatedContext) {
+        block()
+      }
     }
     
     /**
@@ -468,6 +486,119 @@ object ops {
         }
       }
     }
+    
+    /** Merges a device to the provided op creation context device and returns the device to use when specifying the
+     * updated op creation context. The merging rules are specified in the documentation of the [[createWith]] function.
+     *
+     * @param  device    Device to merge.
+     * @param  oldDevice Old (i.e., current) device.
+     * @return Device to use for the new op creation context.
+     */
+    private fun mergeDevice(device: String, oldDevice: String): String {
+      // Check if the device has been reset or has to be reset for all subsequent nested scopes
+      return if (oldDevice.isEmpty() || device.isEmpty())
+        ""
+      else {
+        val oldDeviceSpec = DeviceSpecification.fromString(oldDevice)
+        val newDeviceSpec = DeviceSpecification.fromString(device)
+        DeviceSpecification.merge(oldDeviceSpec, newDeviceSpec).toString()
+      }
+    }
+    
+    /** Merges a device function to the provided op creation context device and returns the device to use when specifying
+     * the updated op creation context. The merging rules are specified in the documentation of the [[createWith]]
+     * function.
+     *
+     * @param  deviceFunction    Device function to merge.
+     * @param  oldDeviceFunction Old (i.e., current) device function.
+     * @param  oldDevice         Old (i.e., current) device.
+     * @return Device function to use for the new op creation context.
+     */
+    private fun mergeDeviceFunction(deviceFn: DeviceFunction, oldDeviceFn: DeviceFunction, oldDevice: String): DeviceFunction = {
+      val oldDeviceSpecString = oldDeviceFn(it)
+      val newDeviceSpecString = deviceFn(it)
+      // Check if the device has been reset or has to be reset for all subsequent nested scopes
+      if (oldDevice.isEmpty() || oldDeviceSpecString.isEmpty() || newDeviceSpecString.isEmpty())
+        ""
+      else {
+        val oldDeviceSpec = DeviceSpecification.fromString(oldDeviceSpecString)
+        val newDeviceSpec = DeviceSpecification.fromString(newDeviceSpecString)
+        DeviceSpecification.merge(oldDeviceSpec, newDeviceSpec).toString()
+      }
+    }
+    
+    /** Merges a set of colocation ops to the provided op creation context set of colocation ops and returns the
+     * set of colocation ops to use when specifying the updated op creation context. The merging rules are
+     * specified in the documentation of the [[createWith]] function.
+     *
+     * @param  colocationOps Set of colocation ops to merge.
+     * @param  context       Op creation context whose colocation ops need to be updated.
+     * @return Set of colocation ops to use for the new op creation context.
+     */
+    private fun mergeColocationOps(colocationsOps: Set<Op>?, context: GraphConstructionScope): MutableSet<Op> =
+        when {
+          colocationsOps == null -> context.colocationOps
+          colocationsOps.isEmpty() -> mutableSetOf()
+          else -> {
+            context.colocationOps.addAll(colocationsOps)
+            context.colocationOps
+          }
+        }
+    
+    /** Merges a set of control dependencies to the provided op creation context set of control dependencies and returns
+     * the set of control dependencies to use when specifying the updated op creation context. The merging rules are
+     * specified in the documentation of the [with] function.
+     *
+     * @param  controlDependencies Set of control dependencies to merge.
+     * @param  context             Op creation context whose control dependencies needs to be updated.
+     * @return Set of control dependencies to use for the new op creation context.
+     */
+    private fun mergeControlDependencies(controlDependencies: Set<Op>?, context: GraphConstructionScope)
+        : Pair<MutableSet<Op>, ControlFlowContext?> =
+        when {
+          controlDependencies == null -> context.controlDependencies to context.controlFlowContext
+          controlDependencies.isEmpty() -> mutableSetOf<Op>() to null
+          else -> {
+            context.controlDependencies.addAll(controlDependencies)
+            context.controlDependencies to context.controlFlowContext
+          }
+        }
+    
+    /** Merges a set of attributes to the provided op creation context set of attributes and returns the set of attributes
+     * to use when specifying the updated op creation context. The merging rules are specified in the documentation of
+     * the [[createWith]] function.
+     *
+     * @param  attributes Set of attributes to merge.
+     * @param  context    Op creation context whose attributes needs to be updated.
+     * @return Set of attributes to use for the new op creation context.
+     */
+    private fun mergeAttributes(attributes: Map<String, tensorflow.AttrValue?>?, context: GraphConstructionScope): MutableMap<String, tensorflow.AttrValue> =
+        when {
+          attributes == null -> context.attributes
+          attributes.isEmpty() ->
+            mutableMapOf()
+          else -> {
+            val mergedMap = context.attributes
+            attributes.forEach { (key, value) ->
+              if (value == null && mergedMap.contains(key))
+                mergedMap.remove(key)
+              else if (value != null)
+                mergedMap[key] = value
+            }
+            mergedMap
+          }
+        }
+    
+    /** Merges a container to the provided op creation context container and returns the container to use when specifying
+     * the updated op creation context. The merging rules are specified in the documentation of the [[createWith]]
+     * function.
+     *
+     * @param  container Container to merge.
+     * @param  context   Op creation context whose container needs to be updated.
+     * @return Container to use for the new op creation context.
+     */
+    private fun mergeContainer(container: String?, context: GraphConstructionScope): String =
+        container ?: context.container
     
     /** Merges a graph to the provided op creation context graph and returns the graph to use when specifying the updated
      * op creation context. The merging rules are specified in the documentation of the [with] function.
@@ -547,53 +678,8 @@ object ops {
         throw GraphMismatchException("$op1 must be from the same graph as $op2")
     }
     
-    /**
-     * - 在[ctxVs]下复用或新生成名称为[name]的sub[VariableScope]（复用和重命名按照[VariableScope]的特殊条件进行），
-     * 并将其赋值到[ctxVs]；
-     * - 同时在[ctxNs]下新生成名称为[name]的sub[NameScope]（名称冲突则会重新命名解决冲突），
-     * 并将其赋值到[ctxNs]。
-     *
-     * @param reuse 是否重用[Variable]
-     */
-    fun <R> variable_scope(name: String, block: () -> R): R {
-      TODO()
-//    val parentVs = ctxVs
-//    val parentNs = ctxNs
-//    val s = parentVs.variable_scope(name, ctxVs.reuse, ctxVs.reenter_increment)
-//    val subNs = parentNs.new_subscope(name)
-//    ctxVs = s
-//    ctxNs = subNs
-//    try {
-//      ctxNs.enter()
-//      ctxVs.enter()
-//      return block()
-//    } finally {
-//      ctxVs.exit()
-//      ctxNs.exit()
-//      ctxVs = parentVs
-//      ctxNs = parentNs
-//    }
-    }
-    
-    fun <R> attr_scope(vararg attrs: Pair<String, tensorflow.AttrValue>, block: () -> R): R {
-      TODO()
-//    val saved_attrs = hashMapOf<String, tensorflow.AttrValue>()
-//    attrs.forEach { (key, value) ->
-//      attr_scope_map.compute(key) { k, v ->
-//        if (v != null) saved_attrs[k] = v
-//        value
-//      }
-//    }
-//    try {
-//      return block()
-//    } finally {
-//      attrs.forEach { (key, _) ->
-//        attr_scope_map.compute(key) { k, v ->
-//          saved_attrs[k]
-//        }
-//      }
-//    }
-    }
+    fun <R> attr_scope(vararg attrs: Pair<String, AttrValue>, block: () -> R): R =
+        with(attributes = attrs.associate { it }, block = block)
     
     fun debugString() = GraphDef.parseFrom(currentGraph.toGraphDef()).toString()
     fun printGraph() {
@@ -611,18 +697,10 @@ object ops {
     }
     
     val version get() = TF_Version().string
-//  fun begin_device(device: String) {
-//    tmpDev = this.device
-//    this.device = device
-//  }
-//
-//  fun end_device() {
-//    this.device = tmpDev
-//  }
     
     fun <R> condContext(pred: Output, pivot: Output, branch: Int, block: (CondContext) -> R): R {
 //    val tmp = currentControlFlowContext
-//    currentControlFlowContext = CondContext(pred, pivot, branch)
+//    currentControlFlowContext = CondContext(predicate, pivot, branch)
 //    try {
 //      return block(currentControlFlowContext as CondContext)
 //    } finally {
@@ -631,27 +709,11 @@ object ops {
       TODO()
     }
     
-    fun <R> on_device(dev: String, block: () -> R): R {
-//    val tmp = device
-//    device = dev
-//    try {
-//      return block()
-//    } finally {
-//      device = tmp
-//    }
-      TODO()
-    }
+    fun <R> on_device(dev: String, block: () -> R): R =
+        with(device = dev, block = block)
     
-    fun <R> on_device(dev: DeviceFunction, block: () -> R): R {
-//    val tmp = device
-//    device = dev
-//    try {
-//      return block()
-//    } finally {
-//      device = tmp
-//    }
-      TODO()
-    }
+    fun <R> on_device(dev: DeviceFunction, block: () -> R): R =
+        with(deviceFunction = dev, block = block)
     
     fun <R> control_dependencies(control_inputs: Output, block: () -> R) =
         control_dependencies(control_inputs.op!!) { block() }
@@ -660,79 +722,24 @@ object ops {
         colocate_with(op.op!!, ignore_existing, block)
     
     fun <R> colocate_with(op: Op, ignore_existing: Boolean = false, block: () -> R) =
-        colocate_with(listOf(op), ignore_existing, block)
+        colocate_with(setOf(op), ignore_existing, block)
     
-    fun <R> colocate_with(op: List<Op>, ignore_existing: Boolean = false, block: () -> R): R {
-//    val current_stack: Collection<Op> =
-//        if (ignore_existing) colocate_with.clone().apply { colocate_with.clear() }
-//        else Collections.emptyList()
-//    val size = op.size
-//    op.forEach { colocate_with.addLast(it) }
-//    try {
-//      return block()
-//    } finally {
-//      repeat(size) {
-//        colocate_with.removeLast()
-//      }
-//      if (ignore_existing)
-//        colocate_with.addAll(current_stack)
-//    }
-      TODO()
-    }
+    fun <R> colocate_with(ops: Set<Op>, ignore_existing: Boolean = false, block: () -> R): R =
+        with(colocationsOps = ops, block = block)
     
     fun <R> colocate_with_tensors(op: Array<Output>, ignore_existing: Boolean = false, block: () -> R): R {
-      return colocate_with(op.map { it.op!! }, ignore_existing, block)
+      return colocate_with(op.mapTo(mutableSetOf<Op>()) { it.op!! }, ignore_existing, block)
     }
     
     fun <R> colocate_with_tensors(op: List<Output>, ignore_existing: Boolean = false, block: () -> R): R {
-      return colocate_with(op.map { it.op!! }, ignore_existing, block)
+      return colocate_with(op.mapTo(mutableSetOf<Op>()) { it.op!! }, ignore_existing, block)
     }
     
-    fun <R> control_dependencies(vararg control_inputs: Op, block: () -> R): R {
-//    var tmpctx: ControlFlowContext? = null
-//    val tmp = if (control_inputs.isEmpty()) {
-//      tmpctx = tf.control_flow_context
-//      tf.control_flow_context = null
-//      control_ops.clone()
-//    } else null
-//    val size = control_inputs.size
-//    if (size == 0)
-//      control_ops.clear()
-//    else
-//      control_ops += control_inputs
-//    try {
-//      return block()
-//    } finally {
-//      if (size == 0) {
-//        tf.control_flow_context = tmpctx
-//        control_ops.addAll(tmp!!)
-//      } else
-//        repeat(size) {
-//          control_ops.removeLast()
-//        }
-//    }
-      TODO()
-    }
+    fun <R> control_dependencies(vararg control_inputs: Op, block: () -> R): R =
+        with(controlDependencies = setOf(*control_inputs), block = block)
     
-    fun <R> control_dependencies(control_inputs: List<Op>, block: () -> R): R {
-//    val tmp = if (control_inputs.isEmpty()) control_ops.clone() else null
-//    val size = control_inputs.size
-//    if (size == 0)
-//      control_ops.clear()
-//    else
-//      control_ops += control_inputs
-//    try {
-//      return block()
-//    } finally {
-//      if (size == 0)
-//        control_ops.addAll(tmp!!)
-//      else
-//        repeat(size) {
-//          control_ops.removeLast()
-//        }
-//    }
-      TODO()
-    }
+    fun <R> control_dependencies(control_inputs: List<Op>, block: () -> R): R =
+        with(controlDependencies = control_inputs.toSet(), block = block)
     
     //    private var tmpDev = ""
     fun begin_device(s: String) {
@@ -743,4 +750,5 @@ object ops {
       TODO("not implemented")
     }
   }
+  
 }

@@ -53,7 +53,7 @@ internal class VariableStore {
   fun getVariable(
       name: String,
       shape: Shape? = null,
-      dataType: DataType<*> = FLOAT,
+      dataType: DataType<*>? = FLOAT,
       initializer: Initializer? = null,
       regularizer: Regularizer? = null,
       trainable: Boolean = true,

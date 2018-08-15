@@ -65,7 +65,7 @@ class Variable(
   interface VariableGetter {
     operator fun invoke(
         name: String,
-        dataType: DataType<*> = types.FLOAT,
+        dataType: DataType<*>? = types.FLOAT,
         shape: Shape? = null,
         initializer: Initializer? = null,
         regularizer: Regularizer? = null,
@@ -118,7 +118,7 @@ class Variable(
         cachingDevice: DeviceFunction? = null
     ): Variable =
         VariableScope.current.getVariable(
-            VariableStore.current, name, shape, dataType!!, initializer, regularizer, trainable, reuse, collections,
+            VariableStore.current, name, shape, dataType, initializer, regularizer, trainable, reuse, collections,
             cachingDevice)
     
     /**

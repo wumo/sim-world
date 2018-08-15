@@ -32,7 +32,7 @@ class VariableScopeTest {
       val d = tf.const(1, name = "c")
       tf.name_scope("L2") {
         val a = tf.const(1, name = "a")
-        tf.variable_scope("L1") {
+        tf.variableScope("L1") {
           val c = tf.variable(f(1f), "c")
           val g = tf.const(1, name = "g")
           assertEquals("L1/L2/a", a.name)

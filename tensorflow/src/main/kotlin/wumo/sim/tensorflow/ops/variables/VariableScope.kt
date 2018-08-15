@@ -78,7 +78,7 @@ internal class VariableScope(
       store: VariableStore,
       name: String,
       shape: Shape? = null,
-      dataType: DataType<*> = FLOAT,
+      dataType: DataType<*>? = FLOAT,
       initializer: Initializer? = null,
       regularizer: Regularizer? = null,
       trainable: Boolean = true,
@@ -175,7 +175,7 @@ internal class VariableScope(
       return object : VariableGetter {
         override fun invoke(
             name: String,
-            dataType: DataType<*>,
+            dataType: DataType<*>?,
             shape: Shape?,
             initializer: Initializer?,
             regularizer: Regularizer?,

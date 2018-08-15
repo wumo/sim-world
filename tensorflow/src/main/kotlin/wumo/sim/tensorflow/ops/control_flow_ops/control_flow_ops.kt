@@ -299,7 +299,7 @@ object control_flow_ops {
     }
     
     /**
-     * Return `true_fn()` if the predicate `pred` is true else `false_fn()`.
+     * Return `true_fn()` if the predicate `predicate` is true else `false_fn()`.
      *
      * `true_fn` and `false_fn` both return lists of output tensors. `true_fn` and
      * `false_fn` must have the same non-zero number and type of outputs.
@@ -307,8 +307,8 @@ object control_flow_ops {
      * Note that the conditional execution applies only to the operations defined in
      * `true_fn` and `false_fn`. Consider the following simple program:
      * @param pred  A scalar determining whether to return the result of `true_fn` or `false_fn`.
-     * @param true_fn The callable to be performed if pred is true.
-     * @param false_fn he callable to be performed if pred is false.
+     * @param true_fn The callable to be performed if predicate is true.
+     * @param false_fn he callable to be performed if predicate is false.
      * @return  Tensors returned by the call to either `true_fn` or `false_fn`. If the
      * callables return a singleton list, the element is extracted from the list.
      */
@@ -331,8 +331,8 @@ object control_flow_ops {
           val res_f = tf.condContext(pred, pivot_2, branch = 0) {
             it.buildCondBranch(false_fn)
           }
-//    val res_t = buildCondBranch(pred, pivot_1, 1, true_fn)
-//     = buildCondBranch(pred, pivot_2, 0, false_fn)
+//    val res_t = buildCondBranch(predicate, pivot_1, 1, true_fn)
+//     = buildCondBranch(predicate, pivot_2, 0, false_fn)
           merge(res_t, res_f)[0]
         }
     
