@@ -215,7 +215,7 @@ private fun _variable(initializer: (String) -> Output, name: String, trainable: 
 //    if (name in ctxVs.variables)
 //      throw IllegalArgumentException("_variable $name already exists, disallowed. " +
 //                                         "Did you mean to set reuse=true in VariableScope?")
-//    with(ctxVs.namescope) {
+//    with(ctxVs.nameScope) {
 //      val t = _variable(initializer, name, trainable)
 //      ctxVs.variables[name] = t
 //      t

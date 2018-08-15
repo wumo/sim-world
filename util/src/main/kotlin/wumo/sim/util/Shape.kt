@@ -2,7 +2,7 @@
 
 package wumo.sim.util
 
-val scalarDimension = Shape()
+val scalarDimension = Shape(IntArray(0))
 infix fun Int.x(a: Int) = Shape(this, a)
 infix fun Shape.x(a: Int) = run {
   val dims = asIntArray()
@@ -41,6 +41,7 @@ infix fun Shape.x(shape: Shape) = run {
  * @see [tensorflow/python/framework/tensor_shape.py/TensorShape]
  */
 class Shape(private val dims: IntArray? = null) : Iterable<Int> {
+  
   constructor(elements: LongArray) : this(IntArray(elements.size) { elements[it].toInt() })
   
   companion object {

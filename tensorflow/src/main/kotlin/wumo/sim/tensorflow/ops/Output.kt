@@ -115,7 +115,7 @@ class Output(override val op: Op?, val value_index: Int) : OutputLike() {
   
   override val dtype: DataType<*>
     get() = if (op != null) {
-      op.outputs[value_index].dtype
+      op.output_types[value_index]
     } else throw NullPointerException("op is null")
   
   val shape: Shape

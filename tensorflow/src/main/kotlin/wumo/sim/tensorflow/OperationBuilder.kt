@@ -7,9 +7,9 @@ import wumo.sim.tensorflow.core.check
 import wumo.sim.tensorflow.ops.Op
 import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.ops.control_flow_ops.control_flow_ops.checkInputFromValidContext
+import wumo.sim.tensorflow.ops.ops
 import wumo.sim.tensorflow.ops.ops.graphConstructionScope
 import wumo.sim.tensorflow.ops.ops.logger
-import wumo.sim.tensorflow.scope.NameScope.Companion.nameFromScopeName
 import wumo.sim.tensorflow.types.DataType
 import wumo.sim.util.Shape
 import wumo.sim.util.ndarray.NDArray
@@ -23,7 +23,7 @@ val String.fullName
 
 fun buildOp(op: String, name: String, setAttr: OperationBuilder.() -> Unit = {}) = run {
   tf.name_scope(name) {
-    val builder = tf.currentGraph.nodeBuilder(op, nameFromScopeName(tf.currentNameScope.scopeName))
+    val builder = tf.currentGraph.nodeBuilder(op, ops.convertNameScopeToName(tf.currentNameScope))
     setAttr(builder)
     builder.build()
   }
@@ -31,7 +31,7 @@ fun buildOp(op: String, name: String, setAttr: OperationBuilder.() -> Unit = {})
 
 fun buildOpTensor(op: String, name: String, setAttr: OperationBuilder.() -> Unit = {}) = run {
   tf.name_scope(name) {
-    val builder = tf.currentGraph.nodeBuilder(op, nameFromScopeName(tf.currentNameScope.scopeName))
+    val builder = tf.currentGraph.nodeBuilder(op, ops.convertNameScopeToName(tf.currentNameScope))
     setAttr(builder)
     val _op = builder.build()
     assert(_op.c_op.node().num_outputs() == 1) { "${_op.c_op.node().DebugString()} outputs > 1, use naryOps instead." }
@@ -41,7 +41,7 @@ fun buildOpTensor(op: String, name: String, setAttr: OperationBuilder.() -> Unit
 
 fun buildOpTensors(op: String, name: String, setAttr: OperationBuilder.() -> Unit = {}) = run {
   tf.name_scope(name) {
-    val builder = tf.currentGraph.nodeBuilder(op, nameFromScopeName(tf.currentNameScope.scopeName))
+    val builder = tf.currentGraph.nodeBuilder(op, ops.convertNameScopeToName(tf.currentNameScope))
     setAttr(builder)
     val _op = builder.build()
     val outputs = _op.c_op.node().num_outputs()
@@ -60,6 +60,7 @@ class OperationBuilder(val opType: String, val name: String) {
   private val attributes = mutableMapOf<String, () -> Unit>()
   
   fun build(): Op {
+    inputFunctions.forEach { it() }
     processControlInput()
     processColocate()
     processAttributes()
@@ -149,7 +150,7 @@ class OperationBuilder(val opType: String, val name: String) {
   private fun pruneControlDependencies(
       controlDependencies: MutableSet<Op>,
       op: Op,
-      processedOps: MutableSet<Op> = emptyMutableSet(),
+      processedOps: MutableSet<Op> = mutableSetOf(),
       maxDepth: Int = 10
   ) {
     if (maxDepth > 0 && op !in processedOps) {
@@ -290,6 +291,7 @@ class OperationBuilder(val opType: String, val name: String) {
       TF_SetAttrFloatList(c_op_desc, name, value.toFloatArray(), value.size)
     }
   }
+  
   fun attr(name: String, dtype: DataType<*>) = run {
     attributes[name] = {
       TF_SetAttrType(c_op_desc, name, dtype.cValue)

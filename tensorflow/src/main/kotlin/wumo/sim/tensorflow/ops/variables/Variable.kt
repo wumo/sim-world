@@ -3,11 +3,7 @@ package wumo.sim.tensorflow.ops.variables
 import wumo.sim.tensorflow.buildOp
 import wumo.sim.tensorflow.core.Graph.Graph
 import wumo.sim.tensorflow.core.ShapeMismatchException
-import wumo.sim.tensorflow.ops.DeviceFunction
-import wumo.sim.tensorflow.ops.Op
-import wumo.sim.tensorflow.ops.Output
-import wumo.sim.tensorflow.ops.forEach
-import wumo.sim.tensorflow.scope.NameScope.Companion.nameFromScopeName
+import wumo.sim.tensorflow.ops.*
 import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.types.DataType
 import wumo.sim.tensorflow.types.FLOAT
@@ -142,8 +138,8 @@ class Variable(
             val inferredDataType = dataType ?: initializer.dtype ?: FLOAT
             val inferredShape = shape ?: initializer.shape ?: throw ShapeMismatchException(
                 "No shape was provided for the new variable and it could not be inferred from the provided initializer.")
-            val scopeName = tf.currentNameScope.scopeName
-            val trueName = nameFromScopeName(scopeName)
+            val scopeName = tf.currentNameScope
+            val trueName = ops.convertNameScopeToName(scopeName)
 //          //Use attr_scope and device(None) to simulate the behavior of
 //          //colocate_with when the _variable we want to colocate with doesn't
 //          //yet exist.

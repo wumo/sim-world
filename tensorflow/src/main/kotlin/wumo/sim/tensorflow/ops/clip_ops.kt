@@ -47,7 +47,7 @@ object clip_ops {
 //    t.shape x intermediate.shape
           assert(t.shape.isCompatibleWith(intermediate.shape))
           tf.identity(
-              intermediate / tf._maximum(l2norm, clip_norm), name = tf.currentNameScope.scopeName)
+              intermediate / tf._maximum(l2norm, clip_norm), name = tf.currentNameScope)
         }
   }
 }

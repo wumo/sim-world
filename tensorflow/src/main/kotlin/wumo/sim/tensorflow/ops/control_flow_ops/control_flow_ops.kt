@@ -251,7 +251,7 @@ object control_flow_ops {
         tf.name_scope(name) {
           tf.colocate_with(output_tensor) {
             tf.control_dependencies(*dependencies) {
-              tf._identity(output_tensor, name = tf.currentNameScope.scopeName)
+              tf._identity(output_tensor, name = tf.currentNameScope)
               //TODO indexedSlices
             }
           }
@@ -294,7 +294,7 @@ object control_flow_ops {
             all_deps += groupControlDeps(deps)
           }
         }
-        groupControlDeps(all_deps, tf.currentNameScope.scopeName)
+        groupControlDeps(all_deps, tf.currentNameScope)
       }
     }
     

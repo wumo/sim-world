@@ -8,6 +8,13 @@ object core {
 }
 
 class ShapeMismatchException(msg: String) : Exception(msg)
+class GraphMismatchException(msg: String) : Exception(msg)
+class IllegalNameException(msg: String) : Exception(msg)
+class InvalidDeviceException(msg: String) : Exception(msg)
+class InvalidShapeException(msg: String) : Exception(msg)
+class InvalidIndexerException(msg: String) : Exception(msg)
+class OpBuilderUsedException(msg: String) : Exception(msg)
+class CheckpointNotFoundException(msg: String) : Exception(msg)
 class CancelledException(msg: String) : Exception(msg)
 class UnknownException(msg: String) : Exception(msg)
 class InvalidArgumentException(msg: String) : Exception(msg)

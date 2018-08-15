@@ -5,15 +5,16 @@ import org.bytedeco.javacpp.tensorflow.TF_Version
 import org.tensorflow.framework.GraphDef
 import wumo.sim.tensorflow.Session
 import wumo.sim.tensorflow.core.Graph
+import wumo.sim.tensorflow.core.GraphMismatchException
+import wumo.sim.tensorflow.core.IllegalNameException
 import wumo.sim.tensorflow.core.core
 import wumo.sim.tensorflow.ops.control_flow_ops.CondContext
+import wumo.sim.tensorflow.ops.control_flow_ops.ControlFlowContext
 import wumo.sim.tensorflow.ops.control_flow_ops.control_flow_ops
 import wumo.sim.tensorflow.ops.gen.gen_ops
 import wumo.sim.tensorflow.ops.variables.Variable
 import wumo.sim.tensorflow.ops.variables.VariableScope
 import wumo.sim.tensorflow.ops.variables.variables
-import wumo.sim.tensorflow.scope.GraphConstructionScope
-import wumo.sim.tensorflow.scope.NameScope
 import wumo.sim.util.DynamicVariable
 import wumo.sim.util.lazyLogger
 import wumo.sim.util.println
@@ -26,7 +27,44 @@ object ops {
   val VALID_OP_NAME_REGEX = Regex("^[A-Za-z0-9.][A-Za-z0-9_.\\-/]*$")
   val VALID_NAME_SCOPE_REGEX = Regex("^[A-Za-z0-9_.\\-/]*$")
   
+  data class GraphConstructionScope(
+      val graph: Graph = Graph(),
+      var nameScope: String = "",
+      var device: String = "",
+      var deviceFunction: (OpSpecification) -> String = { it.device },
+      val colocationOps: MutableSet<Op> = mutableSetOf(),
+      val controlDependencies: MutableSet<Op> = mutableSetOf(),
+      val attributes: MutableMap<String, tensorflow.AttrValue> = mutableMapOf(),
+      var container: String = "", // TODO: !!! Use containers.
+      var controlFlowContext: ControlFlowContext? = null,
+      var outerContext: GraphConstructionScope? = null)
+  
   internal val graphConstructionScope = DynamicVariable(GraphConstructionScope(core.defaultGraph))
+  
+  /** Checks whether the provided string is a valid op name.
+   *
+   * @param  name String to check.
+   * @return Boolean value indicating whether the check was successful.
+   */
+  internal fun checkName(name: String) = VALID_OP_NAME_REGEX.matches(name)
+  
+  /** Checks whether the provided string is a valid name scope for creating ops.
+   *
+   * @param  nameScope String to check.
+   * @return Boolean value indicating whether the check was successful.
+   */
+  internal fun checkNameScope(nameScope: String) = VALID_NAME_SCOPE_REGEX.matches(nameScope)
+  
+  /** Converts the provided name scope to a valid op name, by removing a trailing `"/"` if there exists one.
+   *
+   * @param  nameScope Name scope to convert.
+   * @return Name obtained from the provided name scope.
+   */
+  internal fun convertNameScopeToName(nameScope: String) =
+      if (nameScope.endsWith('/'))
+        nameScope.substring(0, nameScope.lastIndex)
+      else
+        nameScope
   
   interface API :
       gen_ops,
@@ -403,42 +441,110 @@ object ops {
                  atributes: Map<String, tensorflow.AttrValue>? = null,
                  container: String? = null,
                  block: () -> R): R {
+      // TODO: Move this to a separate scope class.
+      // TODO: !!! The order of the updates matters here so let's make sure everything is fine.
+      
       TODO()
-    }
-    
-    fun <R> with(sub: NameScope, block: () -> R): R {
-      TODO()
-//    val parentNs = ctxNs
-//    ctxNs = sub
-//    try {
-//      ctxNs.enter()
-//      return block()
-//    } finally {
-//      ctxNs.exit()
-//      ctxNs = parentNs
-//    }
     }
     
     /**
-     * 在[ctxNs]下新生成名称为[name]的sub[NameScope]（名称冲突则会重新命名解决冲突），
+     * 在[ctxNs]下新生成名称为[nameScope]的sub[NameScope]（名称冲突则会重新命名解决冲突），
      * 并将其赋值到[ctxNs]。
      *
      * [block]执行结束后，恢复[ctxNs]为调用[name_scope]之前的[NameScope]
      */
-    fun <R> name_scope(name: String, block: () -> R): R {
-      TODO()
-//    if (name.startsWith(scopeChar))//already in scope
-//      return block()
-//    val parentNs = ctxNs
-//    val sub = parentNs.new_subscope(name)
-//    ctxNs = sub
-//    try {
-//      ctxNs.enter()
-//      return block()
-//    } finally {
-//      ctxNs.exit()
-//      ctxNs = parentNs
-//    }
+    fun <R> name_scope(nameScope: String, values: Set<Op> = emptySet(), block: () -> R): R {
+      val scope = graphConstructionScope
+      return if (values.isNotEmpty()) {
+        val newGraph = mergeGraph(getGraphFromInputs(values), scope.value)
+        val newNameScope = mergeNameScope(nameScope, scope.value.nameScope) { newGraph.uniqueName(it) }
+        scope.with(scope.value.copy(graph = newGraph, nameScope = newNameScope, outerContext = scope.value)) {
+          block()
+        }
+      } else {
+        val newNameScope = mergeNameScope(nameScope, scope.value.nameScope) { scope.value.graph.uniqueName(it) }
+        scope.with(scope.value.copy(nameScope = newNameScope, outerContext = scope.value)) {
+          block()
+        }
+      }
+    }
+    
+    /** Merges a graph to the provided op creation context graph and returns the graph to use when specifying the updated
+     * op creation context. The merging rules are specified in the documentation of the [with] function.
+     *
+     * @param  graph   Graph to merge.
+     * @param  context Op creation context whose graph needs to be updated.
+     * @return Graph to use for the new op creation context.
+     */
+    private fun mergeGraph(graph: Graph?, context: GraphConstructionScope) =
+        graph ?: context.graph
+    
+    /** Merges a name scope to the provided op creation context name scope and returns the name scope to use when
+     * specifying the updated op creation context. The merging rules are specified in the documentation of the
+     * [[createWith]] function.
+     *
+     * @param  nameScope    Name scope to merge.
+     * @param  oldNameScope Old (i.e., current) name scope.
+     * @param  uniqueNameFn Function that can be used to generate a unique name based on a provided name.
+     * @return Name scope to use for the new op creation context.
+     * @throws IllegalNameException If the provided name scope does not pass the regular expression validity checks.
+     */
+    private fun mergeNameScope(nameScope: String?, oldNameScope: String, uniqueNameFn: (String) -> String): String {
+      return if (nameScope == null)
+        oldNameScope
+      else {
+        // Check whether the provided name scope is valid.
+        // If the root name scope is being set, then stricter checks are performed on it (i.e., op naming checks). This
+        // makes sure the name scope does not start with any illegal characters (e.g., '_', '-', '\', and '/').
+        if ((oldNameScope == "" && nameScope != "" && !checkName(nameScope))
+            || (oldNameScope != "" && !checkNameScope(nameScope)))
+          throw IllegalNameException("Illegal name scope '$nameScope'.")
+        when {
+          nameScope == "" -> ""
+          nameScope.endsWith('/') -> convertNameScopeToName(nameScope)
+          else -> uniqueNameFn(nameScope)
+        }
+      }
+    }
+    
+    /** Returns the appropriate graph to use for the given inputs.
+     *
+     * This function provides a consistent algorithm for choosing the graph in which an op should be constructed in:
+     *
+     *   1. If the argument `graph` is provided and is not set to `null`, the function validates that all `inputs` are
+     * defined in that graph.
+     *   2. Otherwise, we attempt to select a graph from the first op in `inputs` and validate that all other `inputs`
+     * are also defined in the same graph.
+     *
+     * @param  inputs Inputs.
+     * @param  graph  Graph to use. If `null`, the graph is inferred from `inputs`.
+     * @return The appropriate graph to use for the given inputs.
+     * @throws GraphMismatchException If any two of the inputs lie in different graphs, or if `graph` is not `null` and
+     *                                at least one of the `inputs` is not defined in it.
+     * @see "tensorflow.python.framework.ops._get_graph_from_inputs"
+     *
+     */
+    private fun getGraphFromInputs(inputs: Set<Op>, graph: Graph? = null): Graph {
+      val returnGraph = graph ?: inputs.first().graph
+      inputs.forEach {
+        if (graph == null)
+          assetSameGraph(inputs.first(), it)
+        else if (it.graph != returnGraph)
+          throw GraphMismatchException("'$it' is not defined in the passed-in graph.")
+      }
+      return returnGraph
+    }
+    
+    /** Asserts that two ops are defined in the same graph. If they are not, a [[GraphMismatchException]] is thrown.
+     *
+     * @param  op1 First op.
+     * @param  op2 Second op.
+     * @throws GraphMismatchException If the two ops lie in different graphs.
+     * @see "tensorflow.python.framework.ops._assert_same_graph"
+     */
+    private fun assetSameGraph(op1: Op, op2: Op) {
+      if (op1.graph != op2.graph)
+        throw GraphMismatchException("$op1 must be from the same graph as $op2")
     }
     
     /**

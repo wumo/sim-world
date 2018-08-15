@@ -5,7 +5,6 @@ import wumo.sim.tensorflow.core.InvalidDataTypeException
 import wumo.sim.tensorflow.core.ShapeMismatchException
 import wumo.sim.tensorflow.ops.DeviceFunction
 import wumo.sim.tensorflow.ops.variables.Variable.VariableGetter
-import wumo.sim.tensorflow.scope.NameScope
 import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.types.DataType
 import wumo.sim.tensorflow.types.FLOAT
@@ -28,7 +27,7 @@ import wumo.sim.util.emptyMutableSet
  * @param  regularizer      Default regularizer passed to `getVariable`.
  * @param  partitioner      Default partitioner passed to `getVariable`.
  * @param  cachingDevice    Default caching device passed to `getVariable`.
- * @param  namescope        Default name scope passed to `getVariable`.
+ * @param  nameScope        Default name scope passed to `getVariable`.
  * @param  dataType         Default data type passed to `getVariable`.
  * @param  underlyingGetter Default underlying variable getter passed to `getVariable`.
  *
@@ -42,7 +41,7 @@ internal class VariableScope(
     val regularizer: Regularizer? = null,
     val cachingDevice: DeviceFunction? = null,
     val partitioner: Partitioner? = null,
-    val namescope: NameScope = NameScope(""),
+    val nameScope:String="",
     val underlyingGetter: VariableGetter? = null) {
   
   /** Gets an existing variable with the specified name or creates a new one.
@@ -153,7 +152,7 @@ internal class VariableScope(
           regularizer = regularizer ?: oldVariableScope.regularizer,
           cachingDevice = cachingDevice ?: oldVariableScope.cachingDevice,
           partitioner = partitioner ?: oldVariableScope.partitioner,
-          namescope = NameScope(name),
+          nameScope = name,
           underlyingGetter = if (underlyingGetter == null) oldVariableScope.underlyingGetter
           else maybeWrapCustomVariableGetter(underlyingGetter, oldVariableScope.underlyingGetter)
       )
@@ -243,7 +242,7 @@ internal class VariableScope(
 //        }
 //    val real_name = "$name$suffix"
 //    return variable_subscopes.compute(real_name) { _, v ->
-//      v ?: VariableScope(real_name, namescope.reuse_or_new_subscope(real_name))
+//      v ?: VariableScope(real_name, nameScope.reuse_or_new_subscope(real_name))
 //    }!!.apply {
 //      this.reuse = reuse
 //      this.reenter_increment = reenter_increment

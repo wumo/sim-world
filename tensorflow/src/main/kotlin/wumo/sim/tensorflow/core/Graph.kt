@@ -14,11 +14,13 @@ import wumo.sim.tensorflow.OperationBuilder
 import wumo.sim.tensorflow.ops.Op
 import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.ops.Resource
+import wumo.sim.tensorflow.ops.ops
 import wumo.sim.tensorflow.ops.variables.Saver
 import wumo.sim.tensorflow.ops.variables.Variable
 import wumo.sim.tensorflow.ops.variables.Variable.VariableGetter
 import wumo.sim.tensorflow.ops.variables.VariableScopeStore
 import wumo.sim.tensorflow.ops.variables.VariableStore
+import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.util.isNotNull
 import wumo.sim.util.DynamicVariable
 import java.util.*
@@ -68,6 +70,8 @@ class Graph {
   /** Variable scope store object of this graph. */
   internal val variableScopeStore = DynamicVariable(VariableScopeStore())
   internal val variableCreatorStack = DynamicVariable(listOf<VariableGetter>())
+  /** Set that contains the current names in use in this graph. */
+  private val namesInUse = mutableMapOf<String, Int>()
   
   /** Map from collection key to set of values in that collection. */
   private val collections: MutableMap<Graph.Key<*>, MutableSet<*>> = mutableMapOf()
@@ -77,6 +81,43 @@ class Graph {
   private val unfetchable_ops = mutableSetOf<Op>()
   
   private val functions = LinkedHashSet<String>()
+  
+  /** Returns a unique op name in this graph, based on the provided `name`.
+   *
+   * @note Operation names are displayed in error messages reported by the TensorFlow runtime, and in various
+   *       visualization tools such as TensorBoard.
+   * @note You rarely need to call `uniqueName` directly. Most of the time you just need to create
+   *       `Op.createWithNameScope(...)` (which is also thread-safe) blocks to generate structured names.
+   * @param  name       Name in which to base the generated unique name.
+   * @param  markAsUsed If `true`, which is the default, a new unique name is created and marked as in use. If `false`,
+   *                    the unique name is returned without actually being marked as used. This is useful when the
+   *                    caller simply wants to know what the name to be created will be.
+   * @return Unique name.
+   * @see "tensorflow.python.framework.ops.Graph#unique_name"
+   */
+  internal fun uniqueName(name: String, markAsUsed: Boolean = true): String {
+    val nameScope = ops.convertNameScopeToName(tf.currentNameScope)
+    val fullName = if (nameScope == "") name
+    else "$nameScope/$name"
+    var count = namesInUse.getOrDefault(fullName, 0)
+    //Increment the counter for the provided name.
+    if (markAsUsed)
+      namesInUse[fullName] = count + 1
+    return if (count > 0) {
+      var uniqueName = fullName
+      //Make sure the composed name is not already being used.
+      while (uniqueName in namesInUse) {
+        uniqueName = "${fullName}_$count"
+        count++
+      }
+      // Mark the composed name_key as used in case someone wants
+      // to call unique_name("name_1").
+      if (markAsUsed)
+        namesInUse[uniqueName] = 1
+      uniqueName
+    } else
+      fullName
+  }
   
   /** Removes the specified collection from this graph.
    *

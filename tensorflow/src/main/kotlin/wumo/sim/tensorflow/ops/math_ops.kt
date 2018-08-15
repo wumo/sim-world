@@ -9,7 +9,7 @@ import wumo.sim.util.arange
 operator fun Output.plus(b: Any) =
     tf.name_scope("add") {
       val y = tf.const(this.dtype.base_dtype, b, name = "y")
-      tf._add(this, y, name = tf.currentNameScope.scopeName)
+      tf._add(this, y, name = tf.currentNameScope)
     }
 
 operator fun Output.plus(b: Output) = tf._add(this, b)
@@ -17,7 +17,7 @@ operator fun Output.plus(b: Output) = tf._add(this, b)
 operator fun Output.div(b: Any) =
     tf.name_scope("div") {
       val y = tf.const(this.dtype.base_dtype, b, name = "y")
-      tf._div(this, y, name = tf.currentNameScope.scopeName)
+      tf._div(this, y, name = tf.currentNameScope)
     }
 
 operator fun Output.div(b: Output) = tf._div(this, b)
@@ -25,7 +25,7 @@ operator fun Output.div(b: Output) = tf._div(this, b)
 operator fun Output.minus(b: Any) =
     tf.name_scope("sub") {
       val y = tf.const(this.dtype.base_dtype, b, name = "y")
-      tf._sub(this, y, name = tf.currentNameScope.scopeName)
+      tf._sub(this, y, name = tf.currentNameScope)
     }
 
 operator fun Output.minus(b: Output) = tf._sub(this, b)
@@ -33,7 +33,7 @@ operator fun Output.minus(b: Output) = tf._sub(this, b)
 operator fun Output.times(b: Any) =
     tf.name_scope("mul") {
       val y = tf.const(this.dtype.base_dtype, b, name = "y")
-      tf._mul(this, y, name = tf.currentNameScope.scopeName)
+      tf._mul(this, y, name = tf.currentNameScope)
     }
 
 operator fun Output.times(b: Output) = tf._mul(this, b)
@@ -50,14 +50,13 @@ object math_ops {
     fun argmax(a: Output, axis: Int = 0, output_type: DataType<*> = INT64, name: String = "ArgMax") =
         tf.name_scope(name) {
           val dimension = tf.const(axis, "dimension")
-          tf._argMax(a, dimension, output_type, tf.currentNameScope.scopeName)
-          
+          tf._argMax(a, dimension, output_type, tf.currentNameScope)
         }
     
     fun argmin(a: Output, axis: Int = 0, output_type: DataType<*> = INT64, name: String = "ArgMin") =
         tf.name_scope(name) {
           val dimension = tf.const(axis, "dimension")
-          tf._argMin(a, dimension, output_type, tf.currentNameScope.scopeName)
+          tf._argMin(a, dimension, output_type, tf.currentNameScope)
         }
     
     fun cast(x: Output, dstT: DataType<*>, name: String = "Cast"): Output = run {
@@ -75,7 +74,7 @@ object math_ops {
     fun greaterEqual(a: Output, b: Any, name: String = "GreaterEqual") =
         tf.name_scope(name) {
           val y = tf.const(a.dtype.base_dtype, b, name = "y")
-          tf._greaterEqual(a, y, tf.currentNameScope.scopeName)
+          tf._greaterEqual(a, y, tf.currentNameScope)
         }
     
     fun reductionDims(x: Output, axis: Output?): Output {
@@ -147,7 +146,7 @@ object math_ops {
     fun realDiv(a: Output, b: Any, name: String = "RealDiv") =
         tf.name_scope("truediv") {
           val y = tf.const(a.dtype.base_dtype, b, name = "y")
-          tf._realDiv(a, y, name = tf.currentNameScope.scopeName)
+          tf._realDiv(a, y, name = tf.currentNameScope)
         }
     
     fun sum(input: Output, axis: Int? = null, keep_dims: Boolean = false, name: String = "sum") =
@@ -156,7 +155,7 @@ object math_ops {
               reductionDims(input,
                             if (axis != null) tf.const(axis, "reduction_indices")
                             else null)
-          tf._sum(input, reduction_indices, keep_dims, tf.currentNameScope.scopeName)
+          tf._sum(input, reduction_indices, keep_dims, tf.currentNameScope)
         }
     
     fun sum(input: Output, axis: Output? = null, keep_dims: Boolean = false, name: String = "sum") =

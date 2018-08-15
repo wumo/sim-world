@@ -17,7 +17,7 @@ interface Initializer {
   val name: String
   val init: (Shape, DataType<*>, String) -> Output
   operator fun invoke(shape: Shape, dtype: DataType<*>) =
-      tf.name_scope(name) { init(shape, dtype, tf.currentNameScope.scopeName) }
+      tf.name_scope(name) { init(shape, dtype, tf.currentNameScope) }
 }
 
 class ZerosInitializer : Initializer {

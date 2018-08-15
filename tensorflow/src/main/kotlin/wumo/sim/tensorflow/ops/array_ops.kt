@@ -34,20 +34,20 @@ object array_ops {
             else -> 0
           }
           if (shape.numElements() < 1000)
-            tf.const(shape, dtype, zero, tf.currentNameScope.scopeName)
+            tf.const(shape, dtype, zero, tf.currentNameScope)
           else {
             val shape = tf._reshape(tf.const(shape.asLongArray()), tf.const(-1))
-            tf._fill(shape, tf.const(dtype, zero), tf.currentNameScope.scopeName)
+            tf._fill(shape, tf.const(dtype, zero), tf.currentNameScope)
           }
         }
     
     fun ones(shape: Shape, dtype: DataType<*> = FLOAT, name: String = "Ones"): Output =
         tf.name_scope(name) {
           if (shape.numElements() < 1000)
-            tf.const(shape, dtype, 1, tf.currentNameScope.scopeName)
+            tf.const(shape, dtype, 1, tf.currentNameScope)
           else {
             val shape = tf._reshape(tf.const(shape.asLongArray()), tf.const(-1))
-            tf._fill(shape, tf.const(dtype, 1), tf.currentNameScope.scopeName)
+            tf._fill(shape, tf.const(dtype, 1), tf.currentNameScope)
           }
         }
     
@@ -131,7 +131,7 @@ object array_ops {
                          shrink_axis_mask,
                          new_axis_mask,
                          ellipsis_mask,
-                         tf.currentNameScope.scopeName)
+                         tf.currentNameScope)
       }
     }
     
