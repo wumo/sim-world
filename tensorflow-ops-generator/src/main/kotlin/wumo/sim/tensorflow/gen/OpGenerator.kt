@@ -21,7 +21,7 @@ fun main(args: Array<String>) {
 
 fun generateFiles(path: String, kotlinPackage: String, opCategory: Map<String, Array<String>>) {
   val opDef = OpList.newBuilder()
-  TextFormat.merge(readString("tensorflow/resources/ops.pbtxt"), opDef)
+  TextFormat.merge(readString("tensorflow-ops-generator/resources/ops.pbtxt"), opDef)
   val opList = opDef.opList
   val opDefsMap = opList.map { it.name to it }.toMap()
   opCategory.forEach { groupName, opGroup ->
@@ -71,6 +71,7 @@ fun generateGroupFiles(path: String, group: String, opDefs: List<OpDef>, kotlinP
         |import wumo.sim.tensorflow.buildOpTensors
         |import wumo.sim.tensorflow.tf
         |import wumo.sim.util.ndarray.NDArray
+        |import wumo.sim.tensorflow.types.*
         |
         |interface $group {
         |
@@ -111,10 +112,7 @@ class OpGenerator(val opDef: OpDef, val sb: StringBuilder) {
       "addInput(${p.second},${inputsRef[p.first]})"
     }
     val addAttr = parameters.joinToString("\n") { (name, kotlinName) ->
-      if (argumentTypes[name] == "type")
-        "attrType(\"$name\", $kotlinName)"
-      else
-        "attr(\"$name\", $kotlinName)"
+      "attr(\"$name\", $kotlinName)"
     }
     val buildFunc = when (numOutputs) {
       0 -> "buildOp"
@@ -212,7 +210,7 @@ class OpGenerator(val opDef: OpDef, val sb: StringBuilder) {
         "int" to "Long",
         "float" to "Float",
         "bool" to "Boolean",
-        "type" to "Int",
+        "type" to "DataType<*>",
         "shape" to "Shape",
         "Output" to "Output",
         "tensor" to "NDArray<*>",
@@ -244,7 +242,7 @@ class OpGenerator(val opDef: OpDef, val sb: StringBuilder) {
         }
         
         "bool" -> value.b.toString()
-        "type" -> value.type.name
+        "type" -> value.type.name.substring(3)
         
         "shape" -> {
           val s = value.shape

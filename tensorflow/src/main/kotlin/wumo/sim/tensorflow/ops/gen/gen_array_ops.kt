@@ -3,14 +3,13 @@
  */
 package wumo.sim.tensorflow.ops.gen
 
-import org.bytedeco.javacpp.tensorflow.*
-import wumo.sim.tensorflow.ops.Output
-import wumo.sim.util.Shape
 import wumo.sim.tensorflow.buildOp
 import wumo.sim.tensorflow.buildOpTensor
 import wumo.sim.tensorflow.buildOpTensors
-import wumo.sim.tensorflow.tf
-import wumo.sim.util.ndarray.NDArray
+import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.types.DataType
+import wumo.sim.tensorflow.types.INT32
+import wumo.sim.util.Shape
 
 interface gen_array_ops {
   fun _batchToSpace(input: Output, crops: Output, block_size: Long, name: String = "BatchToSpace") = run {
@@ -29,10 +28,10 @@ interface gen_array_ops {
     }
   }
   
-  fun _bitcast(input: Output, _type: Int, name: String = "Bitcast") = run {
+  fun _bitcast(input: Output, _type: DataType<*>, name: String = "Bitcast") = run {
     buildOpTensor("Bitcast", name) {
       addInput(input, false)
-      attrType("type", _type)
+      attr("type", _type)
     }
   }
   
@@ -130,10 +129,10 @@ interface gen_array_ops {
     }
   }
   
-  fun _empty(shape: Output, dtype: Int, init: Boolean = false, name: String = "Empty") = run {
+  fun _empty(shape: Output, dtype: DataType<*>, init: Boolean = false, name: String = "Empty") = run {
     buildOpTensor("Empty", name) {
       addInput(shape, false)
-      attrType("dtype", dtype)
+      attr("dtype", dtype)
       attr("init", init)
     }
   }
@@ -266,9 +265,9 @@ interface gen_array_ops {
     }
   }
   
-  fun _immutableConst(dtype: Int, shape: Shape, memory_region_name: String, name: String = "ImmutableConst") = run {
+  fun _immutableConst(dtype: DataType<*>, shape: Shape, memory_region_name: String, name: String = "ImmutableConst") = run {
     buildOpTensor("ImmutableConst", name) {
-      attrType("dtype", dtype)
+      attr("dtype", dtype)
       attr("shape", shape)
       attr("memory_region_name", memory_region_name)
     }
@@ -304,11 +303,11 @@ interface gen_array_ops {
     }
   }
   
-  fun _listDiff(x: Output, y: Output, out_idx: Int = DT_INT32, name: String = "ListDiff") = run {
+  fun _listDiff(x: Output, y: Output, out_idx: DataType<*> = INT32, name: String = "ListDiff") = run {
     buildOpTensors("ListDiff", name) {
       addInput(x, false)
       addInput(y, false)
-      attrType("out_idx", out_idx)
+      attr("out_idx", out_idx)
     }
   }
   
@@ -392,9 +391,9 @@ interface gen_array_ops {
     }
   }
   
-  fun _placeholder(dtype: Int, shape: Shape = Shape(), name: String = "Placeholder") = run {
+  fun _placeholder(dtype: DataType<*>, shape: Shape = Shape(), name: String = "Placeholder") = run {
     buildOpTensor("Placeholder", name) {
-      attrType("dtype", dtype)
+      attr("dtype", dtype)
       attr("shape", shape)
     }
   }
@@ -435,12 +434,12 @@ interface gen_array_ops {
     }
   }
   
-  fun _quantizeV2(input: Output, min_range: Output, max_range: Output, t: Int, mode: String = "MIN_COMBINED", round_mode: String = "HALF_AWAY_FROM_ZERO", name: String = "QuantizeV2") = run {
+  fun _quantizeV2(input: Output, min_range: Output, max_range: Output, t: DataType<*>, mode: String = "MIN_COMBINED", round_mode: String = "HALF_AWAY_FROM_ZERO", name: String = "QuantizeV2") = run {
     buildOpTensors("QuantizeV2", name) {
       addInput(input, false)
       addInput(min_range, false)
       addInput(max_range, false)
-      attrType("T", t)
+      attr("T", t)
       attr("mode", mode)
       attr("round_mode", round_mode)
     }
@@ -537,24 +536,24 @@ interface gen_array_ops {
     }
   }
   
-  fun _shape(input: Output, out_type: Int = DT_INT32, name: String = "Shape") = run {
+  fun _shape(input: Output, out_type: DataType<*> = INT32, name: String = "Shape") = run {
     buildOpTensor("Shape", name) {
       addInput(input, false)
-      attrType("out_type", out_type)
+      attr("out_type", out_type)
     }
   }
   
-  fun _shapeN(input: Array<Output>, out_type: Int = DT_INT32, name: String = "ShapeN") = run {
+  fun _shapeN(input: Array<Output>, out_type: DataType<*> = INT32, name: String = "ShapeN") = run {
     buildOpTensors("ShapeN", name) {
       addInput(input, false)
-      attrType("out_type", out_type)
+      attr("out_type", out_type)
     }
   }
   
-  fun _size(input: Output, out_type: Int = DT_INT32, name: String = "Size") = run {
+  fun _size(input: Output, out_type: DataType<*> = INT32, name: String = "Size") = run {
     buildOpTensor("Size", name) {
       addInput(input, false)
-      attrType("out_type", out_type)
+      attr("out_type", out_type)
     }
   }
   
@@ -684,33 +683,33 @@ interface gen_array_ops {
     }
   }
   
-  fun _unique(x: Output, out_idx: Int = DT_INT32, name: String = "Unique") = run {
+  fun _unique(x: Output, out_idx: DataType<*> = INT32, name: String = "Unique") = run {
     buildOpTensors("Unique", name) {
       addInput(x, false)
-      attrType("out_idx", out_idx)
+      attr("out_idx", out_idx)
     }
   }
   
-  fun _uniqueV2(x: Output, axis: Output, out_idx: Int = DT_INT32, name: String = "UniqueV2") = run {
+  fun _uniqueV2(x: Output, axis: Output, out_idx: DataType<*> = INT32, name: String = "UniqueV2") = run {
     buildOpTensors("UniqueV2", name) {
       addInput(x, false)
       addInput(axis, false)
-      attrType("out_idx", out_idx)
+      attr("out_idx", out_idx)
     }
   }
   
-  fun _uniqueWithCounts(x: Output, out_idx: Int = DT_INT32, name: String = "UniqueWithCounts") = run {
+  fun _uniqueWithCounts(x: Output, out_idx: DataType<*> = INT32, name: String = "UniqueWithCounts") = run {
     buildOpTensors("UniqueWithCounts", name) {
       addInput(x, false)
-      attrType("out_idx", out_idx)
+      attr("out_idx", out_idx)
     }
   }
   
-  fun _uniqueWithCountsV2(x: Output, axis: Output, out_idx: Int = DT_INT32, name: String = "UniqueWithCountsV2") = run {
+  fun _uniqueWithCountsV2(x: Output, axis: Output, out_idx: DataType<*> = INT32, name: String = "UniqueWithCountsV2") = run {
     buildOpTensors("UniqueWithCountsV2", name) {
       addInput(x, false)
       addInput(axis, false)
-      attrType("out_idx", out_idx)
+      attr("out_idx", out_idx)
     }
   }
   

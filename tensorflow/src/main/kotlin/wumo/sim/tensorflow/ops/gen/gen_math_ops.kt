@@ -3,14 +3,11 @@
  */
 package wumo.sim.tensorflow.ops.gen
 
-import org.bytedeco.javacpp.tensorflow.*
-import wumo.sim.tensorflow.ops.Output
-import wumo.sim.util.Shape
-import wumo.sim.tensorflow.buildOp
 import wumo.sim.tensorflow.buildOpTensor
 import wumo.sim.tensorflow.buildOpTensors
-import wumo.sim.tensorflow.tf
-import wumo.sim.util.ndarray.NDArray
+import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.types.*
+import wumo.sim.util.Shape
 
 interface gen_math_ops {
   fun _abs(x: Output, name: String = "Abs") = run {
@@ -66,10 +63,10 @@ interface gen_math_ops {
     }
   }
   
-  fun _angle(input: Output, tout: Int = DT_FLOAT, name: String = "Angle") = run {
+  fun _angle(input: Output, tout: DataType<*> = FLOAT, name: String = "Angle") = run {
     buildOpTensor("Angle", name) {
       addInput(input, false)
-      attrType("Tout", tout)
+      attr("Tout", tout)
     }
   }
   
@@ -89,19 +86,19 @@ interface gen_math_ops {
     }
   }
   
-  fun _argMax(input: Output, dimension: Output, output_type: Int = DT_INT64, name: String = "ArgMax") = run {
+  fun _argMax(input: Output, dimension: Output, output_type: DataType<*> = INT64, name: String = "ArgMax") = run {
     buildOpTensor("ArgMax", name) {
       addInput(input, false)
       addInput(dimension, false)
-      attrType("output_type", output_type)
+      attr("output_type", output_type)
     }
   }
   
-  fun _argMin(input: Output, dimension: Output, output_type: Int = DT_INT64, name: String = "ArgMin") = run {
+  fun _argMin(input: Output, dimension: Output, output_type: DataType<*> = INT64, name: String = "ArgMin") = run {
     buildOpTensor("ArgMin", name) {
       addInput(input, false)
       addInput(dimension, false)
-      attrType("output_type", output_type)
+      attr("output_type", output_type)
     }
   }
   
@@ -180,10 +177,10 @@ interface gen_math_ops {
     }
   }
   
-  fun _cast(x: Output, dstT: Int, truncate: Boolean = false, name: String = "Cast") = run {
+  fun _cast(x: Output, dstT: DataType<*>, truncate: Boolean = false, name: String = "Cast") = run {
     buildOpTensor("Cast", name) {
       addInput(x, false)
-      attrType("DstT", dstT)
+      attr("DstT", dstT)
       attr("Truncate", truncate)
     }
   }
@@ -209,18 +206,18 @@ interface gen_math_ops {
     }
   }
   
-  fun _complex(real: Output, imag: Output, tout: Int = DT_COMPLEX64, name: String = "Complex") = run {
+  fun _complex(real: Output, imag: Output, tout: DataType<*> = COMPLEX64, name: String = "Complex") = run {
     buildOpTensor("Complex", name) {
       addInput(real, false)
       addInput(imag, false)
-      attrType("Tout", tout)
+      attr("Tout", tout)
     }
   }
   
-  fun _complexAbs(x: Output, tout: Int = DT_FLOAT, name: String = "ComplexAbs") = run {
+  fun _complexAbs(x: Output, tout: DataType<*> = FLOAT, name: String = "ComplexAbs") = run {
     buildOpTensor("ComplexAbs", name) {
       addInput(x, false)
-      attrType("Tout", tout)
+      attr("Tout", tout)
     }
   }
   
@@ -345,12 +342,12 @@ interface gen_math_ops {
     }
   }
   
-  fun _histogramFixedWidth(values: Output, value_range: Output, nbins: Output, dtype: Int = DT_INT32, name: String = "HistogramFixedWidth") = run {
+  fun _histogramFixedWidth(values: Output, value_range: Output, nbins: Output, dtype: DataType<*> = INT32, name: String = "HistogramFixedWidth") = run {
     buildOpTensor("HistogramFixedWidth", name) {
       addInput(values, false)
       addInput(value_range, false)
       addInput(nbins, false)
-      attrType("dtype", dtype)
+      attr("dtype", dtype)
     }
   }
   
@@ -368,10 +365,10 @@ interface gen_math_ops {
     }
   }
   
-  fun _imag(input: Output, tout: Int = DT_FLOAT, name: String = "Imag") = run {
+  fun _imag(input: Output, tout: DataType<*> = FLOAT, name: String = "Imag") = run {
     buildOpTensor("Imag", name) {
       addInput(input, false)
-      attrType("Tout", tout)
+      attr("Tout", tout)
     }
   }
   
@@ -555,16 +552,16 @@ interface gen_math_ops {
     }
   }
   
-  fun _quantizeDownAndShrinkRange(input: Output, input_min: Output, input_max: Output, out_type: Int, name: String = "QuantizeDownAndShrinkRange") = run {
+  fun _quantizeDownAndShrinkRange(input: Output, input_min: Output, input_max: Output, out_type: DataType<*>, name: String = "QuantizeDownAndShrinkRange") = run {
     buildOpTensors("QuantizeDownAndShrinkRange", name) {
       addInput(input, false)
       addInput(input_min, false)
       addInput(input_max, false)
-      attrType("out_type", out_type)
+      attr("out_type", out_type)
     }
   }
   
-  fun _quantizedAdd(x: Output, y: Output, min_x: Output, max_x: Output, min_y: Output, max_y: Output, toutput: Int = DT_QINT32, name: String = "QuantizedAdd") = run {
+  fun _quantizedAdd(x: Output, y: Output, min_x: Output, max_x: Output, min_y: Output, max_y: Output, toutput: DataType<*> = QINT32, name: String = "QuantizedAdd") = run {
     buildOpTensors("QuantizedAdd", name) {
       addInput(x, false)
       addInput(y, false)
@@ -572,11 +569,11 @@ interface gen_math_ops {
       addInput(max_x, false)
       addInput(min_y, false)
       addInput(max_y, false)
-      attrType("Toutput", toutput)
+      attr("Toutput", toutput)
     }
   }
   
-  fun _quantizedMatMul(a: Output, b: Output, min_a: Output, max_a: Output, min_b: Output, max_b: Output, toutput: Int = DT_QINT32, transpose_a: Boolean = false, transpose_b: Boolean = false, tactivation: Int = DT_QUINT8, name: String = "QuantizedMatMul") = run {
+  fun _quantizedMatMul(a: Output, b: Output, min_a: Output, max_a: Output, min_b: Output, max_b: Output, toutput: DataType<*> = QINT32, transpose_a: Boolean = false, transpose_b: Boolean = false, tactivation: DataType<*> = QUINT8, name: String = "QuantizedMatMul") = run {
     buildOpTensors("QuantizedMatMul", name) {
       addInput(a, false)
       addInput(b, false)
@@ -584,14 +581,14 @@ interface gen_math_ops {
       addInput(max_a, false)
       addInput(min_b, false)
       addInput(max_b, false)
-      attrType("Toutput", toutput)
+      attr("Toutput", toutput)
       attr("transpose_a", transpose_a)
       attr("transpose_b", transpose_b)
-      attrType("Tactivation", tactivation)
+      attr("Tactivation", tactivation)
     }
   }
   
-  fun _quantizedMul(x: Output, y: Output, min_x: Output, max_x: Output, min_y: Output, max_y: Output, toutput: Int = DT_QINT32, name: String = "QuantizedMul") = run {
+  fun _quantizedMul(x: Output, y: Output, min_x: Output, max_x: Output, min_y: Output, max_y: Output, toutput: DataType<*> = QINT32, name: String = "QuantizedMul") = run {
     buildOpTensors("QuantizedMul", name) {
       addInput(x, false)
       addInput(y, false)
@@ -599,7 +596,7 @@ interface gen_math_ops {
       addInput(max_x, false)
       addInput(min_y, false)
       addInput(max_y, false)
-      attrType("Toutput", toutput)
+      attr("Toutput", toutput)
     }
   }
   
@@ -611,10 +608,10 @@ interface gen_math_ops {
     }
   }
   
-  fun _real(input: Output, tout: Int = DT_FLOAT, name: String = "Real") = run {
+  fun _real(input: Output, tout: DataType<*> = FLOAT, name: String = "Real") = run {
     buildOpTensor("Real", name) {
       addInput(input, false)
-      attrType("Tout", tout)
+      attr("Tout", tout)
     }
   }
   
@@ -639,14 +636,14 @@ interface gen_math_ops {
     }
   }
   
-  fun _requantize(input: Output, input_min: Output, input_max: Output, requested_output_min: Output, requested_output_max: Output, out_type: Int, name: String = "Requantize") = run {
+  fun _requantize(input: Output, input_min: Output, input_max: Output, requested_output_min: Output, requested_output_max: Output, out_type: DataType<*>, name: String = "Requantize") = run {
     buildOpTensors("Requantize", name) {
       addInput(input, false)
       addInput(input_min, false)
       addInput(input_max, false)
       addInput(requested_output_min, false)
       addInput(requested_output_max, false)
-      attrType("out_type", out_type)
+      attr("out_type", out_type)
     }
   }
   

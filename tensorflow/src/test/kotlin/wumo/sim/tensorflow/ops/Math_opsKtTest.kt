@@ -1,10 +1,9 @@
 package wumo.sim.tensorflow.ops
 
 import org.bytedeco.javacpp.tensorflow
-import org.bytedeco.javacpp.tensorflow.DT_INT32
 import org.junit.Test
-
 import wumo.sim.tensorflow.tf
+import wumo.sim.tensorflow.types.INT32
 import wumo.sim.util.f
 import wumo.sim.util.println
 import wumo.sim.util.x
@@ -40,7 +39,7 @@ class Math_opsKtTest : BaseTest() {
   @Test
   fun cast() {
     val a = tf.const(2 x 2, 2.5f, "a")
-    val b = tf.cast(a, DT_INT32, "b")
+    val b = tf.cast(a, INT32, "b")
     printGraph()
     tf.session {
       b.eval()

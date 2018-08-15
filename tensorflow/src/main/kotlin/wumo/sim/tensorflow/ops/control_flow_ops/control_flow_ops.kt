@@ -1,7 +1,6 @@
 package wumo.sim.tensorflow.ops.control_flow_ops
 
 import wumo.sim.tensorflow.core.InvalidArgumentException
-import wumo.sim.tensorflow.is_ref_dytpe
 import wumo.sim.tensorflow.ops.Op
 import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.ops.variables.Variable
@@ -220,7 +219,7 @@ object control_flow_ops {
                            pred: Output,
                            name: String = "Switch"): Array<Output> =
         tf.colocate_with(data, ignore_existing = true) {
-          if (data.dtype.cValue.is_ref_dytpe)
+          if (data.dtype.isRefType)
             tf._refSwitch(data, pred, name)
           else
             tf._switch(data, pred, name)
@@ -259,7 +258,7 @@ object control_flow_ops {
         }
     
     fun identity(data: Output, name: String): Output {
-      return if (data.dtype.is_ref_dytpe)
+      return if (data.dtype.isRefType)
         tf._refIdentity(data, name)
       else
         tf._identity(data, name)
@@ -355,7 +354,7 @@ object control_flow_ops {
      * @return A tuple containing the chosen input tensor and its index in `inputs`.
      */
     fun merge(vararg inputs: Output, name: String = "Merge"): Array<Output> {
-      return if (inputs.all { it.dtype.is_ref_dytpe })
+      return if (inputs.all { it.dtype.isRefType })
         ref_merge(inputs as Array<Output>, name)
       else
         tf._merge(inputs as Array<Output>, name)

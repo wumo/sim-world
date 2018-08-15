@@ -4,12 +4,12 @@ import org.bytedeco.javacpp.tensorflow.DT_FLOAT
 import wumo.sim.tensorflow.core.Graph.Graph
 import wumo.sim.tensorflow.core.TensorFunction
 import wumo.sim.tensorflow.ops.DeviceFunction
-import wumo.sim.tensorflow.ops.ops
 import wumo.sim.tensorflow.ops.variables.Variable.VariableGetter
 import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.types.DataType
 import wumo.sim.tensorflow.types.types
 import wumo.sim.util.Shape
+import wumo.sim.util.emptyMutableSet
 
 typealias Regularizer = TensorFunction
 
@@ -43,7 +43,7 @@ object variables {
         regularizer: Regularizer? = null,
         trainable: Boolean = true,
         reuse: Reuse = ReuseOrCreateNew,
-        collections: Set<Graph.Key<Variable>> = emptySet(),
+        collections: MutableSet<Graph.Key<Variable>> = emptyMutableSet(),
         cachingDevice: DeviceFunction? = null
     ): Variable =
         Variable.getVariable(
@@ -71,7 +71,7 @@ object variables {
    * Provide a default initializer and a corresponding value.
    *
    */
-  fun defaultInitializer(name: String, dataType: DataType<*> = types.FLOAT32): Initializer =
+  fun defaultInitializer(name: String, dataType: DataType<*> = types.FLOAT): Initializer =
       when {
         dataType.isFloatingPoint -> TODO()
         dataType.isInteger || dataType.isUnsigned || dataType.isBoolean -> ZerosInitializer()

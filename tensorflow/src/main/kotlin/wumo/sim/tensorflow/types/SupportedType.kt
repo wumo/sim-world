@@ -12,16 +12,16 @@ object stringIsSupported : SupportedType<String, STRING>() {
   override fun cast(value: Any) = value.toString()
 }
 
-object booleanIsSupported : SupportedType<Boolean, BOOLEAN>() {
-  override val dataType = BOOLEAN
+object booleanIsSupported : SupportedType<Boolean, BOOL>() {
+  override val dataType = BOOL
   override fun cast(value: Any): Boolean = when (value) {
     is Boolean -> value
     else -> throw InvalidDataTypeException("Cannot convert the provided value a boolean.")
   }
 }
 
-object floatIsSupported : SupportedType<Float, FLOAT32>() {
-  override val dataType = FLOAT32
+object floatIsSupported : SupportedType<Float, FLOAT>() {
+  override val dataType = FLOAT
   override fun cast(value: Any): Float = when (value) {
     is Boolean -> if (value) 1.0f else 0.0f
     is Float -> value.toFloat()
@@ -34,8 +34,8 @@ object floatIsSupported : SupportedType<Float, FLOAT32>() {
   }
 }
 
-object doubleIsSupported : SupportedType<Double, FLOAT64>() {
-  override val dataType = FLOAT64
+object doubleIsSupported : SupportedType<Double, DOUBLE>() {
+  override val dataType = DOUBLE
   override fun cast(value: Any): Double = when (value) {
     is Boolean -> if (value) 1.0 else 0.0
     is Float -> value.toDouble()

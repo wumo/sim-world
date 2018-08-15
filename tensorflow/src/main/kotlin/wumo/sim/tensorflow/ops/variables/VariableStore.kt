@@ -8,8 +8,9 @@ import wumo.sim.tensorflow.ops.variables.variables.defaultInitializer
 import wumo.sim.tensorflow.ops.variables.variables.makeGetter
 import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.types.DataType
-import wumo.sim.tensorflow.types.FLOAT32
+import wumo.sim.tensorflow.types.FLOAT
 import wumo.sim.util.Shape
+import wumo.sim.util.emptyMutableSet
 
 /**
  * Variable store that carries a number of named Variables.
@@ -52,12 +53,12 @@ internal class VariableStore {
   fun getVariable(
       name: String,
       shape: Shape? = null,
-      dataType: DataType<*> = FLOAT32,
+      dataType: DataType<*> = FLOAT,
       initializer: Initializer? = null,
       regularizer: Regularizer? = null,
       trainable: Boolean = true,
       reuse: Reuse = ReuseOrCreateNew,
-      collections: Set<Graph.Key<Variable>> = emptySet(),
+      collections: MutableSet<Graph.Key<Variable>> = emptyMutableSet(),
       cachingDevice: DeviceFunction? = null
   ): Variable = run {
     // Single variable case.

@@ -4,15 +4,14 @@ import wumo.sim.tensorflow.core.Graph.Graph
 import wumo.sim.tensorflow.core.InvalidDataTypeException
 import wumo.sim.tensorflow.core.ShapeMismatchException
 import wumo.sim.tensorflow.ops.DeviceFunction
-import wumo.sim.tensorflow.ops.ops
 import wumo.sim.tensorflow.ops.variables.Variable.VariableGetter
 import wumo.sim.tensorflow.scope.NameScope
-import wumo.sim.tensorflow.scope.enter_exit
 import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.types.DataType
-import wumo.sim.tensorflow.types.*
+import wumo.sim.tensorflow.types.FLOAT
 import wumo.sim.tensorflow.types.types
 import wumo.sim.util.Shape
+import wumo.sim.util.emptyMutableSet
 
 /** Variable scope that carries default settings to provide to [getVariable].
  *
@@ -80,12 +79,12 @@ internal class VariableScope(
       store: VariableStore,
       name: String,
       shape: Shape? = null,
-      dataType: DataType<*> = FLOAT32,
+      dataType: DataType<*> = FLOAT,
       initializer: Initializer? = null,
       regularizer: Regularizer? = null,
       trainable: Boolean = true,
       reuse: Reuse = ReuseOrCreateNew,
-      collections: Set<Graph.Key<Variable>> = emptySet(),
+      collections: MutableSet<Graph.Key<Variable>> = emptyMutableSet(),
       cachingDevice: DeviceFunction? = null
   ): Variable {
     val fullName = if (this.name != null && this.name != "") "${this.name}/$name" else name
@@ -182,7 +181,7 @@ internal class VariableScope(
             initializer: Initializer?,
             regularizer: Regularizer?,
             trainable: Boolean, reuse: Reuse,
-            collections: Set<Graph.Key<Variable>>,
+            collections: MutableSet<Graph.Key<Variable>>,
             cachingDevice: DeviceFunction?,
             underlyingGetter: VariableGetter?): Variable {
           val baseGetter = object : VariableGetter by oldGetter {}

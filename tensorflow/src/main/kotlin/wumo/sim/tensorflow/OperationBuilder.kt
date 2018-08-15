@@ -7,10 +7,10 @@ import wumo.sim.tensorflow.core.check
 import wumo.sim.tensorflow.ops.Op
 import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.ops.control_flow_ops.control_flow_ops.checkInputFromValidContext
-import wumo.sim.tensorflow.ops.ops
 import wumo.sim.tensorflow.ops.ops.graphConstructionScope
 import wumo.sim.tensorflow.ops.ops.logger
 import wumo.sim.tensorflow.scope.NameScope.Companion.nameFromScopeName
+import wumo.sim.tensorflow.types.DataType
 import wumo.sim.util.Shape
 import wumo.sim.util.ndarray.NDArray
 import wumo.sim.util.toByte
@@ -290,12 +290,16 @@ class OperationBuilder(val opType: String, val name: String) {
       TF_SetAttrFloatList(c_op_desc, name, value.toFloatArray(), value.size)
     }
   }
-  
-  fun attrType(name: String, dtype: Int) = run {
+  fun attr(name: String, dtype: DataType<*>) = run {
     attributes[name] = {
-      TF_SetAttrType(c_op_desc, name, dtype)
+      TF_SetAttrType(c_op_desc, name, dtype.cValue)
     }
   }
+//  fun attrType(name: String, dtype: Int) = run {
+//    attributes[name] = {
+//      TF_SetAttrType(c_op_desc, name, dtype)
+//    }
+//  }
   
   fun <T : Any> attr(name: String, value: Tensor<T>) = run {
     attributes[name] = {

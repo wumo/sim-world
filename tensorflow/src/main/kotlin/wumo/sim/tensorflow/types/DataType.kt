@@ -1,12 +1,12 @@
 package wumo.sim.tensorflow.types
 
-import wumo.sim.tensorflow.ops.ops
 import wumo.sim.tensorflow.tf
+import wumo.sim.util.NOPE
 
 interface DataType<KotlinType> {
   //region Data Type Properties
-  val name: String
-  val cValue: Int
+  val name: String get() = protoType.name
+  val cValue: Int get() = protoType.number
   val byteSize: Int
   val priority: Int
   val protoType: org.tensorflow.framework.DataType
@@ -43,7 +43,29 @@ interface DataType<KotlinType> {
   
   /** Returns `true` if this data type represents a boolean data type. */
   val isBoolean: Boolean
-    get() = this == BOOLEAN
+    get() = this == types.BOOL
+  
+  ///**Returns a reference `DType` based on this `DType`.*/
+  val as_ref: DataType<KotlinType>
+    get() = if (isRefType) this else fromCValue(cValue + 100)
+  
+  ///**Returns `True` if this `DType` represents a reference type.*/
+  val isRefType
+    get() = cValue > 100
+  
+  ///**Returns a non-reference `DType` based on this `DType`.*/
+  val base_dtype: DataType<KotlinType>
+    get() = if (isRefType) fromCValue(cValue - 100) else this
+  
+  val real: DataType<KotlinType>
+    get() = when (base_dtype) {
+      is COMPLEX64 -> FLOAT as DataType<KotlinType>
+      is COMPLEX128 -> DOUBLE as DataType<KotlinType>
+      else -> this
+    }
+  
+  val min: KotlinType get() = NOPE()
+  val max: KotlinType get() = NOPE()
   
   //endregion Data Type Set Helper Methods
   
@@ -56,7 +78,7 @@ interface DataType<KotlinType> {
     //region Data Type Sets
     
     /** Set of all floating-point data types. */
-    val floatingPointDataTypes: Set<DataType<*>> = setOf(FLOAT16, FLOAT32, FLOAT64, BFLOAT16)
+    val floatingPointDataTypes: Set<DataType<*>> = setOf(FLOAT16, FLOAT, DOUBLE, BFLOAT16)
     
     /** Set of all complex data types. */
     val complexDataTypes: Set<DataType<*>> = setOf(COMPLEX64, COMPLEX128)
@@ -68,7 +90,7 @@ interface DataType<KotlinType> {
     val quantizedDataTypes: Set<DataType<*>> = setOf(BFLOAT16, QINT8, QINT16, QINT32, QUINT8, QUINT16)
     
     /** Set of all unsigned data types. */
-    val unsignedDataTypes: Set<DataType<*>> = setOf(UINT8, UINT16, UINT32, UINT64, QUINT8, QUINT16)
+    val unsignedDataTypes: Set<DataType<*>> = setOf(UINT8, UINT16, UINT32, UINT64, QUINT8, types.QUINT16)
     
     /** Set of all numeric data types. */
     val numericDataTypes: Set<DataType<*>> = floatingPointDataTypes + complexDataTypes + integerDataTypes + quantizedDataTypes
@@ -93,34 +115,59 @@ interface DataType<KotlinType> {
      * @return Data type corresponding to the provided C value.
      * @throws IllegalArgumentException If an invalid C value is provided.
      */
+    private val cvalueMap = mapOf<Int, DataType<*>>(
+        BOOL.cValue to BOOL,
+        STRING.cValue to STRING,
+        FLOAT16.cValue to FLOAT16,
+        FLOAT.cValue to FLOAT,
+        DOUBLE.cValue to DOUBLE,
+        BFLOAT16.cValue to BFLOAT16,
+        COMPLEX64.cValue to COMPLEX64,
+        COMPLEX128.cValue to COMPLEX128,
+        INT8.cValue to INT8,
+        INT16.cValue to INT16,
+        INT32.cValue to INT32,
+        INT64.cValue to INT64,
+        UINT8.cValue to UINT8,
+        UINT16.cValue to UINT16,
+        UINT32.cValue to UINT32,
+        UINT64.cValue to UINT64,
+        QINT8.cValue to QINT8,
+        QINT16.cValue to QINT16,
+        QINT32.cValue to QINT32,
+        QUINT8.cValue to QUINT8,
+        QUINT16.cValue to QUINT16,
+        RESOURCE.cValue to RESOURCE,
+        VARIANT.cValue to VARIANT,
+        
+        BOOL_REF.cValue to BOOL_REF,
+        STRING_REF.cValue to STRING_REF,
+        FLOAT16_REF.cValue to FLOAT16_REF,
+        FLOAT_REF.cValue to FLOAT_REF,
+        DOUBLE_REF.cValue to DOUBLE_REF,
+        BFLOAT16_REF.cValue to BFLOAT16_REF,
+        COMPLEX64_REF.cValue to COMPLEX64_REF,
+        COMPLEX128_REF.cValue to COMPLEX128_REF,
+        INT8_REF.cValue to INT8_REF,
+        INT16_REF.cValue to INT16_REF,
+        INT32_REF.cValue to INT32_REF,
+        INT64_REF.cValue to INT64_REF,
+        UINT8_REF.cValue to UINT8_REF,
+        UINT16_REF.cValue to UINT16_REF,
+        UINT32_REF.cValue to UINT32_REF,
+        UINT64_REF.cValue to UINT64_REF,
+        QINT8_REF.cValue to QINT8_REF,
+        QINT16_REF.cValue to QINT16_REF,
+        QINT32_REF.cValue to QINT32_REF,
+        QUINT8_REF.cValue to QUINT8_REF,
+        QUINT16_REF.cValue to QUINT16_REF,
+        RESOURCE_REF.cValue to RESOURCE_REF,
+        VARIANT_REF.cValue to VARIANT_REF
+    )
+    
     fun <D : DataType<*>> fromCValue(cValue: Int) = run {
-      val dataType = when (cValue) {
-        BOOLEAN.cValue -> BOOLEAN
-        STRING.cValue -> STRING
-        FLOAT16.cValue -> FLOAT16
-        FLOAT32.cValue -> FLOAT32
-        FLOAT64.cValue -> FLOAT64
-        BFLOAT16.cValue -> BFLOAT16
-        COMPLEX64.cValue -> COMPLEX64
-        COMPLEX128.cValue -> COMPLEX128
-        INT8.cValue -> INT8
-        INT16.cValue -> INT16
-        INT32.cValue -> INT32
-        INT64.cValue -> INT64
-        UINT8.cValue -> UINT8
-        UINT16.cValue -> UINT16
-        UINT32.cValue -> UINT32
-        UINT64.cValue -> UINT64
-        QINT8.cValue -> QINT8
-        QINT16.cValue -> QINT16
-        QINT32.cValue -> QINT32
-        QUINT8.cValue -> QUINT8
-        QUINT16.cValue -> QUINT16
-        RESOURCE.cValue -> RESOURCE
-        VARIANT.cValue -> VARIANT
-        else -> throw IllegalArgumentException(
-            "Data type C value '$cValue' is not recognized in Scala (TensorFlow version ${tf.version}).")
-      }
+      val dataType = cvalueMap[cValue] ?: throw IllegalArgumentException(
+          "Data type C value '$cValue' is not recognized in Kotlin (TensorFlow version ${tf.version}).")
       dataType as D
     }
     
@@ -130,34 +177,59 @@ interface DataType<KotlinType> {
      * @return Data type corresponding to the provided C value.
      * @throws IllegalArgumentException If an invalid data type name is provided.
      */
+    private val nameMap: Map<String, DataType<*>> = mapOf(
+        BOOL.name to BOOL,
+        STRING.name to STRING,
+        FLOAT16.name to FLOAT16,
+        FLOAT.name to FLOAT,
+        DOUBLE.name to DOUBLE,
+        BFLOAT16.name to BFLOAT16,
+        COMPLEX64.name to COMPLEX64,
+        COMPLEX128.name to COMPLEX128,
+        INT8.name to INT8,
+        INT16.name to INT16,
+        INT32.name to INT32,
+        INT64.name to INT64,
+        UINT8.name to UINT8,
+        UINT16.name to UINT16,
+        UINT32.name to UINT32,
+        UINT64.name to UINT64,
+        QINT8.name to QINT8,
+        QINT16.name to QINT16,
+        QINT32.name to QINT32,
+        QUINT8.name to QUINT8,
+        QUINT16.name to QUINT16,
+        RESOURCE.name to RESOURCE,
+        VARIANT.name to VARIANT,
+        
+        BOOL_REF.name to BOOL_REF,
+        STRING_REF.name to STRING_REF,
+        FLOAT16_REF.name to FLOAT16_REF,
+        FLOAT_REF.name to FLOAT_REF,
+        DOUBLE_REF.name to DOUBLE_REF,
+        BFLOAT16_REF.name to BFLOAT16_REF,
+        COMPLEX64_REF.name to COMPLEX64_REF,
+        COMPLEX128_REF.name to COMPLEX128_REF,
+        INT8_REF.name to INT8_REF,
+        INT16_REF.name to INT16_REF,
+        INT32_REF.name to INT32_REF,
+        INT64_REF.name to INT64_REF,
+        UINT8_REF.name to UINT8_REF,
+        UINT16_REF.name to UINT16_REF,
+        UINT32_REF.name to UINT32_REF,
+        UINT64_REF.name to UINT64_REF,
+        QINT8_REF.name to QINT8_REF,
+        QINT16_REF.name to QINT16_REF,
+        QINT32_REF.name to QINT32_REF,
+        QUINT8_REF.name to QUINT8_REF,
+        QUINT16_REF.name to QUINT16_REF,
+        RESOURCE_REF.name to RESOURCE_REF,
+        VARIANT_REF.name to VARIANT_REF
+    )
+    
     fun <D : DataType<*>> fromName(name: String) = run {
-      val dataType = when (name) {
-        "BOOLEAN" -> BOOLEAN
-        "STRING" -> STRING
-        "FLOAT16" -> FLOAT16
-        "FLOAT32" -> FLOAT32
-        "FLOAT64" -> FLOAT64
-        "BFLOAT16" -> BFLOAT16
-        "COMPLEX64" -> COMPLEX64
-        "COMPLEX128" -> COMPLEX128
-        "INT8" -> INT8
-        "INT16" -> INT16
-        "INT32" -> INT32
-        "INT64" -> INT64
-        "UINT8" -> UINT8
-        "UINT16" -> UINT16
-        "UINT32" -> UINT32
-        "UINT64" -> UINT64
-        "QINT8" -> QINT8
-        "QINT16" -> QINT16
-        "QINT32" -> QINT32
-        "QUINT8" -> QUINT8
-        "QUINT16" -> QUINT16
-        "RESOURCE" -> RESOURCE
-        "VARIANT" -> VARIANT
-        else -> throw IllegalArgumentException(
-            "Data type name '$name' is not recognized in Scala (TensorFlow version ${tf.version}).")
-      }
+      val dataType = nameMap[name] ?: throw IllegalArgumentException(
+          "Data type name '$name' is not recognized in Kotlin (TensorFlow version ${tf.version}).")
       dataType as D
     }
     

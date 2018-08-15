@@ -1,13 +1,9 @@
 package wumo.sim.tensorflow.samples
 
-import org.bytedeco.javacpp.tensorflow.DT_FLOAT
-import org.bytedeco.javacpp.tensorflow.DT_INT32
 import org.junit.Test
-import wumo.sim.tensorflow.ops.*
-import wumo.sim.tensorflow.tf
-import wumo.sim.util.*
-import wumo.sim.util.ndarray.NDArray
-import java.util.*
+import wumo.sim.tensorflow.ops.BaseTest
+import wumo.sim.util.Rand
+import wumo.sim.util.f
 
 class `Multi-armed bandit` : BaseTest() {
   @Test

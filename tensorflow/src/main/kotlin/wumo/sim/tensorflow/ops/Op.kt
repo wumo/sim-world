@@ -1,8 +1,6 @@
 package wumo.sim.tensorflow.ops
 
-import org.bytedeco.javacpp.Pointer
 import org.bytedeco.javacpp.PointerPointer
-import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Buffer.newBuffer
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
 import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.tensorflow.core.Graph

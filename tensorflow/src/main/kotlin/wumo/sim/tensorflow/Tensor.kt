@@ -10,6 +10,7 @@ import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Tensor.allocateTensor
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Tensor.newTensor
 import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.tensorflow.core.check
+import wumo.sim.tensorflow.types.*
 import wumo.sim.util.*
 import wumo.sim.util.Shape
 import wumo.sim.util.ndarray.Buf
@@ -30,7 +31,7 @@ abstract class Tensor<T : Any> protected constructor(c_tensor: TF_Tensor) : Buf<
       case<ArrayBuf<*>> { Tensor(_2, Array(_1.raw.size) { _1[it].toString() }) }
     }
     
-    fun <T : Any> toNDArray(tb: Tensor<T>) = NDArray(Shape(tb.dims), tb, dtypeToClass(tb.dtype.base_dtype))
+    fun <T : Any> toNDArray(tb: Tensor<T>) = NDArray(Shape(tb.dims), tb, dtypeToClass(tb.dtype.base_dtype.cValue))
     fun <T : Any> toNDArray(c_tensor: TF_Tensor) = toNDArray(invoke<T>(c_tensor))
     fun <T : Any> fromNDArray(ndarray: NDArray<T>) = (if (ndarray.raw is Tensor<*>) ndarray.raw
     else convert_switch(ndarray.raw, ndarray.shape)) as Tensor<T>
@@ -104,7 +105,7 @@ abstract class Tensor<T : Any> protected constructor(c_tensor: TF_Tensor) : Buf<
   protected val stride: LongArray
   protected val dims: LongArray
   protected val numElements: Long
-  val dtype = TF_TensorType(c_tensor)
+  val dtype: DataType<*> = DataType.fromCValue(TF_TensorType(c_tensor))
   val numDims = TF_NumDims(c_tensor)
   
   init {
@@ -125,12 +126,12 @@ abstract class Tensor<T : Any> protected constructor(c_tensor: TF_Tensor) : Buf<
     val ptr = BytePointer(TF_TensorData(c_tensor))
     val size = TF_TensorByteSize(c_tensor)
     return when (dtype) {
-      DT_COMPLEX64, DT_FLOAT -> FloatPointer(ptr).position(0L).capacity((size / 4)).asBuffer()
-      DT_DOUBLE -> DoublePointer(ptr).position(0L).capacity((size / 8)).asBuffer()
-      DT_QINT32, DT_INT32 -> IntPointer(ptr).position(0L).capacity((size / 4)).asBuffer()
-      DT_BOOL, DT_QUINT8, DT_UINT8, DT_QINT8, DT_INT8 -> ptr.position(0L).capacity(size).asBuffer()
-      DT_BFLOAT16, DT_INT16 -> ShortPointer(ptr).position(0L).capacity((size / 2)).asBuffer()
-      DT_INT64 -> LongPointer(ptr).position(0L).capacity((size / 8)).asBuffer()
+      COMPLEX64, FLOAT -> FloatPointer(ptr).position(0L).capacity((size / 4)).asBuffer()
+      DOUBLE -> DoublePointer(ptr).position(0L).capacity((size / 8)).asBuffer()
+      QINT32, INT32 -> IntPointer(ptr).position(0L).capacity((size / 4)).asBuffer()
+      BOOL, QUINT8, UINT8, QINT8, INT8 -> ptr.position(0L).capacity(size).asBuffer()
+      BFLOAT16, INT16 -> ShortPointer(ptr).position(0L).capacity((size / 2)).asBuffer()
+      INT64 -> LongPointer(ptr).position(0L).capacity((size / 8)).asBuffer()
       else -> throw IllegalStateException("invalid DataType($dtype)")
     } as B
   }
@@ -138,7 +139,7 @@ abstract class Tensor<T : Any> protected constructor(c_tensor: TF_Tensor) : Buf<
   protected fun copy_tensor(): TF_Tensor {
     val src = TF_TensorData(c_tensor)
     val size = TF_TensorByteSize(c_tensor)
-    val t = allocateTensor(dtype, dims, size)
+    val t = allocateTensor(dtype.cValue, dims, size)
     val data = TF_TensorData(t)
     memcpy(data, src, size)
     return t

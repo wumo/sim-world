@@ -1,15 +1,8 @@
 package wumo.sim.tensorflow.samples
 
-import org.bytedeco.javacpp.tensorflow.DT_FLOAT
-import org.bytedeco.javacpp.tensorflow.DT_INT32
 import org.junit.Test
-import wumo.sim.tensorflow.ops.Output
-import wumo.sim.tensorflow.ops.*
-import wumo.sim.tensorflow.tf
 import wumo.sim.envs.classic_control.CartPole
-import wumo.sim.util.Shape
-import wumo.sim.util.i
-import wumo.sim.util.x
+import wumo.sim.tensorflow.ops.BaseTest
 
 class VanillaPolicyTest : BaseTest() {
   @Test

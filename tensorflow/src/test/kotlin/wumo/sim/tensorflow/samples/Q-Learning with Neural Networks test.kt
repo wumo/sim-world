@@ -1,13 +1,7 @@
 package wumo.sim.tensorflow.samples
 
 import org.junit.Test
-import wumo.sim.tensorflow.ops.*
-import wumo.sim.tensorflow.tf
-import wumo.sim.envs.toy_text.FrozenLake
-import wumo.sim.util.Rand
-import wumo.sim.util.f
-import wumo.sim.util.ndarray.NDArray
-import wumo.sim.util.x
+import wumo.sim.tensorflow.ops.BaseTest
 
 class `Q-Learning with Neural Networks test` : BaseTest() {
   @Test

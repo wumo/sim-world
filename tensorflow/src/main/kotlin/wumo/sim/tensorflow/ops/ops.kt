@@ -4,12 +4,12 @@ import org.bytedeco.javacpp.tensorflow
 import org.bytedeco.javacpp.tensorflow.TF_Version
 import org.tensorflow.framework.GraphDef
 import wumo.sim.tensorflow.Session
-import wumo.sim.tensorflow.ops.variables.Variable
 import wumo.sim.tensorflow.core.Graph
 import wumo.sim.tensorflow.core.core
 import wumo.sim.tensorflow.ops.control_flow_ops.CondContext
 import wumo.sim.tensorflow.ops.control_flow_ops.control_flow_ops
 import wumo.sim.tensorflow.ops.gen.gen_ops
+import wumo.sim.tensorflow.ops.variables.Variable
 import wumo.sim.tensorflow.ops.variables.VariableScope
 import wumo.sim.tensorflow.ops.variables.variables
 import wumo.sim.tensorflow.scope.GraphConstructionScope

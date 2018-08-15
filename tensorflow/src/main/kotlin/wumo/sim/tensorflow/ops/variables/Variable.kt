@@ -1,14 +1,16 @@
 package wumo.sim.tensorflow.ops.variables
 
-import wumo.sim.tensorflow.base_dtype
 import wumo.sim.tensorflow.buildOp
 import wumo.sim.tensorflow.core.Graph.Graph
 import wumo.sim.tensorflow.core.ShapeMismatchException
-import wumo.sim.tensorflow.ops.*
+import wumo.sim.tensorflow.ops.DeviceFunction
+import wumo.sim.tensorflow.ops.Op
+import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.ops.forEach
 import wumo.sim.tensorflow.scope.NameScope.Companion.nameFromScopeName
 import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.types.DataType
-import wumo.sim.tensorflow.types.FLOAT32
+import wumo.sim.tensorflow.types.FLOAT
 import wumo.sim.tensorflow.types.types
 import wumo.sim.util.Shape
 import wumo.sim.util.a
@@ -67,7 +69,7 @@ class Variable(
   interface VariableGetter {
     operator fun invoke(
         name: String,
-        dataType: DataType<*> = types.FLOAT32,
+        dataType: DataType<*> = types.FLOAT,
         shape: Shape? = null,
         initializer: Initializer? = null,
         regularizer: Regularizer? = null,
@@ -88,7 +90,7 @@ class Variable(
      *
      * @param  name          Variable name.
      * @param  dataType      Data type for the value of the created variable. If not provided, its value is inferred from
-     *                       the provided initial value. If it cannot be inferred, then it will default to `FLOAT32`.
+     *                       the provided initial value. If it cannot be inferred, then it will default to `FLOAT`.
      * @param  shape         Shape for the value of the created variable. If `null`, an attempt will be made to infer the
      *                       shape of the variable from the provided initializer.
      * @param  initializer   Variable initializer. If `initializer` is `null` (the default), the default initializer
@@ -116,7 +118,7 @@ class Variable(
         regularizer: Regularizer? = null,
         trainable: Boolean = true,
         reuse: Reuse = ReuseOrCreateNew,
-        collections: Set<Graph.Key<Variable>> = emptySet(),
+        collections: MutableSet<Graph.Key<Variable>> = emptyMutableSet(),
         cachingDevice: DeviceFunction? = null
     ): Variable =
         VariableScope.current.getVariable(
@@ -137,7 +139,7 @@ class Variable(
     ): Variable =
         tf.init_scope {
           tf.name_scope(name) {
-            val inferredDataType = dataType ?: initializer.dtype ?: FLOAT32
+            val inferredDataType = dataType ?: initializer.dtype ?: FLOAT
             val inferredShape = shape ?: initializer.shape ?: throw ShapeMismatchException(
                 "No shape was provided for the new variable and it could not be inferred from the provided initializer.")
             val scopeName = tf.currentNameScope.scopeName
@@ -149,7 +151,7 @@ class Variable(
 //          attr.mutable_list().apply {
 //            add_s("loc:@$trueName")
 //          }
-            val variableHandle = tf._variableV2(inferredShape, inferredDataType.cValue.base_dtype,
+            val variableHandle = tf._variableV2(inferredShape, inferredDataType.base_dtype,
                                                 shared_name = trueName, name = scopeName)
             val initialValue = tf.name_scope("Initializer") {
               tf.colocate_with(variableHandle.op!!) {

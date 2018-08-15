@@ -3,7 +3,6 @@ package wumo.sim.tensorflow.ops
 import org.junit.Test
 import wumo.sim.tensorflow.tf
 import wumo.sim.util.f
-import wumo.sim.util.i
 import wumo.sim.util.ndarray.NDArray
 import wumo.sim.util.x
 

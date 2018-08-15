@@ -1,8 +1,7 @@
 package wumo.sim.tensorflow.ops
 
-import org.bytedeco.javacpp.tensorflow.*
-import wumo.sim.tensorflow.orUse
 import wumo.sim.tensorflow.tf
+import wumo.sim.tensorflow.types.*
 import wumo.sim.util.Shape
 
 object array_ops {
@@ -12,26 +11,26 @@ object array_ops {
         tf._oneHot(indices, depth, on_value, off_value, axis, name)
     
     fun placeholder(shape: Shape = Shape(),
-                    dtype: Int = DT_FLOAT, name: String = "Placeholder"): Output =
+                    dtype: DataType<*> = FLOAT, name: String = "Placeholder"): Output =
         tf._placeholder(dtype, shape, name)
     
-    fun zerosLike(x: Output, dtype: Int = DT_INVALID, optimize: Boolean = true, name: String = "ZerosLike") =
+    fun zerosLike(x: Output, dtype: DataType<*>? = null, optimize: Boolean = true, name: String = "ZerosLike") =
         when {
-          optimize && x.shape.is_fully_defined && x.dtype != DT_VARIANT ->
-            zeros(x.shape, dtype = dtype.orUse(x.dtype), name = name)
-          dtype != DT_INVALID && dtype != x.dtype && dtype != DT_VARIANT ->
+          optimize && x.shape.is_fully_defined && x.dtype != VARIANT ->
+            zeros(x.shape, dtype = dtype ?: x.dtype, name = name)
+          dtype != null && dtype != x.dtype && dtype != VARIANT ->
             zeros(shape(x, optimize = optimize), dtype = dtype, name = name)
           else -> tf._zerosLike(x, name)
         }
     
-    fun zeros(shape: Output, dtype: Int = DT_FLOAT, name: String = "Ones"): Output {
+    fun zeros(shape: Output, dtype: DataType<*> = FLOAT, name: String = "Ones"): Output {
       TODO()
     }
     
-    fun zeros(shape: Shape, dtype: Int = DT_FLOAT, name: String = "Ones"): Output =
+    fun zeros(shape: Shape, dtype: DataType<*> = FLOAT, name: String = "Ones"): Output =
         tf.name_scope(name) {
           val zero = when (dtype) {
-            DT_STRING -> ""
+            STRING -> ""
             else -> 0
           }
           if (shape.numElements() < 1000)
@@ -42,7 +41,7 @@ object array_ops {
           }
         }
     
-    fun ones(shape: Shape, dtype: Int = DT_FLOAT, name: String = "Ones"): Output =
+    fun ones(shape: Shape, dtype: DataType<*> = FLOAT, name: String = "Ones"): Output =
         tf.name_scope(name) {
           if (shape.numElements() < 1000)
             tf.const(shape, dtype, 1, tf.currentNameScope.scopeName)
@@ -57,7 +56,7 @@ object array_ops {
      *
      *
      */
-    fun shape(input: Output, out_type: Int = DT_INT32, name: String = "Shape", optimize: Boolean = true): Output {
+    fun shape(input: Output, out_type: DataType<*> = INT32, name: String = "Shape", optimize: Boolean = true): Output {
       //TODO SparseOutput
       val input_shape = input.shape
       if (optimize && input_shape.is_fully_defined)

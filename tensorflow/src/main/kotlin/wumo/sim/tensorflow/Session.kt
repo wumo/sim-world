@@ -10,7 +10,6 @@ import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.tensorflow.core.check
 import wumo.sim.tensorflow.ops.Op
 import wumo.sim.tensorflow.ops.Output
-import wumo.sim.tensorflow.ops.ops
 import wumo.sim.tensorflow.ops.variables.Variable
 import wumo.sim.util.ndarray.NDArray
 import wumo.sim.util.tuple2
@@ -155,7 +154,7 @@ class Session(val c_graph: TF_Graph) {
   }
   
   private fun Output.print(v: NDArray<*>) {
-    val prefix = "${op!!.name}:${dtype.name()}$shape\n  ="
+    val prefix = "${op!!.name}:${dtype.name}$shape\n  ="
     println("$prefix${v.toString(3)}\n")
   }
   

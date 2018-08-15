@@ -1,8 +1,8 @@
 package wumo.sim.tensorflow.ops
 
-import org.bytedeco.javacpp.tensorflow.DT_FLOAT
-import org.bytedeco.javacpp.tensorflow.DT_HALF
 import wumo.sim.tensorflow.tf
+import wumo.sim.tensorflow.types.FLOAT
+import wumo.sim.tensorflow.types.HALF
 import wumo.sim.util.a
 
 object nn_ops {
@@ -40,7 +40,7 @@ object nn_ops {
           //The dynamic range of fp16 is too limited to support the collection of
           //sufficient statistics. As a workaround we simply perform the operations
           //on 32-bit floats before converting the mean and variance back to fp16
-          val y = if (x.dtype == DT_HALF) tf.cast(x, DT_FLOAT) else x
+          val y = if (x.dtype == HALF) tf.cast(x, FLOAT) else x
           //Compute true mean while keeping the dims for proper broadcasting.
           var mean = tf.mean(y, axes, keep_dims = true, name = "mean")
           //sample variance, not unbiased variance
@@ -50,8 +50,8 @@ object nn_ops {
             mean = tf._squeeze(mean, axes.toTypedArray())
             variance = tf._squeeze(variance, axes.toTypedArray())
           }
-          if (x.dtype == DT_HALF)
-            a(tf.cast(mean, DT_HALF), tf.cast(variance, DT_HALF))
+          if (x.dtype == HALF)
+            a(tf.cast(mean, HALF), tf.cast(variance, HALF))
           else a(mean, variance)
         }
     

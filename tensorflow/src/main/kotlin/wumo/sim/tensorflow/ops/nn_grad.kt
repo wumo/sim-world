@@ -1,10 +1,9 @@
 package wumo.sim.tensorflow.ops
 
-import org.bytedeco.javacpp.tensorflow.DT_INT64
-import wumo.sim.tensorflow.ops.gen.*
 import wumo.sim.tensorflow.ops.gradients.noGradient
 import wumo.sim.tensorflow.ops.gradients.register_gradient_op
 import wumo.sim.tensorflow.tf
+import wumo.sim.tensorflow.types.INT64
 import wumo.sim.util.i
 
 fun register_nn_grad() {
@@ -156,7 +155,7 @@ fun register_nn_grad() {
     val grad = grad_inputs[0]
     val overlapping = op.attrBool("overlapping")
     val dx = tf._fractionalAvgPoolGrad(
-        tf._shape(op.inputs[0], out_type = DT_INT64),
+        tf._shape(op.inputs[0], out_type = INT64),
         grad, op.outputs[1], op.outputs[2],
         overlapping = overlapping)
     grad_outputs.add(dx)

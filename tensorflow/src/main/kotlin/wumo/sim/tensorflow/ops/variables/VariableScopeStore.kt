@@ -1,6 +1,5 @@
 package wumo.sim.tensorflow.ops.variables
 
-import wumo.sim.tensorflow.ops.ops
 import wumo.sim.tensorflow.tf
 
 /** A thread-local score for the current variable scope and scope counts.

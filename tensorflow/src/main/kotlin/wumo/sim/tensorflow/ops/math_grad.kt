@@ -1,12 +1,13 @@
 package wumo.sim.tensorflow.ops
 
-import org.bytedeco.javacpp.tensorflow.*
-import wumo.sim.tensorflow.ops.gen.*
 import wumo.sim.tensorflow.ops.gradients.append
 import wumo.sim.tensorflow.ops.gradients.noGradient
 import wumo.sim.tensorflow.ops.gradients.register_gradient_op
 import wumo.sim.tensorflow.ops.gradients.register_no_gradient_op
 import wumo.sim.tensorflow.tf
+import wumo.sim.tensorflow.types.COMPLEX128
+import wumo.sim.tensorflow.types.COMPLEX64
+import wumo.sim.tensorflow.types.INT32
 import wumo.sim.util.a
 import wumo.sim.util.i
 
@@ -397,7 +398,7 @@ fun register_math_grad() {
     // Avoid false singularity at x = 0
     val x_dtype = x.dtype
     val zero = tf._cast(tf.const(0.0), x_dtype)
-    if (x_dtype == DT_COMPLEX64 || x_dtype == DT_COMPLEX128) {
+    if (x_dtype == COMPLEX64 || x_dtype == COMPLEX128) {
       // real(x) < 0 is fine for the complex case
       val log_x = tf.where(tf._notEqual(x, zero), tf._log(x), tf._zerosLike(x))
       val gy_1 = tf._mul(tf._mul(grad, z), log_x)
@@ -754,7 +755,7 @@ fun register_math_grad() {
     val reduction_indices_pos = tf._mod(tf._add(reduction_indices, rank), rank)
     
     // [1]
-    val reduced = tf._cast(reduction_indices_pos, DT_INT32)
+    val reduced = tf._cast(reduction_indices_pos, INT32)
     
     // [0, 1, 2]
     val idx = tf._range(zero, rank, one)

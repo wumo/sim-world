@@ -1,11 +1,10 @@
 package wumo.sim.tensorflow.ops
 
-import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.tensorflow.ops.variables.Variable
-import wumo.sim.tensorflow.base_dtype
 import wumo.sim.tensorflow.tf
+import wumo.sim.tensorflow.types.*
+import wumo.sim.util.a
 import wumo.sim.util.arange
-import wumo.sim.util.i
 
 operator fun Output.plus(b: Any) =
     tf.name_scope("add") {
@@ -24,7 +23,7 @@ operator fun Output.div(b: Any) =
 operator fun Output.div(b: Output) = tf._div(this, b)
 
 operator fun Output.minus(b: Any) =
-    tf.name_scope("add") {
+    tf.name_scope("sub") {
       val y = tf.const(this.dtype.base_dtype, b, name = "y")
       tf._sub(this, y, name = tf.currentNameScope.scopeName)
     }
@@ -42,32 +41,33 @@ operator fun Output.times(b: Output) = tf._mul(this, b)
 operator fun Output.unaryMinus() = tf._neg(this)
 
 object math_ops {
-  private val dtype_hierarchy = mapOf(DT_INT32 to 0,
-                                      DT_INT64 to 1,
-                                      DT_FLOAT to 2,
-                                      DT_DOUBLE to 3)
+  private val dtype_hierarchy: Map<DataType<*>, Int> = mapOf(INT32 to 0,
+                                                             INT64 to 1,
+                                                             FLOAT to 2,
+                                                             DOUBLE to 3)
   
   interface API {
-    fun argmax(a: Output, axis: Int = 0, output_type: Int = DT_INT64, name: String = "ArgMax") =
+    fun argmax(a: Output, axis: Int = 0, output_type: DataType<*> = INT64, name: String = "ArgMax") =
         tf.name_scope(name) {
           val dimension = tf.const(axis, "dimension")
           tf._argMax(a, dimension, output_type, tf.currentNameScope.scopeName)
+          
         }
     
-    fun argmin(a: Output, axis: Int = 0, output_type: Int = DT_INT64, name: String = "ArgMin") =
+    fun argmin(a: Output, axis: Int = 0, output_type: DataType<*> = INT64, name: String = "ArgMin") =
         tf.name_scope(name) {
           val dimension = tf.const(axis, "dimension")
           tf._argMin(a, dimension, output_type, tf.currentNameScope.scopeName)
         }
     
-    fun cast(x: Output, dstT: Int, name: String = "Cast"): Output = run {
+    fun cast(x: Output, dstT: DataType<*>, name: String = "Cast"): Output = run {
       val x = (x as? Variable)?.value ?: x
       if (x.dtype == dstT) x
       else tf._cast(x, dstT, name = name)
     }
     
     fun conj(x: Output, name: String = "Conj") =
-        if (x.dtype == DT_COMPLEX64 || x.dtype == DT_COMPLEX128)
+        if (x.dtype == COMPLEX64 || x.dtype == COMPLEX128)
           tf._conj(x, name)
         else
           x
@@ -136,7 +136,7 @@ object math_ops {
      * @return An 1-D `Output` of type `dtype`.
      */
     fun range(start: Output, limit: Output, delta: Output = tf.const(1), name: String = "Range") = run {
-      val dtypes = i(start.dtype, limit.dtype, delta.dtype)
+      val dtypes = a(start.dtype, limit.dtype, delta.dtype)
       val inferred_dtype = dtypes.maxBy { dtype_hierarchy[it]!! }!!
       val start = cast(start, inferred_dtype)
       val limit = cast(limit, inferred_dtype)

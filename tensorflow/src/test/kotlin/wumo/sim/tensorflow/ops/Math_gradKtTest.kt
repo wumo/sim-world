@@ -1,10 +1,6 @@
 package wumo.sim.tensorflow.ops
 
-import org.bytedeco.javacpp.tensorflow.DT_FLOAT
 import org.junit.Test
-import wumo.sim.tensorflow.tf
-import wumo.sim.util.ndarray.NDArray
-import wumo.sim.util.scalarDimension
 
 class Math_gradKtTest {
   @Test

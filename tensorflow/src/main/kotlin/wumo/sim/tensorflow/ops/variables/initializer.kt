@@ -1,10 +1,10 @@
 package wumo.sim.tensorflow.ops.variables
 
-import org.bytedeco.javacpp.tensorflow.DT_FLOAT
-import wumo.sim.tensorflow.ops.*
+import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.ops.variables.mode.*
 import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.types.DataType
+import wumo.sim.tensorflow.types.FLOAT
 import wumo.sim.tensorflow.types.types
 import wumo.sim.util.Shape
 import kotlin.math.sqrt
@@ -25,26 +25,26 @@ class ZerosInitializer : Initializer {
     get() = "zeroes_initializer"
   override val init: (Shape, DataType<*>, String) -> Output
     get() = { shape, dtype, name ->
-      tf.zeros(shape, dtype.cValue, name)
+      tf.zeros(shape, dtype, name)
     }
 }
 
-fun zeros_initializer(dtype: Int = DT_FLOAT) = ZerosInitializer()
-fun ones_initializer(dtype: Int = DT_FLOAT) = object : Initializer {
+fun zeros_initializer(dtype: DataType<*> = FLOAT) = ZerosInitializer()
+fun ones_initializer(dtype: DataType<*> = FLOAT) = object : Initializer {
   override val name: String
     get() = "oness_initializer"
   override val init: (Shape, DataType<*>, String) -> Output
     get() = { shape, dtype, name ->
-      tf.ones(shape, dtype.cValue, "ones")
+      tf.ones(shape, dtype, "ones")
     }
 }
 
-fun constant_initializer(value: Any, dtype: Int = DT_FLOAT) = object : Initializer {
+fun constant_initializer(value: Any, dtype: DataType<*> = FLOAT) = object : Initializer {
   override val name: String
     get() = "const_initializer"
   override val init: (Shape, DataType<*>, String) -> Output
     get() = { shape, dtype, name ->
-      tf.const(shape, dtype.cValue, value, name = "Const")
+      tf.const(shape, dtype, value, name = "Const")
     }
 }
 
@@ -112,7 +112,7 @@ fun variance_scaling_initializer(factor: Float = 2.0f,
                                  uniform: Boolean = false) =
     object : Initializer {
       override val dtype: DataType<*>?
-        get() = types.FLOAT32
+        get() = types.FLOAT
       override val name: String
         get() = "variance_scaling_initializer"
       override val init: (Shape, DataType<*>, String) -> Output
@@ -133,7 +133,7 @@ fun variance_scaling_initializer(factor: Float = 2.0f,
             tf.random_uniform(shape, -limit, limit)
           } else {
             val trunc_stddev = sqrt(1.3 * factor / n).toFloat()
-            tf._truncatedNormal(tf.const(shape.asIntArray()!!), dtype.cValue, 0L, trunc_stddev.toLong())
+            tf._truncatedNormal(tf.const(shape.asIntArray()!!), dtype, 0L, trunc_stddev.toLong())
           }
         }
     }

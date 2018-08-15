@@ -4,7 +4,6 @@ import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
 import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.tensorflow.core.Graph
 import wumo.sim.tensorflow.core.check
-import wumo.sim.tensorflow.name
 import wumo.sim.tensorflow.types.DataType
 import wumo.sim.util.Shape
 

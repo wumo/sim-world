@@ -1,12 +1,10 @@
 package wumo.sim.tensorflow.samples
 
-import org.bytedeco.javacpp.tensorflow
-import org.bytedeco.javacpp.tensorflow.DT_INT32
 import org.junit.Test
-import wumo.sim.tensorflow.ops.*
-import wumo.sim.tensorflow.tf
-import wumo.sim.util.*
-import wumo.sim.util.ndarray.NDArray
+import wumo.sim.tensorflow.ops.BaseTest
+import wumo.sim.util.Rand
+import wumo.sim.util.a
+import wumo.sim.util.f
 
 class Contextual_Bandit : BaseTest() {
   @Test
