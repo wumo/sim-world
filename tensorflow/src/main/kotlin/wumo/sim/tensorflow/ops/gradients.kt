@@ -58,7 +58,7 @@ object gradient_ops {
 //fun TF.gradientDescentOptimizer(learningRate: Float,
 //                                loss: Output,
 //                                name: String = "GradientDescent"): Op {
-//  name_scope(name) {
+//  nameScope(name) {
 //    val dy = gradients(loss, trainables)
 //    val alpha = const(learningRate, "learning_rate")
 //    val applyGradient = mutableListOf<Op>()

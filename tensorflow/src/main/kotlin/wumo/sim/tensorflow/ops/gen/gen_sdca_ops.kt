@@ -15,7 +15,7 @@ interface gen_sdca_ops {
     }
   }
   
-  fun _sdcaOptimizer(sparse_example_indices: Array<Output>, sparse_feature_indices: Array<Output>, sparse_feature_values: Array<Output>, dense_features: Array<Output>, example_weights: Output, example_labels: Output, sparse_indices: Array<Output>, sparse_weights: Array<Output>, dense_weights: Array<Output>, example_state_data: Output, loss_type: String, l1: Float, l2: Float, num_loss_partitions: Long, num_inner_iterations: Long, adaptative: Boolean = false, name: String = "SdcaOptimizer") = run {
+  fun _sdcaOptimizer(sparse_example_indices: List<Output>, sparse_feature_indices: List<Output>, sparse_feature_values: List<Output>, dense_features: List<Output>, example_weights: Output, example_labels: Output, sparse_indices: List<Output>, sparse_weights: List<Output>, dense_weights: List<Output>, example_state_data: Output, loss_type: String, l1: Float, l2: Float, num_loss_partitions: Long, num_inner_iterations: Long, adaptative: Boolean = false, name: String = "SdcaOptimizer") = run {
     buildOpTensors("SdcaOptimizer", name) {
       addInput(sparse_example_indices, false)
       addInput(sparse_feature_indices, false)
@@ -36,7 +36,7 @@ interface gen_sdca_ops {
     }
   }
   
-  fun _sdcaShrinkL1(weights: Array<Output>, l1: Float, l2: Float, name: String = "SdcaShrinkL1") = run {
+  fun _sdcaShrinkL1(weights: List<Output>, l1: Float, l2: Float, name: String = "SdcaShrinkL1") = run {
     buildOp("SdcaShrinkL1", name) {
       addInput(weights, true)
       attr("l1", l1)

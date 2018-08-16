@@ -239,7 +239,7 @@ interface gen_dataset_ops {
     }
   }
   
-  fun _paddedBatchDataset(input_dataset: Output, batch_size: Output, padded_shapes: Array<Output>, padding_values: Output, output_shapes: Array<Shape>, name: String = "PaddedBatchDataset") = run {
+  fun _paddedBatchDataset(input_dataset: Output, batch_size: Output, padded_shapes: List<Output>, padding_values: Output, output_shapes: Array<Shape>, name: String = "PaddedBatchDataset") = run {
     buildOpTensor("PaddedBatchDataset", name) {
       addInput(input_dataset, false)
       addInput(batch_size, false)
@@ -284,7 +284,7 @@ interface gen_dataset_ops {
     }
   }
   
-  fun _prependFromQueueAndPaddedBatchDataset(input_dataset: Output, batch_size: Output, padded_shapes: Array<Output>, padding_values: Output, output_shapes: Array<Shape>, name: String = "PrependFromQueueAndPaddedBatchDataset") = run {
+  fun _prependFromQueueAndPaddedBatchDataset(input_dataset: Output, batch_size: Output, padded_shapes: List<Output>, padding_values: Output, output_shapes: Array<Shape>, name: String = "PrependFromQueueAndPaddedBatchDataset") = run {
     buildOpTensor("PrependFromQueueAndPaddedBatchDataset", name) {
       addInput(input_dataset, false)
       addInput(batch_size, false)
@@ -470,7 +470,7 @@ interface gen_dataset_ops {
     }
   }
   
-  fun _zipDataset(input_datasets: Array<Output>, output_types: Array<Long>, output_shapes: Array<Shape>, name: String = "ZipDataset") = run {
+  fun _zipDataset(input_datasets: List<Output>, output_types: Array<Long>, output_shapes: Array<Shape>, name: String = "ZipDataset") = run {
     buildOpTensor("ZipDataset", name) {
       addInput(input_datasets, false)
       attr("output_types", output_types)
@@ -570,7 +570,7 @@ interface gen_dataset_ops {
     }
   }
   
-  fun _paddedBatchDatasetV2(input_dataset: Output, batch_size: Output, padded_shapes: Array<Output>, padding_values: Output, drop_remainder: Output, output_shapes: Array<Shape>, name: String = "PaddedBatchDatasetV2") = run {
+  fun _paddedBatchDatasetV2(input_dataset: Output, batch_size: Output, padded_shapes: List<Output>, padding_values: Output, drop_remainder: Output, output_shapes: Array<Shape>, name: String = "PaddedBatchDatasetV2") = run {
     buildOpTensor("PaddedBatchDatasetV2", name) {
       addInput(input_dataset, false)
       addInput(batch_size, false)

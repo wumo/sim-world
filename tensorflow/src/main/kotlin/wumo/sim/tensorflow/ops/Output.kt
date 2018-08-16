@@ -20,22 +20,48 @@ sealed class OutputLike : OutputConvertible {
   abstract val consumers: Array<Op>
 }
 
-class IndexedSlices : OutputLike() {
-  override val name: String
-    get() = TODO("not implemented")
-  override val dtype: DataType<*>
-    get() = TODO("not implemented")
-  override val device: String
-    get() = TODO("not implemented")
-  override val op: Op?
-    get() = TODO("not implemented")
-  override val consumers: Array<Op>
-    get() = TODO("not implemented")
-  override val graph: Graph
-    get() = TODO("not implemented")
+/** Sparse representation of a set of tensor slices at given indices.
+ *
+ * This class if a simple wrapper for a pair (or a set of three) of [[Output]] objects:
+ *   - `indices`: A one-dimensional integer [[Output]] with shape `[D0]`.
+ *   - `values`: An [[Output]] of any data type, with shape `[D0, D1, ..., Dn]`.
+ *   - `denseShape`: Optionally, an integer [[Output]] with shape `[LARGE0, D1, ..., Dn]`.
+ *
+ * An [IndexedSlices] is typically used to represent a subset of a larger [[Output]], `dense`, of shape
+ * `[LARGE0, D1, ..., Dn]`, where `LARGE0 >> D0`. The values in `indices` are the indices in the first dimension of
+ * the slices that have been extracted from the larger tensor.
+ *
+ * The dense [[Output]], `dense`, represented by [IndexedSlices], `slices`, has:
+ * {{{
+ *   dense(slices.indices(i), ::, ::, ...) = slices.values(i, ::, ::, ...)
+ * }}}
+ *
+ * The [IndexedSlices] class is used primarily in the definition of gradients for operations that have
+ * sparse gradients, such as `gather`.
+ *
+ * Note that this is different than [[SparseOutput]] which uses multi-dimensional indices and scalar values.
+ *
+ * @param  indices    Indices along the first dimension of the corresponding dense [[Output]].
+ * @param  values     Values corresponding to the provided indices.
+ * @param  denseShape Shape of the corresponding dense [[Output]].
+ *
+ */
+class IndexedSlices(val indices: Output, val values: Output, val denseShape: Output? = null) : OutputLike() {
+  
+  override val graph: Graph = ops.getGraphFromInputs(setOf(values.op!!, indices.op!!) +
+                                                         if (denseShape == null) emptySet() else setOf(denseShape.op!!))
+  override val name: String = "${values.name}[${indices.name}]" +
+      if (denseShape != null) "(shape = ${denseShape.name})" else ""
+  override val dtype: DataType<*> = values.dtype
+  override val device: String = values.device
+  override val op: Op? = values.op
+  override val consumers: Array<Op> = values.consumers
   
   override fun toOutput(): Output {
-    TODO("not implemented")
+    if (denseShape == null)
+      throw IllegalStateException("Conversion of 'OutputIndexedSlices', '$this', " +
+                                      "which has no dense shape information available, is not possible.")
+    TODO()
   }
 }
 

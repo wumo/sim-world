@@ -56,7 +56,7 @@ interface gen_array_ops {
     }
   }
   
-  fun _concatV2(values: Array<Output>, axis: Output, name: String = "ConcatV2") = run {
+  fun _concatV2(values: List<Output>, axis: Output, name: String = "ConcatV2") = run {
     buildOpTensor("ConcatV2", name) {
       addInput(values, false)
       addInput(axis, false)
@@ -362,7 +362,7 @@ interface gen_array_ops {
     }
   }
   
-  fun _pack(values: Array<Output>, axis: Long = 0L, name: String = "Pack") = run {
+  fun _pack(values: List<Output>, axis: Long = 0L, name: String = "Pack") = run {
     buildOpTensor("Pack", name) {
       addInput(values, false)
       attr("axis", axis)
@@ -384,7 +384,7 @@ interface gen_array_ops {
     }
   }
   
-  fun _parallelConcat(values: Array<Output>, shape: Shape, name: String = "ParallelConcat") = run {
+  fun _parallelConcat(values: List<Output>, shape: Shape, name: String = "ParallelConcat") = run {
     buildOpTensor("ParallelConcat", name) {
       addInput(values, false)
       attr("shape", shape)
@@ -445,7 +445,7 @@ interface gen_array_ops {
     }
   }
   
-  fun _quantizedConcat(concat_dim: Output, values: Array<Output>, input_mins: Array<Output>, input_maxes: Array<Output>, name: String = "QuantizedConcat") = run {
+  fun _quantizedConcat(concat_dim: Output, values: List<Output>, input_mins: List<Output>, input_maxes: List<Output>, name: String = "QuantizedConcat") = run {
     buildOpTensors("QuantizedConcat", name) {
       addInput(concat_dim, false)
       addInput(values, false)
@@ -543,7 +543,7 @@ interface gen_array_ops {
     }
   }
   
-  fun _shapeN(input: Array<Output>, out_type: DataType<*> = INT32, name: String = "ShapeN") = run {
+  fun _shapeN(input: List<Output>, out_type: DataType<*> = INT32, name: String = "ShapeN") = run {
     buildOpTensors("ShapeN", name) {
       addInput(input, false)
       attr("out_type", out_type)

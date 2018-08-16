@@ -89,7 +89,7 @@ internal class VariableScope(
     val fullName = if (this.name != null && this.name != "") "${this.name}/$name" else name
     // Variable names only depend on the variable scope and not the name scope,
     // so we reset it below for the time of variable creation.
-    return tf.name_scope("") {
+    return tf.nameScope("") {
       store.getVariable(fullName, shape, dataType, initializer, regularizer, trainable, reuse, collections, cachingDevice)
     }
   }
@@ -157,7 +157,7 @@ internal class VariableScope(
           else maybeWrapCustomVariableGetter(underlyingGetter, oldVariableScope.underlyingGetter)
       )
       variableScopeStore.scope = newVariableScope
-      val result = if (isPure) block() else tf.name_scope(name) { block() }
+      val result = if (isPure) block() else tf.nameScope(name) { block() }
       variableScopeStore.closeVariableSubScopes(newName)
       variableScopeStore.scope = oldVariableScope
       return result

@@ -27,7 +27,7 @@ interface gen_control_flow_ops {
     }
   }
   
-  fun _merge(inputs: Array<Output>, name: String = "Merge") = run {
+  fun _merge(inputs: List<Output>, name: String = "Merge") = run {
     buildOpTensors("Merge", name) {
       addInput(inputs, false)
     }
@@ -45,7 +45,7 @@ interface gen_control_flow_ops {
     }
   }
   
-  fun _refSelect(index: Output, inputs: Array<Output>, name: String = "RefSelect") = run {
+  fun _refSelect(index: Output, inputs: List<Output>, name: String = "RefSelect") = run {
     buildOpTensor("RefSelect", name) {
       addInput(index, false)
       addInput(inputs, true)
@@ -96,7 +96,7 @@ interface gen_control_flow_ops {
     }
   }
   
-  fun _refMerge(inputs: Array<Output>, name: String = "RefMerge") = run {
+  fun _refMerge(inputs: List<Output>, name: String = "RefMerge") = run {
     buildOpTensors("RefMerge", name) {
       addInput(inputs, true)
     }

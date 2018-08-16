@@ -78,10 +78,10 @@ package wumo.sim.tensorflow.training
 //    val first_var = var_list.minBy { it.name }!!
 //    create_non_slot_variable(initial_value = beta1,
 //                             name = "beta1_power",
-//                             colocate_with = first_var)
+//                             colocateWith = first_var)
 //    create_non_slot_variable(initial_value = beta2,
 //                             name = "beta2_power",
-//                             colocate_with = first_var)
+//                             colocateWith = first_var)
 //    // Create slots for the first and second moments.
 //    for (v in var_list) {
 //      zero_slot(v, "m", name)
@@ -111,9 +111,9 @@ package wumo.sim.tensorflow.training
 //  }
 //
 //  override fun finish(update_ops: MutableList<Op>, name: String): Op {
-//    tf.control_dependencies(update_ops) {
+//    tf.controlDependencies(update_ops) {
 //      val (beta1_power, beta2_power) = get_beta_accumulators()
-//      tf.colocate_with(beta1_power) {
+//      tf.colocateWith(beta1_power) {
 //        val update_beta1 = beta1_power.assign(beta1_power * beta1_t, use_locking = use_locking).op
 //        val update_beta2 = beta2_power.assign(beta2_power * beta2_t, use_locking = use_locking).op
 //        update_ops += update_beta1!!

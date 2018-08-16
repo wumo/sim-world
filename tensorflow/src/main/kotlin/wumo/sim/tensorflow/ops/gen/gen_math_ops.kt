@@ -16,7 +16,7 @@ interface gen_math_ops {
     }
   }
   
-  fun _accumulateNV2(inputs: Array<Output>, shape: Shape, name: String = "AccumulateNV2") = run {
+  fun _accumulateNV2(inputs: List<Output>, shape: Shape, name: String = "AccumulateNV2") = run {
     buildOpTensor("AccumulateNV2", name) {
       addInput(inputs, false)
       attr("shape", shape)
@@ -42,7 +42,7 @@ interface gen_math_ops {
     }
   }
   
-  fun _addN(inputs: Array<Output>, name: String = "AddN") = run {
+  fun _addN(inputs: List<Output>, name: String = "AddN") = run {
     buildOpTensor("AddN", name) {
       addInput(inputs, false)
     }

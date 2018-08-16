@@ -57,7 +57,7 @@ interface gen_string_ops {
     }
   }
   
-  fun _stringJoin(inputs: Array<Output>, separator: String = "", name: String = "StringJoin") = run {
+  fun _stringJoin(inputs: List<Output>, separator: String = "", name: String = "StringJoin") = run {
     buildOpTensor("StringJoin", name) {
       addInput(inputs, false)
       attr("separator", separator)

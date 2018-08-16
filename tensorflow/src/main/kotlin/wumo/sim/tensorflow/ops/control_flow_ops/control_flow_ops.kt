@@ -1,8 +1,8 @@
 package wumo.sim.tensorflow.ops.control_flow_ops
 
 import wumo.sim.tensorflow.core.InvalidArgumentException
-import wumo.sim.tensorflow.ops.Op
-import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.core.InvalidDataTypeException
+import wumo.sim.tensorflow.ops.*
 import wumo.sim.tensorflow.ops.variables.Variable
 import wumo.sim.tensorflow.tf
 import wumo.sim.util.a
@@ -12,7 +12,7 @@ import kotlin.collections.component2
 object control_flow_ops {
   /** Returns `true` if the provided op is within a cond statement. */
   val Op.isInCond: Boolean
-    get() = controlFlowContext?.condContext() != null
+    get() = controlFlowContext?.condContext != null
   
   /** Returns `true` if the provided op is within a while loop statement. */
   val Op.isInWhileLoop: Boolean
@@ -124,7 +124,7 @@ object control_flow_ops {
    * @see[ControlFlowContext.condContext]
    */
   internal fun getContainingCondContext(context: ControlFlowContext?) =
-      context?.condContext()
+      context?.condContext
   
   /** Returns `true` if `maybeContainingContext` is or contains `context`. */
   internal fun isContainingContext(context: ControlFlowContext?,
@@ -170,18 +170,18 @@ object control_flow_ops {
           isContainingContext(whileContext, inputWhileContext) -> null
           // `inputOp` is in a while loop which contains `op`'s while loop (or not in a while loop at all).
           whileContext.gradState != null &&
-              isContainingContext(whileContext.gradState.forwardContext,
+              isContainingContext(whileContext.gradState?.forwardContext,
                                   inputWhileContext) -> null
           // `op` is in a gradient context and `inputOp` is in the associated forward pass context or an ancestor
           // thereof. This case is needed to build while loop gradients. Note that we theoretically also need this
           // case for custom gradient functions that close over tensors from ancestor contexts, but this has not been
           // verified yet.
           whileContext.gradState != null &&
-              whileContext.gradState.forwardContext === inputWhileContext?.outerContext -> null
+              whileContext.gradState?.forwardContext === inputWhileContext?.outerContext -> null
           // `op` is in a gradient context and `inputOp` is in a child of the associated forward pass context. This
           // case is needed for the gradients of while loops with conditionals.
           inputWhileContext?.gradState != null &&
-              inputWhileContext.gradState.forwardContext === whileContext -> null
+              inputWhileContext.gradState?.forwardContext === whileContext -> null
           // `inputOp` is in the gradient context of `op`'s context. This case is needed when the gradient of a while
           // loop gradient is requested (this will eventually fail unless there is a `stopGradient` op or similar).
           inputWhileContext?.gradState != null &&
@@ -198,7 +198,7 @@ object control_flow_ops {
   }
   
   private fun groupControlDeps(deps: List<Op>, name: String = "noOp") = run {
-    tf.control_dependencies(deps) {
+    tf.controlDependencies(deps) {
       tf._noOp(name)
     }
   }
@@ -206,64 +206,117 @@ object control_flow_ops {
   /**
    * @see [_merge]
    */
-  private fun ref_merge(inputs: Array<Output>, name: String): Array<Output> =
-      tf.colocate_with_tensors(inputs) {
+  private fun ref_merge(inputs: List<Output>, name: String): Array<Output> =
+      tf.colocateWith(inputs) {
         tf._refMerge(inputs, name)
       }
   
+  /** Creates an op that forwards [input] to the output port determined by [predicate], while making sure the new op is
+   * colocated with [input].
+   *
+   * If [predicate] is `true`, then [input] is forwarded to `outputTrue`. Otherwise, it goes to `outputFalse`.
+   *
+   * @param  input     Tensor to be forwarded to the appropriate output.
+   * @param  predicate Scalar boolean tensor that specifies which output port will receive [input].
+   * @param  name      Name for the created op.
+   * @return Tuple containing `outputFalse` and `outputTrue`, in that order.
+   */
+  fun _switchRefOrTensor(input: Output,
+                         predicate: Output,
+                         name: String = "Switch"): Array<Output> {
+    // The device colocation below addresses the following scenario:
+    //
+    // Assume you execute Optimizer.applyGradients() in a branch of a cond() and:
+    //   1. The update op is created inside a `Op.colocateWith(Set(var.op)) { }` block.
+    //   2. Some tensor `data` is captured and a switch is created in a `Op.colocateWith(Set(data.op)) { }` block.
+    //
+    // Op.colocateWith(Set(var.op)) {
+    //   Op.colocateWith(Set(data.op)) {
+    //     op = ...
+    //   }
+    // }
+    //
+    // `var` and `data` may be pinned to different devices and so we want the ops created within the
+    // `Op.colocateWith(Set(data.op)) { }` block to ignore the existing stack.
+    return tf.colocateWith(input, ignoreExisting = true) {
+      if (input.dtype.isRefType)
+        tf._refSwitch(input, predicate, name)
+      else
+        switch(input, predicate, name)
+    }
+  }
+  
+  fun <T : OutputLike> switch(input: T, predicate: Output, name: String = "Switch"): Array<Output> {
+    return when (input) {
+      is Output -> tf._switch(input, predicate, name)
+      is IndexedSlices -> {
+        TODO()
+      }
+      is SparseOutput -> {
+        TODO()
+      }
+      else -> {
+        TODO()
+      }
+    }
+  }
+  
+  /**
+   * Returns the value of an available element of `inputs`.
+   *
+   * This op tests each of the tensors in `inputs` in turn to determine if any of
+   * them is available. If it finds an available tensor, it returns it and its
+   * index in `inputs`.
+   
+   * It is an error if more than one tensor in `inputs` is available. If no tensor
+   * in `inputs` is available, the returned tensor and index are not set.
+   *
+   * This op handles both `Output`s and `IndexedSlices`. If inputs has a mix of
+   * `Output`s and `IndexedSlices`, all inputs are converted to IndexedSlices
+   * before merging.
+   * @param inputs The input tensors, at most one of which is available.
+   * @param name A name for this operation (optional).
+   * @return A tuple containing the chosen input tensor and its index in `inputs`.
+   */
+  fun <T : OutputLike> merge(inputs: List<T>, name: String = "Merge"): Array<Output> {
+    return when {
+      inputs.all { it is Output } -> {
+        inputs as List<Output>
+        if (inputs.all { it.dtype.isRefType })
+          ref_merge(inputs, name)
+        else
+          tf._merge(inputs, name)
+      }
+      inputs.all { it is SparseOutput } -> TODO()
+      else -> TODO()
+    }
+  }
+  
   interface API {
-    /**
-     * @see [switch]
+    
+    /** Creates an op that produces the content of `input` only after all ops in `dependencies` have finished executing.
+     *
+     * In some cases, a user may want the output of an op to be consumed externally only after some other dependencies
+     * have run first. This function ensures returns `input`, but only after all ops in `dependencies` have run. Note
+     * that this means that there is no guarantee that `input` will be evaluated after any `dependencies` have run.
+     *
+     * @group ControlFlowOps
+     * @param  dependencies Set of ops to be executed before `input`.
+     * @param  input        Op output to be computed after all ops in `dependencies` have finished executing.
+     * @param  name         Name for the created op (used mainly as a name scope).
+     * @return Created op output.
+     * @see "tensorflow.python.ops.control_flow_ops.with_dependencies"
      */
-    fun _switchRefOrTensor(data: Output,
-                           pred: Output,
-                           name: String = "Switch"): Array<Output> =
-        tf.colocate_with(data, ignore_existing = true) {
-          if (data.dtype.isRefType)
-            tf._refSwitch(data, pred, name)
-          else
-            tf._switch(data, pred, name)
-        }
-    
-    /**
-    Produces the content of `output_tensor` only after `dependencies`.
-    
-    In some cases, a user may want the output of an operation to be
-    consumed externally only after some other dependencies have run
-    first. This function ensures returns `output_tensor`, but only after all
-    operations in `dependencies` have run. Note that this means that there is
-    no guarantee that `output_tensor` will be evaluated after any `dependencies`
-    have run.
-    
-    See also @{tf.tuple$tuple} and @{tf.group$group}.
-    
-    Args:
-     * @param dependencies: Iterable of operations to run before this op finishes.
-     * @param output_tensor: A `Output` or `IndexedSlices` that will be returned.
-     * @param name: (Optional) A name for this operation.
-    
-    Returns:
-    Same as `output_tensor`.
-     */
-    fun with_dependencies(vararg dependencies: Op,
-                          output_tensor: Output,
-                          name: String = "control_dependency"): Output =
-        tf.name_scope(name) {
-          tf.colocate_with(output_tensor) {
-            tf.control_dependencies(*dependencies) {
-              tf._identity(output_tensor, name = tf.currentNameScope)
-              //TODO indexedSlices
+    fun withDependencies(dependencies: Set<Op>,
+                         input: Output,
+                         name: String = "control_dependency"): Output =
+        tf.nameScope(name, dependencies + input.op!!) {
+          tf.colocateWith(input) {
+            tf.controlDependencies(dependencies) {
+              tf.identity(input, name = tf.currentNameScope)
             }
           }
         }
-    
-    fun identity(data: Output, name: String): Output {
-      return if (data.dtype.isRefType)
-        tf._refIdentity(data, name)
-      else
-        tf._identity(data, name)
-      //TODO indexedSlice
-    }
     
     fun group(inputs: List<Any>, name: String = "group_deps"): Op {
       val ops_on_device = mutableMapOf<String, MutableList<Op>>()
@@ -283,14 +336,14 @@ object control_flow_ops {
       }
       if (ops_on_device.size == 1) {
         val (dev, deps) = ops_on_device.entries.first()
-        return tf.on_device(dev) {
+        return tf.device(dev) {
           groupControlDeps(deps, name)
         }
       }
       val all_deps = mutableListOf<Op>()
-      return tf.name_scope(name) {
+      return tf.nameScope(name) {
         for ((dev, deps) in ops_on_device) {
-          tf.on_device(dev) {
+          tf.device(dev) {
             all_deps += groupControlDeps(deps)
           }
         }
@@ -311,54 +364,67 @@ object control_flow_ops {
      * @param false_fn he callable to be performed if predicate is false.
      * @return  Tensors returned by the call to either `true_fn` or `false_fn`. If the
      * callables return a singleton list, the element is extracted from the list.
+     *
+     * @see "tensorflow.python.ops.control_flow_ops.cond"
      */
-    fun cond(pred: Output,
-             true_fn: () -> Any,
-             false_fn: () -> Any,
-             name: String = "cond"): Output =
-        tf.name_scope(name) {
-          val (p_2, p_1) = tf._switch(pred, pred)
-          val pivot_1 = tf._identity(p_1, name = "switch_t")
-          val pivot_2 = tf._identity(p_2, name = "switch_f")
-          val pred = tf._identity(pred, name = "pred_id")
+    fun <T> cond(pred: Output,
+                 true_fn: () -> T,
+                 false_fn: () -> T,
+                 name: String = "cond"): Output =
+        tf.nameScope(name) {
+          val (p_false, p_true) = switch(pred, pred)
+          val pivot_true = tf._identity(p_true, name = "switch_t")
+          val pivot_false = tf._identity(p_false, name = "switch_f")
+          val pred_id = tf._identity(pred, name = "pred_id")
           //Disable the fetching of tensors that are only on one branch of cond.
-          for (tensor in a(p_1, p_2, pivot_1, pivot_2, pred))
-            tf.currentGraph.prevent_fetching(tensor.op!!)
+          for (tensor in a(p_true, p_false, pivot_true, pivot_false, pred_id))
+            tensor.op!!.graph.preventFetching(tensor.op)
+          
           //Build the graph for the true branch in a new context.
-          val res_t = tf.condContext(pred, pivot_1, branch = 1) {
-            it.buildCondBranch(true_fn)
+          val contextTrue = CondContext(pred_id, pivot_true, branch = 1)
+          contextTrue.enter()
+          val (originalResultTrue, resultTrue) = contextTrue.buildCondBranch(true_fn)
+          contextTrue.exitResult(resultTrue)
+          contextTrue.exit()
+          
+          // Build the graph for the false branch in a new context.
+          val contextFalse = CondContext(pred_id, pivot_false, branch = 0)
+          contextFalse.enter()
+          val (_, resultFalse) = contextFalse.buildCondBranch(false_fn)
+          contextFalse.exitResult(resultFalse)
+          contextFalse.exit()
+          
+          // Check that the return values of the two branches have matching data types.
+          resultTrue.zip(resultFalse).forEach {
+            if (it.first.dtype != it.second.dtype)
+              throw InvalidDataTypeException(
+                  "The outputs of `trueFn` (dataType = ${it.first.dtype}) and " +
+                      "`falseFn` (dataType = ${it.second.dtype}) must have the same data type.")
           }
-          val res_f = tf.condContext(pred, pivot_2, branch = 0) {
-            it.buildCondBranch(false_fn)
+          
+          val merges = resultFalse.zip(resultTrue).map { merge(listOf(it.first, it.second))[0] }
+          
+          // Add to collections.
+          tf.currentGraph.addToCollection(contextTrue, CondContext.Companion.COND_CONTEXT)
+          tf.currentGraph.addToCollection(contextFalse, CondContext.Companion.COND_CONTEXT)
+          
+          unfl
+          when (originalResultTrue) {
+            is Op -> merges.first().op
+            is Output ->
           }
+          
+          TODO()
+//          val res_t = tf.condContext(pred_id, pivot_true, branch = 1) {
+//            it.buildCondBranch(true_fn)
+//          }
+//          val res_f = tf.condContext(pred_id, pivot_false, branch = 0) {
+//            it.buildCondBranch(false_fn)
+//          }
 //    val res_t = buildCondBranch(predicate, pivot_1, 1, true_fn)
 //     = buildCondBranch(predicate, pivot_2, 0, false_fn)
-          merge(res_t, res_f)[0]
+//          merge(res_t, res_f)[0]
         }
     
-    /**
-     * Returns the value of an available element of `inputs`.
-     *
-     * This op tests each of the tensors in `inputs` in turn to determine if any of
-     * them is available. If it finds an available tensor, it returns it and its
-     * index in `inputs`.
-     
-     * It is an error if more than one tensor in `inputs` is available. If no tensor
-     * in `inputs` is available, the returned tensor and index are not set.
-     *
-     * This op handles both `Output`s and `IndexedSlices`. If inputs has a mix of
-     * `Output`s and `IndexedSlices`, all inputs are converted to IndexedSlices
-     * before merging.
-     * @param inputs The input tensors, at most one of which is available.
-     * @param name A name for this operation (optional).
-     * @return A tuple containing the chosen input tensor and its index in `inputs`.
-     */
-    fun merge(vararg inputs: Output, name: String = "Merge"): Array<Output> {
-      return if (inputs.all { it.dtype.isRefType })
-        ref_merge(inputs as Array<Output>, name)
-      else
-        tf._merge(inputs as Array<Output>, name)
-      //TODO handle sparseTensor indexedSlices
-    }
   }
 }

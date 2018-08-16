@@ -42,7 +42,7 @@ interface gen_logging_ops {
     }
   }
   
-  fun _mergeSummary(inputs: Array<Output>, name: String = "MergeSummary") = run {
+  fun _mergeSummary(inputs: List<Output>, name: String = "MergeSummary") = run {
     buildOpTensor("MergeSummary", name) {
       addInput(inputs, false)
     }

@@ -43,7 +43,7 @@ interface gen_parsing_ops {
     }
   }
   
-  fun _parseExample(serialized: Output, names: Output, sparse_keys: Array<Output>, dense_keys: Array<Output>, dense_defaults: Output, sparse_types: Array<Long>, dense_shapes: Array<Shape>, name: String = "ParseExample") = run {
+  fun _parseExample(serialized: Output, names: Output, sparse_keys: List<Output>, dense_keys: List<Output>, dense_defaults: Output, sparse_types: Array<Long>, dense_shapes: Array<Shape>, name: String = "ParseExample") = run {
     buildOpTensors("ParseExample", name) {
       addInput(serialized, false)
       addInput(names, false)
@@ -67,7 +67,7 @@ interface gen_parsing_ops {
     }
   }
   
-  fun _parseSingleSequenceExample(serialized: Output, feature_list_dense_missing_assumed_empty: Output, context_sparse_keys: Array<Output>, context_dense_keys: Array<Output>, feature_list_sparse_keys: Array<Output>, feature_list_dense_keys: Array<Output>, context_dense_defaults: Output, debug_name: Output, context_sparse_types: Array<Long> = arrayOf(), feature_list_dense_types: Array<Long> = arrayOf(), context_dense_shapes: Array<Shape> = arrayOf(), feature_list_sparse_types: Array<Long> = arrayOf(), feature_list_dense_shapes: Array<Shape> = arrayOf(), name: String = "ParseSingleSequenceExample") = run {
+  fun _parseSingleSequenceExample(serialized: Output, feature_list_dense_missing_assumed_empty: Output, context_sparse_keys: List<Output>, context_dense_keys: List<Output>, feature_list_sparse_keys: List<Output>, feature_list_dense_keys: List<Output>, context_dense_defaults: Output, debug_name: Output, context_sparse_types: Array<Long> = arrayOf(), feature_list_dense_types: Array<Long> = arrayOf(), context_dense_shapes: Array<Shape> = arrayOf(), feature_list_sparse_types: Array<Long> = arrayOf(), feature_list_dense_shapes: Array<Shape> = arrayOf(), name: String = "ParseSingleSequenceExample") = run {
     buildOpTensors("ParseSingleSequenceExample", name) {
       addInput(serialized, false)
       addInput(feature_list_dense_missing_assumed_empty, false)

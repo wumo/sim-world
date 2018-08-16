@@ -99,8 +99,8 @@ internal class VariableStore {
       variables[name] = variable
       // Run the regularizer if specified and save the resulting loss.
       if (regularizer != null) {
-        tf.colocate_with(variable.op) {
-          val loss = tf.name_scope("$name/Regularizer") {
+        tf.colocateWith(variable.op) {
+          val loss = tf.nameScope("$name/Regularizer") {
             regularizer(variable.value)
           }
           if (loss != null)

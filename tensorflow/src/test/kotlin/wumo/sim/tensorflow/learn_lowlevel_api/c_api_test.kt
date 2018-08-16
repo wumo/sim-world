@@ -30,7 +30,7 @@ class c_api_test {
   @Test
   fun `add control input`() {
     val a = tf.const(1f, name = "a")
-    tf.control_dependencies(a) {
+    tf.controlDependencies(a) {
       val b = tf.const(2f, name = "b")
     }
     
@@ -45,7 +45,7 @@ class c_api_test {
   @Test
   fun `add control input2`() {
     val a = tf.const(1f, name = "a")
-    tf.control_dependencies(a) {
+    tf.controlDependencies(a) {
       val b = tf.const(2f, name = "b")
     }
     

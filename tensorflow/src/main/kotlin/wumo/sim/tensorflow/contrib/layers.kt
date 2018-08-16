@@ -18,7 +18,7 @@ package wumo.sim.tensorflow.contrib
 //                        num_class: Int,
 //                        on_value: Float = 1f, off_value: Float = 0f,
 //                        name: String = "OneHotEncoding"): Output {
-//  name_scope(name) {
+//  nameScope(name) {
 //    val labels = if (labels.dtype == DT_INT32) cast(labels, DT_INT64) else labels
 //    return oneHot(labels, const(num_class, name = "depth"),
 //                  const(on_value, name = "on_value"),

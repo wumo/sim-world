@@ -34,11 +34,11 @@ package wumo.sim.tensorflow.training
 //    val var_list = grads_and_vars.map { (g, v) -> v }
 //    create_slots(var_list)
 //    val update_ops = mutableListOf<Op>()
-//    ops.name_scope(name) {
+//    ops.nameScope(name) {
 //      prepare()
 //      for ((grad, v) in grads_and_vars)
-//        ops.name_scope("update_$name") {
-//          ops.colocate_with(v.op!!) {
+//        ops.nameScope("update_$name") {
+//          ops.colocateWith(v.op!!) {
 //            update_ops += apply_dense(grad, v)
 //          }
 //        }
@@ -93,9 +93,9 @@ package wumo.sim.tensorflow.training
 //  }
 //
 //  /**Add an extra variable, not associated with a slot.*/
-//  open fun create_non_slot_variable(initial_value: Any, name: String, colocate_with: Variable) =
+//  open fun create_non_slot_variable(initial_value: Any, name: String, colocateWith: Variable) =
 //      non_slot_dict.compute(name) { _, v ->
-//        v ?: tf.colocate_with(colocate_with) {
+//        v ?: tf.colocateWith(colocateWith) {
 //          tf.variable(initial_value, name = name, trainable = false)
 //        }
 //      }

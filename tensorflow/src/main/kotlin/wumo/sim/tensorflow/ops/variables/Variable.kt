@@ -134,14 +134,14 @@ class Variable(
         name: String = "Variable"
     ): Variable =
         tf.init_scope {
-          tf.name_scope(name) {
+          tf.nameScope(name) {
             val inferredDataType = dataType ?: initializer.dtype ?: FLOAT
             val inferredShape = shape ?: initializer.shape ?: throw ShapeMismatchException(
                 "No shape was provided for the new variable and it could not be inferred from the provided initializer.")
             val scopeName = tf.currentNameScope
             val trueName = ops.convertNameScopeToName(scopeName)
 //          //Use attr_scope and device(None) to simulate the behavior of
-//          //colocate_with when the _variable we want to colocate with doesn't
+//          //colocateWith when the _variable we want to colocate with doesn't
 //          //yet exist.
 //          val attr = tensorflow.AttrValue()
 //          attr.mutable_list().apply {
@@ -149,19 +149,19 @@ class Variable(
 //          }
             val variableHandle = tf._variableV2(inferredShape, inferredDataType.base_dtype,
                                                 shared_name = trueName, name = scopeName)
-            val initialValue = tf.name_scope("Initializer") {
-              tf.colocate_with(variableHandle.op!!) {
+            val initialValue = tf.nameScope("Initializer") {
+              tf.colocateWith(variableHandle.op!!) {
                 initializer(inferredShape, inferredDataType)
               }
             }
             val initializeOp = tf.assign(variableHandle,
                                          tryGuardAgainstUninitializedDependencies(name, initialValue))
             val snapshot = if (cachingDevice != null)
-              tf.on_device(cachingDevice) {
+              tf.device(cachingDevice) {
                 tf._identity(variableHandle, name = "read")
               }
             else
-              tf.colocate_with(variableHandle.op!!) {
+              tf.colocateWith(variableHandle.op!!) {
                 tf._identity(variableHandle, name = "read")
               }
             val createdVariable = Variable(inferredDataType, variableHandle, initializeOp.op!!, initialValue, snapshot)

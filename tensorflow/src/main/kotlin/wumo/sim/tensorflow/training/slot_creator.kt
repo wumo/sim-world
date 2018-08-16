@@ -42,7 +42,7 @@ package wumo.sim.tensorflow.training
 //                                 colocate_with_primary: Boolean): Variable {
 //  val validate_shape = shape.is_fully_defined
 //  return if (colocate_with_primary)
-//    tf.colocate_with(primary) {
+//    tf.colocateWith(primary) {
 //      create_slot_var(primary, initializer, name, validate_shape, shape, dtype)
 //    }
 //  else

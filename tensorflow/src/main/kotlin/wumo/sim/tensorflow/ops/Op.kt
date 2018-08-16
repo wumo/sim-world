@@ -4,18 +4,25 @@ import org.bytedeco.javacpp.PointerPointer
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
 import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.tensorflow.core.Graph
-import wumo.sim.tensorflow.ops.control_flow_ops.CondContext
 import wumo.sim.tensorflow.ops.control_flow_ops.ControlFlowContext
 import wumo.sim.tensorflow.ops.ops.COLOCATION_OPS_ATTRIBUTE_NAME
 import wumo.sim.tensorflow.ops.ops.COLOCATION_OPS_ATTRIBUTE_PREFIX
 import wumo.sim.tensorflow.types.DataType
+import kotlin.collections.Iterable
+import kotlin.collections.List
+import kotlin.collections.Map
+import kotlin.collections.Set
+import kotlin.collections.emptySet
+import kotlin.collections.forEach
+import kotlin.collections.mutableSetOf
+import kotlin.collections.plusAssign
 import java.util.Collections.emptySet as emptyMutableSet
 
 class OpSpecification(val name: String, val opType: String, val device: String)
 typealias DeviceFunction = (OpSpecification) -> String
 
 class Op(val graph: Graph, val c_op: TF_Operation) {
-//  init {
+  //  init {
 //    graph.cache(c_op)
 //  }
   val name: String by lazy { TF_OperationName(c_op).string }
@@ -25,9 +32,6 @@ class Op(val graph: Graph, val c_op: TF_Operation) {
   val attrs: AttrSlice by lazy { node.attrs() }
   
   var controlFlowContext: ControlFlowContext? = null
-  fun set_control_flow_context(condContext: CondContext) {
-    this.controlFlowContext = condContext
-  }
   
   /**
    * Update the input to this findOp at the given index.
@@ -48,10 +52,24 @@ class Op(val graph: Graph, val c_op: TF_Operation) {
   }
   
   /**
+   * Add a list of new control inputs to this operation.
+   */
+  internal fun addControlInputs(ops: Iterable<Op>) {
+    ops.forEach { AddControlInput(graph.c_graph, c_op, it.c_op) }
+    controlInputs = _loadControlInputs()
+  }
+  
+  /**
    * Add a new control input to this findOp.
    */
   internal fun addControlInput(op: Op) {
     AddControlInput(graph.c_graph, c_op, op.c_op)
+    controlInputs = _loadControlInputs()
+  }
+  
+  /** Clears the control inputs of `op` (i.e., removes all of them). */
+  internal fun removeAllControlInputs() {
+    RemoveAllControlInputs(graph.c_graph, c_op)
     controlInputs = _loadControlInputs()
   }
   
@@ -97,25 +115,27 @@ class Op(val graph: Graph, val c_op: TF_Operation) {
     numControlInputs = TF_OperationNumControlInputs(c_op)
     val control_ops = PointerPointer<TF_Operation>(numControlInputs.toLong())
     TF_OperationGetControlInputs(c_op, control_ops, numControlInputs)
-    List(numControlInputs) {
-      graph.cache(control_ops.get(TF_Operation::class.java, it.toLong()))
+    val controlOpsSet = mutableSetOf<Op>()
+    repeat(numControlInputs) {
+      controlOpsSet += graph.cache(control_ops.get(TF_Operation::class.java, it.toLong()))
     }
+    controlOpsSet
   }
   
   var colocationOps = _loadColocationOps()
     private set
   
   /** Colocation ops for this op (i.e., ops guaranteed to be placed on the same device). */
-  fun _loadColocationOps() = run {
+  fun _loadColocationOps(): Set<Op> {
     val class_attr = attrStringList(COLOCATION_OPS_ATTRIBUTE_NAME)
-    if (class_attr != null) {
-      val colocationOps = hashSetOf<Op>()
+    return if (class_attr != null) {
+      val colocationOps = mutableSetOf<Op>()
       for (class_name in class_attr)
         if (class_name.startsWith(COLOCATION_OPS_ATTRIBUTE_PREFIX))
           colocationOps += graph.findOp(class_name.substring(COLOCATION_OPS_ATTRIBUTE_PREFIX.length))!!
-      colocationOps.toTypedArray()
+      colocationOps
     } else
-      emptyArray()
+      emptySet()
   }
   
   fun set_attr(key: String, value: AttrValue) {
@@ -197,7 +217,6 @@ class Op(val graph: Graph, val c_op: TF_Operation) {
   
   fun toNodeDef() =
       node.def()!!
-  
 }
 
 internal inline fun StringAttrValueMap.forEach(block: (String, AttrValue) -> Unit) {

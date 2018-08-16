@@ -205,7 +205,7 @@ class OpGenerator(val opDef: OpDef, val sb: StringBuilder) {
     
     val typeToKotlinType = mapOf(
         "func" to "NameAttrList",
-        "list(func)" to "Array<NameAttrList>",
+        "list(func)" to "List<NameAttrList>",
         "string" to "String",
         "int" to "Long",
         "float" to "Float",
@@ -221,7 +221,7 @@ class OpGenerator(val opDef: OpDef, val sb: StringBuilder) {
         "list(type)" to "Array<Long>",
         "list(shape)" to "Array<Shape>",
         "list(tensor)" to "Array<NDArray<*>>",
-        "list(Output)" to "Array<Output>"
+        "list(Output)" to "List<Output>"
     )
     
     /**Converts the provided TensorFlow attribute

@@ -112,7 +112,7 @@ interface gen_data_flow_ops {
     }
   }
   
-  fun _dynamicStitch(indices: Array<Output>, data: Array<Output>, name: String = "DynamicStitch") = run {
+  fun _dynamicStitch(indices: List<Output>, data: List<Output>, name: String = "DynamicStitch") = run {
     buildOpTensor("DynamicStitch", name) {
       addInput(indices, false)
       addInput(data, false)
@@ -314,7 +314,7 @@ interface gen_data_flow_ops {
     }
   }
   
-  fun _parallelDynamicStitch(indices: Array<Output>, data: Array<Output>, name: String = "ParallelDynamicStitch") = run {
+  fun _parallelDynamicStitch(indices: List<Output>, data: List<Output>, name: String = "ParallelDynamicStitch") = run {
     buildOpTensor("ParallelDynamicStitch", name) {
       addInput(indices, false)
       addInput(data, false)

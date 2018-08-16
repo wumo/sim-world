@@ -27,7 +27,7 @@ object state_ops {
     fun assign(ref: Output, value: Output, name: String = "Assign") =
     //TODO NOTE(mrry): We add an explicit colocation constraint between
     //the newly created op and any of its reference-typed inputs.
-        tf.colocate_with(ref) {
+        tf.colocateWith(ref) {
           tf._assign(ref, value, name = name)
         }
     
@@ -105,10 +105,10 @@ private fun _variable(initializer: (String) -> Output, name: String, trainable: 
 
 //private fun _variable(initializer: (String) -> Output, name: String, trainable: Boolean = true): Variable {
 //  TODO()
-////  ops.name_scope(name) {
+////  ops.nameScope(name) {
 ////    ops.init_scope {
 ////      //Use attr_scope and device(None) to simulate the behavior of
-////      //colocate_with when the _variable we want to colocate with doesn't
+////      //colocateWith when the _variable we want to colocate with doesn't
 ////      //yet exist.
 ////      val attr = tensorflow.AttrValue()
 ////      attr.mutable_list().apply {
@@ -125,7 +125,7 @@ private fun _variable(initializer: (String) -> Output, name: String, trainable: 
 ////      //TODO: Change this class to not take caching_device, b
 ////      //ut to take the op to colocate the snapshot with, so we can use
 ////      //colocation rather than devices.
-////      colocate_with(t.op!!) {
+////      colocateWith(t.op!!) {
 ////        t.snapshot = _identity(t, name = "read")
 ////      }
 ////      if (trainable) trainables += t
@@ -147,7 +147,7 @@ private fun _variable(initializer: (String) -> Output, name: String, trainable: 
 //fun assign(ref: Output, value: Output, name: String = "Assign") =
 ////TODO NOTE(mrry): We add an explicit colocation constraint between
 ////the newly created op and any of its reference-typed inputs.
-//    ops.colocate_with(ref) {
+//    ops.colocateWith(ref) {
 //      tf._assign(ref, value, name = name)
 //    }
 //

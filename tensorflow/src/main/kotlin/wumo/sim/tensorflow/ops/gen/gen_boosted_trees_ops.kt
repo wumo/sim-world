@@ -9,7 +9,7 @@ import wumo.sim.tensorflow.buildOpTensors
 import wumo.sim.tensorflow.ops.Output
 
 interface gen_boosted_trees_ops {
-  fun _boostedTreesCalculateBestGainsPerFeature(node_id_range: Output, stats_summary_list: Array<Output>, l1: Output, l2: Output, tree_complexity: Output, min_node_weight: Output, max_splits: Long, name: String = "BoostedTreesCalculateBestGainsPerFeature") = run {
+  fun _boostedTreesCalculateBestGainsPerFeature(node_id_range: Output, stats_summary_list: List<Output>, l1: Output, l2: Output, tree_complexity: Output, min_node_weight: Output, max_splits: Long, name: String = "BoostedTreesCalculateBestGainsPerFeature") = run {
     buildOpTensors("BoostedTreesCalculateBestGainsPerFeature", name) {
       addInput(node_id_range, false)
       addInput(stats_summary_list, false)
@@ -54,7 +54,7 @@ interface gen_boosted_trees_ops {
     }
   }
   
-  fun _boostedTreesExampleDebugOutputs(tree_ensemble_handle: Output, bucketized_features: Array<Output>, logits_dimension: Long, name: String = "BoostedTreesExampleDebugOutputs") = run {
+  fun _boostedTreesExampleDebugOutputs(tree_ensemble_handle: Output, bucketized_features: List<Output>, logits_dimension: Long, name: String = "BoostedTreesExampleDebugOutputs") = run {
     buildOpTensor("BoostedTreesExampleDebugOutputs", name) {
       addInput(tree_ensemble_handle, false)
       addInput(bucketized_features, false)
@@ -68,7 +68,7 @@ interface gen_boosted_trees_ops {
     }
   }
   
-  fun _boostedTreesMakeStatsSummary(node_ids: Output, gradients: Output, hessians: Output, bucketized_features_list: Array<Output>, max_splits: Long, num_buckets: Long, name: String = "BoostedTreesMakeStatsSummary") = run {
+  fun _boostedTreesMakeStatsSummary(node_ids: Output, gradients: Output, hessians: Output, bucketized_features_list: List<Output>, max_splits: Long, num_buckets: Long, name: String = "BoostedTreesMakeStatsSummary") = run {
     buildOpTensor("BoostedTreesMakeStatsSummary", name) {
       addInput(node_ids, false)
       addInput(gradients, false)
@@ -79,7 +79,7 @@ interface gen_boosted_trees_ops {
     }
   }
   
-  fun _boostedTreesPredict(tree_ensemble_handle: Output, bucketized_features: Array<Output>, logits_dimension: Long, name: String = "BoostedTreesPredict") = run {
+  fun _boostedTreesPredict(tree_ensemble_handle: Output, bucketized_features: List<Output>, logits_dimension: Long, name: String = "BoostedTreesPredict") = run {
     buildOpTensor("BoostedTreesPredict", name) {
       addInput(tree_ensemble_handle, false)
       addInput(bucketized_features, false)
@@ -93,7 +93,7 @@ interface gen_boosted_trees_ops {
     }
   }
   
-  fun _boostedTreesTrainingPredict(tree_ensemble_handle: Output, cached_tree_ids: Output, cached_node_ids: Output, bucketized_features: Array<Output>, logits_dimension: Long, name: String = "BoostedTreesTrainingPredict") = run {
+  fun _boostedTreesTrainingPredict(tree_ensemble_handle: Output, cached_tree_ids: Output, cached_node_ids: Output, bucketized_features: List<Output>, logits_dimension: Long, name: String = "BoostedTreesTrainingPredict") = run {
     buildOpTensors("BoostedTreesTrainingPredict", name) {
       addInput(tree_ensemble_handle, false)
       addInput(cached_tree_ids, false)
@@ -103,7 +103,7 @@ interface gen_boosted_trees_ops {
     }
   }
   
-  fun _boostedTreesUpdateEnsemble(tree_ensemble_handle: Output, feature_ids: Output, node_ids: Array<Output>, gains: Array<Output>, thresholds: Array<Output>, left_node_contribs: Array<Output>, right_node_contribs: Array<Output>, max_depth: Output, learning_rate: Output, pruning_mode: Long, name: String = "BoostedTreesUpdateEnsemble") = run {
+  fun _boostedTreesUpdateEnsemble(tree_ensemble_handle: Output, feature_ids: Output, node_ids: List<Output>, gains: List<Output>, thresholds: List<Output>, left_node_contribs: List<Output>, right_node_contribs: List<Output>, max_depth: Output, learning_rate: Output, pruning_mode: Long, name: String = "BoostedTreesUpdateEnsemble") = run {
     buildOp("BoostedTreesUpdateEnsemble", name) {
       addInput(tree_ensemble_handle, false)
       addInput(feature_ids, false)

@@ -2,6 +2,8 @@ package wumo.sim.tensorflow.ops.control_flow_ops
 
 import wumo.sim.tensorflow.ops.Op
 import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.ops.OutputLike
+import wumo.sim.tensorflow.ops.ops.graphConstructionScope
 import wumo.sim.tensorflow.tf
 import java.util.*
 
@@ -23,6 +25,10 @@ import java.util.*
  * Pushed and popped by ctxt.Enter() and ctxt.Exit()
  */
 abstract class ControlFlowContext {
+  
+  /** Name of this control flow context. */
+  abstract val name: String
+  
   /** Control flow context containing this context. */
   val outerContext = tf.currentControlFlowContext
   /**Set of values that have already been seen in this context.*/
@@ -31,25 +37,30 @@ abstract class ControlFlowContext {
   val external_values = hashMapOf<String, Output>()
   /** Contains the stack of control flow contexts that have been entered so far. */
   val contextStack = ArrayDeque<ControlFlowContext?>()
+  /** Returns the control pivot op output for this context, or null.*/
+  open val controlPivot: Op? = null
   
   /**
    * Returns the first ancestor [CondContext] containing this context.
+   * @see "tensorflow.python.ops.control_flow_util.GetContainingCondContext"
    */
-  fun condContext(): CondContext? {
-    var context: ControlFlowContext? = this
-    while (context != null) {
-      if (context is CondContext) return context
-      context = context.outerContext
+  open val condContext: CondContext?
+    get() {
+      var context: ControlFlowContext? = this
+      while (context != null) {
+        if (context is CondContext) return context
+        context = context.outerContext
+      }
+      return null
     }
-    return null
-  }
   
   /**
    * Returns the first ancestor [WhileContext] containing this context.
    
    * @param stopContext If provided, the search will end if it sees [stopContext].
+   * @see "tensorflow.python.ops.control_flow_util.GetContainingWhileContext"
    */
-  fun whileContext(stopContext: ControlFlowContext? = null): WhileContext? {
+  open fun whileContext(stopContext: ControlFlowContext? = null): WhileContext? {
     var context: ControlFlowContext? = this
     while (context != null) {
       if (context is WhileContext || context === stopContext)
@@ -59,12 +70,105 @@ abstract class ControlFlowContext {
     return null
   }
   
-  /**Returns the first ancestor XLAContext containing this context.*/
+  /**Returns the first ancestor [XLAControlFlowContext] containing this context.
+   * @see "tensorflow.python.ops.control_flow_util.GetContainingXLAContext"
+   */
   open fun xlaContext(): XLAControlFlowContext? = outerContext?.xlaContext()
   
-  abstract fun addOp(op: Op)
+  /**
+   * Adds `output` to the current context and its outer context recursively.
+   * @see "tensorflow.python.ops.control_flow_ops.CondContext#AddValue"
+   * @see "tensorflow.python.ops.control_flow_ops.WhileContext#AddValue"
+   */
+  abstract fun addValue(output: Output): Output
   
+  /** Adds [op] to the current context.
+   * @see "tensorflow.python.ops.control_flow_ops.CondContext#AddOp"
+   * @see "tensorflow.python.ops.control_flow_ops.WhileContext#AddOp"
+   */
+  open fun addOp(op: Op) = addInternal(op)
+  
+  /** Adds [op] to the current context. We move any external control dependencies of the op to the control flow pivot,
+   * to ensure they get executed. */
+  abstract fun addInternal(op: Op)
+  
+  /** Returns `true` if back-propagation is supported for this control flow context.
+   * @see "tensorflow.python.ops.control_flow_ops.ControlFlowContext#back_prop"
+   */
+  abstract val backPropagate: Boolean
+  
+  /**
+   * Gradient loop state for this context, used for back-propagation.
+   * @see "tensorflow.python.ops.control_flow_ops.ControlFlowContext#grad_state"
+   */
   abstract val gradState: GradientLoopState?
+  
+  /** Enters this control flow context.
+   * @see "tensorflow.python.ops.control_flow_ops.ControlFlowContext#Enter"
+   */
+  fun enter() {
+    contextStack.add(graphConstructionScope.value.controlFlowContext)
+    graphConstructionScope.value = graphConstructionScope.value.copy(
+        controlFlowContext = this,
+        outerContext = graphConstructionScope.value)
+  }
+  
+  /** Exits this control flow context.
+   * @see "tensorflow.python.ops.control_flow_ops.ControlFlowContext#Exit"
+   */
+  fun exit() {
+    graphConstructionScope.value = graphConstructionScope.value.copy(
+        controlFlowContext = contextStack.removeLast(),
+        outerContext = graphConstructionScope.value)
+  }
+  
+  /** Makes a sequence of tensors available in the outer context.
+   * @see "tensorflow.python.ops.control_flow_ops.ControlFlowContext#ExitResult"
+   */
+  fun exitResult(result: List<OutputLike>) {
+    outerContext?.let { c ->
+      result.forEach {
+        c.values += it.name
+      }
+    }
+  }
+  
+  /**
+   * Enters a control flow context for building a gradient colocated with `colocationOps`.
+   * @see "tensorflow.python.ops.control_flow_ops.ControlFlowContext#EnterGradientColocation"
+   */
+  fun enterGradientColocation(colocationOps: Set<Op>, gradientUID: String) {
+    outerContext?.enterGradientColocation(colocationOps, gradientUID)
+  }
+  
+  /** Exits a control flow context for building a gradient colocated with `colocationOps`.
+   * @see "tensorflow.python.ops.control_flow_ops.ControlFlowContext#ExitGradientColocation"
+   */
+  fun exitGradientColocation(colocationOps: Set<Op>, gradientUID: String) {
+    outerContext?.exitGradientColocation(colocationOps, gradientUID)
+  }
+  
+  /** Removes any external control dependency on this op and returns the remaining internal control inputs and any
+   * external control inputs that were removed.
+   * @see "tensorflow.python.ops.control_flow_ops.ControlFlowContext#_RemoveExternalControlEdges"
+   */
+  internal fun removeExternalControlEdges(op: Op): Pair<Set<Op>, Set<Op>> {
+    // A control input of 'op' is internal if it is in the same while loop context as the enclosing while loop context
+    // of this context.
+    val whileCtx = whileContext()
+    val internalControlInputs = when (whileCtx) {
+      null -> op.controlInputs
+      else -> op.controlInputs.filterTo(mutableSetOf()) { control_flow_ops.getOutputContext(it)?.whileContext() == whileCtx }
+    }
+    val externalControlInputs = if (internalControlInputs.size != op.controlInputs.size) {
+      val externalControlInputs = op.controlInputs - internalControlInputs
+      op.removeAllControlInputs()
+      op.addControlInputs(internalControlInputs)
+      externalControlInputs
+    } else
+      emptySet<Op>()
+    return internalControlInputs to externalControlInputs
+  }
 }
 
 abstract class XLAControlFlowContext : ControlFlowContext() {

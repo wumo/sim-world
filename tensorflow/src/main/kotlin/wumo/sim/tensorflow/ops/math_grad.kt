@@ -49,7 +49,7 @@ fun register_math_grad() {
     val grad = grad_inputs[0]
     val b = op.inputs[1]
     // op.output[0]: y = -b * conj(a)^2
-    tf.control_dependencies(grad) {
+    tf.controlDependencies(grad) {
       val ca = tf._conj(op.inputs[0])
       val cg = tf._conj(grad)
       grad_outputs.append(cg * tf.const(-2.0) * b * ca, tf._reciprocalGrad(ca, grad))
@@ -59,7 +59,7 @@ fun register_math_grad() {
     val grad = grad_inputs[0]
     // dy/dx = (2 * x)
     val x = op.inputs[0]
-    tf.control_dependencies(grad) {
+    tf.controlDependencies(grad) {
       val x = tf._conj(x)
       val two = tf.const(x.dtype, 2.0)
       grad_outputs.append(tf._mul(grad, tf._mul(x, two)))
@@ -74,7 +74,7 @@ fun register_math_grad() {
     val grad = grad_inputs[0]
     val a = op.inputs[0]
     val y = op.outputs[0]  // y = 0.5 * b / conj(a)
-    tf.control_dependencies(grad) {
+    tf.controlDependencies(grad) {
       val ga = grad / a
       grad_outputs.append(-tf._conj(ga) * y, tf.const(0.5) * ga)
     }
@@ -89,7 +89,7 @@ fun register_math_grad() {
     //Returns backprop gradient for f(a,b) = -0.5 * b * conj(a)^3.
     val a = op.inputs[0]  // a = x^{ -1 / 2 }
     val b = op.inputs[1]  // backprop gradient for a
-    tf.control_dependencies(grad) {
+    tf.controlDependencies(grad) {
       val ca = tf._conj(a)
       val cg = tf._conj(grad)
       val grad_a = tf.const(-1.5) * cg * b * tf._square(ca)
@@ -104,7 +104,7 @@ fun register_math_grad() {
     //         = grad(y) * conj(y)
     //Returns grad * exp(x).
     val y = op.outputs[0]  // y = e^x
-    tf.control_dependencies(grad) {
+    tf.controlDependencies(grad) {
       val y = tf._conj(y)
       grad_outputs.append(grad * y)
     }
@@ -117,7 +117,7 @@ fun register_math_grad() {
     // grad(x) = grad(y) * conj(dy/dx)
     //Returns grad * exp(x).
     val x = op.inputs[0]
-    tf.control_dependencies(grad) {
+    tf.controlDependencies(grad) {
       val x = tf._conj(x)
       val y = tf._exp(x)
       grad_outputs.append(grad * y)
@@ -132,7 +132,7 @@ fun register_math_grad() {
     
     //Returns grad * (1/x).
     val x = op.inputs[0]
-    tf.control_dependencies(grad) {
+    tf.controlDependencies(grad) {
       val x = tf._conj(x)
       grad_outputs.append(grad * tf._reciprocal(x))
     }
@@ -143,7 +143,7 @@ fun register_math_grad() {
     // y = log1p(x)
     // dy/dx = 1 / (1 + x)
     // grad(x) = grad(y) * conj(dy/dx)
-    tf.control_dependencies(grad) {
+    tf.controlDependencies(grad) {
       val one = tf._cast(tf.const(1.0), op.inputs[0].dtype)
       val dydx = tf._reciprocal(tf._add(one, op.inputs[0]))
       grad_outputs.add(tf._mul(grad, tf._conj(dydx)))
@@ -155,7 +155,7 @@ fun register_math_grad() {
     // y = sinh(x)
     // dy/dx = cosh(x)
     // grad(x) = grad(y) * conj(dy/dx)
-    tf.control_dependencies(grad) {
+    tf.controlDependencies(grad) {
       val dydx = tf._cosh(op.inputs[0])
       grad_outputs.add(tf._mul(grad, tf._conj(dydx)))
     }
@@ -165,7 +165,7 @@ fun register_math_grad() {
     // y = cosh(x)
     // dy/dx = sinh(x)
     // grad(x) = grad(y) * conj(dy/dx)
-    tf.control_dependencies(grad) {
+    tf.controlDependencies(grad) {
       val dydx = tf._sinh(op.inputs[0])
       grad_outputs.add(tf._mul(grad, tf._conj(dydx)))
     }
@@ -178,7 +178,7 @@ fun register_math_grad() {
     // the gradient.
     // Optimization to avoid calculating conj(y) until the gradient is
     // evaluated.
-    tf.control_dependencies(grad) {
+    tf.controlDependencies(grad) {
       val y = tf._conj(op.outputs[0])
       grad_outputs.add(tf._tanhGrad(y, grad))
     }
@@ -218,7 +218,7 @@ fun register_math_grad() {
     // the gradient.
     // Optimization to avoid calculating conj(y) until the gradient is
     // evaluated.
-    tf.control_dependencies(grad.op!!) {
+    tf.controlDependencies(grad.op!!) {
       val y = tf._conj(op.outputs[0])
       grad_outputs.add(tf._sigmoidGrad(y, grad))
     }
@@ -609,7 +609,7 @@ fun register_math_grad() {
   register_gradient_op("Erf") { op, grad_inputs, grad_outputs ->
     val grad = grad_inputs[0]
     val two_over_root_pi = tf._cast(tf.const(2 / Math.sqrt(Math.PI)), grad.dtype)
-    tf.control_dependencies(grad.op!!) {
+    tf.controlDependencies(grad.op!!) {
       val x = tf._conj(op.inputs[0])
       // grad * 2/sqrt(pi) * exp(-x**2)
       val dx = tf._mul(tf._mul(grad, two_over_root_pi),
@@ -620,7 +620,7 @@ fun register_math_grad() {
   
   register_gradient_op("Lgamma") { op, grad_inputs, grad_outputs ->
     val grad = grad_inputs[0]
-    tf.control_dependencies(grad.op!!) {
+    tf.controlDependencies(grad.op!!) {
       val x = tf._conj(op.inputs[0])
       val dx = tf._mul(grad, tf._digamma(x))
       grad_outputs.add(dx)

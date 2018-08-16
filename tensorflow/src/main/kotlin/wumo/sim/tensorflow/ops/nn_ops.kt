@@ -36,7 +36,7 @@ object nn_ops {
                 axes: LongArray,
                 name: String = "moments",
                 keep_dims: Boolean = false): Array<Output> =
-        tf.name_scope(name) {
+        tf.nameScope(name) {
           //The dynamic range of fp16 is too limited to support the collection of
           //sufficient statistics. As a workaround we simply perform the operations
           //on 32-bit floats before converting the mean and variance back to fp16
@@ -100,7 +100,7 @@ object nn_ops {
                             offset: Output?, scale: Output?,
                             variance_epsilon: Float,
                             name: String = "batchnorm"): Output =
-        tf.name_scope(name) {
+        tf.nameScope(name) {
           //    val _variance_epsilon = tf.const(variance_epsilon)
           var inv = tf._rsqrt(variance + variance_epsilon)
           if (scale != null)

@@ -22,7 +22,7 @@ val String.fullName
   get() = substring(2)
 
 fun buildOp(op: String, name: String, setAttr: OperationBuilder.() -> Unit = {}) = run {
-  tf.name_scope(name) {
+  tf.nameScope(name) {
     val builder = tf.currentGraph.nodeBuilder(op, ops.convertNameScopeToName(tf.currentNameScope))
     setAttr(builder)
     builder.build()
@@ -30,7 +30,7 @@ fun buildOp(op: String, name: String, setAttr: OperationBuilder.() -> Unit = {})
 }
 
 fun buildOpTensor(op: String, name: String, setAttr: OperationBuilder.() -> Unit = {}) = run {
-  tf.name_scope(name) {
+  tf.nameScope(name) {
     val builder = tf.currentGraph.nodeBuilder(op, ops.convertNameScopeToName(tf.currentNameScope))
     setAttr(builder)
     val _op = builder.build()
@@ -40,7 +40,7 @@ fun buildOpTensor(op: String, name: String, setAttr: OperationBuilder.() -> Unit
 }
 
 fun buildOpTensors(op: String, name: String, setAttr: OperationBuilder.() -> Unit = {}) = run {
-  tf.name_scope(name) {
+  tf.nameScope(name) {
     val builder = tf.currentGraph.nodeBuilder(op, ops.convertNameScopeToName(tf.currentNameScope))
     setAttr(builder)
     val _op = builder.build()
@@ -55,7 +55,7 @@ class OperationBuilder(val opType: String, val name: String) {
   private val c_op_desc: TF_OperationDescription = TF_NewOperation(graph.c_graph, opType, name)
   private val inputFunctions = mutableListOf<() -> Unit>()
   private val inputs = mutableListOf<Output>()
-  private val inputLists = mutableListOf<Array<Output>>()
+  private val inputLists = mutableListOf<Collection<Output>>()
   private val device: String = ""
   private val attributes = mutableMapOf<String, () -> Unit>()
   
@@ -178,19 +178,7 @@ class OperationBuilder(val opType: String, val name: String) {
     inputs += input
   }
   
-  fun addInput(input: Collection<Output>, ref: Boolean = false) {
-    inputFunctions += {
-      val inputs = TF_Output(input.size.toLong())
-      for ((i, _input) in input.withIndex()) {
-        val t = checkRef(_input, ref)
-        inputs.position(i.toLong()).oper(t.op!!.c_op).index(t.value_index)
-      }
-      TF_AddInputList(c_op_desc, inputs.position(0L), input.size)
-    }
-    input.forEach { inputs += it }
-  }
-  
-  fun addInput(input: Array<Output>, ref: Boolean = false) {
+  fun addInput(input: List<Output>, ref: Boolean = false) {
     inputFunctions += {
       val inputs = TF_Output(input.size.toLong())
       for ((i, _input) in input.withIndex()) {
@@ -205,6 +193,22 @@ class OperationBuilder(val opType: String, val name: String) {
     }
     input.forEach { inputs += it }
   }
+  
+//  fun addInput(input: Array<Output>, ref: Boolean = false) {
+//    inputFunctions += {
+//      val inputs = TF_Output(input.size.toLong())
+//      for ((i, _input) in input.withIndex()) {
+//        val t = checkRef(_input, ref)
+//        inputs.position(i.toLong()).oper(t.op!!.c_op).index(t.value_index)
+//            .apply {
+//              input_ops += t.op
+//              inputLists += input
+//            }
+//      }
+//      TF_AddInputList(c_op_desc, inputs.position(0L), input.size)
+//    }
+//    input.forEach { inputs += it }
+//  }
   
   fun attr(name: String, value: String) = run {
     attributes[name] = {

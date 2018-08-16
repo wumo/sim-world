@@ -83,7 +83,7 @@ interface gen_sparse_ops {
     }
   }
   
-  fun _sparseConcat(indices: Array<Output>, values: Array<Output>, shapes: Array<Output>, concat_dim: Long, name: String = "SparseConcat") = run {
+  fun _sparseConcat(indices: List<Output>, values: List<Output>, shapes: List<Output>, concat_dim: Long, name: String = "SparseConcat") = run {
     buildOpTensors("SparseConcat", name) {
       addInput(indices, false)
       addInput(values, false)
@@ -92,7 +92,7 @@ interface gen_sparse_ops {
     }
   }
   
-  fun _sparseCross(indices: Array<Output>, values: Output, shapes: Array<Output>, dense_inputs: Output, hashed_output: Boolean, num_buckets: Long, hash_key: Long, out_type: DataType<*>, internal_type: DataType<*>, name: String = "SparseCross") = run {
+  fun _sparseCross(indices: List<Output>, values: Output, shapes: List<Output>, dense_inputs: Output, hashed_output: Boolean, num_buckets: Long, hash_key: Long, out_type: DataType<*>, internal_type: DataType<*>, name: String = "SparseCross") = run {
     buildOpTensors("SparseCross", name) {
       addInput(indices, false)
       addInput(values, false)

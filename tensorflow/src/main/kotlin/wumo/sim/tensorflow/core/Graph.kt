@@ -33,7 +33,7 @@ import java.util.*
  * [Output] objects, which represent
  * the units of data that flow between operations.
  */
-class Graph {
+open class Graph {
   
   val c_graph = newGraph()!!
   
@@ -78,7 +78,7 @@ class Graph {
   /**Set of tensors that are dangerous to feed!*/
   private val unfeedableOutputs = mutableSetOf<Output>()
   /**Set of operations that are dangerous to fetch!*/
-  private val unfetchable_ops = mutableSetOf<Op>()
+  private val unfetchableOps = mutableSetOf<Op>()
   
   private val functions = LinkedHashSet<String>()
   
@@ -189,7 +189,9 @@ class Graph {
     return Output(op, valueIdx)
   }
   
-  fun is_function(name: String) = name in functions
+  /** Returns `true` if [name] is registered in this graph's function library. */
+  fun isFunction(name: String) = name in functions
+  
   fun toGraphDef(): ByteArray {
     val buf = newBuffer()
     val status = newStatus()
@@ -224,8 +226,28 @@ class Graph {
     TODO("not implemented")
   }
   
-  fun prevent_fetching(op: Op) {
-    unfetchable_ops += op
+  /** Prevents the feeding of values to the provided op output, while running in a session.
+   *
+   * @param  output Op output whose feeding is prevented.
+   * @throws GraphMismatchException If the provided op output does not belong to this graph.
+   */
+  fun preventFeeding(output: Output) {
+    assertNotFrozen()
+    if (output.graph != this)
+      throw GraphMismatchException("The provided op output does not belong to this graph.")
+    unfeedableOutputs += output
+  }
+  
+  /** Prevents the fetching of values to the provided op, while running in a session.
+   *
+   * @param  op Op whose fetching is prevented.
+   * @throws GraphMismatchException If the provided op does not belong to this graph.
+   */
+  fun preventFetching(op: Op) {
+    assertNotFrozen()
+    if (op.graph != this)
+      throw GraphMismatchException("The provided op does not belong to this graph.")
+    unfetchableOps += op
   }
   
   companion object Graph {

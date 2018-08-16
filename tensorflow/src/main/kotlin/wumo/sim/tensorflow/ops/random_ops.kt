@@ -12,7 +12,7 @@ object random_ops {
     fun random_normal(shape: Output, dtype: DataType<*> = FLOAT,
                       mean: Float = 0f, stddev: Output,
                       name: String = "random_normal"): Output =
-        tf.name_scope(name) {
+        tf.nameScope(name) {
           val mean_t = tf.const(mean, name = "mean")
           val rnd = tf._randomStandardNormal(shape, dtype)
           val mul = rnd * stddev
@@ -22,7 +22,7 @@ object random_ops {
     fun random_normal(shape: Output, dtype: DataType<*> = FLOAT,
                       mean: Float = 0f, stddev: Float = 1f,
                       name: String = "random_normal"): Output =
-        tf.name_scope(name) {
+        tf.nameScope(name) {
           val mean_t = tf.const(mean, name = "mean")
           val stddev_t = tf.const(stddev)
           val rnd = tf._randomStandardNormal(shape, dtype)
@@ -33,7 +33,7 @@ object random_ops {
     fun random_normal(shape: Output, dtype: DataType<*> = FLOAT,
                       mean: Output, stddev: Output,
                       name: String = "RandomStandardNormal"): Output =
-        tf.name_scope(name) {
+        tf.nameScope(name) {
           val rnd = tf._randomStandardNormal(shape, dtype)
           val mul = rnd * stddev
           tf._add(mul, mean, tf.currentNameScope)
@@ -42,7 +42,7 @@ object random_ops {
     fun random_uniform(shape: Output, dtype: DataType<*> = FLOAT,
                        min: Number, max: Number,
                        name: String = "random_uniform"): Output =
-        tf.name_scope(name) {
+        tf.nameScope(name) {
           val minval = tf.const(scalarDimension, dtype, min, name = "min")
           val maxval = tf.const(scalarDimension, dtype, max, name = "max")
           if (dtype.isInteger)
@@ -56,7 +56,7 @@ object random_ops {
     fun random_uniform(shape: Shape,
                        min: Float, max: Float,
                        name: String = "random_uniform"): Output =
-        tf.name_scope(name) {
+        tf.nameScope(name) {
           val shape_t = tf.const(shape.asIntArray()!!, "shape")
           val minval = tf.const(min, "min")
           val maxval = tf.const(max, "max")
@@ -66,7 +66,7 @@ object random_ops {
         }
     
     fun truncatedNormal(shape: Output, mean: Float = 0f, stddev: Float = 1f, dtype: DataType<*> = FLOAT, name: String = "truncated_normal"): Output =
-        tf.name_scope(name) {
+        tf.nameScope(name) {
           val mean_t = tf.const(mean, name = "mean")
           val stddev_t = tf.const(stddev, name = "stddev")
           val rnd = tf._truncatedNormal(shape, dtype, name = name)

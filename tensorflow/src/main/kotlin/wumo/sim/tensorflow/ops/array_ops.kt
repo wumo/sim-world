@@ -6,6 +6,20 @@ import wumo.sim.util.Shape
 
 object array_ops {
   interface API {
+    fun <T : OutputLike> identity(data: T, name: String): Output {
+      return when (data) {
+        is Output -> {
+          if (data.dtype.isRefType)
+            tf._refIdentity(data, name)
+          else
+            tf._identity(data, name)
+        }
+        is IndexedSlices -> TODO()
+        is SparseOutput -> TODO()
+        else -> TODO()
+      }
+    }
+    
     fun oneHot(indices: Output, depth: Output, on_value: Output = tf.const(1f, "on_value"),
                off_value: Output = tf.const(0f, "off_value"), axis: Long = -1L, name: String = "OneHot") =
         tf._oneHot(indices, depth, on_value, off_value, axis, name)
@@ -28,7 +42,7 @@ object array_ops {
     }
     
     fun zeros(shape: Shape, dtype: DataType<*> = FLOAT, name: String = "Ones"): Output =
-        tf.name_scope(name) {
+        tf.nameScope(name) {
           val zero = when (dtype) {
             STRING -> ""
             else -> 0
@@ -42,7 +56,7 @@ object array_ops {
         }
     
     fun ones(shape: Shape, dtype: DataType<*> = FLOAT, name: String = "Ones"): Output =
-        tf.name_scope(name) {
+        tf.nameScope(name) {
           if (shape.numElements() < 1000)
             tf.const(shape, dtype, 1, tf.currentNameScope)
           else {
@@ -121,7 +135,7 @@ object array_ops {
         strides += 1
         shrink_axis_mask = shrink_axis_mask or (1L shl index)
       }
-      return tf.name_scope("strided_slice") {
+      return tf.nameScope("strided_slice") {
         val packed_begin = stack(begin)
         val packed_end = stack(end)
         val packed_strides = stack(strides)

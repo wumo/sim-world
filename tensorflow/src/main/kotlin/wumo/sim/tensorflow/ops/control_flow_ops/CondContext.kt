@@ -1,17 +1,15 @@
 package wumo.sim.tensorflow.ops.control_flow_ops
 
-import wumo.sim.tensorflow.ops.IndexedSlices
-import wumo.sim.tensorflow.ops.Op
-import wumo.sim.tensorflow.ops.Output
-import wumo.sim.tensorflow.ops.SparseOutput
+import wumo.sim.tensorflow.core.Graph
+import wumo.sim.tensorflow.ops.*
 import wumo.sim.tensorflow.ops.control_flow_ops.control_flow_ops.isLoopExit
 import wumo.sim.tensorflow.tf
+import wumo.sim.util.SwitchType2
 
 class CondContext(val predicate: Output,
                   val pivot: Output,
-                  val branch: Int) : ControlFlowContext() {
-  override val gradState: GradientLoopState?
-    get() = TODO("not implemented")
+                  val branch: Int,
+                  name: String = "CondContext") : ControlFlowContext() {
   
   init {
     //Values considered to have been already seen in this context. predicate is not
@@ -19,23 +17,30 @@ class CondContext(val predicate: Output,
     values += predicate.name
     external_values[predicate.name] = predicate
     values += pivot.name
-    pivot.op!!.set_control_flow_context(this)
+    pivot.op!!.controlFlowContext = this
   }
   
-  override fun addOp(op: Op) {
-    if (op.inputs.isEmpty()) {
-      _removeExternalControlEdges(op)
-      op.addControlInput(pivot.op!!)
+  override val name = tf.currentGraph.uniqueName(name)
+  
+  override val controlPivot = pivot.op
+  
+  override val condContext = this
+  
+  override fun addInternal(op: Op) {
+    if (op.numInputs == 0) {
+      // Remove any external control dependencies on this op.
+      removeExternalControlEdges(op)
+      controlPivot?.let { op.addControlInput(it) }
     } else {
-      for (i in 0 until op.inputs.size) {
-        val x = op.inputs[i]
-        val real_x = addValue(x)
-        if (real_x != x)
-          op.updateInput(i, real_x)
+      op.inputs.withIndex().forEach { (index, input) ->
+        val realInput = addValue(input)
+        if (realInput != input)
+          op.updateInput(index, realInput)
       }
-      _removeExternalControlEdges(op)
-      if (op.graph.is_function(op.opType) || op.opType == "SymbolicGradient")
-        op.addControlInput(pivot.op!!)
+      // Remove any external control dependencies on this op.
+      removeExternalControlEdges(op)
+      if (op.graph.isFunction(op.opType) || op.opType == "SymbolicGradient")
+        controlPivot?.let { op.addControlInput(it) }
     }
     //Mark op's outputs as seen by this context and any outer contexts.
     val output_names = op.outputs.map { it.name }
@@ -45,68 +50,100 @@ class CondContext(val predicate: Output,
       ctxt = ctxt.outerContext
     }
     if (outerContext != null || !isLoopExit(op))
-      op.graph.prevent_fetching(op)
+      op.graph.preventFetching(op)
   }
   
-  private fun _removeExternalControlEdges(op: Op) {
-    //TODO Remove any external control dependency on this op
-  }
+  override val backPropagate = whileContext()?.backPropagate == true
+  
+  override val gradState = whileContext()?.gradState
   
   /**Add `val` to the current context and its outer context recursively.*/
-  private fun addValue(v: Output): Output {
-    return if (v.name in values) {
+  override fun addValue(output: Output): Output {
+    return if (output.name in values) {
       //Use the real value if it comes from outer context. This is needed in
       //particular for nested conds.
-      external_values[v.name] ?: v
+      external_values.getOrDefault(output.name, output)
     } else {
-      var result = v
-      values += v.name
-      if (outerContext != null) {
-        result = (outerContext as CondContext).addValue(v)
+      values += output.name
+      val switchInput = outerContext?.let {
+        val result = it.addValue(output)
         values += result.name
         external_values[result.name] = result
-      }
-      tf.control_dependencies {
-        result = tf._switchRefOrTensor(result, predicate)[branch]
-      }
-      result.op!!.graph.prevent_fetching(result.op!!)
+        result
+      } ?: output
       
+      val result = tf.controlDependencies {
+        control_flow_ops._switchRefOrTensor(switchInput, predicate)[branch]
+      }
+      result.op!!.graph.preventFetching(result.op)
+      result.op.controlFlowContext = this
       values += result.name
-      external_values[v.name] = result
+      external_values[output.name] = result
       result
     }
   }
   
-  fun buildCondTensor(v: Any): Output {
+  /**Add the subgraph defined by fn() to the graph.*/
+  fun <T> buildCondBranch(fn: () -> T): Pair<T, List<Output>> {
+    val originalResult = fn()
+    condOutputSwitch(originalResult,this)
+    val result = buildCondTensor(originalResult)
+    return originalResult to listOf(result)
+  }
+  
+  fun <T> buildCondTensor(v: T): Output {
     return when (v) {
       is Op -> {//Use pivot as the proxy for this op.
-        tf.with_dependencies(v, output_tensor = pivot)
+        tf.withDependencies(setOf(v), input = pivot)
       }
       is IndexedSlices, is SparseOutput -> {
         TODO()
       }
-      else -> processOutputTensor((v as Output).value())
+      is OutputLike -> processOutput(v.toOutput())
+      else -> TODO()
     }
   }
   
-  /**Add the subgraph defined by fn() to the graph.*/
-  fun buildCondBranch(fn: () -> Any): Output {
-    val original_result = fn()
-    val result = buildCondTensor(original_result)
-    return result
+  private fun processOp(op: Op): Output {
+    //Use pivot as the proxy for this op.
+    return tf.withDependencies(setOf(op), pivot)
   }
   
-  private fun processOutputTensor(v: Output): Output {
-    var real_v = v
-    if (v.name !in values) {
-      values += v.name
-      real_v = tf._switchRefOrTensor(v, predicate)[branch]
-      external_values[v.name] = real_v
-    } else {
-      val external_v = external_values[v.name]
-      if (external_v != null)
-        real_v = external_v
+  /** Processes an op output used in a conditional branch. */
+  private fun processOutput(output: Output): Output {
+    return if (output.name !in values) {
+      // Handle the special case of () -> x.
+      values += output.name
+      val switchInput = outerContext?.let {
+        val result = it.addValue(output)
+        values += result.name
+        external_values[result.name] = result
+        result
+      } ?: output
+      val realValue = control_flow_ops._switchRefOrTensor(switchInput, predicate)[branch]
+      external_values[output.name] = realValue
+      realValue
+    } else
+      external_values[output.name] ?: output
+  }
+  
+  fun <T> unflatten(output: T, values: List<OutputLike>): T {
+  
+  }
+  
+  interface CollectionKey : Graph.Graph.Key<CondContext>
+  
+  companion object {
+    object COND_CONTEXT : CollectionKey {
+      override val name: String = "cond_context"
     }
-    return real_v
+    val condOutputSwitch=SwitchType2<CondContext>
+    fun processOutput(output: Op, context: CondContext): Output {
+      return context.processOp(output)
+    }
+    
+    fun processOutput(output: OutputLike, context: CondContext): Output {
+      return context.processOutput(output.toOutput())
+    }
   }
 }

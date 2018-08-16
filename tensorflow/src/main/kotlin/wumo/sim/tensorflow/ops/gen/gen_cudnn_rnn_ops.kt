@@ -47,7 +47,7 @@ interface gen_cudnn_rnn_ops {
     }
   }
   
-  fun _cudnnRNNCanonicalToParams(num_layers: Output, num_units: Output, input_size: Output, weights: Array<Output>, biases: Array<Output>, rnn_mode: String = "lstm", input_mode: String = "linear_input", direction: String = "unidirectional", dropout: Float = 0.0f, seed: Long = 0L, seed2: Long = 0L, name: String = "CudnnRNNCanonicalToParams") = run {
+  fun _cudnnRNNCanonicalToParams(num_layers: Output, num_units: Output, input_size: Output, weights: List<Output>, biases: List<Output>, rnn_mode: String = "lstm", input_mode: String = "linear_input", direction: String = "unidirectional", dropout: Float = 0.0f, seed: Long = 0L, seed2: Long = 0L, name: String = "CudnnRNNCanonicalToParams") = run {
     buildOpTensor("CudnnRNNCanonicalToParams", name) {
       addInput(num_layers, false)
       addInput(num_units, false)
