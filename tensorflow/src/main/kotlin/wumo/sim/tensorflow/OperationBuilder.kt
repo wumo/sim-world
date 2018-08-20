@@ -93,7 +93,7 @@ class OperationBuilder(val opType: String, val name: String) {
         visited += op
         val dep = op.colocationOps
         if (dep.isEmpty())
-          colcated += dep
+          colcated += op
         else
           dep.forEach { if (it !in visited) queue += dep }
       }

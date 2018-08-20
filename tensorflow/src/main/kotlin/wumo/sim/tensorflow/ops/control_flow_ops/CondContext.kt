@@ -4,7 +4,6 @@ import wumo.sim.tensorflow.core.Graph
 import wumo.sim.tensorflow.ops.*
 import wumo.sim.tensorflow.ops.control_flow_ops.control_flow_ops.isLoopExit
 import wumo.sim.tensorflow.tf
-import wumo.sim.util.SwitchType2
 
 class CondContext(val predicate: Output,
                   val pivot: Output,
@@ -72,7 +71,7 @@ class CondContext(val predicate: Output,
         result
       } ?: output
       
-      val result = tf.controlDependencies {
+      val result = tf.controlDependencies(emptySet()) {
         control_flow_ops._switchRefOrTensor(switchInput, predicate)[branch]
       }
       result.op!!.graph.preventFetching(result.op)
@@ -84,21 +83,18 @@ class CondContext(val predicate: Output,
   }
   
   /**Add the subgraph defined by fn() to the graph.*/
-  fun <T> buildCondBranch(fn: () -> T): Pair<T, List<Output>> {
+  fun <T> buildCondBranch(fn: () -> T): Pair<T, List<OutputLike>> {
     val originalResult = fn()
-    condOutputSwitch(originalResult,this)
-    val result = buildCondTensor(originalResult)
-    return originalResult to listOf(result)
+        ?: throw IllegalArgumentException("The provide cond branch functions must have return values other than 'null'.")
+    val res = CondContext.processOutput(originalResult, this)
+    val res_flat = CondContext.flatten(res)
+    return originalResult to res_flat
   }
   
   fun <T> buildCondTensor(v: T): Output {
     return when (v) {
-      is Op -> {//Use pivot as the proxy for this op.
-        tf.withDependencies(setOf(v), input = pivot)
-      }
-      is IndexedSlices, is SparseOutput -> {
-        TODO()
-      }
+      is Op -> processOp(v)
+      is IndexedSlices, is SparseOutput -> TODO()
       is OutputLike -> processOutput(v.toOutput())
       else -> TODO()
     }
@@ -127,23 +123,35 @@ class CondContext(val predicate: Output,
       external_values[output.name] ?: output
   }
   
-  fun <T> unflatten(output: T, values: List<OutputLike>): T {
-  
-  }
-  
   interface CollectionKey : Graph.Graph.Key<CondContext>
   
   companion object {
     object COND_CONTEXT : CollectionKey {
       override val name: String = "cond_context"
     }
-    val condOutputSwitch=SwitchType2<CondContext>
-    fun processOutput(output: Op, context: CondContext): Output {
-      return context.processOp(output)
-    }
     
-    fun processOutput(output: OutputLike, context: CondContext): Output {
-      return context.processOutput(output.toOutput())
-    }
+    fun <T> processOutput(output: T, context: CondContext): Any =
+        when (output) {
+          is Op -> context.processOp(output)
+          is IndexedSlices -> TODO()
+          is SparseOutput -> TODO()
+          is OutputLike -> context.processOutput(output.toOutput())
+          else -> TODO()
+        }
+    
+    fun <R> flatten(processedOutput: R): List<OutputLike> =
+        when (processedOutput) {
+          is Output -> listOf(processedOutput)
+          is IndexedSlices -> TODO()
+          is SparseOutput -> TODO()
+          else -> TODO()
+        }
+    
+    fun <T> unflatten(output: T, values: List<OutputLike>): T =
+        when (output) {
+          is Op -> values.first().op as T
+          is Output, is IndexedSlices, is SparseOutput -> values.first() as T
+          else -> TODO()
+        }
   }
 }

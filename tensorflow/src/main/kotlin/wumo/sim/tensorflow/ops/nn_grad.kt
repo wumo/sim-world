@@ -1,7 +1,5 @@
 package wumo.sim.tensorflow.ops
 
-import wumo.sim.tensorflow.ops.gradients.noGradient
-import wumo.sim.tensorflow.ops.gradients.register_gradient_op
 import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.types.INT64
 import wumo.sim.util.i
@@ -73,13 +71,13 @@ fun register_nn_grad() {
     val strides = op.attrLongList("strides")
     val use_cudnn_on_gpu = op.attrBool("use_cudnn_on_gpu")
     val dx_1 = tf._conv2DBackpropInput(tf._shape(op.inputs[0]), op.inputs[1], grad, strides.toTypedArray(), padding,
-                                      data_format = data_format,
-                                      use_cudnn_on_gpu = use_cudnn_on_gpu)
-    grad_outputs.add(dx_1)
-    val dx_2 = tf._conv2DBackpropFilter(op.inputs[0], tf._shape(op.inputs[1]),
-                                       grad, strides.toTypedArray(), padding,
                                        data_format = data_format,
                                        use_cudnn_on_gpu = use_cudnn_on_gpu)
+    grad_outputs.add(dx_1)
+    val dx_2 = tf._conv2DBackpropFilter(op.inputs[0], tf._shape(op.inputs[1]),
+                                        grad, strides.toTypedArray(), padding,
+                                        data_format = data_format,
+                                        use_cudnn_on_gpu = use_cudnn_on_gpu)
     grad_outputs.add(dx_2)
   }
   register_gradient_op("MaxPool") { op, grad_inputs, grad_outputs ->
@@ -98,7 +96,7 @@ fun register_nn_grad() {
     val data_format = op.attrString("data_format")
     val padding = op.attrString("padding")
     val dx = tf._maxPoolGradV2(op.inputs[0], op.outputs[0], grad,
-                              op.inputs[1], op.inputs[2], padding, data_format = data_format)
+                               op.inputs[1], op.inputs[2], padding, data_format = data_format)
     grad_outputs.add(dx)
     grad_outputs.add(noGradient)
     grad_outputs.add(noGradient)
@@ -110,8 +108,8 @@ fun register_nn_grad() {
     val strides = op.attrLongList("strides")
     val ksize = op.attrLongList("ksize")
     val dx = tf._maxPool3DGrad(op.inputs[0], op.outputs[0], grad,
-                              ksize.toTypedArray(), strides.toTypedArray(),
-                              padding, data_format = data_format)
+                               ksize.toTypedArray(), strides.toTypedArray(),
+                               padding, data_format = data_format)
     grad_outputs.add(dx)
   }
   register_gradient_op("AvgPool") { op, grad_inputs, grad_outputs ->
@@ -121,8 +119,8 @@ fun register_nn_grad() {
     val strides = op.attrLongList("strides")
     val ksize = op.attrLongList("ksize")
     val dx = tf._avgPoolGrad(tf._shape(op.inputs[0]), grad,
-                            ksize.toTypedArray(), strides.toTypedArray(), padding,
-                            data_format = data_format)
+                             ksize.toTypedArray(), strides.toTypedArray(), padding,
+                             data_format = data_format)
     grad_outputs.add(dx)
   }
   register_gradient_op("AvgPool3D") { op, grad_inputs, grad_outputs ->
@@ -132,8 +130,8 @@ fun register_nn_grad() {
     val strides = op.attrLongList("strides")
     val ksize = op.attrLongList("ksize")
     val dx = tf._avgPool3DGrad(tf._shape(op.inputs[0]), grad,
-                              ksize.toTypedArray(), strides.toTypedArray(), padding,
-                              data_format = data_format)
+                               ksize.toTypedArray(), strides.toTypedArray(), padding,
+                               data_format = data_format)
     grad_outputs.add(dx)
   }
   register_gradient_op("LRN") { op, grad_inputs, grad_outputs ->

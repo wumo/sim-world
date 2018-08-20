@@ -1,28 +1,23 @@
 package wumo.sim.tensorflow.ops
 
-import wumo.sim.tensorflow.ops.gradients.append
-import wumo.sim.tensorflow.ops.gradients.noGradient
-import wumo.sim.tensorflow.ops.gradients.register_gradient_op
-import wumo.sim.tensorflow.ops.gradients.register_no_gradient_op
 import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.types.COMPLEX128
 import wumo.sim.tensorflow.types.COMPLEX64
 import wumo.sim.tensorflow.types.INT32
-import wumo.sim.util.a
 import wumo.sim.util.i
 
 fun register_math_grad() {
   register_no_gradient_op("Less",
-                          "LessEqual",
-                          "Greater",
-                          "GreaterEqual",
-                          "Equal",
-                          "ApproximateEqual",
-                          "NotEqual",
-                          "LogicalAnd",
-                          "LogicalOr",
-                          "LogicalNot",
-                          "Floor")
+                                                  "LessEqual",
+                                                  "Greater",
+                                                  "GreaterEqual",
+                                                  "Equal",
+                                                  "ApproximateEqual",
+                                                  "NotEqual",
+                                                  "LogicalAnd",
+                                                  "LogicalOr",
+                                                  "LogicalNot",
+                                                  "Floor")
   
   register_gradient_op("ArgMax", "ArgMin") { op, grad_inputs, grad_outputs ->
     grad_outputs.append(noGradient, noGradient)
@@ -531,8 +526,8 @@ fun register_math_grad() {
     // The axes entry in indices then moves a 1 to each of its entries,
     // resulting in
     // [2, 1, 1, 7]
-    val indices = a(input_rank_range, axes)
-    val data = a(input_shape, axes_ones)
+    val indices = listOf(input_rank_range, axes)
+    val data = listOf(input_shape, axes_ones)
     return tf._dynamicStitch(indices, data)
   }
   
@@ -764,7 +759,7 @@ fun register_math_grad() {
     val other = tf._listDiff(idx, reduced)[0]
     
     // [1, 0, 2]
-    val perm = tf._concatV2(a(reduced, other), tf.const(0))
+    val perm = tf._concatV2(listOf(reduced, other), tf.const(0))
     
     // 3 => [3]
     val reduced_num = tf._prod(tf._gather(input_shape, reduced), tf.const(0))
@@ -796,7 +791,7 @@ fun register_math_grad() {
     //   [ 5.,  6.,  0.,  6.],
     //   [ 7.,  8.,  5.,  6.]
     // ]
-    val reshaped = tf._reshape(permuted, tf.stack(a(reduced_num, other_num)))
+    val reshaped = tf._reshape(permuted, tf.stack(listOf(reduced_num, other_num)))
     
     // [
     //   [ 1.,  1.,  1.,  1.],

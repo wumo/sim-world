@@ -197,7 +197,7 @@ object control_flow_ops {
     if (errorMsg != null) throw InvalidArgumentException(errorMsg)
   }
   
-  private fun groupControlDeps(deps: List<Op>, name: String = "noOp") = run {
+  private fun groupControlDeps(deps: Set<Op>, name: String = "noOp") = run {
     tf.controlDependencies(deps) {
       tf._noOp(name)
     }
@@ -247,15 +247,13 @@ object control_flow_ops {
   }
   
   fun <T : OutputLike> switch(input: T, predicate: Output, name: String = "Switch"): Array<Output> {
-    return when (input) {
-      is Output -> tf._switch(input, predicate, name)
+    val _input = input as OutputLike
+    return when (_input) {
+      is Output -> tf._switch(_input, predicate, name)
       is IndexedSlices -> {
         TODO()
       }
       is SparseOutput -> {
-        TODO()
-      }
-      else -> {
         TODO()
       }
     }
@@ -319,7 +317,7 @@ object control_flow_ops {
         }
     
     fun group(inputs: List<Any>, name: String = "group_deps"): Op {
-      val ops_on_device = mutableMapOf<String, MutableList<Op>>()
+      val ops_on_device = mutableMapOf<String, MutableSet<Op>>()
       for (input in inputs) {
         val op = when (input) {
           is Op -> input
@@ -329,7 +327,7 @@ object control_flow_ops {
         }
         val dev = op!!.device
         ops_on_device.compute(dev) { _, list ->
-          val list = list ?: mutableListOf()
+          val list = list ?: mutableSetOf<Op>()
           list += op
           list
         }
@@ -340,7 +338,7 @@ object control_flow_ops {
           groupControlDeps(deps, name)
         }
       }
-      val all_deps = mutableListOf<Op>()
+      val all_deps = mutableSetOf<Op>()
       return tf.nameScope(name) {
         for ((dev, deps) in ops_on_device) {
           tf.device(dev) {
@@ -370,7 +368,7 @@ object control_flow_ops {
     fun <T> cond(pred: Output,
                  true_fn: () -> T,
                  false_fn: () -> T,
-                 name: String = "cond"): Output =
+                 name: String = "cond"): T =
         tf.nameScope(name) {
           val (p_false, p_true) = switch(pred, pred)
           val pivot_true = tf._identity(p_true, name = "switch_t")
@@ -408,23 +406,7 @@ object control_flow_ops {
           tf.currentGraph.addToCollection(contextTrue, CondContext.Companion.COND_CONTEXT)
           tf.currentGraph.addToCollection(contextFalse, CondContext.Companion.COND_CONTEXT)
           
-          unfl
-          when (originalResultTrue) {
-            is Op -> merges.first().op
-            is Output ->
-          }
-          
-          TODO()
-//          val res_t = tf.condContext(pred_id, pivot_true, branch = 1) {
-//            it.buildCondBranch(true_fn)
-//          }
-//          val res_f = tf.condContext(pred_id, pivot_false, branch = 0) {
-//            it.buildCondBranch(false_fn)
-//          }
-//    val res_t = buildCondBranch(predicate, pivot_1, 1, true_fn)
-//     = buildCondBranch(predicate, pivot_2, 0, false_fn)
-//          merge(res_t, res_f)[0]
+          CondContext.unflatten(originalResultTrue, merges)
         }
-    
   }
 }

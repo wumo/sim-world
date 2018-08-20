@@ -107,7 +107,7 @@ abstract class ControlFlowContext {
    * @see "tensorflow.python.ops.control_flow_ops.ControlFlowContext#Enter"
    */
   fun enter() {
-    contextStack.add(graphConstructionScope.value.controlFlowContext)
+    graphConstructionScope.value.controlFlowContext?.let { contextStack.addLast(it) }
     graphConstructionScope.value = graphConstructionScope.value.copy(
         controlFlowContext = this,
         outerContext = graphConstructionScope.value)
@@ -118,7 +118,7 @@ abstract class ControlFlowContext {
    */
   fun exit() {
     graphConstructionScope.value = graphConstructionScope.value.copy(
-        controlFlowContext = contextStack.removeLast(),
+        controlFlowContext = contextStack.pollLast(),
         outerContext = graphConstructionScope.value)
   }
   

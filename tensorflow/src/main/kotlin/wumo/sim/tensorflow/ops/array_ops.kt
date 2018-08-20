@@ -202,7 +202,7 @@ object array_ops {
      * @param name
      * @return A stacked `Output` with the same type as `values`.
      */
-    fun stack(values: Array<Output>, axis: Long = 0L, name: String = "stack"): Output {
+    fun stack(values: List<Output>, axis: Long = 0L, name: String = "stack"): Output {
       if (axis == 0L) {
         return tf._pack(values, axis, name)
       }
@@ -215,9 +215,6 @@ object array_ops {
       }
       TODO()
     }
-    
-    fun stack(values: Collection<Output>, axis: Long = 0L, name: String = "stack") =
-        tf._pack(values.toTypedArray(), axis, name)
     
     /**
      * Return the elements, either from `x` or `y`, depending on the `condition`.

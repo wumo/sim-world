@@ -272,7 +272,10 @@ object ops {
     /** Returns the graph of the current op creation context. */
     val currentGraph get() = graphConstructionScope.value.graph
     /** Returns the name scope of the current op creation context. */
-    val currentNameScope get() = graphConstructionScope.value.nameScope
+    val currentNameScope
+      get() = graphConstructionScope.value.nameScope.let {
+        if (it.isEmpty()) "" else "$it/"
+      }
     /** Returns the device of the current op creation context. */
     val currentDevice get() = graphConstructionScope.value.device
     /** Returns the device function of the current op creation context. */
@@ -764,8 +767,11 @@ object ops {
     fun <R> device(dev: DeviceFunction, block: () -> R): R =
         with(deviceFunction = dev, block = block)
     
-    fun <R> controlDependencies(control_inputs: Output, block: () -> R) =
-        controlDependencies(control_inputs.op!!) { block() }
+    fun <R> controlDependencies(control_input: Output, block: () -> R) =
+        controlDependencies(setOf(control_input.op!!)) { block() }
+    
+    fun <R> controlDependencies(control_input: Op, block: () -> R) =
+        controlDependencies(setOf(control_input)) { block() }
     
     /** Creates a context that can be used for creating gradient ops and placing them on the same device as
      * `colocationOps`.

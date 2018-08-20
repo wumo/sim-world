@@ -51,7 +51,7 @@ class WhileContext : ControlFlowContext() {
     }
     // TODO: [CONTROL_FLOW] Stop ignoring ops with no outputs.
     // Use an identity to pull control inputs as data inputs. Note that we ignore ops which do not have any outputs.
-    tf.controlDependencies {
+    tf.controlDependencies(emptySet()) {
       enter()
       val externalInputs = externalInputs.map { op ->
         tf._identity(op.outputs[0]).op!!

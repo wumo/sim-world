@@ -1,23 +1,20 @@
 package wumo.sim.tensorflow.ops
 
-import wumo.sim.tensorflow.ops.gradients.noGradient
-import wumo.sim.tensorflow.ops.gradients.register_gradient_op
-import wumo.sim.tensorflow.ops.gradients.register_no_gradient_op
 import wumo.sim.tensorflow.tf
 import wumo.sim.util.i
 
 fun register_array_grad() {
   register_no_gradient_op("Const", "StopGradient",
-                          "ConcatOffset",
-                          "EditDistance",
-                          "ZerosLike",
-                          "InvertPermutation",
-                          "Shape",
-                          "ShapeN",
-                          "Rank",
-                          "Size",
-                          "BroadcastGradientArgs",
-                          "OneHot")
+                                                  "ConcatOffset",
+                                                  "EditDistance",
+                                                  "ZerosLike",
+                                                  "InvertPermutation",
+                                                  "Shape",
+                                                  "ShapeN",
+                                                  "Rank",
+                                                  "Size",
+                                                  "BroadcastGradientArgs",
+                                                  "OneHot")
   
   register_gradient_op("Pack") { op, grad_inputs, grad_outputs ->
     val grad = grad_inputs[0]
@@ -32,7 +29,7 @@ fun register_array_grad() {
   register_gradient_op("Unpack") { op, grad_inputs, grad_outputs ->
     val grad = grad_inputs[0]
     val axis = op.attrLong("axis")
-    grad_outputs.add(tf._pack(grad_inputs.toTypedArray(), axis = axis))
+    grad_outputs.add(tf._pack(grad_inputs, axis = axis))
   }
   register_gradient_op("Identity") { op, grad_inputs, grad_outputs ->
     val grad = grad_inputs[0]
@@ -62,7 +59,7 @@ fun register_array_grad() {
   register_gradient_op("Split") { op, grad_inputs, grad_outputs ->
     val grad = grad_inputs[0]
     grad_outputs.add(noGradient)
-    grad_outputs.add(tf._concatV2(grad_inputs.toTypedArray(), op.inputs[0]))
+    grad_outputs.add(tf._concatV2(grad_inputs, op.inputs[0]))
   }
   register_gradient_op("Diag") { op, grad_inputs, grad_outputs ->
     val grad = grad_inputs[0]
@@ -291,7 +288,7 @@ fun register_array_grad() {
     //             [2 0]
     //             [1 0]]
     val paddings =
-        tf._concatV2(arrayOf(before_padding, after_padding), tf.const(1))
+        tf._concatV2(listOf(before_padding, after_padding), tf.const(1))
     grad_outputs.add(tf._pad(grad, paddings));
     // Nothing propagated for "begin" and "size" inputs
     grad_outputs.add(noGradient)

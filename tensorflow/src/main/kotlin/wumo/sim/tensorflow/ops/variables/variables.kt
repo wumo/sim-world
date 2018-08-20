@@ -43,7 +43,7 @@ object variables {
         regularizer: Regularizer? = null,
         trainable: Boolean = true,
         reuse: Reuse = ReuseOrCreateNew,
-        collections: MutableSet<Graph.Key<Variable>> = emptyMutableSet(),
+        collections: MutableSet<Graph.Key<Variable>> = mutableSetOf(),
         cachingDevice: DeviceFunction? = null
     ): Variable =
         Variable.getVariable(

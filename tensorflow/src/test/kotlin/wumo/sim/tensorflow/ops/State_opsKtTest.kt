@@ -10,9 +10,9 @@ class State_opsKtTest : BaseTest() {
   
   @Test
   fun `variable def`() {
-    val a1 = tf.variable(Shape(4, 4, 2), 1)
-    val b = tf.variable(f(1f, 2f, 3f, 4f))
-    val c = tf.variable(Shape(2, 2), a("1", "2", "a", "b"))
+    val a1 = tf.variable(Shape(4, 4, 2), 1, name = "a")
+    val b = tf.variable(f(1f, 2f, 3f, 4f), name = "b")
+    val c = tf.variable(Shape(2, 2), a("1", "2", "a", "b"), name = "c")
     printGraph()
   }
   
@@ -33,8 +33,9 @@ class State_opsKtTest : BaseTest() {
   
   @Test
   fun `variable depend on variable`() {
-//    val a = tf.variable(2 x 2, 1f, "a")
-//    val b = tf.variable(a, name = "b")
+    val a = tf.variable(Shape(2, 2), 1f, "a")
+    val b = tf.variable(a, name = "b")
+    printGraph()
 ////    val init = tf.global_variable_initializer()
 //    printGraph()
 //    tf.session {

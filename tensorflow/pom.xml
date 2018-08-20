@@ -12,10 +12,6 @@
     <artifactId>tensorflow</artifactId>
 
     <properties>
-        <javacpp.version>1.4.3-SNAPSHOT</javacpp.version>
-        <tensorflow.version>1.10.0-rc1</tensorflow.version>
-        <javacpp-resets-tensorflow.version>${tensorflow.version}-${javacpp.version}</javacpp-resets-tensorflow.version>
-        <javacpp-resets-cuda.version>9.2-7.1-${javacpp.version}</javacpp-resets-cuda.version>
         <atomicfu.version>0.10.3</atomicfu.version>
     </properties>
 
@@ -38,8 +34,7 @@
         <dependency>
             <groupId>org.tensorflow</groupId>
             <artifactId>proto</artifactId>
-            <version>1.9.0</version>
-            <!--<root>test</root>-->
+            <version>${tensorflow.version}</version>
         </dependency>
 
         <dependency>
@@ -47,11 +42,17 @@
             <artifactId>tensorflow-platform</artifactId>
             <version>${javacpp-resets-tensorflow.version}</version>
         </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.bytedeco.javacpp-presets</groupId>-->
+            <!--<artifactId>tensorflow</artifactId>-->
+            <!--<version>${javacpp-resets-tensorflow.version}</version>-->
+            <!--<classifier>${platform}</classifier>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>org.bytedeco.javacpp-presets</groupId>
             <artifactId>tensorflow</artifactId>
             <version>${javacpp-resets-tensorflow.version}</version>
-            <classifier>${platform}</classifier>
+            <classifier>linux-x86_64</classifier>
         </dependency>
         <!--<dependency>-->
             <!--<groupId>org.bytedeco.javacpp-presets</groupId>-->

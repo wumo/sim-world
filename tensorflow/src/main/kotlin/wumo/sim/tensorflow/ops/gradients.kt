@@ -1,7 +1,5 @@
 package wumo.sim.tensorflow.ops
 
-import wumo.sim.tensorflow.ops.gradients.addSymbolicGradients
-
 object gradient_ops {
   interface API {
     fun gradients(y: Output, xs: Collection<Output>): List<Output> {

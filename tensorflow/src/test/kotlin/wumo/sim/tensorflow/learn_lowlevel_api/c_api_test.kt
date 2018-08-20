@@ -45,9 +45,9 @@ class c_api_test {
   @Test
   fun `add control input2`() {
     val a = tf.const(1f, name = "a")
-    tf.controlDependencies(a) {
-      val b = tf.const(2f, name = "b")
-    }
+//    tf.controlDependencies(a) {
+//      val b = tf.const(2f, name = "b")
+//    }
     
     val c = tf.const(3f, name = "c")
     tf.printGraph()

@@ -1,8 +1,6 @@
-package wumo.sim.tensorflow.ops.gradients
+package wumo.sim.tensorflow.ops
 
 import org.bytedeco.javacpp.tensorflow.*
-import wumo.sim.tensorflow.ops.*
-import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.tf
 import java.util.*
 import kotlin.collections.HashMap
@@ -422,7 +420,7 @@ class SymbolicGradientBuilder(val outputs_: List<Output>,
       else -> {
         // Otherwise, adds backprop-ed gradients.
         // TODO(andydavis) Use a better accumulator here.
-        tf._addN(grads_to_keep.toTypedArray())
+        tf._addN(grads_to_keep)
       }
     }
   }

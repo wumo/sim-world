@@ -284,3 +284,77 @@ class SwitchType6<P2, P3, P4, P5, P6, R> {
     return block(params)
   }
 }
+
+inline fun <T> Class<T>.primitive() =
+    if (ClassUtils.isPrimitiveWrapper(this))
+      ClassUtils.wrapperToPrimitive(this)
+    else this
+
+inline fun <T> Class<T>.wrapper() =
+    if (ClassUtils.isPrimitiveWrapper(this))
+      this
+    else ClassUtils.primitiveToWrapper(this)
+
+inline fun putReturnType(branches: MutableMap<Pair<Class<*>, Class<*>>, Any>, c: Pair<Class<*>, Class<*>>, block: Any) {
+  val (paramType, returnType) = c
+  val primitiveP = paramType.primitive()
+  val wrapperP = paramType.wrapper()
+  val primitiveR = returnType.primitive()
+  val wrapperR = returnType.wrapper()
+  
+  branches[primitiveP to primitiveR] = block
+  branches[primitiveP to wrapperR] = block
+  branches[wrapperP to primitiveR] = block
+  branches[wrapperP to primitiveR] = block
+}
+
+class SwitchReturnType {
+  val branches = HashMap<Pair<Class<*>, Class<*>>, Fun1<Any, Any>>()
+  val subtypeBranches = HashMap<Pair<Class<*>, Class<*>>, Fun1<Any, Any>>()
+  var elseBranch: (Any) -> Any = { throw IllegalArgumentException("unsupported ${it::class.java}") }
+  inline fun <reified P1, reified R> case(noinline block: Fun1<P1, R>) {
+    putReturnType(branches as MutableMap<Pair<Class<*>, Class<*>>, Any>,
+                  P1::class.java to R::class.java, block)
+  }
+  
+  inline fun caseElse(noinline block: Fun1<Any, Any>) {
+    elseBranch = block
+  }
+  
+  inline fun <reified P1, reified R> caseIs(noinline block: Fun1<P1, Any>) {
+    putReturnType(subtypeBranches as MutableMap<Pair<Class<*>, Class<*>>, Any>,
+                  P1::class.java to R::class.java, block)
+  }
+  
+  inline operator fun <reified R> invoke(b: Any): R {
+    val cls = b::class.java to R::class.java
+    
+    val block = branches[cls]
+    if (block == null) {
+      for ((supertype, fn) in subtypeBranches) {
+        if (supertype.first.isAssignableFrom(cls.first)
+            && supertype.second.isAssignableFrom(cls.second))
+          return fn(b) as R
+      }
+      return elseBranch(b) as R
+    }
+    return block(b) as R
+  }
+}
+
+interface ReturnType<P, R>
+
+class SwitchReturnTypeClass {
+  val branches = HashMap<Pair<Class<*>, Class<*>>, ReturnType<Any, Any>>()
+  inline fun <reified P1, reified R> case(block: ReturnType<P1, R>) {
+    putReturnType(branches as MutableMap<Pair<Class<*>, Class<*>>, Any>,
+                  P1::class.java to R::class.java, block)
+  }
+  
+  inline operator fun <reified R, reified T> invoke(b: T): ReturnType<T, R> {
+    val cls = T::class.java to R::class.java
+    
+    val block = branches[cls] ?: throw IllegalArgumentException("unsupported $cls")
+    return block as ReturnType<T, R>
+  }
+}

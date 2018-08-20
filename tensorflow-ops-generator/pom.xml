@@ -12,10 +12,6 @@
     <artifactId>tensorflow-ops-generator</artifactId>
 
     <properties>
-        <javacpp.version>1.4.3-SNAPSHOT</javacpp.version>
-        <tensorflow.version>1.10.0-rc1</tensorflow.version>
-        <javacpp-resets-tensorflow.version>${tensorflow.version}-${javacpp.version}</javacpp-resets-tensorflow.version>
-        <javacpp-resets-cuda.version>9.2-7.1-${javacpp.version}</javacpp-resets-cuda.version>
         <atomicfu.version>0.10.3</atomicfu.version>
     </properties>
 

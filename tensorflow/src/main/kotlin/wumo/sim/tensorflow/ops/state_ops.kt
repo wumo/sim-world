@@ -64,6 +64,8 @@ object state_ops {
     fun variable(shape: Shape, initial_value: Int, name: String = "Variable", trainable: Boolean = true) = _variable({ tf.const(shape, initial_value, it) }, name, trainable)
     fun variable(shape: Shape, initial_value: Long, name: String = "Variable", trainable: Boolean = true) = _variable({ tf.const(shape, initial_value, it) }, name, trainable)
     fun variable(shape: Shape, initial_value: String, name: String = "Variable", trainable: Boolean = true) = _variable({ tf.const(shape, initial_value, it) }, name, trainable)
+    fun variable(initial_value: OutputLike, name: String = "Variable", trainable: Boolean = true) = _variable({ initial_value.toOutput() }, name, trainable)
+    fun variable(initial_value: Variable, name: String = "Variable", trainable: Boolean = true) = _variable({ initial_value.toOutput() }, name, trainable)
     fun variable(initial_value: Any, name: String = "Variable", trainable: Boolean = true) =
         variable_switch(initial_value, name, trainable)
   }
