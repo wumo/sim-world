@@ -1,16 +1,17 @@
 package wumo.sim.tensorflow.ops.variables
 
-import wumo.sim.tensorflow.buildOp
 import wumo.sim.tensorflow.core.Graph.Graph
 import wumo.sim.tensorflow.core.ShapeMismatchException
-import wumo.sim.tensorflow.ops.*
+import wumo.sim.tensorflow.createOp
+import wumo.sim.tensorflow.ops.DeviceFunction
+import wumo.sim.tensorflow.ops.Op
+import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.ops.ops
 import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.types.DataType
 import wumo.sim.tensorflow.types.FLOAT
 import wumo.sim.tensorflow.types.types
 import wumo.sim.util.Shape
-import wumo.sim.util.a
-import wumo.sim.util.emptyMutableSet
 
 class Variable(
     override val dataType: DataType<*>,
@@ -25,6 +26,7 @@ class Variable(
   override val shape = variable.shape
   val op = variable.op!!
   override val value = snapshot
+  fun readValue() = tf._identity(variable, name = "read")
   override val initializer = initializeOp
   override val isInitialized: Output
     get() = tf.with(graph) {
@@ -34,7 +36,7 @@ class Variable(
   override val initializedValue: Output
     get() =
       tf.init_scope {
-        tf.cond(isInitialized, { value }, { initialValue })
+        tf.cond(isInitialized, { readValue() }, { initialValue })
       }
   
   override fun read(name: String): Output =
@@ -121,6 +123,30 @@ class Variable(
             VariableStore.current, name, shape, dataType, initializer, regularizer, trainable, reuse, collections,
             cachingDevice)
     
+    val globalVariables: Set<Variable> = tf.currentGraph.globalVariables
+    
+    val localVariables: Set<Variable> = tf.currentGraph.localVariables
+    
+    /** Creates an op that initializes the provided variables.
+     *
+     * After you launch the graph in a session, you can run the returned op to initialize all the variables in
+     * `variables`. This op runs all the initializers of the variables in `variables`, in parallel.
+     *
+     * Calling [initializer] is equivalent to passing the list of initializers to [tf.group].
+     *
+     * If [variables] is empty, the method still returns an op that can be run. That op has no effect (i.e., it is a
+     * [tf._noOp]).
+     *
+     * @param  variables Set of variables to initialize.
+     * @param  name      Name for the created op.
+     * @return Created op.
+     */
+    fun initializer(variables: Set<Variable>, name: String = "init"): Op =
+        if (variables.isNotEmpty())
+          tf.group(variables.mapTo(mutableSetOf()) { it.initializer }, name)
+        else
+          tf._noOp(name)
+    
     /**
      * @see "tensorflow.python.ops.variables.Variable#__init__"
      */
@@ -154,8 +180,8 @@ class Variable(
                 initializer(inferredShape, inferredDataType)
               }
             }
-            val initializeOp = tf.assign(variableHandle,
-                                         tryGuardAgainstUninitializedDependencies(name, initialValue))
+            val initializeOp = tf._assign(variableHandle,
+                                          tryGuardAgainstUninitializedDependencies(variableHandle.name, initialValue))
             val snapshot = if (cachingDevice != null)
               tf.device(cachingDevice) {
                 tf._identity(variableHandle, name = "read")
@@ -248,33 +274,39 @@ class Variable(
      */
     private fun safeInitialValueFromOp(variableName: String, op: Op, op_cache: MutableMap<String, Op>): Op {
       val op_type = op.opType
-      if (op_type in a("IsVariableInitialized", "VarIsInitializedOp", "ReadVariableOp"))
-        return op
-      if (op_type in a("Variable", "VariableV2", "VarHandleOp")) {
-        //Attempt to find the initialized_value of any variable reference / handles.
-        val initialized_value = findInitializedValueForVariable(op)
-        return initialized_value?.op ?: op
-      }
-      //Recursively build initializer expressions for inputs.
-      var modified = false
-      val new_op_inputs = mutableListOf<Output>()
-      for (op_input in op.inputs) {
-        val new_op_input = safeInitialValueFromTensor(variableName, op_input, op_cache)
-        new_op_inputs += new_op_input
-        modified = modified || (new_op_input != op_input)
-      }
-      //If at least one input was modified, replace the op.
-      if (modified) {
-        var new_op_type = op_type
-        if (new_op_type == "RefSwitch")
-          new_op_type = "Switch"
-        val new_op_name = "${op.name}_$variableName".replace(":", "_")
-        return buildOp(new_op_type, new_op_name) {
-          new_op_inputs.forEach { addInput(it) }
-          op.toNodeDef().attr().forEach { key, attrValue -> attr(key, attrValue) }
+      return when (op_type) {
+        "IsVariableInitialized", "VarIsInitializedOp", "ReadVariableOp" ->
+          op
+        "Variable", "VariableV2", "VarHandleOp" -> {
+          //Attempt to find the initialized_value of any variable reference / handles.
+          val initialized_value = findInitializedValueForVariable(op)
+          initialized_value?.op ?: op
+        }
+        else -> {
+          //Recursively build initializer expressions for inputs.
+          var modified = false
+          val new_op_inputs = op.inputs.map { op_input ->
+            val new_op_input = safeInitialValueFromTensor(variableName, op_input, op_cache)
+            modified = modified || (new_op_input != op_input)
+            new_op_input
+          }
+          //If at least one input was modified, replace the op.
+          if (modified) {
+            var new_op_type = op_type
+            if (new_op_type == "RefSwitch")
+              new_op_type = "Switch"
+            val new_op_name = "${op.name}_$variableName".replace(":", "_")
+            createOp(new_op_type, new_op_name, new_op_inputs, op.nodeDef().attrMap)
+//            buildOp(new_op_type, new_op_name) {
+//              val nodeDef = op.toNodeDef()
+//              createOp(new_op_name, new_op_inputs, nodeDef)
+//              new_op_inputs.forEach { addInput(it) }
+//              op.toNodeDef().attr().forEach { key, attrValue -> attr(key, attrValue) }
+//            }
+          } else
+            op
         }
       }
-      return op
     }
     
     /**

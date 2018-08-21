@@ -1,21 +1,18 @@
 package wumo.sim.tensorflow.ops
 
+import org.bytedeco.javacpp.Pointer
 import org.bytedeco.javacpp.PointerPointer
+import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Buffer.newBuffer
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
 import org.bytedeco.javacpp.tensorflow.*
+import org.tensorflow.framework.NodeDef
 import wumo.sim.tensorflow.core.Graph
+import wumo.sim.tensorflow.core.check
 import wumo.sim.tensorflow.ops.control_flow_ops.ControlFlowContext
 import wumo.sim.tensorflow.ops.ops.COLOCATION_OPS_ATTRIBUTE_NAME
 import wumo.sim.tensorflow.ops.ops.COLOCATION_OPS_ATTRIBUTE_PREFIX
 import wumo.sim.tensorflow.types.DataType
-import kotlin.collections.Iterable
-import kotlin.collections.List
-import kotlin.collections.Map
-import kotlin.collections.Set
 import kotlin.collections.emptySet
-import kotlin.collections.forEach
-import kotlin.collections.mutableSetOf
-import kotlin.collections.plusAssign
 import java.util.Collections.emptySet as emptyMutableSet
 
 class OpSpecification(val name: String, val opType: String, val device: String)
@@ -212,7 +209,17 @@ class Op(val graph: Graph, val c_op: TF_Operation) {
     }
   
   override fun toString(): String {
-    return """"Op("$name", op=$opType, dev=$device, run=${c_op.node().DebugString().string})"""
+    return """"Op("$name", op=$opType, dev=$device, def=${c_op.node().DebugString().string})"""
+  }
+  
+  fun nodeDef(): NodeDef {
+    val buf = newBuffer()
+    val status = newStatus()
+    TF_OperationToNodeDef(c_op, buf, status)
+    status.check()
+    val data = buf.data()
+    data.limit<Pointer>(buf.length())
+    return NodeDef.parseFrom(data.asByteBuffer())
   }
   
   fun toNodeDef() =

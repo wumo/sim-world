@@ -3,6 +3,7 @@ package wumo.sim.tensorflow
 import org.bytedeco.javacpp.BytePointer
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
 import org.bytedeco.javacpp.tensorflow.*
+import org.tensorflow.framework.OpDef
 import wumo.sim.tensorflow.core.check
 import wumo.sim.tensorflow.ops.Op
 import wumo.sim.tensorflow.ops.Output
@@ -17,9 +18,6 @@ import wumo.sim.util.toByte
 import wumo.sim.util.warn
 import java.util.*
 import java.util.Collections.emptySet as emptyMutableSet
-
-val String.fullName
-  get() = substring(2)
 
 fun buildOp(op: String, name: String, setAttr: OperationBuilder.() -> Unit = {}) = run {
   tf.nameScope(name) {
@@ -49,7 +47,54 @@ fun buildOpTensors(op: String, name: String, setAttr: OperationBuilder.() -> Uni
   }
 }
 
+/**
+ * Creates an `Operation` in this graph.
+ * This is a low-level interface for creating an [Op]. Most
+ * programs will not call this method directly, and instead use the
+ * Kotlin op constructors, such as [tf.const], which add ops to
+ * the default graph.
+ * @see "tensorflow.python.framework.ops.Graph#create_op"
+ */
+fun createOp(op: String, name: String, inputs: List<Output>, attrs: Map<String, org.tensorflow.framework.AttrValue>): Op =
+    tf.nameScope(name) {
+      val builder = tf.currentGraph.nodeBuilder(op, ops.convertNameScopeToName(tf.currentNameScope))
+      val opDef = tf.currentGraph.getOpDef(op)
+      builder.reconstructSequenceInputs(opDef, inputs, attrs)
+      attrs.forEach { key, attr -> builder.attr(key, attr) }
+      builder.build()
+    }
+
+private fun OperationBuilder.reconstructSequenceInputs(
+    opDef: OpDef, inputs: List<Output>, attrs: Map<String, org.tensorflow.framework.AttrValue>) {
+  var inputLen: Int
+  var isSequence: Boolean
+  var i = 0
+  opDef.inputArgList.forEach { inputArg ->
+    when {
+      inputArg.numberAttr.isNotEmpty() -> {
+        inputLen = attrs[inputArg.numberAttr!!]!!.i.toInt()
+        isSequence = true
+      }
+      inputArg.typeListAttr.isNotEmpty() -> {
+        inputLen = attrs[inputArg.typeListAttr!!]!!.list.typeList.size
+        isSequence = true
+      }
+      else -> {
+        inputLen = 1
+        isSequence = false
+      }
+    }
+    if (isSequence)
+      addInput(inputs.subList(i, i + inputLen))
+    else
+      addInput(inputs[i])
+    i += inputLen
+  }
+  assert(i == inputs.size)
+}
+
 class OperationBuilder(val opType: String, val name: String) {
+  
   private val scope = graphConstructionScope.value
   private val graph = scope.graph
   private val c_op_desc: TF_OperationDescription = TF_NewOperation(graph.c_graph, opType, name)
@@ -58,6 +103,9 @@ class OperationBuilder(val opType: String, val name: String) {
   private val inputLists = mutableListOf<Collection<Output>>()
   private val device: String = ""
   private val attributes = mutableMapOf<String, () -> Unit>()
+  /** We add an explicit colocation constraint between
+   *  the newly created op and any of its reference-typed inputs.*/
+  private val maybeColocateInputs = mutableListOf<Op>()
   
   fun build(): Op {
     inputFunctions.forEach { it() }
@@ -83,10 +131,11 @@ class OperationBuilder(val opType: String, val name: String) {
    *strongly connected component indicates equivalent colocationOps
    */
   private fun processColocate() {
-    if (scope.colocationOps.isEmpty()) return
+    if (scope.colocationOps.isEmpty() && maybeColocateInputs.isEmpty()) return
     val colcated = hashSetOf<Op>()
     val visited = hashSetOf<Op>()
     val queue = ArrayDeque(scope.colocationOps)
+    queue.addAll(maybeColocateInputs)
     while (queue.isNotEmpty()) {
       val op = queue.pop()
       if (op !in visited) {
@@ -168,21 +217,20 @@ class OperationBuilder(val opType: String, val name: String) {
   }
   
   private val input_ops = mutableSetOf<Op>()
-  private fun checkRef(input: Output, ref: Boolean) =
-      if (ref) input.asRef() else input.value()
   
   fun addInput(input: Output, ref: Boolean = false) {
     inputFunctions += {
-      addInput(checkRef(input, ref).asTF_Output())
+      addInput(input.asTF_Output())
     }
     inputs += input
+    if (ref) maybeColocateInputs += input.op!!
   }
   
   fun addInput(input: List<Output>, ref: Boolean = false) {
     inputFunctions += {
       val inputs = TF_Output(input.size.toLong())
       for ((i, _input) in input.withIndex()) {
-        val t = checkRef(_input, ref)
+        val t = _input
         inputs.position(i.toLong()).oper(t.op!!.c_op).index(t.value_index)
             .apply {
               input_ops += t.op
@@ -191,9 +239,10 @@ class OperationBuilder(val opType: String, val name: String) {
       }
       TF_AddInputList(c_op_desc, inputs.position(0L), input.size)
     }
+    if (ref) input.forEach { maybeColocateInputs += it.op!! }
     input.forEach { inputs += it }
   }
-  
+
 //  fun addInput(input: Array<Output>, ref: Boolean = false) {
 //    inputFunctions += {
 //      val inputs = TF_Output(input.size.toLong())
@@ -365,6 +414,15 @@ class OperationBuilder(val opType: String, val name: String) {
     attributes[name] = {
       val status = newStatus()
       val buf = attrValue.SerializeAsString()
+      TF_SetAttrValueProto(c_op_desc, name, buf, buf.limit(), status)
+      status.check()
+    }
+  }
+  
+  fun attr(name: String, attrValue: org.tensorflow.framework.AttrValue) = run {
+    attributes[name] = {
+      val status = newStatus()
+      val buf = BytePointer(*attrValue.toByteArray())
       TF_SetAttrValueProto(c_op_desc, name, buf, buf.limit(), status)
       status.check()
     }

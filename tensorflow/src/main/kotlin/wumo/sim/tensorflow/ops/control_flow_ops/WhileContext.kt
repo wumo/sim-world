@@ -3,6 +3,7 @@ package wumo.sim.tensorflow.ops.control_flow_ops
 import wumo.sim.tensorflow.ops.Op
 import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.tf
+import wumo.sim.util.emptyMutableSet
 
 class WhileContext : ControlFlowContext() {
   override fun addValue(output: Output): Output {
@@ -15,7 +16,6 @@ class WhileContext : ControlFlowContext() {
     get() = TODO("not implemented")
   override val name: String
     get() = TODO("not implemented")
-  
   
   override fun addOp(op: Op) {
     TODO("not implemented")
@@ -51,7 +51,7 @@ class WhileContext : ControlFlowContext() {
     }
     // TODO: [CONTROL_FLOW] Stop ignoring ops with no outputs.
     // Use an identity to pull control inputs as data inputs. Note that we ignore ops which do not have any outputs.
-    tf.controlDependencies(emptySet()) {
+    tf.controlDependencies(emptyMutableSet()) {
       enter()
       val externalInputs = externalInputs.map { op ->
         tf._identity(op.outputs[0]).op!!

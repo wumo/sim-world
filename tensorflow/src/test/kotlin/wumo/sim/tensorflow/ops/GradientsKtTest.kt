@@ -11,7 +11,7 @@ class GradientsKtTest : BaseTest() {
 //    val z = tf.mul(x, y, "z")
 //    val optimizer = GradientDescentOptimizer(learningRate = 0.1f)
 //    val opt = optimizer.minimize(z)
-//    val init = tf.global_variable_initializer()
+//    val init = tf.globalVariablesInitializer()
 //    println(tf.debugString())
 //    tf.session {
 //      init.run()

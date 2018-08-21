@@ -17,7 +17,7 @@ class `Q-Learning with Neural Networks test` : BaseTest() {
 //    val optimizer = GradientDescentOptimizer(learningRate = 0.1f, name = "train")
 //    val train = optimizer.minimize(loss)
 ////    val train = tf.gradientDescentOptimizer(0.1f, loss, "train")
-//    val init = tf.global_variable_initializer()
+//    val init = tf.globalVariablesInitializer()
 //    printGraph()
 //    tf.session {
 //      init.run()

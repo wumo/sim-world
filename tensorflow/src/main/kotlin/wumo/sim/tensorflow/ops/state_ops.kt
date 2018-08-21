@@ -2,10 +2,9 @@
 
 package wumo.sim.tensorflow.ops
 
-import wumo.sim.tensorflow.ops.variables.Initializer
+import wumo.sim.tensorflow.ops.variables.DynamicInitializer
 import wumo.sim.tensorflow.ops.variables.Variable
 import wumo.sim.tensorflow.tf
-import wumo.sim.tensorflow.types.DataType
 import wumo.sim.util.Shape
 import wumo.sim.util.SwitchType3
 import wumo.sim.util.scalarDimension
@@ -23,13 +22,13 @@ import wumo.sim.util.scalarDimension
 object state_ops {
   
   interface API {
-    
-    fun assign(ref: Output, value: Output, name: String = "Assign") =
-    //TODO NOTE(mrry): We add an explicit colocation constraint between
-    //the newly created op and any of its reference-typed inputs.
-        tf.colocateWith(ref) {
-          tf._assign(ref, value, name = name)
-        }
+
+//    fun assign(ref: Output, value: Output, name: String = "Assign") =
+//    //TODO NOTE(mrry): We add an explicit colocation constraint between
+//    //the newly created op and any of its reference-typed inputs.
+//        tf.colocateWith(ref) {
+//          tf._assign(ref, value, name = name)
+//        }
     
     fun variable(initial_value: Float, name: String = "Variable", trainable: Boolean = true) = variable(scalarDimension, initial_value, name, trainable)
     
@@ -65,7 +64,7 @@ object state_ops {
     fun variable(shape: Shape, initial_value: Long, name: String = "Variable", trainable: Boolean = true) = _variable({ tf.const(shape, initial_value, it) }, name, trainable)
     fun variable(shape: Shape, initial_value: String, name: String = "Variable", trainable: Boolean = true) = _variable({ tf.const(shape, initial_value, it) }, name, trainable)
     fun variable(initial_value: OutputLike, name: String = "Variable", trainable: Boolean = true) = _variable({ initial_value.toOutput() }, name, trainable)
-    fun variable(initial_value: Variable, name: String = "Variable", trainable: Boolean = true) = _variable({ initial_value.toOutput() }, name, trainable)
+    fun variable(initial_value: Variable, name: String = "Variable", trainable: Boolean = true) = _variable({ initial_value.initializedValue.toOutput() }, name, trainable)
     fun variable(initial_value: Any, name: String = "Variable", trainable: Boolean = true) =
         variable_switch(initial_value, name, trainable)
   }
@@ -94,16 +93,17 @@ private val variable_switch = SwitchType3<String, Boolean, Variable>().apply {
 }
 
 private fun _variable(initializer: (String) -> Output, name: String, trainable: Boolean = true): Variable =
-    tf.variable(name, initializer = object : Initializer {
-      val initValue = initializer("Initializer")
-      override val dtype: DataType<*>?
-        get() = initValue.dtype
-      override val shape: Shape?
-        get() = initValue.shape
-      override val name = "Initializer"
-      override val init: (Shape, DataType<*>, String) -> Output
-        get() = { _, _, _ -> initValue }
-    }, trainable = trainable)
+    tf.variable(name, initializer = DynamicInitializer(initializer("${tf.currentNameScope}$name/initial_value")), trainable = trainable)
+//    tf.variable(name, initializer = object : Initializer {
+//      val initValue = initializer("Initializer")
+//      override val dtype: DataType<*>?
+//        get() = initValue.dtype
+//      override val shape: Shape?
+//        get() = initValue.shape
+//      override val name = "Initializer"
+//      override val init: (Shape, DataType<*>, String) -> Output
+//        get() = { _, _, _ -> initValue }
+//    }, trainable = trainable)
 
 //private fun _variable(initializer: (String) -> Output, name: String, trainable: Boolean = true): Variable {
 //  TODO()

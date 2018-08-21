@@ -27,7 +27,7 @@ class `Multi-armed bandit` : BaseTest() {
 ////    val loss = tf.neg(tf.mul(tf.log(responsible_output), reward_holder))
 //    val optimizer = GradientDescentOptimizer(learningRate = 0.001f)
 //    val train = optimizer.minimize(loss, name = "train")
-//    val init = tf.global_variable_initializer()
+//    val init = tf.globalVariablesInitializer()
 //    println(tf.debugString())
 //
 //    val total_episodes = 1000//Set total number of episodes to train agent on.

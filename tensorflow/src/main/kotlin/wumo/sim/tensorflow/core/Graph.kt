@@ -10,6 +10,8 @@ import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Graph.newGraph
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
 import org.bytedeco.javacpp.tensorflow
 import org.bytedeco.javacpp.tensorflow.*
+import org.tensorflow.framework.GraphDef
+import org.tensorflow.framework.OpDef
 import wumo.sim.tensorflow.OperationBuilder
 import wumo.sim.tensorflow.ops.Op
 import wumo.sim.tensorflow.ops.Output
@@ -153,6 +155,151 @@ open class Graph {
   fun <K> getCollection(key: Graph.Key<K>) =
       collections.getOrDefault(key, mutableSetOf<K>()) as MutableSet<K>
   
+  var randomSeed: Int?
+    /** Gets the random seed of this graph. */
+    get() = (collections.getOrPut(Graph.Keys.RANDOM_SEEDS) { mutableSetOf<Int>() } as Set<Int>)?.firstOrNull()
+    /** Sets the random seed of this graph to the provided value. */
+    set(value) {
+      assertNotFrozen()
+      value?.let {
+        collections[Graph.Keys.RANDOM_SEEDS] = mutableSetOf(it)
+      }
+    }
+  
+  /** Returns the set of global variables in this graph.
+   *
+   * Global variables are variables that are shared across machines in a distributed environment. The `Variable()`
+   * constructor and the function `getVariable()` automatically add new variables to the graph collection with key
+   * `Graph.Keys.GLOBAL_VARIABLES`. This convenience function returns the contents of that collection.
+   *
+   * An alternative to global variables are local variables.
+   */
+  val globalVariables: Set<Variable>
+    get() = getCollection(Graph.Keys.GLOBAL_VARIABLES)
+  
+  /** Returns the set of local variables in this graph.
+   *
+   * Local variables (or per-process variables), are usually not saved/restored to/from checkpoints and are used for
+   * temporary or intermediate values. For example, they can be used as counters for metrics computations or number of
+   * epochs this machine has read data. This convenience function returns the contents of that collection.
+   *
+   * An alternative to local variables are global variables.
+   */
+  val localVariables: Set<Variable> get() = getCollection(Graph.Keys.LOCAL_VARIABLES)
+  
+  /** Returns the subset of `Variable` objects that are used in models for inference (feed forward), in this graph. */
+  val modelVariables: Set<Variable> get() = getCollection(Graph.Keys.MODEL_VARIABLES)
+  
+  /** Returns the set of metric variables in the current graph.
+   *
+   * Metric variables are usually not saved/restored to/from checkpoints and are used for temporary or intermediate
+   * values used for computing metrics (e.g., streaming metrics). This convenience function returns the contents of
+   * that collection.
+   */
+//  val metricVariables: Set<Variable> = getCollection(Metric.METRIC_VARIABLES)
+  
+  /** Returns the set of all variables created with `trainable = true`.
+   *
+   * When passed `trainable = true`, the `Variable()` constructor automatically adds new variables to the graph
+   * collection with key `Graph.Keys.TRAINABLE_VARIABLES`. This convenience function returns the contents of that
+   * collection.
+   */
+  val trainableVariables: Set<Variable> get() = getCollection(Graph.Keys.TRAINABLE_VARIABLES)
+  
+  /** Creates an op that returns a tensor containing the names of all uninitialized variables among all global and local
+   * variables of this graph. If all variables have been initialized, then an empty tensor is returned.
+   *
+   * @param  name Name for the created op.
+   * @return Created op output, which contains the names of the handles of all variables which have not yet been
+   *         initialized.
+   */
+//  fun uninitializedVariables(name: String = "UninitializedVariables"): Output = {
+//    Variable.uninitializedVariables(name = name)
+//  }
+  
+  /** Returns the set of all the summary `Output`s that have been created in the graph. */
+  val summaries: Set<Output> get() = getCollection(Graph.Keys.SUMMARIES)
+  
+  /** Returns the set of all the table initializers that have been created in the graph. */
+  val tableInitializers: Set<Op> get() = getCollection(Graph.Keys.TABLE_INITIALIZERS)
+  
+  /** Returns the set of all savers that have been created in the graph. */
+  val savers: Set<Saver> get() = getCollection(Graph.Keys.SAVERS)
+  
+  /** Returns the set of all shared resources used by the graph which need to be initialized once per cluster. */
+  val sharedResources: Set<Resource> get() = getCollection(Graph.Keys.SHARED_RESOURCES)
+  
+  /** Returns the set of all local resources used by the graph which need to be initialized once per cluster. */
+  val localResources: Set<Resource> get() = getCollection(Graph.Keys.LOCAL_RESOURCES)
+  
+  /** Creates an op that returns a tensor containing the names of all uninitialized resources among all shared and local
+   * resources of this graph. If all resources have been initialized, then an empty tensor is returned.
+   *
+   * @param  name Name for the created op.
+   * @return Created op output, which contains the names of the handles of all resources which have not yet been
+   *         initialized.
+   */
+  fun uninitializedResources(name: String = "UninitializedResources"): Output = run {
+    TODO()
+//    Resources.uninitializedResources(name = name)
+  }
+  
+  /** Returns the set of all the train `Op`s (i.e., optimizer update ops) that have been created in the graph. */
+  val trainOps: Set<Op> get() = getCollection(Graph.Keys.TRAIN_OP)
+  
+  /** Returns an op that initializes all global variables of this graph.
+   *
+   * For more information, refer to [[globalVariables]] and [[Variable.initializer]].
+   *
+   * @param  name Name for the created op.
+   * @return Created op.
+   */
+  fun globalVariablesInitializer(name: String = "global_variables_initializer"): Op =
+      Variable.initializer(globalVariables)
+  
+  /** Returns an op that initializes all local variables of this graph.
+   *
+   * For more information, refer to [[localVariables]] and [[Variable.initializer]].
+   *
+   * @param  name Name for the created op.
+   * @return Created op.
+   */
+  fun localVariablesInitializer(name: String = "local_variables_initializer"): Op =
+      Variable.initializer(localVariables, name)
+  
+  /** Returns an op that initializes all model variables of this graph.
+   *
+   * For more information, refer to [[modelVariables]] and [[Variable.initializer]].
+   *
+   * @param  name Name for the created op.
+   * @return Created op.
+   */
+  fun modelVariablesInitializer(name: String = "ModelVariablesInitializer"): Op =
+      Variable.initializer(modelVariables, name)
+  
+  /** Returns an op that initializes all trainable variables of this graph.
+   *
+   * For more information, refer to [[trainableVariables]] and [[Variable.initializer]].
+   *
+   * @param  name Name for the created op.
+   * @return Created op.
+   */
+  fun trainableVariablesInitializer(name: String = "TrainableVariablesInitializer"): Op =
+      Variable.initializer(trainableVariables, name)
+  
+  /**
+   * Returns the [OpDef] proto for [opType].
+   */
+  fun getOpDef(opType: String): OpDef {
+    val buf = newBuffer()
+    val status = newStatus()
+    TF_GraphGetOpDef(c_graph, opType, buf, status)
+    status.check()
+    val data = buf.data()
+    data.limit<Pointer>(buf.length())
+    return OpDef.parseFrom(data.asByteBuffer())
+  }
+  
   fun num_node_ids() = c_graph.graph().num_node_ids()
   fun nodeBuilder(opType: String, name: String) = OperationBuilder(opType, name)
   fun isFetchable(op: Op) {
@@ -192,7 +339,9 @@ open class Graph {
   /** Returns `true` if [name] is registered in this graph's function library. */
   fun isFunction(name: String) = name in functions
   
-  fun toGraphDef(): ByteArray {
+  fun toGraphDef() = GraphDef.parseFrom(toGraphDefBytes())
+  
+  fun toGraphDefBytes(): ByteArray {
     val buf = newBuffer()
     val status = newStatus()
     TF_GraphToGraphDef(c_graph, buf, status)
@@ -204,6 +353,10 @@ open class Graph {
     val data = d.asByteBuffer()
     data.get(bytes)
     return bytes
+  }
+  
+  fun debugString(): String {
+    return toGraphDef().toString()
   }
   
   fun import(act_graph_def: ByteArray, prefix: String = "") {

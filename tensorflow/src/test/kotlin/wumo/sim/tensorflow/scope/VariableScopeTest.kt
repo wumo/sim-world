@@ -22,7 +22,7 @@ class VariableScopeTest {
 //        println()
 //      }
 //    }
-//    val init = tf.global_variable_initializer()
+//    val init = tf.globalVariablesInitializer()
 //    tf.printGraph()
   }
   
@@ -35,9 +35,9 @@ class VariableScopeTest {
         tf.variableScope("L1") {
           val c = tf.variable(f(1f), "c")
           val g = tf.const(1, name = "g")
-          assertEquals("L1/L2/a", a.name)
+          assertEquals("L1/L2/a:0", a.name)
           assertEquals("L1/c_1", c.name)
-          assertEquals("L1/L2/L1/g", g.name)
+          assertEquals("L1/L2/L1/g:0", g.name)
         }
       }
     }

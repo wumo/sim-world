@@ -3,7 +3,6 @@ package wumo.sim.tensorflow.ops
 import org.bytedeco.javacpp.tensorflow
 import org.bytedeco.javacpp.tensorflow.AttrValue
 import org.bytedeco.javacpp.tensorflow.TF_Version
-import org.tensorflow.framework.GraphDef
 import wumo.sim.tensorflow.Session
 import wumo.sim.tensorflow.core.*
 import wumo.sim.tensorflow.ops.control_flow_ops.CondContext
@@ -11,7 +10,9 @@ import wumo.sim.tensorflow.ops.control_flow_ops.ControlFlowContext
 import wumo.sim.tensorflow.ops.control_flow_ops.control_flow_ops
 import wumo.sim.tensorflow.ops.gen.gen_ops
 import wumo.sim.tensorflow.ops.variables.variables
+import wumo.sim.tensorflow.tf
 import wumo.sim.util.DynamicVariable
+import wumo.sim.util.dump
 import wumo.sim.util.lazyLogger
 import wumo.sim.util.println
 
@@ -25,15 +26,15 @@ object ops {
   
   data class GraphConstructionScope(
       val graph: Graph = Graph(),
-      var nameScope: String = "",
-      var device: String = "",
-      var deviceFunction: (OpSpecification) -> String = { it.device },
-      val colocationOps: MutableSet<Op> = mutableSetOf(),
-      val controlDependencies: MutableSet<Op> = mutableSetOf(),
-      val attributes: MutableMap<String, tensorflow.AttrValue> = mutableMapOf(),
-      var container: String = "", // TODO: !!! Use containers.
-      var controlFlowContext: ControlFlowContext? = null,
-      var outerContext: GraphConstructionScope? = null)
+      val nameScope: String = "",
+      val device: String = "",
+      val deviceFunction: (OpSpecification) -> String = { it.device },
+      val colocationOps: Set<Op> = emptySet(),
+      val controlDependencies: Set<Op> = emptySet(),
+      val attributes: Map<String, tensorflow.AttrValue> = mutableMapOf(),
+      val container: String = "", // TODO: !!! Use containers.
+      val controlFlowContext: ControlFlowContext? = null,
+      val outerContext: GraphConstructionScope? = null)
   
   internal val graphConstructionScope = DynamicVariable(GraphConstructionScope(core.defaultGraph))
   
@@ -138,13 +139,13 @@ object ops {
    * @param  context       Op creation context whose colocation ops need to be updated.
    * @return Set of colocation ops to use for the new op creation context.
    */
-  private fun mergeColocationOps(colocationsOps: Set<Op>?, context: GraphConstructionScope): MutableSet<Op> =
+  private fun mergeColocationOps(colocationsOps: MutableSet<Op>?, context: GraphConstructionScope): Set<Op> =
       when {
         colocationsOps == null -> context.colocationOps
         colocationsOps.isEmpty() -> mutableSetOf()
         else -> {
-          context.colocationOps.addAll(colocationsOps)
-          context.colocationOps
+          colocationsOps.addAll(context.colocationOps)
+          colocationsOps
         }
       }
   
@@ -156,14 +157,14 @@ object ops {
    * @param  context             Op creation context whose control dependencies needs to be updated.
    * @return Set of control dependencies to use for the new op creation context.
    */
-  private fun mergeControlDependencies(controlDependencies: Set<Op>?, context: GraphConstructionScope)
-      : Pair<MutableSet<Op>, ControlFlowContext?> =
+  private fun mergeControlDependencies(controlDependencies: MutableSet<Op>?, context: GraphConstructionScope)
+      : Pair<Set<Op>, ControlFlowContext?> =
       when {
         controlDependencies == null -> context.controlDependencies to context.controlFlowContext
         controlDependencies.isEmpty() -> mutableSetOf<Op>() to null
         else -> {
-          context.controlDependencies.addAll(controlDependencies)
-          context.controlDependencies to context.controlFlowContext
+          controlDependencies.addAll(context.controlDependencies)
+          controlDependencies to context.controlFlowContext
         }
       }
   
@@ -175,13 +176,14 @@ object ops {
    * @param  context    Op creation context whose attributes needs to be updated.
    * @return Set of attributes to use for the new op creation context.
    */
-  private fun mergeAttributes(attributes: Map<String, tensorflow.AttrValue?>?, context: GraphConstructionScope): MutableMap<String, tensorflow.AttrValue> =
+  private fun mergeAttributes(attributes: Map<String, tensorflow.AttrValue?>?, context: GraphConstructionScope):
+      Map<String, tensorflow.AttrValue> =
       when {
         attributes == null -> context.attributes
         attributes.isEmpty() ->
-          mutableMapOf()
+          emptyMap()
         else -> {
-          val mergedMap = context.attributes
+          val mergedMap = HashMap(context.attributes)
           attributes.forEach { (key, value) ->
             if (value == null && mergedMap.contains(key))
               mergedMap.remove(key)
@@ -337,8 +339,11 @@ object ops {
       if (outerContext.graph is FunctionGraph)
         throw IllegalStateException("All graphs are building functions.")
       return graphConstructionScope.with(outerContext) {
-        with(nameScope = graphConstructionScope.value.nameScope,
-             controlDependencies = emptySet(), block = block)
+        var scope = graphConstructionScope.value.nameScope
+        if (scope.isNotEmpty() && !scope.endsWith('/'))
+          scope = "$scope/"
+        with(nameScope = scope,
+             controlDependencies = mutableSetOf(), block = block)
       }
     }
     
@@ -625,8 +630,8 @@ object ops {
      */
     fun <R> with(graph: Graph? = null, nameScope: String? = null,
                  device: String = "", deviceFunction: DeviceFunction = { it.device },
-                 colocationsOps: Set<Op>? = null,
-                 controlDependencies: Set<Op>? = null,
+                 colocationsOps: MutableSet<Op>? = null,
+                 controlDependencies: MutableSet<Op>? = null,
                  attributes: Map<String, tensorflow.AttrValue>? = null,
                  container: String? = null,
                  block: () -> R): R {
@@ -681,19 +686,36 @@ object ops {
     fun <R> attr_scope(vararg attrs: Pair<String, AttrValue>, block: () -> R): R =
         with(attributes = attrs.associate { it }, block = block)
     
-    fun debugString() = GraphDef.parseFrom(currentGraph.toGraphDef()).toString()
+    fun globalVariablesInitializer(): Op =
+        tf.currentGraph.globalVariablesInitializer()
+    
+    fun localVariablesInitializer(): Op =
+        tf.currentGraph.localVariablesInitializer()
+    
+    fun modelVariablesInitializer(): Op =
+        tf.currentGraph.modelVariablesInitializer()
+    
+    fun trainableVariablesInitializer(): Op =
+        tf.currentGraph.trainableVariablesInitializer()
+    
+    fun debugString(): String {
+      val graphDef = currentGraph.toGraphDef()
+      return graphDef.toString()
+    }
+    
     fun printGraph() {
       debugString().println()
+    }
+    
+    fun dumpGraph(file: String): String {
+      val str = debugString()
+      dump(file, str)
+      return str
     }
     
     fun session(block: Session.() -> Unit) {
       val session = Session(currentGraph.c_graph)
       block(session)
-    }
-    
-    fun global_variable_initializer(): Op {
-      TODO()
-//    return tf.group(global_variables, name = "init")
     }
     
     val version get() = TF_Version().string
@@ -768,10 +790,10 @@ object ops {
         with(deviceFunction = dev, block = block)
     
     fun <R> controlDependencies(control_input: Output, block: () -> R) =
-        controlDependencies(setOf(control_input.op!!)) { block() }
+        controlDependencies(mutableSetOf(control_input.op!!)) { block() }
     
     fun <R> controlDependencies(control_input: Op, block: () -> R) =
-        controlDependencies(setOf(control_input)) { block() }
+        controlDependencies(mutableSetOf(control_input)) { block() }
     
     /** Creates a context that can be used for creating gradient ops and placing them on the same device as
      * `colocationOps`.
@@ -835,7 +857,7 @@ object ops {
       return colocateWith(op.mapTo(mutableSetOf<Op>()) { it.op!! }, ignore_existing, block)
     }
     
-    fun <R> controlDependencies(control_inputs: Set<Op>, block: () -> R): R =
+    fun <R> controlDependencies(control_inputs: MutableSet<Op>, block: () -> R): R =
         with(controlDependencies = control_inputs, block = block)
     
     //    private var tmpDev = ""

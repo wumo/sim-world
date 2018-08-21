@@ -4,6 +4,7 @@ import wumo.sim.tensorflow.core.Graph
 import wumo.sim.tensorflow.ops.*
 import wumo.sim.tensorflow.ops.control_flow_ops.control_flow_ops.isLoopExit
 import wumo.sim.tensorflow.tf
+import wumo.sim.util.emptyMutableSet
 
 class CondContext(val predicate: Output,
                   val pivot: Output,
@@ -71,7 +72,7 @@ class CondContext(val predicate: Output,
         result
       } ?: output
       
-      val result = tf.controlDependencies(emptySet()) {
+      val result = tf.controlDependencies(emptyMutableSet()) {
         control_flow_ops._switchRefOrTensor(switchInput, predicate)[branch]
       }
       result.op!!.graph.preventFetching(result.op)
@@ -102,7 +103,7 @@ class CondContext(val predicate: Output,
   
   private fun processOp(op: Op): Output {
     //Use pivot as the proxy for this op.
-    return tf.withDependencies(setOf(op), pivot)
+    return tf.withDependencies(mutableSetOf(op), pivot)
   }
   
   /** Processes an op output used in a conditional branch. */

@@ -45,7 +45,7 @@ class Contextual_Bandit : BaseTest() {
 //    val optimizer = GradientDescentOptimizer(learningRate = 0.001f)
 //    val train = optimizer.minimize(loss, name = "train")
 ////    val train = tf.gradientDescentOptimizer(0.001f, loss)
-//    val init = tf.global_variable_initializer()
+//    val init = tf.globalVariablesInitializer()
 //    printGraph()
 //    val weights = tf.trainables[0]
 //    val total_episodes = 10000

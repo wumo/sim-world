@@ -42,7 +42,7 @@ class VanillaPolicyTest : BaseTest() {
 //    val gradients = tf.gradients(loss, tf.trainables)
 //    val optimizer = AdamOptimizer(learningRate = lr)
 //    val update_batch = optimizer.apply_gradients(gradients.zip(tf.trainables))
-//    val init = tf.global_variable_initializer()
+//    val init = tf.globalVariablesInitializer()
 //    printGraph()
 //
 //    val total_episodes = 5000  //Set total number of episodes to train agent on.

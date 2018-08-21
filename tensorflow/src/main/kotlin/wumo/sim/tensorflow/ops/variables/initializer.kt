@@ -39,6 +39,18 @@ fun ones_initializer(dtype: DataType<*> = FLOAT) = object : Initializer {
     }
 }
 
+class DynamicInitializer(val value: Output) : Initializer {
+  override val dtype = value.dtype
+  override val shape = value.shape
+  override val name: String
+    get() = "constant_initializer"
+  override val init: (Shape, DataType<*>, String) -> Output
+    get() = { shape, dtype, name ->
+      value
+    }
+  
+}
+
 fun constant_initializer(value: Any, dtype: DataType<*> = FLOAT) = object : Initializer {
   override val name: String
     get() = "const_initializer"

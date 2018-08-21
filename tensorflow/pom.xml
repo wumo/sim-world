@@ -43,22 +43,22 @@
             <version>${javacpp-resets-tensorflow.version}</version>
         </dependency>
         <!--<dependency>-->
-            <!--<groupId>org.bytedeco.javacpp-presets</groupId>-->
-            <!--<artifactId>tensorflow</artifactId>-->
-            <!--<version>${javacpp-resets-tensorflow.version}</version>-->
-            <!--<classifier>${platform}</classifier>-->
+        <!--<groupId>org.bytedeco.javacpp-presets</groupId>-->
+        <!--<artifactId>tensorflow</artifactId>-->
+        <!--<version>${javacpp-resets-tensorflow.version}</version>-->
+        <!--<classifier>${platform}</classifier>-->
         <!--</dependency>-->
         <dependency>
             <groupId>org.bytedeco.javacpp-presets</groupId>
             <artifactId>tensorflow</artifactId>
             <version>${javacpp-resets-tensorflow.version}</version>
-            <classifier>linux-x86_64</classifier>
+            <classifier>${platform.class}</classifier>
         </dependency>
         <!--<dependency>-->
-            <!--<groupId>org.bytedeco.javacpp-presets</groupId>-->
-            <!--<artifactId>tensorflow</artifactId>-->
-            <!--<version>${javacpp-resets-tensorflow.version}</version>-->
-            <!--<classifier>${platform}-gpu</classifier>-->
+        <!--<groupId>org.bytedeco.javacpp-presets</groupId>-->
+        <!--<artifactId>tensorflow</artifactId>-->
+        <!--<version>${javacpp-resets-tensorflow.version}</version>-->
+        <!--<classifier>${platform}-gpu</classifier>-->
         <!--</dependency>-->
         <!--<dependency>-->
         <!--<groupId>org.bytedeco.javacpp-presets</groupId>-->

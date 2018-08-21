@@ -3,9 +3,9 @@ package wumo.sim.tensorflow.ops.control_flow_ops
 import wumo.sim.tensorflow.core.InvalidArgumentException
 import wumo.sim.tensorflow.core.InvalidDataTypeException
 import wumo.sim.tensorflow.ops.*
-import wumo.sim.tensorflow.ops.variables.Variable
 import wumo.sim.tensorflow.tf
 import wumo.sim.util.a
+import wumo.sim.util.groupBy
 import kotlin.collections.component1
 import kotlin.collections.component2
 
@@ -197,18 +197,9 @@ object control_flow_ops {
     if (errorMsg != null) throw InvalidArgumentException(errorMsg)
   }
   
-  private fun groupControlDeps(deps: Set<Op>, name: String = "noOp") = run {
-    tf.controlDependencies(deps) {
-      tf._noOp(name)
-    }
-  }
-  
-  /**
-   * @see [_merge]
-   */
-  private fun ref_merge(inputs: List<Output>, name: String): Array<Output> =
-      tf.colocateWith(inputs) {
-        tf._refMerge(inputs, name)
+  private fun groupControlDeps(dev: String, deps: MutableSet<Op>, name: String = "noOp") =
+      tf.with(device = dev, controlDependencies = deps) {
+        tf._noOp(name)
       }
   
   /** Creates an op that forwards [input] to the output port determined by [predicate], while making sure the new op is
@@ -281,7 +272,7 @@ object control_flow_ops {
       inputs.all { it is Output } -> {
         inputs as List<Output>
         if (inputs.all { it.dtype.isRefType })
-          ref_merge(inputs, name)
+          tf._refMerge(inputs, name)
         else
           tf._merge(inputs, name)
       }
@@ -305,7 +296,7 @@ object control_flow_ops {
      * @return Created op output.
      * @see "tensorflow.python.ops.control_flow_ops.with_dependencies"
      */
-    fun withDependencies(dependencies: Set<Op>,
+    fun withDependencies(dependencies: MutableSet<Op>,
                          input: Output,
                          name: String = "control_dependency"): Output =
         tf.nameScope(name, dependencies + input.op!!) {
@@ -316,36 +307,33 @@ object control_flow_ops {
           }
         }
     
-    fun group(inputs: List<Any>, name: String = "group_deps"): Op {
-      val ops_on_device = mutableMapOf<String, MutableSet<Op>>()
-      for (input in inputs) {
-        val op = when (input) {
-          is Op -> input
-          is Variable -> input.initializer
-          is Output -> input.op
-          else -> throw IllegalArgumentException("unsupported ${input::class.java}")
-        }
-        val dev = op!!.device
-        ops_on_device.compute(dev) { _, list ->
-          val list = list ?: mutableSetOf<Op>()
-          list += op
-          list
-        }
-      }
+    /**
+     * Create an op that groups multiple operations.
+     *
+     * When this op finishes, all ops in [inputs] have finished. This op has no
+     * output.
+     *
+     * @param inputs Zero or more tensors to group.
+     * @param name A name for this operation (optional).
+     *
+     * @return An Operation that executes all its inputs.
+     */
+    fun group(inputs: Iterable<Op>, name: String = "group_deps"): Op {
+      // Sorts *inputs according to their devices.
+      val ops_on_device = inputs.groupBy { it.device }
       if (ops_on_device.size == 1) {
+        // 1-level tree. The root node is the returned NoOp node.
         val (dev, deps) = ops_on_device.entries.first()
-        return tf.device(dev) {
-          groupControlDeps(deps, name)
-        }
+        return groupControlDeps(dev, deps, name)
       }
-      val all_deps = mutableSetOf<Op>()
-      return tf.nameScope(name) {
-        for ((dev, deps) in ops_on_device) {
-          tf.device(dev) {
-            all_deps += groupControlDeps(deps)
+      // 2-level tree. The root node is the returned no-op node. `dependencies` contains 1 NoOp node for each device.
+      val deps = ops_on_device.asSequence()
+          .sortedBy { it.key }
+          .mapTo(mutableSetOf()) { (dev, ops) ->
+            groupControlDeps(dev, ops)
           }
-        }
-        groupControlDeps(all_deps, tf.currentNameScope)
+      return tf.controlDependencies(deps) {
+        tf._noOp(name)
       }
     }
     

@@ -16,7 +16,7 @@ class Array_opsKtTest : BaseTest() {
   fun placeholder() {
     val p = tf.placeholder(2 x 2)
 //    val a = tf.variable(p)
-    val init = tf.global_variable_initializer()
+    val init = tf.globalVariablesInitializer()
     printGraph()
     tf.session {
       init.run(p to NDArray(2 x 2, f(1f, 2f, 3f, 4f)))

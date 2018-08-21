@@ -14,7 +14,7 @@ class Random_opsKtTest : BaseTest() {
     val a = tf._randomUniform(tf.const(i(2, 2)), FLOAT)
     val b = tf.random_uniform(2 x 2, 1f, 2f)
 //    val c = tf.variable(tf.random_uniform(2 x 3, 2f, 3f))
-    val init = tf.global_variable_initializer()
+    val init = tf.globalVariablesInitializer()
     printGraph()
     tf.session {
       init.run()
