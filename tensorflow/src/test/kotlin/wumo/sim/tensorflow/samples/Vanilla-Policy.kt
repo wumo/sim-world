@@ -16,7 +16,7 @@ class VanillaPolicyTest : BaseTest() {
 //    val s_size = 4
 //    val a_size = 2
 //    val h_size = 8
-//    val state_in = tf.placeholder(-1 x s_size, dtype = DT_FLOAT, name = "state_in")
+//    val state_in = tf.placeholder(-1 x s_size, dataType = DT_FLOAT, name = "state_in")
 //    val hidden = tf.fully_connected(state_in, h_size,
 //                                    biases_initializer = null,
 //                                    activation_fn = { tf.relu(it) })
@@ -27,8 +27,8 @@ class VanillaPolicyTest : BaseTest() {
 //
 //    //The next six lines establish the training proceedure. We feed the reward and chosen action into the network
 //    //to compute the loss, and use it to update the network.
-//    val reward_holder = tf.placeholder(Shape(-1), dtype = DT_FLOAT, name = "reward_holder")
-//    val action_holder = tf.placeholder(Shape(-1), dtype = DT_INT32, name = "action_holder")
+//    val reward_holder = tf.placeholder(Shape(-1), dataType = DT_FLOAT, name = "reward_holder")
+//    val action_holder = tf.placeholder(Shape(-1), dataType = DT_INT32, name = "action_holder")
 //
 //    val indexes = tf.range(tf.const(0), tf.shape(output)[0]) * tf.shape(output)[1] + action_holder
 //    val responsible_output = tf.gather(tf.reshape(output, tf.const(i(-1))), indexes, name = "responsible_weight")

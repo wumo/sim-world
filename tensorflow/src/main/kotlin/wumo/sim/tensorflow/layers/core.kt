@@ -18,9 +18,9 @@ package wumo.sim.tensorflow.layers
 //            val kernel_constraint: Any? = null,
 //            val bias_constraint: Any? = null,
 //            trainable: Boolean = true,
-//            dtype: Int = 0) : Layer(trainable = trainable,
+//            dataType: Int = 0) : Layer(trainable = trainable,
 //                                    activity_reqularizer = activity_regularizer,
-//                                    dtype = dtype) {
+//                                    dataType = dataType) {
 //  lateinit var input_spec: Any
 //  lateinit var kernel: Output
 //  var bias: Output? = null
@@ -29,14 +29,14 @@ package wumo.sim.tensorflow.layers
 //      throw IllegalArgumentException("The last dimension of the inputs to `Dense`" +
 //                                         "should be defined. Found `None`.")
 //    kernel = add_variable(name = "weights",
-//                          shape = input_shape[-1] x units, dtype = dtype,
+//                          shape = input_shape[-1] x units, dataType = dataType,
 //                          initializer = kernel_initializer,
 //                          regularizer = kernel_regularizer,
 //                          trainable = true)
 //
 //    if (use_bias)
 //      bias = add_variable(name = "biases",
-//                          shape = dim(units), dtype = dtype,
+//                          shape = dim(units), dataType = dataType,
 //                          initializer = bias_initializer!!,
 //                          regularizer = bias_regularizer,
 //                          trainable = true)

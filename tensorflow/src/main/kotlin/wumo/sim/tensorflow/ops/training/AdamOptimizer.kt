@@ -1,11 +1,11 @@
-package wumo.sim.tensorflow.training
+package wumo.sim.tensorflow.ops.training
 //
 //import wumo.sim.tensorflow.*
 //import wumo.sim.tensorflow.ops.*
 //import wumo.sim.tensorflow.ops.control_flow_ops.group
 //import wumo.sim.tensorflow.ops.gen.applyAdam
 //import wumo.sim.tensorflow.ops.variables.Variable
-//import wumo.sim.util.tuple2
+//import wumo.sim.util.t2
 //
 ///**
 // * Construct a new Adam optimizer.
@@ -101,12 +101,12 @@ package wumo.sim.tensorflow.training
 //    val v = get_slot(_v, "v")
 //    val (beta1_power, beta2_power) = get_beta_accumulators()
 //    return tf.applyAdam(_v, m, v,
-//                         tf.cast(beta1_power, _v.dtype.base_dtype),
-//                         tf.cast(beta2_power, _v.dtype.base_dtype),
-//                         tf.cast(lr_t, _v.dtype.base_dtype),
-//                         tf.cast(beta1_t, _v.dtype.base_dtype),
-//                         tf.cast(beta2_t, _v.dtype.base_dtype),
-//                         tf.cast(epsilon_t, _v.dtype.base_dtype),
+//                         tf.cast(beta1_power, _v.dataType.base_dtype),
+//                         tf.cast(beta2_power, _v.dataType.base_dtype),
+//                         tf.cast(lr_t, _v.dataType.base_dtype),
+//                         tf.cast(beta1_t, _v.dataType.base_dtype),
+//                         tf.cast(beta2_t, _v.dataType.base_dtype),
+//                         tf.cast(epsilon_t, _v.dataType.base_dtype),
 //                         grad, use_locking = use_locking).op!!
 //  }
 //
@@ -124,7 +124,7 @@ package wumo.sim.tensorflow.training
 //  }
 //
 //  private fun get_beta_accumulators() =
-//      tuple2(get_non_slot_variable("beta1_power"),
+//      t2(get_non_slot_variable("beta1_power"),
 //             get_non_slot_variable("beta2_power"))
 //
 //}

@@ -33,14 +33,14 @@ interface gen_sparse_ops {
   fun _deserializeManySparse(serialized_sparse: Output, dtype: DataType<*>, name: String = "DeserializeManySparse") = run {
     buildOpTensors("DeserializeManySparse", name) {
       addInput(serialized_sparse, false)
-      attr("dtype", dtype)
+      attr("dataType", dtype)
     }
   }
   
   fun _deserializeSparse(serialized_sparse: Output, dtype: DataType<*>, name: String = "DeserializeSparse") = run {
     buildOpTensors("DeserializeSparse", name) {
       addInput(serialized_sparse, false)
-      attr("dtype", dtype)
+      attr("dataType", dtype)
     }
   }
   
@@ -297,7 +297,7 @@ interface gen_sparse_ops {
   fun _takeManySparseFromTensorsMap(sparse_handles: Output, dtype: DataType<*>, container: String = "", shared_name: String = "", name: String = "TakeManySparseFromTensorsMap") = run {
     buildOpTensors("TakeManySparseFromTensorsMap", name) {
       addInput(sparse_handles, false)
-      attr("dtype", dtype)
+      attr("dataType", dtype)
       attr("container", container)
       attr("shared_name", shared_name)
     }

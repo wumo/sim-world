@@ -15,7 +15,7 @@ import wumo.sim.util.Shape
 
 class Variable(
     override val dataType: DataType<*>,
-    private val variable: Output,
+    val variable: Output,
     initializeOp: Op,
     private val initialValue: Output,
     snapshot: Output) : VariableLike {
@@ -161,7 +161,7 @@ class Variable(
     ): Variable =
         tf.init_scope {
           tf.nameScope(name) {
-            val inferredDataType = dataType ?: initializer.dtype ?: FLOAT
+            val inferredDataType = dataType ?: initializer.dataType ?: FLOAT
             val inferredShape = shape ?: initializer.shape ?: throw ShapeMismatchException(
                 "No shape was provided for the new variable and it could not be inferred from the provided initializer.")
             val scopeName = tf.currentNameScope

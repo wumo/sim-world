@@ -9,11 +9,10 @@ import wumo.sim.graphics.Viewer
 import wumo.sim.spaces.Box
 import wumo.sim.spaces.Discrete
 import wumo.sim.util.Rand
-import wumo.sim.util.d
 import wumo.sim.util.f
 import wumo.sim.util.ndarray.NDArray
 import wumo.sim.util.ndarray.unaryMinus
-import wumo.sim.util.tuple4
+import wumo.sim.util.t4
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
@@ -48,7 +47,7 @@ class CartPole : Env<NDArray<Float>, Int> {
   override val action_space = Discrete(2)
   override val observation_space = Box(-high, high)
   
-  override fun step(a: Int): tuple4<NDArray<Float>, Float, Boolean, Map<String, Any>> {
+  override fun step(a: Int): t4<NDArray<Float>, Float, Boolean, Map<String, Any>> {
     assert(action_space.contains(a)) { "invalid a:$a" }
     var (x, x_dot, theta, theta_dot) = state
     
@@ -83,7 +82,7 @@ class CartPole : Env<NDArray<Float>, Int> {
         0.0f
       }
     }
-    return tuple4(state.copy(), reward, done, emptyMap())
+    return t4(state.copy(), reward, done, emptyMap())
   }
   
   override fun reset(): NDArray<Float> {

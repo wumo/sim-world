@@ -847,7 +847,7 @@ object ops {
           colocationOps = newColocationOps, outerContext = graphConstructionScope.value), block)
     }
     
-    fun <R> colocateWith(op: Output, ignoreExisting: Boolean = false, block: () -> R) =
+    fun <R> colocateWith(op: OutputLike, ignoreExisting: Boolean = false, block: () -> R) =
         colocateWith(op.op!!, ignoreExisting, block)
     
     fun <R> colocateWith(op: Op, ignore_existing: Boolean = false, block: () -> R) =

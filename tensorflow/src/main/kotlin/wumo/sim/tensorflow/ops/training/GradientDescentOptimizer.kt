@@ -1,4 +1,4 @@
-package wumo.sim.tensorflow.training
+package wumo.sim.tensorflow.ops.training
 //
 //import wumo.sim.tensorflow.ops.Output
 //import wumo.sim.tensorflow.ops.variables.Variable
@@ -16,6 +16,6 @@ package wumo.sim.tensorflow.training
 //  }
 //
 //  override fun apply_dense(grad: Output, v: Variable) =
-//      tf.applyGradientDescent(v, tf.cast(lr_t, v.dtype.base_dtype), grad).op!!
+//      tf.applyGradientDescent(v, tf.cast(lr_t, v.dataType.base_dtype), grad).op!!
 //
 //}

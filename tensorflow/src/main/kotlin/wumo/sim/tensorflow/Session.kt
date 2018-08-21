@@ -12,10 +12,10 @@ import wumo.sim.tensorflow.ops.Op
 import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.ops.variables.Variable
 import wumo.sim.util.ndarray.NDArray
-import wumo.sim.util.tuple2
-import wumo.sim.util.tuple3
-import wumo.sim.util.tuple4
-import wumo.sim.util.tuple5
+import wumo.sim.util.t2
+import wumo.sim.util.t3
+import wumo.sim.util.t4
+import wumo.sim.util.t5
 
 class Session(val c_graph: TF_Graph) {
   private val c_session: TF_Session
@@ -53,30 +53,30 @@ class Session(val c_graph: TF_Graph) {
     return t as NDArray<T>
   }
   
-  fun <T1 : Any, T2 : Any> eval(t1: Output, t2: Output): tuple2<NDArray<T1>, NDArray<T2>> {
+  fun <T1 : Any, T2 : Any> eval(t1: Output, t2: Output): t2<NDArray<T1>, NDArray<T2>> {
     val (r1, r2) = _eval(t1, t2)
-    return tuple2(r1 as NDArray<T1>, r2 as NDArray<T2>)
+    return t2(r1 as NDArray<T1>, r2 as NDArray<T2>)
   }
   
-  fun <T1 : Any, T2 : Any, T3 : Any> eval(t1: Output, t2: Output, t3: Output): tuple3<NDArray<T1>, NDArray<T2>, NDArray<T3>> {
+  fun <T1 : Any, T2 : Any, T3 : Any> eval(t1: Output, t2: Output, t3: Output): t3<NDArray<T1>, NDArray<T2>, NDArray<T3>> {
     val (r1, r2, r3) = _eval(t1, t2, t3)
-    return tuple3(r1 as NDArray<T1>, r2 as NDArray<T2>,
-                  r3 as NDArray<T3>)
+    return t3(r1 as NDArray<T1>, r2 as NDArray<T2>,
+              r3 as NDArray<T3>)
   }
   
   fun <T1 : Any, T2 : Any, T3 : Any, T4 : Any> eval(t1: Output, t2: Output, t3: Output, t4: Output):
-      tuple4<NDArray<T1>, NDArray<T2>, NDArray<T3>, NDArray<T4>> {
+      t4<NDArray<T1>, NDArray<T2>, NDArray<T3>, NDArray<T4>> {
     val (r1, r2, r3, r4) = _eval(t1, t2, t3, t4)
-    return tuple4(r1 as NDArray<T1>, r2 as NDArray<T2>,
-                  r3 as NDArray<T3>, r4 as NDArray<T4>)
+    return t4(r1 as NDArray<T1>, r2 as NDArray<T2>,
+              r3 as NDArray<T3>, r4 as NDArray<T4>)
   }
   
   fun <T1 : Any, T2 : Any, T3 : Any, T4 : Any, T5 : Any> eval(t1: Output, t2: Output, t3: Output, t4: Output, t5: Output):
-      tuple5<NDArray<T1>, NDArray<T2>, NDArray<T3>, NDArray<T4>, NDArray<T5>> {
+      t5<NDArray<T1>, NDArray<T2>, NDArray<T3>, NDArray<T4>, NDArray<T5>> {
     val (r1, r2, r3, r4, r5) = _eval(t1, t2, t3, t4, t5)
-    return tuple5(r1 as NDArray<T1>, r2 as NDArray<T2>,
-                  r3 as NDArray<T3>, r4 as NDArray<T4>,
-                  r5 as NDArray<T5>)
+    return t5(r1 as NDArray<T1>, r2 as NDArray<T2>,
+              r3 as NDArray<T3>, r4 as NDArray<T4>,
+              r5 as NDArray<T5>)
   }
   
   fun eval(fetch: List<Output>): Array<NDArray<Any>> {
@@ -121,7 +121,7 @@ class Session(val c_graph: TF_Graph) {
     }
   }
   
-  private fun accumulateFeedDict(): tuple3<TF_Output, PointerPointer<TF_Tensor>, Int> {
+  private fun accumulateFeedDict(): t3<TF_Output, PointerPointer<TF_Tensor>, Int> {
     val ninputs = feed_dict.size.toLong()
     val inputs = TF_Output(ninputs)
     val input_values = PointerPointer<TF_Tensor>(ninputs)
@@ -132,16 +132,16 @@ class Session(val c_graph: TF_Graph) {
     }
     inputs.position(0L)
     input_values.position(0L)
-    return tuple3(inputs, input_values, ninputs.toInt())
+    return t3(inputs, input_values, ninputs.toInt())
   }
   
-  private fun accumulateRuns(): tuple2<PointerPointer<TF_Operation>, Int> {
+  private fun accumulateRuns(): t2<PointerPointer<TF_Operation>, Int> {
     val ntargets = run_list.size.toLong()
     val target_opers = PointerPointer<TF_Operation>(ntargets)
     for ((i, op) in run_list.withIndex())
       target_opers.position(i.toLong()).put(op.c_op)
     target_opers.position(0L)
-    return tuple2(target_opers, ntargets.toInt())
+    return t2(target_opers, ntargets.toInt())
   }
   
   fun Variable.eval() = toOutput().eval()
@@ -154,7 +154,7 @@ class Session(val c_graph: TF_Graph) {
   }
   
   private fun Output.print(v: NDArray<*>) {
-    val prefix = "${op!!.name}:${dtype.name}$shape\n  ="
+    val prefix = "${op!!.name}:${dataType.name}$shape\n  ="
     println("$prefix${v.toString(3)}\n")
   }
   

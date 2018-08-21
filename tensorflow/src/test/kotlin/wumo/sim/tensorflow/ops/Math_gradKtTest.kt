@@ -5,7 +5,7 @@ import org.junit.Test
 class Math_gradKtTest {
   @Test
   fun `test gradient`() {
-//    val x = tf.placeholder(scalarDimension, dtype = DT_FLOAT, name = "x")
+//    val x = tf.placeholder(scalarDimension, dataType = DT_FLOAT, name = "x")
 //    val y = tf.relu(x, name = "y")
 //
 //    val gradient = tf.gradients(y, listOf(x))

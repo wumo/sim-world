@@ -14,7 +14,7 @@ interface OutputConvertible {
 sealed class OutputLike : OutputConvertible {
   abstract val graph: Graph
   abstract val name: String
-  abstract val dtype: DataType<*>
+  abstract val dataType: DataType<*>
   abstract val device: String
   abstract val op: Op?
   abstract val consumers: Array<Op>
@@ -52,7 +52,7 @@ class IndexedSlices(val indices: Output, val values: Output, val denseShape: Out
                                                          if (denseShape == null) emptySet() else setOf(denseShape.op!!))
   override val name: String = "${values.name}[${indices.name}]" +
       if (denseShape != null) "(shape = ${denseShape.name})" else ""
-  override val dtype: DataType<*> = values.dtype
+  override val dataType: DataType<*> = values.dataType
   override val device: String = values.device
   override val op: Op? = values.op
   override val consumers: Array<Op> = values.consumers
@@ -68,7 +68,7 @@ class IndexedSlices(val indices: Output, val values: Output, val denseShape: Out
 class SparseOutput : OutputLike() {
   override val name: String
     get() = TODO("not implemented")
-  override val dtype: DataType<*>
+  override val dataType: DataType<*>
     get() = TODO("not implemented")
   override val device: String
     get() = TODO("not implemented")
@@ -139,7 +139,7 @@ class Output(override val op: Op?, val value_index: Int) : OutputLike() {
   
   override fun toOutput() = this
   
-  override val dtype: DataType<*>
+  override val dataType: DataType<*>
     get() = if (op != null) {
       op.output_types[value_index]
     } else throw NullPointerException("op is null")
@@ -212,7 +212,7 @@ class Output(override val op: Op?, val value_index: Int) : OutputLike() {
     
     if (op != other.op) return false
     if (value_index != other.value_index) return false
-    if (dtype != other.dtype) return false
+    if (dataType != other.dataType) return false
     
     return true
   }
@@ -234,6 +234,6 @@ class Output(override val op: Op?, val value_index: Int) : OutputLike() {
   override fun toString() =
       when (op) {
         null -> "Output(null)"
-        else -> """Output("$name", shape=$shape, dtype=$dtype, op=$op)"""
+        else -> """Output("$name", shape=$shape, dataType=$dataType, op=$op)"""
       }
 }

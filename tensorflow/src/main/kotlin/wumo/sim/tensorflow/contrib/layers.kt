@@ -19,7 +19,7 @@ package wumo.sim.tensorflow.contrib
 //                        on_value: Float = 1f, off_value: Float = 0f,
 //                        name: String = "OneHotEncoding"): Output {
 //  nameScope(name) {
-//    val labels = if (labels.dtype == DT_INT32) cast(labels, DT_INT64) else labels
+//    val labels = if (labels.dataType == DT_INT32) cast(labels, DT_INT64) else labels
 //    return oneHot(labels, const(num_class, name = "depth"),
 //                  const(on_value, name = "on_value"),
 //                  const(off_value, name = "off_value"), name = ctxNs.scopeName)
@@ -48,7 +48,7 @@ package wumo.sim.tensorflow.contrib
 //                      bias_regularizer = biases_regularizer,
 //                      activity_regularizer = null,
 //                      trainable = trainable,
-//                      dtype = inputs.dtype)
+//                      dataType = inputs.dataType)
 //    var outputs = layer(inputs)
 //
 //    if (normalizer_fn != null)
@@ -107,7 +107,7 @@ package wumo.sim.tensorflow.contrib
 //normalized inputs accordingly.
 //
 // * @return:A `Output` representing the output of the findOp, having the same
-//shape and dtype as `inputs`.
+//shape and dataType as `inputs`.
 //
 // * @throws
 //Raises:
@@ -124,7 +124,7 @@ package wumo.sim.tensorflow.contrib
 //  variable_scope("LayerNorm") {
 //    val inputs_shape = inputs.shape
 //    val inputs_rank = inputs_shape.rank()
-//    val dtype = inputs.dtype.base_dtype
+//    val dataType = inputs.dataType.base_dtype
 //    val begin_norm_axis = if (_begin_norm_axis < 0) {
 //      inputs_rank + _begin_norm_axis
 //    } else _begin_norm_axis
@@ -132,15 +132,15 @@ package wumo.sim.tensorflow.contrib
 //      throw IllegalArgumentException("begin_params_axis ($begin_params_axis) and begin_norm_axis ($begin_norm_axis) " +
 //                                         "must be < rank(inputs) ($inputs_rank)")
 //    val params_shape = inputs_shape[-1 until 0]
-//    if (!params_shape.is_fully_defined)
+//    if (!params_shape.isFullyDefined)
 //      throw IllegalArgumentException("Inputs ${inputs.name}: shape(inputs)[$begin_params_axis:]" +
 //                                         " is not fully defined: $inputs_shape")
 //    //Allocate parameters for the beta and gamma of the normalization.
 //    val beta = if (center)
-//      tf.get_variable(params_shape, dtype, zeros_initializer(), "beta", trainable)
+//      tf.get_variable(params_shape, dataType, zeros_initializer(), "beta", trainable)
 //    else null
 //    val gamma = if (scale)
-//      tf.get_variable(params_shape, dtype, ones_initializer(), "gamma", trainable)
+//      tf.get_variable(params_shape, dataType, ones_initializer(), "gamma", trainable)
 //    else null
 //    //Calculate the moments on the last axis (layer activations).
 //    val norm_axes = (begin_norm_axis until inputs_rank).map { it.toLong() }.toLongArray()

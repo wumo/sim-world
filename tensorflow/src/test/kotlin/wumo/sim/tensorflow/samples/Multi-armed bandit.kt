@@ -19,8 +19,8 @@ class `Multi-armed bandit` : BaseTest() {
 //    val weights = tf.variable(Shape(4), 1f, name = "weights")
 //    val chosen_action = tf.argmax(weights, 0, name = "chosen_action")
 //
-//    val reward_holder = tf.placeholder(Shape(1), dtype = DT_FLOAT, name = "reward_holder")
-//    val action_holder = tf.placeholder(Shape(1), dtype = DT_INT32, name = "action_holder")
+//    val reward_holder = tf.placeholder(Shape(1), dataType = DT_FLOAT, name = "reward_holder")
+//    val action_holder = tf.placeholder(Shape(1), dataType = DT_INT32, name = "action_holder")
 //
 //    val responsible_weight = tf.slice(weights, action_holder, tf.const(i(1)), name = "responsible_weight")
 //    val loss = -(tf.log(responsible_weight) * reward_holder)

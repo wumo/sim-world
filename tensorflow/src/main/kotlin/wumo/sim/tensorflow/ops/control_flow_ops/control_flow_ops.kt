@@ -230,7 +230,7 @@ object control_flow_ops {
     // `var` and `data` may be pinned to different devices and so we want the ops created within the
     // `Op.colocateWith(Set(data.op)) { }` block to ignore the existing stack.
     return tf.colocateWith(input, ignoreExisting = true) {
-      if (input.dtype.isRefType)
+      if (input.dataType.isRefType)
         tf._refSwitch(input, predicate, name)
       else
         switch(input, predicate, name)
@@ -271,7 +271,7 @@ object control_flow_ops {
     return when {
       inputs.all { it is Output } -> {
         inputs as List<Output>
-        if (inputs.all { it.dtype.isRefType })
+        if (inputs.all { it.dataType.isRefType })
           tf._refMerge(inputs, name)
         else
           tf._merge(inputs, name)
@@ -296,12 +296,12 @@ object control_flow_ops {
      * @return Created op output.
      * @see "tensorflow.python.ops.control_flow_ops.with_dependencies"
      */
-    fun withDependencies(dependencies: MutableSet<Op>,
-                         input: Output,
+    fun withDependencies(dependencies: Set<Op>,
+                         input: OutputLike,
                          name: String = "control_dependency"): Output =
         tf.nameScope(name, dependencies + input.op!!) {
-          tf.colocateWith(input) {
-            tf.controlDependencies(dependencies) {
+          tf.colocateWith(input.op!!) {
+            tf.controlDependencies(dependencies.toMutableSet()) {
               tf.identity(input, name = tf.currentNameScope)
             }
           }
@@ -335,6 +335,45 @@ object control_flow_ops {
       return tf.controlDependencies(deps) {
         tf._noOp(name)
       }
+    }
+    
+    /** Group tensors together.
+     * This creates a tuple of tensors with the same values as the `tensors`
+     * argument, except that the value of each tensor is only returned after the
+     * values of all tensors have been computed.
+     *
+     * `control_inputs` contains additional ops that have to finish before this op
+     * finishes, but whose outputs are not returned.
+     *
+     * This can be used as a "join" mechanism for parallel computations: all the
+     * argument tensors can be computed in parallel, but the values of any tensor
+     * returned by `tuple` are only available after all the parallel computations
+     * are done.
+     *
+     * See also @{tf.group$group} and
+     * @{tf.control_dependencies$control_dependencies}.
+     *
+     * @group ControlFlowOps
+     * @param  inputs        Op outputs being grouped.
+     * @param  controlInputs Set of additional ops that have to finish before this op finishes, but whose outputs are not
+     *                       returned.
+     * @param  name          Name for the created ops (used mainly as a name scope).
+     * @return Created op outputs, which in this case are the values of `inputs`.
+     */
+    fun tuple(inputs: List<OutputLike?>, controlInputs: Set<Op> = emptySet(), name: String = "tuple"): List<OutputLike?> {
+      val gatingOps = inputs.asSequence().filterNotNull().mapTo(mutableSetOf()) { it.op!! }
+      return if (gatingOps.isEmpty())
+        inputs
+      else
+        tf.nameScope(name, gatingOps) {
+          val gate = group(gatingOps + controlInputs)
+          inputs.map {
+            if (it == null)
+              it
+            else
+              withDependencies(setOf(gate), it)
+          }
+        }
     }
     
     /**
@@ -382,10 +421,10 @@ object control_flow_ops {
           
           // Check that the return values of the two branches have matching data types.
           resultTrue.zip(resultFalse).forEach {
-            if (it.first.dtype != it.second.dtype)
+            if (it.first.dataType != it.second.dataType)
               throw InvalidDataTypeException(
-                  "The outputs of `trueFn` (dataType = ${it.first.dtype}) and " +
-                      "`falseFn` (dataType = ${it.second.dtype}) must have the same data type.")
+                  "The outputs of `trueFn` (dataType = ${it.first.dataType}) and " +
+                      "`falseFn` (dataType = ${it.second.dataType}) must have the same data type.")
           }
           
           val merges = resultFalse.zip(resultTrue).map { merge(listOf(it.first, it.second))[0] }

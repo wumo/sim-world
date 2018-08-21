@@ -11,7 +11,7 @@ package wumo.sim.tensorflow.layers
 //
 //open class Layer(val trainable: Boolean = true,
 //                 val activity_reqularizer: Any? = null,
-//                 var dtype: Int = 0) {
+//                 var dataType: Int = 0) {
 //
 //  var statefule = false
 //  var built = false
@@ -25,8 +25,8 @@ package wumo.sim.tensorflow.layers
 //
 //  open operator fun invoke(inputs: Output): Output {
 //    if (!built) {
-//      if (dtype == DT_INVALID)
-//        dtype = inputs.dtype
+//      if (dataType == DT_INVALID)
+//        dataType = inputs.dataType
 //      val input_shape = inputs.shape
 //      build(input_shape)
 //    }
@@ -37,12 +37,12 @@ package wumo.sim.tensorflow.layers
 //    return outputs
 //  }
 //
-//  protected fun add_variable(shape: Shape, dtype: DataType<*>? = null,
+//  protected fun add_variable(shape: Shape, dataType: DataType<*>? = null,
 //                             initializer: Initializer,
 //                             regularizer: TensorFunction? = null,
 //                             trainable: Boolean = true,
 //                             name: String = ""): Output {
-//    val v = tf.variable(name, shape, dtype, initializer, trainable = trainable && this.trainable)
+//    val v = tf.variable(name, shape, dataType, initializer, trainable = trainable && this.trainable)
 //    if (regularizer != null)
 //      losses += regularizer(v)
 //    return v

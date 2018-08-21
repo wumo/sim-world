@@ -1,8 +1,7 @@
 package wumo.sim.wrappers
 
 import wumo.sim.core.Env
-import wumo.sim.core.Space
-import wumo.sim.util.tuple4
+import wumo.sim.util.t4
 
 class TimeLimit<O : Any, A : Any>(val env: Env<O, A>,
                                   val max_episode_steps: Int? = null,
@@ -24,7 +23,7 @@ class TimeLimit<O : Any, A : Any>(val env: Env<O, A>,
   override val action_space = env.action_space
   override val observation_space = env.observation_space
   
-  override fun step(a: A): tuple4<O, Float, Boolean, Map<String, Any>> {
+  override fun step(a: A): t4<O, Float, Boolean, Map<String, Any>> {
     val tuple = env.step(a)
     elapsed_steps++
     if (past_limit())

@@ -61,7 +61,7 @@ interface gen_resource_variable_ops {
   fun _readVariableOp(resource: Output, dtype: DataType<*>, name: String = "ReadVariableOp") = run {
     buildOpTensor("ReadVariableOp", name) {
       addInput(resource, false)
-      attr("dtype", dtype)
+      attr("dataType", dtype)
     }
   }
   
@@ -69,7 +69,7 @@ interface gen_resource_variable_ops {
     buildOpTensor("ResourceGather", name) {
       addInput(resource, false)
       addInput(indices, false)
-      attr("dtype", dtype)
+      attr("dataType", dtype)
       attr("validate_indices", validate_indices)
     }
   }
@@ -132,7 +132,7 @@ interface gen_resource_variable_ops {
   
   fun _varHandleOp(dtype: DataType<*>, shape: Shape, container: String = "", shared_name: String = "", name: String = "VarHandleOp") = run {
     buildOpTensor("VarHandleOp", name) {
-      attr("dtype", dtype)
+      attr("dataType", dtype)
       attr("shape", shape)
       attr("container", container)
       attr("shared_name", shared_name)

@@ -9,7 +9,7 @@ object array_ops {
     fun <T : OutputLike> identity(data: T, name: String): Output {
       return when (data) {
         is Output -> {
-          if (data.dtype.isRefType)
+          if (data.dataType.isRefType)
             tf._refIdentity(data, name)
           else
             tf._identity(data, name)
@@ -30,9 +30,9 @@ object array_ops {
     
     fun zerosLike(x: Output, dtype: DataType<*>? = null, optimize: Boolean = true, name: String = "ZerosLike") =
         when {
-          optimize && x.shape.is_fully_defined && x.dtype != VARIANT ->
-            zeros(x.shape, dtype = dtype ?: x.dtype, name = name)
-          dtype != null && dtype != x.dtype && dtype != VARIANT ->
+          optimize && x.shape.isFullyDefined && x.dataType != VARIANT ->
+            zeros(x.shape, dtype = dtype ?: x.dataType, name = name)
+          dtype != null && dtype != x.dataType && dtype != VARIANT ->
             zeros(shape(x, optimize = optimize), dtype = dtype, name = name)
           else -> tf._zerosLike(x, name)
         }
@@ -73,7 +73,7 @@ object array_ops {
     fun shape(input: Output, out_type: DataType<*> = INT32, name: String = "Shape", optimize: Boolean = true): Output {
       //TODO SparseOutput
       val input_shape = input.shape
-      if (optimize && input_shape.is_fully_defined)
+      if (optimize && input_shape.isFullyDefined)
         return tf.const(input_shape.asIntArray()!!, name)
       return tf._shape(input, out_type, name)
     }
@@ -165,7 +165,7 @@ object array_ops {
     fun rank(input: Output, name: String = "Rank", optimize: Boolean = true): Output {
       //TODO SparseOutput
       val input_shape = input.shape
-      if (optimize && input_shape.is_fully_defined)
+      if (optimize && input_shape.isFullyDefined)
         return tf.const(input_shape.rank, name)
       return tf._rank(input, name)
     }

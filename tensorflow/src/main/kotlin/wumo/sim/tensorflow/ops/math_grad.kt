@@ -56,7 +56,7 @@ fun register_math_grad() {
     val x = op.inputs[0]
     tf.controlDependencies(grad) {
       val x = tf._conj(x)
-      val two = tf.const(x.dtype, 2.0)
+      val two = tf.const(x.dataType, 2.0)
       grad_outputs.append(tf._mul(grad, tf._mul(x, two)))
     }
   }
@@ -139,7 +139,7 @@ fun register_math_grad() {
     // dy/dx = 1 / (1 + x)
     // grad(x) = grad(y) * conj(dy/dx)
     tf.controlDependencies(grad) {
-      val one = tf._cast(tf.const(1.0), op.inputs[0].dtype)
+      val one = tf._cast(tf.const(1.0), op.inputs[0].dataType)
       val dydx = tf._reciprocal(tf._add(one, op.inputs[0]))
       grad_outputs.add(tf._mul(grad, tf._conj(dydx)))
     }
@@ -201,7 +201,7 @@ fun register_math_grad() {
     // y = atanh(x)
     // dy/dx = 1 / (1 - x^2)
     // grad(x) = grad(y) * conj(dy/dx)
-    val one = tf._cast(tf.const(1.0), op.inputs[0].dtype)
+    val one = tf._cast(tf.const(1.0), op.inputs[0].dataType)
     val dydx = tf._reciprocal(tf._sub(one, tf._square(op.inputs[0])))
     grad_outputs.add(tf._mul(grad, tf._conj(dydx)))
   }
@@ -222,7 +222,7 @@ fun register_math_grad() {
   register_gradient_op("Sign") { op, grad_inputs, grad_outputs ->
     val grad = grad_inputs[0]
     val shape = tf._shape(op.inputs[0])
-    val zero = tf._cast(tf.const(0.0), op.inputs[0].dtype)
+    val zero = tf._cast(tf.const(0.0), op.inputs[0].dataType)
     val dx = tf._fill(shape, zero)
     grad_outputs.add(dx)
   }
@@ -250,7 +250,7 @@ fun register_math_grad() {
     // dy/dx = 1 / sqrt(1 - x^2)
     // grad(x) = grad(y) * conj(dy/dx)
     val x2 = tf._square(op.inputs[0])
-    val one = tf._cast(tf.const(1.0), op.inputs[0].dtype)
+    val one = tf._cast(tf.const(1.0), op.inputs[0].dataType)
     val dydx = tf._reciprocal(tf._sqrt(tf._sub(one, x2)))
     val dx = tf._mul(grad, tf._conj(dydx))
     grad_outputs.add(dx)
@@ -262,7 +262,7 @@ fun register_math_grad() {
     // dy/dx = - 1 / (1 - x * x)^1/2
     // dx = dy * (- 1 / (1 - x * x)^1/2)
     val x2 = tf._square(op.inputs[0])
-    val one = tf._cast(tf.const(1.0), op.inputs[0].dtype)
+    val one = tf._cast(tf.const(1.0), op.inputs[0].dataType)
     val dydx = tf._neg(tf._reciprocal(tf._sqrt(tf._sub(one, x2))))
     val dx = tf._mul(grad, dydx)
     grad_outputs.add(dx)
@@ -283,7 +283,7 @@ fun register_math_grad() {
     // y = arctan(x)
     // dy/dx = 1 / (1 + x^2)
     // dx = dy * (1 / (1 + x^2)
-    val one = tf._cast(tf.const(1.0), op.inputs[0].dtype)
+    val one = tf._cast(tf.const(1.0), op.inputs[0].dataType)
     val dydx = tf._reciprocal(tf._add(one, tf._square(op.inputs[0])))
     val dx = tf._mul(grad, dydx)
     grad_outputs.add(dx)
@@ -362,7 +362,7 @@ fun register_math_grad() {
     // dy/dx_2 = -2 * (x_1 - x_2)
     val x_1 = tf._conj(op.inputs[0])
     val x_2 = tf._conj(op.inputs[1])
-    val two = tf._cast(tf.const(2), grad.dtype)
+    val two = tf._cast(tf.const(2), grad.dataType)
     val gx_1 = tf._mul(grad, tf._mul(two, tf._sub(x_1, x_2)))
     val gx_2 = tf._neg(gx_1)
     binaryGradCommon(op, grad_outputs, gx_1, gx_2)
@@ -387,11 +387,11 @@ fun register_math_grad() {
     val y = tf._conj(op.inputs[1])
     val z = tf._conj(op.outputs[0])
     // grad * y * pow(x, y - 1)
-    val one = tf._cast(tf.const(1.0), y.dtype)
+    val one = tf._cast(tf.const(1.0), y.dataType)
     val gx_1 = tf._mul(tf._mul(grad, y),
                        tf._pow(x, tf._sub(y, one)))
     // Avoid false singularity at x = 0
-    val x_dtype = x.dtype
+    val x_dtype = x.dataType
     val zero = tf._cast(tf.const(0.0), x_dtype)
     if (x_dtype == COMPLEX64 || x_dtype == COMPLEX128) {
       // real(x) < 0 is fine for the complex case
@@ -439,14 +439,14 @@ fun register_math_grad() {
   
   register_gradient_op("Real") { op, grad_inputs, grad_outputs ->
     val grad = grad_inputs[0]
-    val zero = tf._cast(tf.const(0.0), op.outputs[0].dtype)
+    val zero = tf._cast(tf.const(0.0), op.outputs[0].dataType)
     val dx = tf._complex(grad, zero)
     grad_outputs.add(dx)
   }
   
   register_gradient_op("Imag") { op, grad_inputs, grad_outputs ->
     val grad = grad_inputs[0]
-    val zero = tf._cast(tf.const(0.0), op.outputs[0].dtype)
+    val zero = tf._cast(tf.const(0.0), op.outputs[0].dataType)
     val dx = tf._complex(zero, grad)
     grad_outputs.add(dx)
   }
@@ -465,7 +465,7 @@ fun register_math_grad() {
     val re = tf._real(op.inputs[0])
     val im = tf._imag(op.inputs[0])
     val z_inv = tf._reciprocal(tf._complex(im, re))
-    val zero = tf._cast(tf.const(0), grad.dtype)
+    val zero = tf._cast(tf.const(0), grad.dataType)
     grad = tf._complex(grad, zero)
     val dx = tf._neg(tf._mul(grad, z_inv))
     grad_outputs.add(dx)
@@ -598,12 +598,12 @@ fun register_math_grad() {
     val group_size = safeDivHelper(tf._prod(input_shape, zero), tf._prod(output_shape, zero))
     
     // propagate sum_grad/group_size
-    grad_outputs.add(tf._div(sum_grad, tf._cast(group_size, sum_grad.dtype)))
+    grad_outputs.add(tf._div(sum_grad, tf._cast(group_size, sum_grad.dataType)))
     grad_outputs.add(noGradient)
   }
   register_gradient_op("Erf") { op, grad_inputs, grad_outputs ->
     val grad = grad_inputs[0]
-    val two_over_root_pi = tf._cast(tf.const(2 / Math.sqrt(Math.PI)), grad.dtype)
+    val two_over_root_pi = tf._cast(tf.const(2 / Math.sqrt(Math.PI)), grad.dataType)
     tf.controlDependencies(grad.op!!) {
       val x = tf._conj(op.inputs[0])
       // grad * 2/sqrt(pi) * exp(-x**2)
@@ -663,7 +663,7 @@ fun register_math_grad() {
     //           [-3]],  [1, 2, -3]])
     //  = [[1, 1, 1],
     //     [0, 0, 1]]
-    val indicators = tf._cast(tf._equal(y, input), grad.dtype)
+    val indicators = tf._cast(tf._equal(y, input), grad.dataType)
     
     // [[3],
     //  [1]]

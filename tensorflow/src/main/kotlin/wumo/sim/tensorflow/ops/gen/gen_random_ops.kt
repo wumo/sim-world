@@ -46,7 +46,7 @@ interface gen_random_ops {
       addInput(rate, false)
       attr("seed", seed)
       attr("seed2", seed2)
-      attr("dtype", dtype)
+      attr("dataType", dtype)
     }
   }
   
@@ -61,7 +61,7 @@ interface gen_random_ops {
   fun _randomStandardNormal(shape: Output, dtype: DataType<*>, seed: Long = 0L, seed2: Long = 0L, name: String = "RandomStandardNormal") = run {
     buildOpTensor("RandomStandardNormal", name) {
       addInput(shape, false)
-      attr("dtype", dtype)
+      attr("dataType", dtype)
       attr("seed", seed)
       attr("seed2", seed2)
     }
@@ -70,7 +70,7 @@ interface gen_random_ops {
   fun _randomUniform(shape: Output, dtype: DataType<*>, seed: Long = 0L, seed2: Long = 0L, name: String = "RandomUniform") = run {
     buildOpTensor("RandomUniform", name) {
       addInput(shape, false)
-      attr("dtype", dtype)
+      attr("dataType", dtype)
       attr("seed", seed)
       attr("seed2", seed2)
     }
@@ -89,7 +89,7 @@ interface gen_random_ops {
   fun _truncatedNormal(shape: Output, dtype: DataType<*>, seed: Long = 0L, seed2: Long = 0L, name: String = "TruncatedNormal") = run {
     buildOpTensor("TruncatedNormal", name) {
       addInput(shape, false)
-      attr("dtype", dtype)
+      attr("dataType", dtype)
       attr("seed", seed)
       attr("seed2", seed2)
     }

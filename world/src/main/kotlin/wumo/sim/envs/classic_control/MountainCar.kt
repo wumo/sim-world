@@ -29,7 +29,7 @@ class MountainCar : Env<NDArray<Float>, Int> {
   override val observation_space = Box(low = NDArray(f(min_position, -max_speed)),
                                        high = NDArray(f(max_position, max_speed)))
   
-  override fun step(a: Int): tuple4<NDArray<Float>, Float, Boolean, Map<String, Any>> {
+  override fun step(a: Int): t4<NDArray<Float>, Float, Boolean, Map<String, Any>> {
     assert(action_space.contains(a)) { "invalid a:$a" }
     var (position, velocity) = state
     velocity += ((a - 1) * 0.001 + cos(3 * position) * (-0.0025)).toFloat()
@@ -41,7 +41,7 @@ class MountainCar : Env<NDArray<Float>, Int> {
     val reward = -1.0f
     state[0] = position
     state[1] = velocity
-    return tuple4(state.copy(), reward, done, emptyMap())
+    return t4(state.copy(), reward, done, emptyMap())
   }
   
   override fun reset(): NDArray<Float> {

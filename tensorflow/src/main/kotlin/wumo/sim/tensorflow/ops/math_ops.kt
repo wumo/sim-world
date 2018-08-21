@@ -8,7 +8,7 @@ import wumo.sim.util.arange
 
 operator fun Output.plus(b: Any) =
     tf.nameScope("add") {
-      val y = tf.const(this.dtype.base_dtype, b, name = "y")
+      val y = tf.const(this.dataType.base_dtype, b, name = "y")
       tf._add(this, y, name = tf.currentNameScope)
     }
 
@@ -16,7 +16,7 @@ operator fun Output.plus(b: Output) = tf._add(this, b)
 
 operator fun Output.div(b: Any) =
     tf.nameScope("div") {
-      val y = tf.const(this.dtype.base_dtype, b, name = "y")
+      val y = tf.const(this.dataType.base_dtype, b, name = "y")
       tf._div(this, y, name = tf.currentNameScope)
     }
 
@@ -24,7 +24,7 @@ operator fun Output.div(b: Output) = tf._div(this, b)
 
 operator fun Output.minus(b: Any) =
     tf.nameScope("sub") {
-      val y = tf.const(this.dtype.base_dtype, b, name = "y")
+      val y = tf.const(this.dataType.base_dtype, b, name = "y")
       tf._sub(this, y, name = tf.currentNameScope)
     }
 
@@ -32,7 +32,7 @@ operator fun Output.minus(b: Output) = tf._sub(this, b)
 
 operator fun Output.times(b: Any) =
     tf.nameScope("mul") {
-      val y = tf.const(this.dtype.base_dtype, b, name = "y")
+      val y = tf.const(this.dataType.base_dtype, b, name = "y")
       tf._mul(this, y, name = tf.currentNameScope)
     }
 
@@ -61,19 +61,19 @@ object math_ops {
     
     fun cast(x: Output, dstT: DataType<*>, name: String = "Cast"): Output = run {
       val x = (x as? Variable)?.value ?: x
-      if (x.dtype == dstT) x
+      if (x.dataType == dstT) x
       else tf._cast(x, dstT, name = name)
     }
     
     fun conj(x: Output, name: String = "Conj") =
-        if (x.dtype == COMPLEX64 || x.dtype == COMPLEX128)
+        if (x.dataType == COMPLEX64 || x.dataType == COMPLEX128)
           tf._conj(x, name)
         else
           x
     
     fun greaterEqual(a: Output, b: Any, name: String = "GreaterEqual") =
         tf.nameScope(name) {
-          val y = tf.const(a.dtype.base_dtype, b, name = "y")
+          val y = tf.const(a.dataType.base_dtype, b, name = "y")
           tf._greaterEqual(a, y, tf.currentNameScope)
         }
     
@@ -101,7 +101,7 @@ object math_ops {
     Creates a sequence of numbers that begins at `start` and extends by
     increments of `delta` up to but not including `limit`.
     
-    The dtype of the resulting tensor is inferred from the inputs unless
+    The dataType of the resulting tensor is inferred from the inputs unless
     it is provided explicitly.
     
     Like the Python builtin `range`, `start` defaults to 0, so that
@@ -132,10 +132,10 @@ object math_ops {
      * @param delta: A 0-D `Output` (scalar). Number that increments
      * `start`. Defaults to 1.
      * @param name: A name for the operation. Defaults to "range".
-     * @return An 1-D `Output` of type `dtype`.
+     * @return An 1-D `Output` of type `dataType`.
      */
     fun range(start: Output, limit: Output, delta: Output = tf.const(1), name: String = "Range") = run {
-      val dtypes = a(start.dtype, limit.dtype, delta.dtype)
+      val dtypes = a(start.dataType, limit.dataType, delta.dataType)
       val inferred_dtype = dtypes.maxBy { dtype_hierarchy[it]!! }!!
       val start = cast(start, inferred_dtype)
       val limit = cast(limit, inferred_dtype)
@@ -145,7 +145,7 @@ object math_ops {
     
     fun realDiv(a: Output, b: Any, name: String = "RealDiv") =
         tf.nameScope("truediv") {
-          val y = tf.const(a.dtype.base_dtype, b, name = "y")
+          val y = tf.const(a.dataType.base_dtype, b, name = "y")
           tf._realDiv(a, y, name = tf.currentNameScope)
         }
     

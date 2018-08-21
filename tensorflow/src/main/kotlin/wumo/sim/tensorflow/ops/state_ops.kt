@@ -96,8 +96,8 @@ private fun _variable(initializer: (String) -> Output, name: String, trainable: 
     tf.variable(name, initializer = DynamicInitializer(initializer("${tf.currentNameScope}$name/initial_value")), trainable = trainable)
 //    tf.variable(name, initializer = object : Initializer {
 //      val initValue = initializer("Initializer")
-//      override val dtype: DataType<*>?
-//        get() = initValue.dtype
+//      override val dataType: DataType<*>?
+//        get() = initValue.dataType
 //      override val shape: Shape?
 //        get() = initValue.shape
 //      override val name = "Initializer"
@@ -118,7 +118,7 @@ private fun _variable(initializer: (String) -> Output, name: String, trainable: 
 ////      }
 ////      val t = attr_scope("_class" to attr) {
 ////        val initial_value = initializer("Initializer")
-////        val v = _variableV2(initial_value.shape, initial_value.dtype.base_dtype, name = ctxNs.scopeName)
+////        val v = _variableV2(initial_value.shape, initial_value.dataType.base_dtype, name = ctxNs.scopeName)
 ////        Variable(v.op!!, 0).apply {
 ////          this.initial_value = initial_value
 ////        }
@@ -140,8 +140,8 @@ private fun _variable(initializer: (String) -> Output, name: String, trainable: 
 //fun variable(shape: Shape, initializer: Initializer, name: String, trainable: Boolean = true, validate_shape: Boolean = true) =
 //    _variable({ initializer(shape, name = "initial_value") }, name, trainable)
 //
-//fun variable(shape: Shape, dtype: Int, initializer: Initializer, name: String, trainable: Boolean = true, validate_shape: Boolean = true) =
-//    _variable({ initializer(shape, dtype.base_dtype, "initial_value") }, name, trainable)
+//fun variable(shape: Shape, dataType: Int, initializer: Initializer, name: String, trainable: Boolean = true, validate_shape: Boolean = true) =
+//    _variable({ initializer(shape, dataType.base_dtype, "initial_value") }, name, trainable)
 //
 //fun variable(initial_value: Output, name: String = "Variable", trainable: Boolean = true) =
 //    _variable({ initial_value }, name, trainable)
@@ -154,7 +154,7 @@ private fun _variable(initializer: (String) -> Output, name: String, trainable: 
 //    }
 //
 //fun is_variable_initialized(ref: Output, name: String = "IsVariableInitialized"): Output {
-//  if (ref.dtype.is_ref_dytpe) {
+//  if (ref.dataType.is_ref_dytpe) {
 //    tf._isVariableInitialized(ref, name)
 //  }
 //  TODO("handle resource")
@@ -201,8 +201,8 @@ private fun _variable(initializer: (String) -> Output, name: String, trainable: 
 //fun get_variable(shape: Shape, initializer: Initializer, name: String, trainable: Boolean = true, validate_shape: Boolean = true) =
 //    get_variable({ initializer(shape, name = "Initializer") }, name, trainable)
 //
-//fun get_variable(shape: Shape, dtype: Int, initializer: Initializer, name: String, trainable: Boolean = true, validate_shape: Boolean = true) =
-//    get_variable({ initializer(shape, dtype.base_dtype, "Initializer") }, name, trainable)
+//fun get_variable(shape: Shape, dataType: Int, initializer: Initializer, name: String, trainable: Boolean = true, validate_shape: Boolean = true) =
+//    get_variable({ initializer(shape, dataType.base_dtype, "Initializer") }, name, trainable)
 //
 //fun get_variable(initial_value: Output, name: String = "Variable", trainable: Boolean = true) =
 //    get_variable({ initial_value }, name, trainable)

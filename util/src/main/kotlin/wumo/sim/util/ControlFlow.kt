@@ -5,11 +5,11 @@ package wumo.sim.util
 import org.apache.commons.lang3.ClassUtils
 
 typealias Fun1<P1, R> = (P1) -> R
-typealias Fun2<P1, P2, R> = tuple2<P1, P2>.() -> R
-typealias Fun3<P1, P2, P3, R> = tuple3<P1, P2, P3>.() -> R
-typealias Fun4<P1, P2, P3, P4, R> = tuple4<P1, P2, P3, P4>.() -> R
-typealias Fun5<P1, P2, P3, P4, P5, R> = tuple5<P1, P2, P3, P4, P5>.() -> R
-typealias Fun6<P1, P2, P3, P4, P5, P6, R> = tuple6<P1, P2, P3, P4, P5, P6>.() -> R
+typealias Fun2<P1, P2, R> = t2<P1, P2>.() -> R
+typealias Fun3<P1, P2, P3, R> = t3<P1, P2, P3>.() -> R
+typealias Fun4<P1, P2, P3, P4, R> = t4<P1, P2, P3, P4>.() -> R
+typealias Fun5<P1, P2, P3, P4, P5, R> = t5<P1, P2, P3, P4, P5>.() -> R
+typealias Fun6<P1, P2, P3, P4, P5, P6, R> = t6<P1, P2, P3, P4, P5, P6>.() -> R
 
 class SwitchValue<T, P1, R> {
   private val branches = HashMap<T, Fun1<P1, R>>()
@@ -33,7 +33,7 @@ class SwitchValue2<T, P1, P2, R> {
   
   operator fun invoke(b: T, p1: P1, p2: P2): R {
     val block = branches[b] ?: throw IllegalArgumentException("unsupported $b")
-    return block(tuple2(p1, p2))
+    return block(t2(p1, p2))
   }
 }
 
@@ -46,7 +46,7 @@ class SwitchValue3<T, P1, P2, P3, R> {
   
   operator fun invoke(b: T, p1: P1, p2: P2, p3: P3): R {
     val block = branches[b] ?: throw IllegalArgumentException("unsupported $b")
-    return block(tuple3(p1, p2, p3))
+    return block(t3(p1, p2, p3))
   }
 }
 
@@ -59,7 +59,7 @@ class SwitchValue4<T, P1, P2, P3, P4, R> {
   
   operator fun invoke(b: T, p1: P1, p2: P2, p3: P3, p4: P4): R {
     val block = branches[b] ?: throw IllegalArgumentException("unsupported $b")
-    return block(tuple4(p1, p2, p3, p4))
+    return block(t4(p1, p2, p3, p4))
   }
 }
 
@@ -72,7 +72,7 @@ class SwitchValue5<T, P1, P2, P3, P4, P5, R> {
   
   operator fun invoke(b: T, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5): R {
     val block = branches[b] ?: throw IllegalArgumentException("unsupported $b")
-    return block(tuple5(p1, p2, p3, p4, p5))
+    return block(t5(p1, p2, p3, p4, p5))
   }
 }
 
@@ -85,7 +85,7 @@ class SwitchValue6<T, P1, P2, P3, P4, P5, P6, R> {
   
   operator fun invoke(b: T, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6): R {
     val block = branches[b] ?: throw IllegalArgumentException("unsupported $b")
-    return block(tuple6(p1, p2, p3, p4, p5, p6))
+    return block(t6(p1, p2, p3, p4, p5, p6))
   }
 }
 
@@ -147,7 +147,7 @@ class SwitchType2<P2, R> {
   }
   
   operator fun invoke(b: Any, p2: P2): R {
-    val params = tuple2(b, p2)
+    val params = t2(b, p2)
     val cls = b::class.java
     val block = branches[cls]
     if (block == null) {
@@ -164,7 +164,7 @@ class SwitchType2<P2, R> {
 class SwitchType3<P2, P3, R> {
   val branches = HashMap<Class<*>, Fun3<Any, P2, P3, R>>()
   val subtypeBranches = HashMap<Class<*>, Fun3<Any, P2, P3, R>>()
-  var elseBranch: tuple3<Any, P2, P3>.() -> R = { throw IllegalArgumentException("unsupported ${this._1::class.java}") }
+  var elseBranch: t3<Any, P2, P3>.() -> R = { throw IllegalArgumentException("unsupported ${this._1::class.java}") }
   inline fun <reified P1> case(noinline block: Fun3<P1, P2, P3, R>) {
     put(branches as MutableMap<Class<*>, Any>, P1::class.java, block)
   }
@@ -178,7 +178,7 @@ class SwitchType3<P2, P3, R> {
   }
   
   operator fun invoke(b: Any, p2: P2, p3: P3): R {
-    val params = tuple3(b, p2, p3)
+    val params = t3(b, p2, p3)
     val cls = b::class.java
     val block = branches[cls]
     if (block == null) {
@@ -195,7 +195,7 @@ class SwitchType3<P2, P3, R> {
 class SwitchType4<P2, P3, P4, R> {
   val branches = HashMap<Class<*>, Fun4<Any, P2, P3, P4, R>>()
   val subtypeBranches = HashMap<Class<*>, Fun4<Any, P2, P3, P4, R>>()
-  var elseBranch: tuple4<Any, P2, P3, P4>.() -> R = { throw IllegalArgumentException("unsupported ${this._1::class.java}") }
+  var elseBranch: t4<Any, P2, P3, P4>.() -> R = { throw IllegalArgumentException("unsupported ${this._1::class.java}") }
   inline fun <reified P1> case(noinline block: Fun4<P1, P2, P3, P4, R>) {
     put(branches as MutableMap<Class<*>, Any>, P1::class.java, block)
   }
@@ -209,7 +209,7 @@ class SwitchType4<P2, P3, P4, R> {
   }
   
   operator fun invoke(b: Any, p2: P2, p3: P3, p4: P4): R {
-    val params = tuple4(b, p2, p3, p4)
+    val params = t4(b, p2, p3, p4)
     val cls = b::class.java
     val block = branches[cls]
     if (block == null) {
@@ -226,7 +226,7 @@ class SwitchType4<P2, P3, P4, R> {
 class SwitchType5<P2, P3, P4, P5, R> {
   val branches = HashMap<Class<*>, Fun5<Any, P2, P3, P4, P5, R>>()
   val subtypeBranches = HashMap<Class<*>, Fun5<Any, P2, P3, P4, P5, R>>()
-  var elseBranch: tuple5<Any, P2, P3, P4, P5>.() -> R = { throw IllegalArgumentException("unsupported ${this._1::class.java}") }
+  var elseBranch: t5<Any, P2, P3, P4, P5>.() -> R = { throw IllegalArgumentException("unsupported ${this._1::class.java}") }
   inline fun <reified P1> case(noinline block: Fun5<P1, P2, P3, P4, P5, R>) {
     put(branches as MutableMap<Class<*>, Any>, P1::class.java, block)
   }
@@ -240,7 +240,7 @@ class SwitchType5<P2, P3, P4, P5, R> {
   }
   
   operator fun invoke(b: Any, p2: P2, p3: P3, p4: P4, p5: P5): R {
-    val params = tuple5(b, p2, p3, p4, p5)
+    val params = t5(b, p2, p3, p4, p5)
     val cls = b::class.java
     val block = branches[cls]
     if (block == null) {
@@ -257,7 +257,7 @@ class SwitchType5<P2, P3, P4, P5, R> {
 class SwitchType6<P2, P3, P4, P5, P6, R> {
   val branches = HashMap<Class<*>, Fun6<Any, P2, P3, P4, P5, P6, R>>()
   val subtypeBranches = HashMap<Class<*>, Fun6<Any, P2, P3, P4, P5, P6, R>>()
-  var elseBranch: tuple6<Any, P2, P3, P4, P5, P6>.() -> R = { throw IllegalArgumentException("unsupported ${this._1::class.java}") }
+  var elseBranch: t6<Any, P2, P3, P4, P5, P6>.() -> R = { throw IllegalArgumentException("unsupported ${this._1::class.java}") }
   inline fun <reified P1> case(noinline block: Fun6<P1, P2, P3, P4, P5, P6, R>) {
     put(branches as MutableMap<Class<*>, Any>, P1::class.java, block)
   }
@@ -271,7 +271,7 @@ class SwitchType6<P2, P3, P4, P5, P6, R> {
   }
   
   operator fun invoke(b: Any, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6): R {
-    val params = tuple6(b, p2, p3, p4, p5, p6)
+    val params = t6(b, p2, p3, p4, p5, p6)
     val cls = b::class.java
     val block = branches[cls]
     if (block == null) {

@@ -350,9 +350,9 @@ class OperationBuilder(val opType: String, val name: String) {
       TF_SetAttrType(c_op_desc, name, dtype.cValue)
     }
   }
-//  fun attrType(name: String, dtype: Int) = run {
+//  fun attrType(name: String, dataType: Int) = run {
 //    attributes[name] = {
-//      TF_SetAttrType(c_op_desc, name, dtype)
+//      TF_SetAttrType(c_op_desc, name, dataType)
 //    }
 //  }
   

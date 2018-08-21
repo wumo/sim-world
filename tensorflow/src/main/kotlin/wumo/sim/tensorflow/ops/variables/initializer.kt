@@ -10,7 +10,7 @@ import wumo.sim.util.Shape
 import kotlin.math.sqrt
 
 interface Initializer {
-  val dtype: DataType<*>?
+  val dataType: DataType<*>?
     get() = null
   val shape: Shape?
     get() = null
@@ -40,7 +40,7 @@ fun ones_initializer(dtype: DataType<*> = FLOAT) = object : Initializer {
 }
 
 class DynamicInitializer(val value: Output) : Initializer {
-  override val dtype = value.dtype
+  override val dataType = value.dataType
   override val shape = value.shape
   override val name: String
     get() = "constant_initializer"
@@ -123,7 +123,7 @@ fun variance_scaling_initializer(factor: Float = 2.0f,
                                  mode: mode = FAN_IN,
                                  uniform: Boolean = false) =
     object : Initializer {
-      override val dtype: DataType<*>?
+      override val dataType: DataType<*>?
         get() = types.FLOAT
       override val name: String
         get() = "variance_scaling_initializer"

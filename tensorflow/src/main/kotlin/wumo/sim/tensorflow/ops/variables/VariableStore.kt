@@ -10,7 +10,6 @@ import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.types.DataType
 import wumo.sim.tensorflow.types.FLOAT
 import wumo.sim.util.Shape
-import wumo.sim.util.emptyMutableSet
 
 /**
  * Variable store that carries a number of named Variables.
@@ -87,7 +86,7 @@ internal class VariableStore {
       if (reuse == ReuseExistingOnly)
         throw IllegalArgumentException(
             "Variable '$name' does not exist, but variable scope re-use was set to 'ReuseExistingOnly'.")
-      if (shape != null && !shape.is_fully_defined)
+      if (shape != null && !shape.isFullyDefined)
         throw IllegalArgumentException(
             "The shape of a new variable ('$name') must be fully defined, but instead it was set to '$shape'.")
 //      val acutalInitializer=

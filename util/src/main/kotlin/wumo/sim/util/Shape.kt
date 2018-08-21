@@ -55,11 +55,11 @@ class Shape(private val dims: IntArray? = null) : Iterable<Int> {
   
   val rank = dims?.size ?: -1
   
-  val is_fully_defined: Boolean
+  val isFullyDefined: Boolean
     get() = dims?.all { it >= 0 } ?: false
   
   fun numElements() =
-      if (!is_fully_defined) -1
+      if (!isFullyDefined) -1
       else {
         var size = 1
         dims!!.forEach { size *= it }

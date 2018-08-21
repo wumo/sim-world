@@ -36,7 +36,7 @@ interface gen_data_flow_ops {
     buildOpTensor("AccumulatorTakeGradient", name) {
       addInput(handle, true)
       addInput(num_required, false)
-      attr("dtype", dtype)
+      attr("dataType", dtype)
     }
   }
   
@@ -91,7 +91,7 @@ interface gen_data_flow_ops {
   
   fun _conditionalAccumulator(dtype: DataType<*>, shape: Shape, container: String = "", shared_name: String = "", name: String = "ConditionalAccumulator") = run {
     buildOpTensor("ConditionalAccumulator", name) {
-      attr("dtype", dtype)
+      attr("dataType", dtype)
       attr("shape", shape)
       attr("container", container)
       attr("shared_name", shared_name)
@@ -144,7 +144,7 @@ interface gen_data_flow_ops {
   fun _getSessionTensor(handle: Output, dtype: DataType<*>, name: String = "GetSessionTensor") = run {
     buildOpTensor("GetSessionTensor", name) {
       addInput(handle, false)
-      attr("dtype", dtype)
+      attr("dataType", dtype)
     }
   }
   
@@ -438,13 +438,13 @@ interface gen_data_flow_ops {
     buildOpTensors("SparseAccumulatorTakeGradient", name) {
       addInput(handle, true)
       addInput(num_required, false)
-      attr("dtype", dtype)
+      attr("dataType", dtype)
     }
   }
   
   fun _sparseConditionalAccumulator(dtype: DataType<*>, shape: Shape, container: String = "", shared_name: String = "", name: String = "SparseConditionalAccumulator") = run {
     buildOpTensor("SparseConditionalAccumulator", name) {
-      attr("dtype", dtype)
+      attr("dataType", dtype)
       attr("shape", shape)
       attr("container", container)
       attr("shared_name", shared_name)
@@ -502,7 +502,7 @@ interface gen_data_flow_ops {
     buildOpTensors("TensorArrayConcatV3", name) {
       addInput(handle, false)
       addInput(flow_in, false)
-      attr("dtype", dtype)
+      attr("dataType", dtype)
       attr("element_shape_except0", element_shape_except0)
     }
   }
@@ -512,7 +512,7 @@ interface gen_data_flow_ops {
       addInput(handle, false)
       addInput(indices, false)
       addInput(flow_in, false)
-      attr("dtype", dtype)
+      attr("dataType", dtype)
       attr("element_shape", element_shape)
     }
   }
@@ -539,7 +539,7 @@ interface gen_data_flow_ops {
       addInput(handle, false)
       addInput(index, false)
       addInput(flow_in, false)
-      attr("dtype", dtype)
+      attr("dataType", dtype)
     }
   }
   
@@ -571,7 +571,7 @@ interface gen_data_flow_ops {
   fun _tensorArrayV3(size: Output, dtype: DataType<*>, element_shape: Shape = Shape(), dynamic_size: Boolean = false, clear_after_read: Boolean = true, identical_element_shapes: Boolean = false, tensor_array_name: String = "", name: String = "TensorArrayV3") = run {
     buildOpTensors("TensorArrayV3", name) {
       addInput(size, false)
-      attr("dtype", dtype)
+      attr("dataType", dtype)
       attr("element_shape", element_shape)
       attr("dynamic_size", dynamic_size)
       attr("clear_after_read", clear_after_read)

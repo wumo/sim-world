@@ -1,5 +1,7 @@
 package wumo.sim.tensorflow.ops
 
+import wumo.sim.tensorflow.ops.gradient_ops.AggregationMethod.AddAggregationMethod
+
 object gradient_ops {
   interface API {
     fun gradients(y: Output, xs: Collection<Output>): List<Output> {
@@ -9,6 +11,41 @@ object gradient_ops {
     fun gradients(ys: List<Output>, xs: Collection<Output>): List<Output> {
       return addSymbolicGradients(ys, xs.toList())
     }
+    
+    /**
+     * @see "tensorflow.python.ops.gradients_impl.gradients"
+     */
+    fun gradients(ys: List<Output>,
+                  xs: List<Output>,
+                  grad_ys: List<OutputLike>? = null,
+                  gateGradients: Boolean = false,
+                  aggregationMethod: AggregationMethod = AddAggregationMethod,
+                  colocateGradientsWithOps: Boolean = false,
+                  name: String = "gradients"): List<OutputLike?> {
+      TODO()
+    }
+    
+  }
+  
+  sealed class GatingMethod {
+    object NoGating : GatingMethod()
+    object OpGating : GatingMethod()
+    object GraphGating : GatingMethod()
+  }
+  
+  /**
+   * Aggregation method used to combine gradients.
+   *
+   * Computing partial derivatives can require aggregating gradient contributions. All such aggregation methods are
+   * represented as objects extending this trait.
+   *
+   * @see "tensorflow.python.ops.gradients_impl.AggregationMethod"
+   */
+  sealed class AggregationMethod {
+    
+    object AddAggregationMethod : AggregationMethod()
+    object AccumulateAggregationMethod : AggregationMethod()
+    
   }
 }
 

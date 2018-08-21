@@ -197,29 +197,29 @@ open class NDArray<T : Any>(val shape: Shape, val raw: Buf<T>, val dtype: Class<
     override fun next() = raw[a++]
   }
   
-  fun flatten() = object : Iterator<tuple2<Int, T>> {
+  fun flatten() = object : Iterator<t2<Int, T>> {
     var a = 0
-    lateinit var element: tuple2<Int, T>
+    lateinit var element: t2<Int, T>
     override fun hasNext() = a < size
     
-    override fun next(): tuple2<Int, T> {
+    override fun next(): t2<Int, T> {
       val value = raw[a]
       if (this::element.isInitialized)
         element._2 = value
       else
-        element = tuple2(a, value)
+        element = t2(a, value)
       a++
       return element
     }
   }
   
-  fun withIndex() = object : Iterator<tuple2<IntArray, T>> {
+  fun withIndex() = object : Iterator<t2<IntArray, T>> {
     val idx = IntArray(dims.size).apply { this[this.lastIndex] = -1 }
     var a = 0
-    lateinit var element: tuple2<IntArray, T>
+    lateinit var element: t2<IntArray, T>
     override fun hasNext() = a < size
     
-    override fun next(): tuple2<IntArray, T> {
+    override fun next(): t2<IntArray, T> {
       for (_idx in dims.lastIndex downTo 0) {
         idx[_idx]++
         if (idx[_idx] < dims[_idx])
@@ -230,7 +230,7 @@ open class NDArray<T : Any>(val shape: Shape, val raw: Buf<T>, val dtype: Class<
       if (this::element.isInitialized)
         element._2 = value
       else
-        element = tuple2(idx, value)
+        element = t2(idx, value)
       return element
     }
   }

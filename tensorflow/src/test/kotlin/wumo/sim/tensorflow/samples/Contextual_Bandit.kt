@@ -27,7 +27,7 @@ class Contextual_Bandit : BaseTest() {
       return if (Rand().nextGaussian() > bandit) 1f else -1f
     }
 //
-//    val state_in = tf.placeholder(Shape(1), dtype = DT_INT32, name = "state_in")
+//    val state_in = tf.placeholder(Shape(1), dataType = DT_INT32, name = "state_in")
 //    val state_in_OH = tf.one_hot_encoding(state_in, num_bandits)
 //    var output = tf.fully_connected(state_in_OH, num_actions,
 //                                    biases_initializer = null,
@@ -36,8 +36,8 @@ class Contextual_Bandit : BaseTest() {
 //    output = tf.reshape(output, tf.const(i(-1)), name = "output")
 //    val chosen_action = tf.argmax(output, 0, name = "chosen_action")
 //
-//    val reward_holder = tf.placeholder(Shape(1), dtype = tensorflow.DT_FLOAT, name = "reward_holder")
-//    val action_holder = tf.placeholder(Shape(1), dtype = DT_INT32, name = "action_holder")
+//    val reward_holder = tf.placeholder(Shape(1), dataType = tensorflow.DT_FLOAT, name = "reward_holder")
+//    val action_holder = tf.placeholder(Shape(1), dataType = DT_INT32, name = "action_holder")
 //
 //    val responsible_output = tf.slice(output, action_holder, tf.const(i(1)), name = "responsible_weight")
 //    val loss = -(tf.log(responsible_output) * reward_holder)

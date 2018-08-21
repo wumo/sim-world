@@ -23,7 +23,7 @@ interface gen_stateless_random_ops {
     buildOpTensor("StatelessRandomNormal", name) {
       addInput(shape, false)
       addInput(seed, false)
-      attr("dtype", dtype)
+      attr("dataType", dtype)
     }
   }
   
@@ -31,7 +31,7 @@ interface gen_stateless_random_ops {
     buildOpTensor("StatelessRandomUniform", name) {
       addInput(shape, false)
       addInput(seed, false)
-      attr("dtype", dtype)
+      attr("dataType", dtype)
     }
   }
   
@@ -39,7 +39,7 @@ interface gen_stateless_random_ops {
     buildOpTensor("StatelessTruncatedNormal", name) {
       addInput(shape, false)
       addInput(seed, false)
-      attr("dtype", dtype)
+      attr("dataType", dtype)
     }
   }
 }

@@ -40,7 +40,7 @@ object nn_ops {
           //The dynamic range of fp16 is too limited to support the collection of
           //sufficient statistics. As a workaround we simply perform the operations
           //on 32-bit floats before converting the mean and variance back to fp16
-          val y = if (x.dtype == HALF) tf.cast(x, FLOAT) else x
+          val y = if (x.dataType == HALF) tf.cast(x, FLOAT) else x
           //Compute true mean while keeping the dims for proper broadcasting.
           var mean = tf.mean(y, axes, keep_dims = true, name = "mean")
           //sample variance, not unbiased variance
@@ -50,7 +50,7 @@ object nn_ops {
             mean = tf._squeeze(mean, axes.toTypedArray())
             variance = tf._squeeze(variance, axes.toTypedArray())
           }
-          if (x.dtype == HALF)
+          if (x.dataType == HALF)
             a(tf.cast(mean, HALF), tf.cast(variance, HALF))
           else a(mean, variance)
         }

@@ -132,7 +132,7 @@ interface gen_array_ops {
   fun _empty(shape: Output, dtype: DataType<*>, init: Boolean = false, name: String = "Empty") = run {
     buildOpTensor("Empty", name) {
       addInput(shape, false)
-      attr("dtype", dtype)
+      attr("dataType", dtype)
       attr("init", init)
     }
   }
@@ -267,7 +267,7 @@ interface gen_array_ops {
   
   fun _immutableConst(dtype: DataType<*>, shape: Shape, memory_region_name: String, name: String = "ImmutableConst") = run {
     buildOpTensor("ImmutableConst", name) {
-      attr("dtype", dtype)
+      attr("dataType", dtype)
       attr("shape", shape)
       attr("memory_region_name", memory_region_name)
     }
@@ -393,7 +393,7 @@ interface gen_array_ops {
   
   fun _placeholder(dtype: DataType<*>, shape: Shape = Shape(), name: String = "Placeholder") = run {
     buildOpTensor("Placeholder", name) {
-      attr("dtype", dtype)
+      attr("dataType", dtype)
       attr("shape", shape)
     }
   }
