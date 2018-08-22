@@ -1,6 +1,7 @@
 package wumo.sim.tensorflow.ops.variables
 
 import wumo.sim.tensorflow.core.Graph.Graph
+import wumo.sim.tensorflow.core.InvalidDataTypeException
 import wumo.sim.tensorflow.core.ShapeMismatchException
 import wumo.sim.tensorflow.createOp
 import wumo.sim.tensorflow.ops.DeviceFunction
@@ -39,6 +40,9 @@ class Variable(
         tf.cond(isInitialized, { readValue() }, { initialValue })
       }
   
+  /** Contains the partition/save-slice information for this variable. */
+  internal var partitionInformation: PartitionInformation? = null
+  
   override fun read(name: String): Output =
       tf._identity(variable, name = "read")
   
@@ -54,6 +58,12 @@ class Variable(
   
   override fun assignSub(value: Output, name: String): Output =
       tf._assignSub(variable, value, name = name)
+  
+  override fun assignScatterSub(indices: Output, values: Output, use_locking: Boolean, name: String): Output {
+    if (values.dataType != dataType)
+      throw InvalidDataTypeException("Expected '$dataType', but got '${values.dataType}'.")
+    return tf._scatterSub(variable, indices, values, use_locking, name)
+  }
   
   override fun toString() = op.toString()
   override fun equals(other: Any?) =
@@ -78,6 +88,20 @@ class Variable(
         underlyingGetter: VariableGetter? = null
     ): Variable
   }
+  
+  /** Class that contains partitioning information for a variable that can also be used to save it as a slice.
+   *
+   * @param  fullName         Name of the full variable, of which the variable is a partition.
+   * @param  fullShape        Shape of the full variable, of which the variable is a partition.
+   * @param  partitionOffsets Offsets of the partition into the full variable.
+   * @param  partitionShape   Shape of the variable.
+   */
+  class PartitionInformation(
+      val fullName: String,
+      val fullShape: Shape,
+      val partitionOffsets: IntArray,
+      val partitionShape: IntArray
+  )
   
   companion object {
     /** Gets an existing variable with the specified name or creates a new one.

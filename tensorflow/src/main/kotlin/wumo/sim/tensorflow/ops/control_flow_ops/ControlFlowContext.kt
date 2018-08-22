@@ -34,7 +34,7 @@ abstract class ControlFlowContext {
   /**Set of values that have already been seen in this context.*/
   val values = hashSetOf<String>()
   /**Set of values referenced by but external to this context.*/
-  val external_values = hashMapOf<String, Output>()
+  val externalValues = hashMapOf<String, Output>()
   /** Contains the stack of control flow contexts that have been entered so far. */
   val contextStack = ArrayDeque<ControlFlowContext?>()
   /** Returns the control pivot op output for this context, or null.*/
@@ -101,7 +101,7 @@ abstract class ControlFlowContext {
    * Gradient loop state for this context, used for back-propagation.
    * @see "tensorflow.python.ops.control_flow_ops.ControlFlowContext#grad_state"
    */
-  abstract val gradState: GradientLoopState?
+  abstract val gradLoopState: GradientLoopState?
   
   /** Enters this control flow context.
    * @see "tensorflow.python.ops.control_flow_ops.ControlFlowContext#Enter"

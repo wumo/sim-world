@@ -3,7 +3,9 @@ package wumo.sim.tensorflow.ops.control_flow_ops
 import wumo.sim.tensorflow.core.InvalidArgumentException
 import wumo.sim.tensorflow.core.InvalidDataTypeException
 import wumo.sim.tensorflow.ops.*
+import wumo.sim.tensorflow.tensor.constantValue
 import wumo.sim.tensorflow.tf
+import wumo.sim.util.NONE
 import wumo.sim.util.a
 import wumo.sim.util.groupBy
 import kotlin.collections.component1
@@ -169,24 +171,24 @@ object control_flow_ops {
           
           isContainingContext(whileContext, inputWhileContext) -> null
           // `inputOp` is in a while loop which contains `op`'s while loop (or not in a while loop at all).
-          whileContext.gradState != null &&
-              isContainingContext(whileContext.gradState?.forwardContext,
+          whileContext.gradLoopState != null &&
+              isContainingContext(whileContext.gradLoopState?.forwardContext,
                                   inputWhileContext) -> null
           // `op` is in a gradient context and `inputOp` is in the associated forward pass context or an ancestor
           // thereof. This case is needed to build while loop gradients. Note that we theoretically also need this
           // case for custom gradient functions that close over tensors from ancestor contexts, but this has not been
           // verified yet.
-          whileContext.gradState != null &&
-              whileContext.gradState?.forwardContext === inputWhileContext?.outerContext -> null
+          whileContext.gradLoopState != null &&
+              whileContext.gradLoopState?.forwardContext === inputWhileContext?.outerContext -> null
           // `op` is in a gradient context and `inputOp` is in a child of the associated forward pass context. This
           // case is needed for the gradients of while loops with conditionals.
-          inputWhileContext?.gradState != null &&
-              inputWhileContext.gradState?.forwardContext === whileContext -> null
+          inputWhileContext?.gradLoopState != null &&
+              inputWhileContext.gradLoopState?.forwardContext === whileContext -> null
           // `inputOp` is in the gradient context of `op`'s context. This case is needed when the gradient of a while
           // loop gradient is requested (this will eventually fail unless there is a `stopGradient` op or similar).
-          inputWhileContext?.gradState != null &&
-              inputContext.gradState?.forwardContext?.gradState != null &&
-              inputContext.gradState!!.forwardContext.gradState!!.forwardContext === whileContext -> null
+          inputWhileContext?.gradLoopState != null &&
+              inputContext.gradLoopState?.forwardContext?.gradLoopState != null &&
+              inputContext.gradLoopState!!.forwardContext.gradLoopState!!.forwardContext === whileContext -> null
           // `inputOp` is in the gradient gradient context of `op`'s context. This case is needed when the gradient of
           // a while loop gradient is requested (this will eventually fail unless there is a `stopGradient` op or
           // similar).
@@ -195,6 +197,65 @@ object control_flow_ops {
       }
     }
     if (errorMsg != null) throw InvalidArgumentException(errorMsg)
+  }
+  
+  /** Calculates a maximum size for use by stack ops inside XLA while loops.
+   *
+   * @param  value            Value inside the while loop forward context. Used for printing error messages.
+   * @param  whileLoopContext Forward context inside which value resides. This does not always match the value's
+   *                          immediate context, as `value` may be inside e.g., a cond context, inside the while loop.
+   * @return Tensor containing the `maxSize` to feed to a stack initializer.
+   * @throws InvalidArgumentException If `value` is nested inside a while loop that either lacks a `maximumIterations`
+   *                                  parameter, or whose `maximumIterations` parameter is inside a while loop that is
+   *                                  a parent of the calling context, and cannot be evaluated at graph build time
+   *                                  (i.e., statically) to a constant value.
+   */
+  internal fun getMaxSizeFromNestedMaximumIterations(
+      value: Output,
+      whileLoopContext: WhileContext?
+  ): Output {
+    val valueName = value.name
+    // `currentContext` is the context that `tf.gradients()` was called in.
+    val currentContext = tf.currentControlFlowContext
+    val currentContextName = currentContext?.name ?: ""
+    
+    // Loop through all containing while-loop contexts between the value and the current context, multiplying together
+    // each context's `maxIterations`, in order to get the maximum stack size.
+    var maxSize = tf.const(1)
+    
+    var currentWhileContext = whileLoopContext
+    while (currentWhileContext != null) {
+      val maxIter = currentWhileContext.maximumIterations
+      if (maxIter == null)
+        throw InvalidArgumentException(
+            "Cannot create a gradient accumulator for tensor '$valueName', inside an XLA while loop, because " +
+                "'maximumIterations' was not passed to the `tf.whileLoop()` call " +
+                "('${currentWhileContext.name}').")
+      else {
+        val maxIterContext = maxIter.op!!.controlFlowContext
+        // If `maxIterContext` (non-strictly) contains `currentContext`, then it is ok to use.
+        if (isContainingContext(currentContext, maxIterContext))
+          maxSize *= maxIter
+        else {
+          // We cannot use `maxIter` because it is defined in a nested while-loop or cond context, and so
+          // an error will be thrown if we try to use it as input to any ops in `currentContext` (e.g., `maxSize` or
+          // the final accumulator stack). We attempt to get a constant value out to use instead.
+          val constMaxIter = constantValue(maxIter)
+          if (constMaxIter == null)
+            throw InvalidArgumentException(
+                "Cannot create a gradient accumulator for tensor '$valueName', inside an XLA while loop, because " +
+                    "the 'maximumIterations' tensor ('${maxIter.name}') for while-loop context " +
+                    "'${currentWhileContext.name}' must be statically known (e.g., a constant value or " +
+                    "known shape dimension), or must be defined at or outside the while-loop context " +
+                    "'$currentContextName' (currently defined in '${maxIterContext?.name}').")
+          else
+            maxSize *= constMaxIter
+        }
+      }
+      // Find the next outer while-loop context, or stop if we have reached the `tf.gradients()` context.
+      currentWhileContext = getContainingWhileContext(currentWhileContext.outerContext, stopContext = currentContext)
+    }
+    return maxSize
   }
   
   private fun groupControlDeps(dev: String, deps: MutableSet<Op>, name: String = "noOp") =
@@ -435,5 +496,111 @@ object control_flow_ops {
           
           CondContext.unflatten(originalResultTrue, merges)
         }
+    
+    /** Creates an op that creates or finds a child frame, and makes `input` available to that child frame.
+     *
+     * The op is used together with `exit` to create loops in the graph. The unique `frameName` is used by the `Executor`
+     * to identify frames. If `isConstant` is `true`, then the output is a constant in the child frame. Otherwise, it may
+     * be changed in the child frame. At most `parallelIterations` iterations are run in parallel in the child frame.
+     *
+     * @param  input              Tensor to be made available to the child frame.
+     * @param  frameName          Name of the child frame.
+     * @param  isConstant         If `true`, the output is constant within the child frame.
+     * @param  parallelIterations Number of iterations allowed to run in parallel.
+     * @param               useRef: Boolean = true,
+    : If true, use ref_enter if data is of ref type.
+     * @param  useInputShape      If `true`, the output tensor's shape is manually set to the input tensor's shape.
+     * @param  name               Name for the created op.
+     * @return Created op output, which is the same as `input`.
+     */
+    fun <T : OutputLike> enter(input: T, frameName: String, isContant: Boolean = false, parallelIterations: Int = 10,
+                               useRef: Boolean = true, useInputShape: Boolean = true, name: String = "Enter"): T =
+        when (input) {
+          is Output -> {
+            val result = if (input.dataType.isRefType && useRef)
+              tf._refEnter(input, frameName, isContant, parallelIterations.toLong(), name)
+            else
+              tf._enter(input, frameName, isContant, parallelIterations.toLong(), name)
+            if (useInputShape)
+              result.setShape(input.shape)
+            result
+          }
+          is IndexedSlices -> {
+            val values = tf.enter(input.values, frameName, isContant, parallelIterations, useRef, useInputShape, name)
+            val indices = tf.enter(input.indices, frameName, isContant, parallelIterations, useRef, useInputShape, "indices")
+            val denseShape = if (input.denseShape != null)
+              tf.enter(input.denseShape, frameName, isContant, parallelIterations, useRef, useInputShape, "dense_shape")
+            else null
+            IndexedSlices(indices, values, denseShape)
+          }
+          is SparseOutput -> {
+            val values = tf.enter(input.values, frameName, isContant, parallelIterations, useRef, useInputShape, name)
+            val indices = tf.enter(input.indices, frameName, isContant, parallelIterations, useRef, useInputShape, "indices")
+            val denseShape = tf.enter(input.denseShape!!, frameName, isContant, parallelIterations, useRef, useInputShape, "dense_shape")
+            SparseOutput(indices, values, denseShape)
+          }
+          else -> NONE()
+        } as T
+    
+    /** Creates an op that exits from the current frame to its parent frame.
+     *
+     * The op makes `input` available to the parent frame.
+     *
+     * @param  input Tensor to be made available to the parent frame.
+     * @param  name  Name for the created op.
+     * @return Created op output, which is the same as `input`.
+     */
+    fun <T : OutputLike> exit(input: T, name: String = "Exit"): T =
+        when (input) {
+          is Output -> if (input.dataType.isRefType)
+            tf._refExit(input, name)
+          else
+            tf._exit(input, name)
+          is IndexedSlices -> {
+            val values = tf.exit(input.values, name)
+            val indices = tf._exit(input.indices, "indices")
+            val denseShape = if (input.denseShape != null)
+              tf._exit(input.denseShape, name)
+            else null
+            IndexedSlices(indices, values, denseShape)
+          }
+          is SparseOutput -> {
+            val values = tf.exit(input.values, name)
+            val indices = tf._exit(input.indices, "indices")
+            val denseShape = tf._exit(input.denseShape!!, name)
+            SparseOutput(indices, values, denseShape)
+          }
+          else -> NONE()
+        } as T
+    
+    /** Creates an op that makes its input available to the next iteration.
+     *
+     * @param  input Tensor to make available to the next iteration.
+     * @param  name  Name for the created op.
+     * @return Created op output, which is the same as `input`.
+     */
+    fun <T : OutputLike> nextIteration(input: T, name: String = "NextIteration"): T =
+        when (input) {
+          is Output ->
+            if (input.dataType.isRefType)
+              tf._refNextIteration(input, name)
+            else
+              tf._nextIteration(input, name)
+          is IndexedSlices -> {
+            val values = tf.nextIteration(input.values, name)
+            val indices = tf._nextIteration(input.indices, "indices")
+            val denseShape = if (input.denseShape != null)
+              tf._nextIteration(input.denseShape, "dense_shape")
+            else null
+            IndexedSlices(indices, values, denseShape)
+          }
+          is SparseOutput -> {
+            val values = tf.nextIteration(input.values, name)
+            val indices = tf._nextIteration(input.indices, "indices")
+            val denseShape = tf._nextIteration(input.denseShape!!, "dense_shape")
+            SparseOutput(indices, values, denseShape)
+          }
+          else -> NONE()
+        } as T
   }
 }

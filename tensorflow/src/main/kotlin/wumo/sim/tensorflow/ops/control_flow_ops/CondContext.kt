@@ -15,7 +15,7 @@ class CondContext(val predicate: Output,
     //Values considered to have been already seen in this context. predicate is not
     //included in this context.
     values += predicate.name
-    external_values[predicate.name] = predicate
+    externalValues[predicate.name] = predicate
     values += pivot.name
     pivot.op!!.controlFlowContext = this
   }
@@ -55,20 +55,20 @@ class CondContext(val predicate: Output,
   
   override val backPropagate = whileContext()?.backPropagate == true
   
-  override val gradState = whileContext()?.gradState
+  override val gradLoopState = whileContext()?.gradLoopState
   
   /**Add `val` to the current context and its outer context recursively.*/
   override fun addValue(output: Output): Output {
     return if (output.name in values) {
       //Use the real value if it comes from outer context. This is needed in
       //particular for nested conds.
-      external_values.getOrDefault(output.name, output)
+      externalValues.getOrDefault(output.name, output)
     } else {
       values += output.name
       val switchInput = outerContext?.let {
         val result = it.addValue(output)
         values += result.name
-        external_values[result.name] = result
+        externalValues[result.name] = result
         result
       } ?: output
       
@@ -78,7 +78,7 @@ class CondContext(val predicate: Output,
       result.op!!.graph.preventFetching(result.op)
       result.op.controlFlowContext = this
       values += result.name
-      external_values[output.name] = result
+      externalValues[output.name] = result
       result
     }
   }
@@ -114,14 +114,14 @@ class CondContext(val predicate: Output,
       val switchInput = outerContext?.let {
         val result = it.addValue(output)
         values += result.name
-        external_values[result.name] = result
+        externalValues[result.name] = result
         result
       } ?: output
       val realValue = control_flow_ops._switchRefOrTensor(switchInput, predicate)[branch]
-      external_values[output.name] = realValue
+      externalValues[output.name] = realValue
       realValue
     } else
-      external_values[output.name] ?: output
+      externalValues[output.name] ?: output
   }
   
   interface CollectionKey : Graph.Graph.Key<CondContext>

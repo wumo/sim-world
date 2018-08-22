@@ -106,7 +106,7 @@ interface gen_image_ops {
     buildOpTensor("DecodePng", name) {
       addInput(contents, false)
       attr("channels", channels)
-      attr("dataType", dtype)
+      attr("dtype", dtype)
     }
   }
   

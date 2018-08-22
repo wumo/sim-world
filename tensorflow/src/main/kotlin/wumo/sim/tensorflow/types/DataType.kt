@@ -1,7 +1,7 @@
 package wumo.sim.tensorflow.types
 
 import wumo.sim.tensorflow.tf
-import wumo.sim.util.NOPE
+import wumo.sim.util.NONE
 
 interface DataType<KotlinType> {
   //region Data Type Properties
@@ -64,8 +64,8 @@ interface DataType<KotlinType> {
       else -> this
     }
   
-  val min: KotlinType get() = NOPE()
-  val max: KotlinType get() = NOPE()
+  val min: KotlinType get() = NONE()
+  val max: KotlinType get() = NONE()
   
   //endregion Data Type Set Helper Methods
   

@@ -2,9 +2,9 @@ package wumo.sim.tensorflow.ops
 
 import org.bytedeco.javacpp.tensorflow.AttrValue
 import org.bytedeco.javacpp.tensorflow.TensorProto
-import wumo.sim.tensorflow.Tensor
 import wumo.sim.tensorflow.buildOpTensor
 import wumo.sim.tensorflow.dtypeFromClass
+import wumo.sim.tensorflow.tensor.Tensor
 import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.types.*
 import wumo.sim.util.Shape
@@ -23,6 +23,7 @@ object const_ops {
     case(INT32, UINT32) { tf.const(_1, (_2 as Number).toInt(), _3) }
     case(INT64, UINT64) { tf.const(_1, (_2 as Number).toLong(), _3) }
     case(STRING) { tf.const(_1, _2.toString(), _3) }
+    //TODO add support for Tensor and NDArray
   }
   
   interface API {
@@ -84,21 +85,21 @@ object const_ops {
       }
       return buildOpTensor("Const", name = name) {
         attr("value", tensor_proto)
-        attr("dataType", dtype)
+        attr("dtype", dtype)
       }
     }
     
     fun <T : Any> const(value: Tensor<T>, name: String = "Const") =
         buildOpTensor("Const", name = name) {
           attr("value", value)
-          attr("dataType", value.dtype)
+          attr("dtype", value.dtype)
         }
     
     fun <T : Any> const(value: NDArray<T>, name: String = "Const"): Output {
       val dtype = dtypeFromClass(value.dtype)
       return buildOpTensor("Const", name = name) {
         attr("value", Tensor.fromNDArray(value))
-        attr("dataType", dtype)
+        attr("dtype", dtype)
       }
     }
   }

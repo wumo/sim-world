@@ -5,4 +5,4 @@ package wumo.sim.util
  */
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun NOPE(): Nothing = throw NotImplementedError()
+inline fun NONE(): Nothing = throw NotImplementedError()

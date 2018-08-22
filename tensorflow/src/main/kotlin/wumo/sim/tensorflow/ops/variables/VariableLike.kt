@@ -98,6 +98,16 @@ interface VariableLike : OutputConvertible {
    */
   fun assignSub(value: Output, name: String = "AssignAdd"): Output
   
+  /** Creates an op that subtracts the provided sparse value from the current value of the variable and returns its
+   * value.
+   *
+   * @param  indices Indices corresponding to the `values` being subtracted.
+   * @param  values  Values to be subtracted, corresponding to the provided `indices`.
+   * @param  name    Name for created op.
+   * @return Variable value read op, after the subtraction.
+   */
+  fun assignScatterSub(indices: Output, values: Output, use_locking: Boolean = false, name: String = "ScatterSub"): Output
+  
   /** Converts this variable to an op output. This function simply returns an op corresponding to the variable value. */
   override fun toOutput() = value
 }

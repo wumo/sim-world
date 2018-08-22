@@ -255,6 +255,52 @@ object ops {
       throw GraphMismatchException("$op1 must be from the same graph as $op2")
   }
   
+  /**
+   * For an op that takes `input_ops` as inputs, compute control inputs.
+  
+  The returned control dependencies should yield an execution that
+  is equivalent to adding all control inputs in
+  self._control_dependencies_stack to a newly created op. However,
+  this function attempts to prune the returned control dependencies
+  by observing that nodes created within the same `with
+  control_dependencies(...):` block may have data dependencies that make
+  the explicit approach redundant.
+   * @see "tensorflow.python.framework.ops.Graph#_control_dependencies_for_inputs"
+   */
+  internal fun controlDependencies(inputs: Set<Output>): Set<Op> {
+    val controlDependencies = HashSet(tf.currentControlDependencies)
+    inputs.flatMapTo(controlDependencies) { it.op!!.controlInputs }
+    inputs.forEach { pruneControlDependencies(controlDependencies, it.op!!) }
+    return controlDependencies
+  }
+  
+  /** Prunes control dependencies from the provided set, given that the op for which these control dependencies are
+   * specified uses `op` as direct or indirect (through other ops) input or control input. This eliminates redundant
+   * control dependencies due to transitive dependencies (e.g., if `a` depends on `b` and `c`, and `b` depends on
+   * `c`, then the dependency of `a` on `c` is pruned).
+   *
+   * @param  controlDependencies  Current set of control dependencies for the op that is being built.
+   * @param  op           Op that is a direct or indirect (through other ops) input or control input, for the op that
+   *                      is being built.
+   * @param  processedOps Already processed ops (provided for efficiency purposes so that we do not go through them
+   *                      a second time).
+   */
+  internal fun pruneControlDependencies(
+      controlDependencies: MutableSet<Op>,
+      op: Op,
+      processedOps: MutableSet<Op> = mutableSetOf(),
+      maxDepth: Int = 10
+  ) {
+    if (maxDepth > 0 && op !in processedOps) {
+      // Prune op that is already used as input to the dependant op
+      controlDependencies -= op
+      processedOps += op
+      // Prune transitive control dependencies
+      op.inputs.forEach { pruneControlDependencies(controlDependencies, it.op!!, processedOps, maxDepth - 1) }
+      op.controlInputs.forEach { pruneControlDependencies(controlDependencies, it, processedOps, maxDepth - 1) }
+    }
+  }
+  
   interface API :
       gen_ops,
       array_ops.API,

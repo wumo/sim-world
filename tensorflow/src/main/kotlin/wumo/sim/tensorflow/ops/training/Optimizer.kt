@@ -1,7 +1,6 @@
 package wumo.sim.tensorflow.ops.training
 
-import org.apache.commons.lang3.concurrent.ConstantInitializer
-import wumo.sim.tensorflow.Tensor
+import wumo.sim.tensorflow.tensor.Tensor
 import wumo.sim.tensorflow.core.Graph
 import wumo.sim.tensorflow.core.InvalidDataTypeException
 import wumo.sim.tensorflow.ops.*
@@ -9,6 +8,7 @@ import wumo.sim.tensorflow.ops.gradient_ops.AggregationMethod.AddAggregationMeth
 import wumo.sim.tensorflow.ops.gradient_ops.GatingMethod.GraphGating
 import wumo.sim.tensorflow.ops.gradient_ops.GatingMethod.OpGating
 import wumo.sim.tensorflow.ops.training.Optimizer.Companion.VariableProcessor.RefVariableProcessor
+import wumo.sim.tensorflow.ops.variables.DynamicInitializer
 import wumo.sim.tensorflow.ops.variables.Initializer
 import wumo.sim.tensorflow.ops.variables.Variable
 import wumo.sim.tensorflow.tf
@@ -30,8 +30,7 @@ abstract class Optimizer {
   protected val slots = mutableMapOf<String, MutableMap<Variable, Variable>>()
   
   /** Returns the names of all slots used by this optimizer. */
-  protected val slotNames
-    get() = slots.keys
+  protected val slotNames get() = slots.keys
   
   /**
    * Additional variables created by the `Optimizer`.
@@ -155,7 +154,7 @@ abstract class Optimizer {
       for ((g, v, p) in gradientsAndVariables)
       // We colocate all ops created for variable application on the same device as the variable.
         tf.with(nameScope = "update_${v.op.name}", colocationsOps = mutableSetOf(v.op)) {
-          updateOps += p.updateOp(this, g, global_step)
+          updateOps += p.updateOp(this, g!!, global_step)
         }
       
       val apply_updates = if (global_step == null)
@@ -228,7 +227,8 @@ abstract class Optimizer {
    * @param  iteration Option containing current iteration in the optimization loop, if one has been provided.
    * @return Created op that applies the provided gradient to the provided variable.
    */
-  abstract fun applySparse(gradient: IndexedSlices, variable: Variable, iteration: Variable?): Op
+  open fun applySparse(gradient: IndexedSlices, variable: Variable, iteration: Variable?): Op =
+      NONE()
   
   /** Applies the updates corresponding to the provided gradient (with potentially duplicate indices), to the provided
    * variable.
@@ -250,13 +250,11 @@ abstract class Optimizer {
    * @param  iteration Option containing current iteration in the optimization loop, if one has been provided.
    * @return Created op that applies the provided gradient to the provided variable.
    */
-  fun applySparseDuplicateIndices(
+  open fun applySparseDuplicateIndices(
       gradient: IndexedSlices,
       variable: Variable,
       iteration: Variable?
-  ): Op {
-    TODO()
-  }
+  ): Op = NONE()
   
   /** Gets the map used for caching slots created under the provided name. If the map does not exist, then a new empty
    * map is created and returned.
@@ -277,16 +275,16 @@ abstract class Optimizer {
    * @param  variableScope Name to use when scoping the variable that needs to be created for the slot.
    * @return Requested slot variable.
    */
-  protected final fun getSlot(
+  protected fun getSlot(
       name: String,
       variable: Variable,
       initializer: Initializer,
       shape: Shape,
       dataType: DataType<*>,
       variableScope: String
-  ): Variable {
-    tf.colocateWith(mutableSetOf(variable.op)) {
-      slotMap(name).getOrPut(variable, Slot.create(variable, initializer, variableScope, dataType, shape))
+  ): Variable = tf.colocateWith(mutableSetOf(variable.op)) {
+    slotMap(name).getOrPut(variable) {
+      slot_creator.create(variable, initializer, variableScope, dataType, shape)
     }
   }
   
@@ -296,7 +294,7 @@ abstract class Optimizer {
    * @param  variable Slot primary variable.
    * @return Requested slot variable, or `null` if it cannot be found.
    */
-  protected final fun getSlot(name: String, variable: Variable): Variable? =
+  protected fun getSlot(name: String, variable: Variable): Variable? =
       slots.getOrDefault(name, emptyMutableMap()).get(variable)
   
   /** Gets an existing slot or creates a new one using an initial value of zeros, if none exists.
@@ -306,13 +304,11 @@ abstract class Optimizer {
    * @param  variableScope Name to use when scoping the variable that needs to be created for the slot.
    * @return Requested slot variable.
    */
-  protected final fun zerosSlot(name: String, variable: Variable, variableScope: String): Variable {
-    val named_slots = slotMap(name)
-    return named_slots.getOrPut(variable) {
-       create_zeros_slot(v, op_name)
-    }
-    Op.colocateWith(Set(variable.op)) {
-      slotMap(name).getOrElseUpdate(variable, slot_creator.zeros(variable, variableScope))
+  protected fun zerosSlot(name: String, variable: Variable, variableScope: String): Variable {
+    return tf.colocateWith(mutableSetOf(variable.op)) {
+      slotMap(name).getOrPut(variable) {
+        slot_creator.zeros(variable, variableScope)
+      }
     }
   }
   
@@ -323,18 +319,18 @@ abstract class Optimizer {
    * @param  colocationOps Set of colocation ops for the non-slot variable.
    * @return Created non-slot variable.
    */
-  protected final fun getOrCreateNonSlotVariable(
+  protected fun getOrCreateNonSlotVariable(
       name: String,
-      initialValue: Tensor[_<: DataType],
-  colocationOps: Set[Op] = Set.empty
+      initialValue: Tensor<*>,
+      colocationOps: MutableSet<Op> = mutableSetOf()
   ): Variable =
-  {
-    nonSlotVariables.getOrElseUpdate(
-        (name, colocationOps.map(_.graph).headOption),
-    Op.colocateWith(colocationOps) {
-      Variable.getVariable(name, initializer = ConstantInitializer(initialValue), trainable = false)
-    })
-  }
+      nonSlotVariables.getOrPut(name) {
+        tf.colocateWith(colocationOps) {
+          Variable.getVariable(name,
+                               initializer = DynamicInitializer(tf.const(initialValue)),
+                               trainable = false)
+        }
+      }
   
   /** Gets a non-slot variable that has been added to this optimizer (or throws an error if no such non-slot variable
    * could be found in this optimizer).
@@ -343,21 +339,19 @@ abstract class Optimizer {
    * @param  graph Graph in which the variable is defined.
    * @return Obtained non-slot variable.
    */
-  protected final fun getNonSlotVariable(name: String, graph: Graph? = null): Variable =
-      {
-        nonSlotVariables((name, graph))
-      }
+  protected fun getNonSlotVariable(name: String, graph: Graph? = null): Variable? =
+      nonSlotVariables[name]
   
   /** Gets all the non-slot variables that have been added to this optimizer. */
-  protected final fun getNonSlotVariables: Iterable[Variable] = nonSlotVariables.values
+  protected val getNonSlotVariables: Iterable<Variable> get() = nonSlotVariables.values
   
   /** Returns a sequence of variables which encode the current state of this optimizer. The returned variables include
    * both slot variables and non-slot global variables created by this optimizer, in the current graph. */
-  final val variables: List<Variable> =
-      {
-        (getNonSlotVariables.filter(_.graph == Op.currentGraph)++ slots . values . flatMap (_.values))
-            .toSeq.sortBy(_.name)
-      }
+  val variables: List<Variable> =
+      (getNonSlotVariables.filter { it.graph == tf.currentGraph } +
+          slots.values.flatMap { it.values })
+          .toList()
+          .sortedBy { it.name }
   
   companion object {
     /**

@@ -11,6 +11,8 @@ import wumo.sim.tensorflow.ops.control_flow_ops.control_flow_ops.checkInputFromV
 import wumo.sim.tensorflow.ops.ops
 import wumo.sim.tensorflow.ops.ops.graphConstructionScope
 import wumo.sim.tensorflow.ops.ops.logger
+import wumo.sim.tensorflow.ops.ops.pruneControlDependencies
+import wumo.sim.tensorflow.tensor.Tensor
 import wumo.sim.tensorflow.types.DataType
 import wumo.sim.util.Shape
 import wumo.sim.util.ndarray.NDArray
@@ -183,33 +185,6 @@ class OperationBuilder(val opType: String, val name: String) {
       pruneControlDependencies(controlDependencies, it)
     }
     controlDependencies.forEach { TF_AddControlInput(c_op_desc, it.c_op) }
-  }
-  
-  /** Prunes control dependencies from the provided set, given that the op for which these control dependencies are
-   * specified uses `op` as direct or indirect (through other ops) input or control input. This eliminates redundant
-   * control dependencies due to transitive dependencies (e.g., if `a` depends on `b` and `c`, and `b` depends on
-   * `c`, then the dependency of `a` on `c` is pruned).
-   *
-   * @param  controlDependencies  Current set of control dependencies for the op that is being built.
-   * @param  op           Op that is a direct or indirect (through other ops) input or control input, for the op that
-   *                      is being built.
-   * @param  processedOps Already processed ops (provided for efficiency purposes so that we do not go through them
-   *                      a second time).
-   */
-  private fun pruneControlDependencies(
-      controlDependencies: MutableSet<Op>,
-      op: Op,
-      processedOps: MutableSet<Op> = mutableSetOf(),
-      maxDepth: Int = 10
-  ) {
-    if (maxDepth > 0 && op !in processedOps) {
-      // Prune op that is already used as input to the dependant op
-      controlDependencies -= op
-      processedOps += op
-      // Prune transitive control dependencies
-      op.inputs.forEach { pruneControlDependencies(controlDependencies, it.op!!, processedOps, maxDepth - 1) }
-      op.controlInputs.forEach { pruneControlDependencies(controlDependencies, it, processedOps, maxDepth - 1) }
-    }
   }
   
   private fun addInput(input: TF_Output) {

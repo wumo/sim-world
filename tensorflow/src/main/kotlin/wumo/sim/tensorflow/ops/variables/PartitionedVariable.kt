@@ -7,6 +7,7 @@ import wumo.sim.tensorflow.types.DataType
 import wumo.sim.util.Shape
 
 class PartitionedVariable : VariableLike {
+  
   override val graph: Graph
     get() = TODO("not implemented")
   override val name: String
@@ -41,6 +42,10 @@ class PartitionedVariable : VariableLike {
   }
   
   override fun assignSub(value: Output, name: String): Output {
+    TODO("not implemented")
+  }
+  
+  override fun assignScatterSub(indices: Output, values: Output, use_locking: Boolean, name: String): Output {
     TODO("not implemented")
   }
   

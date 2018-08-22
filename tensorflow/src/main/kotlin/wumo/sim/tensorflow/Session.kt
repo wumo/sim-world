@@ -11,6 +11,7 @@ import wumo.sim.tensorflow.core.check
 import wumo.sim.tensorflow.ops.Op
 import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.ops.variables.Variable
+import wumo.sim.tensorflow.tensor.Tensor
 import wumo.sim.util.ndarray.NDArray
 import wumo.sim.util.t2
 import wumo.sim.util.t3

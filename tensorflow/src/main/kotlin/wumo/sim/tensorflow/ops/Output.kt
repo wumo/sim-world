@@ -17,7 +17,7 @@ sealed class OutputLike : OutputConvertible {
   abstract val dataType: DataType<*>
   abstract val device: String
   abstract val op: Op?
-  abstract val consumers: Array<Op>
+  abstract val consumers: List<Op>
 }
 
 /** Sparse representation of a set of tensor slices at given indices.
@@ -55,7 +55,7 @@ class IndexedSlices(val indices: Output, val values: Output, val denseShape: Out
   override val dataType: DataType<*> = values.dataType
   override val device: String = values.device
   override val op: Op? = values.op
-  override val consumers: Array<Op> = values.consumers
+  override val consumers: List<Op> = values.consumers
   
   override fun toOutput(): Output {
     if (denseShape == null)
@@ -65,7 +65,7 @@ class IndexedSlices(val indices: Output, val values: Output, val denseShape: Out
   }
 }
 
-class SparseOutput : OutputLike() {
+class SparseOutput(val indices: Output, val values: Output, val denseShape: Output? = null) : OutputLike() {
   override val name: String
     get() = TODO("not implemented")
   override val dataType: DataType<*>
@@ -74,7 +74,7 @@ class SparseOutput : OutputLike() {
     get() = TODO("not implemented")
   override val op: Op?
     get() = TODO("not implemented")
-  override val consumers: Array<Op>
+  override val consumers: List<Op>
     get() = TODO("not implemented")
   override val graph: Graph
     get() = TODO("not implemented")
@@ -122,17 +122,17 @@ class SparseOutput : OutputLike() {
  * @param[op] [Op] that computes this tensor.
  * @param[value_index] Index of the operation's endpoint that produces this tensor.
  */
-class Output(override val op: Op?, val value_index: Int) : OutputLike() {
+class Output(override val op: Op, val value_index: Int) : OutputLike() {
   
   override val graph = op!!.graph
   override val device = op!!.device
-  override val consumers: Array<Op>
+  override val consumers: List<Op>
     get() {
       val tf_output = asTF_Output()
       val numConsumers = TF_OperationOutputNumConsumers(tf_output)
       val consumers = TF_Input(numConsumers.toLong())
       TF_OperationOutputConsumers(tf_output, consumers, numConsumers)
-      return Array(numConsumers) {
+      return List(numConsumers) {
         graph.cache(consumers.position(it.toLong()).oper())
       }
     }
@@ -177,7 +177,7 @@ class Output(override val op: Op?, val value_index: Int) : OutputLike() {
   ==> TensorShape([Shape(None), Shape(None), Shape(3)])
   
   # We know that each image in this dataset is 28 x 28 pixels.
-  image.set_shape([28, 28, 3])
+  image.setShape([28, 28, 3])
   print(image.shape)
   ==> TensorShape([Shape(28), Shape(28), Shape(3)])
   ```
@@ -189,7 +189,7 @@ class Output(override val op: Op?, val value_index: Int) : OutputLike() {
   ValueError: If `shape` is not compatible with the current shape of
   this tensor.
    */
-  fun set_shape(shape: Shape) {
+  fun setShape(shape: Shape) {
     assert(this.shape.isCompatibleWith(shape))
     op!!
     val dims = shape.asLongArray()

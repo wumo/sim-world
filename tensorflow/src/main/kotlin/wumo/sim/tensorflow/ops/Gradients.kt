@@ -428,7 +428,7 @@ class SymbolicGradientBuilder(val outputs_: List<Output>,
 
 val noGradient = toOutput(null, -1)
 fun toOutput(n: Node?, v: Int) =
-    if (n == null) Output(null, v)
+    if (n == null) TODO()
     else
       Output(n.toOperation(), v)
 

@@ -346,7 +346,7 @@ interface gen_math_ops {
       addInput(values, false)
       addInput(value_range, false)
       addInput(nbins, false)
-      attr("dataType", dtype)
+      attr("dtype", dtype)
     }
   }
   

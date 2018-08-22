@@ -6,39 +6,47 @@ import wumo.sim.tensorflow.types.*
 import wumo.sim.util.a
 import wumo.sim.util.arange
 
-operator fun Output.plus(b: Any) =
+operator fun <T : OutputConvertible> T.plus(b: Any) =
     tf.nameScope("add") {
-      val y = tf.const(this.dataType.base_dtype, b, name = "y")
-      tf._add(this, y, name = tf.currentNameScope)
+      val a = this.toOutput()
+      val y = tf.const(a.dataType.base_dtype, b, name = "y")
+      tf._add(a, y, name = tf.currentNameScope)
     }
 
-operator fun Output.plus(b: Output) = tf._add(this, b)
+operator fun <T : OutputConvertible, R : OutputConvertible> T.plus(b: R) =
+    tf._add(this.toOutput(), b.toOutput())
 
-operator fun Output.div(b: Any) =
+operator fun <T : OutputConvertible> T.div(b: Any) =
     tf.nameScope("div") {
-      val y = tf.const(this.dataType.base_dtype, b, name = "y")
-      tf._div(this, y, name = tf.currentNameScope)
+      val a = this.toOutput()
+      val y = tf.const(a.dataType.base_dtype, b, name = "y")
+      tf._div(a, y, name = tf.currentNameScope)
     }
 
-operator fun Output.div(b: Output) = tf._div(this, b)
+operator fun <T : OutputConvertible, R : OutputConvertible> T.div(b: R) =
+    tf._div(this.toOutput(), b.toOutput())
 
-operator fun Output.minus(b: Any) =
+operator fun <T : OutputConvertible> T.minus(b: Any) =
     tf.nameScope("sub") {
-      val y = tf.const(this.dataType.base_dtype, b, name = "y")
-      tf._sub(this, y, name = tf.currentNameScope)
+      val a = this.toOutput()
+      val y = tf.const(a.dataType.base_dtype, b, name = "y")
+      tf._sub(a, y, name = tf.currentNameScope)
     }
 
-operator fun Output.minus(b: Output) = tf._sub(this, b)
+operator fun <T : OutputConvertible, R : OutputConvertible> T.minus(b: R) =
+    tf._sub(this.toOutput(), b.toOutput())
 
-operator fun Output.times(b: Any) =
+operator fun <T : OutputConvertible> T.times(b: Any) =
     tf.nameScope("mul") {
-      val y = tf.const(this.dataType.base_dtype, b, name = "y")
-      tf._mul(this, y, name = tf.currentNameScope)
+      val a = this.toOutput()
+      val y = tf.const(a.dataType.base_dtype, b, name = "y")
+      tf._mul(a, y, name = tf.currentNameScope)
     }
 
-operator fun Output.times(b: Output) = tf._mul(this, b)
+operator fun <T : OutputConvertible, R : OutputConvertible> T.times(b: R) =
+    tf._mul(this.toOutput(), b.toOutput())
 
-operator fun Output.unaryMinus() = tf._neg(this)
+operator fun <T : OutputConvertible> T.unaryMinus() = tf._neg(this.toOutput())
 
 object math_ops {
   private val dtype_hierarchy: Map<DataType<*>, Int> = mapOf(INT32 to 0,

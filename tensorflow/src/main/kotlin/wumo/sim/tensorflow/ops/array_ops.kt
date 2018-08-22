@@ -70,12 +70,18 @@ object array_ops {
      *
      *
      */
-    fun shape(input: Output, out_type: DataType<*> = INT32, name: String = "Shape", optimize: Boolean = true): Output {
-      //TODO SparseOutput
-      val input_shape = input.shape
-      if (optimize && input_shape.isFullyDefined)
-        return tf.const(input_shape.asIntArray()!!, name)
-      return tf._shape(input, out_type, name)
+    fun shape(input: OutputLike, out_type: DataType<*> = INT32, name: String = "Shape", optimize: Boolean = true): Output {
+      return when (input) {
+        is SparseOutput -> tf._cast(input.denseShape!!, out_type)
+        is Output -> {
+          val input_shape = input.shape
+          if (optimize && input_shape.isFullyDefined)
+            tf.const(input_shape.asIntArray()!!, name)
+          else
+            tf._shape(input, out_type, name)
+        }
+        else -> TODO()
+      }
     }
     
     /**

@@ -11,6 +11,7 @@ import wumo.sim.tensorflow.core.check
 import wumo.sim.tensorflow.ops.control_flow_ops.ControlFlowContext
 import wumo.sim.tensorflow.ops.ops.COLOCATION_OPS_ATTRIBUTE_NAME
 import wumo.sim.tensorflow.ops.ops.COLOCATION_OPS_ATTRIBUTE_PREFIX
+import wumo.sim.tensorflow.tensor.Tensor
 import wumo.sim.tensorflow.types.DataType
 import kotlin.collections.emptySet
 import java.util.Collections.emptySet as emptyMutableSet
@@ -200,6 +201,12 @@ class Op(val graph: Graph, val c_op: TF_Operation) {
     return FloatArray(list_value.i_size()) {
       list_value.f(it)
     }
+  }
+  
+  fun attrTensor(name: String): Tensor<*> {
+    val value = attrs.Find(name)
+    value.tensor()
+    TODO()
   }
   
   val attr: Map<String, Any>

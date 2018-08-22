@@ -1,7 +1,7 @@
 package wumo.sim.tensorflow.types
 
 import org.tensorflow.framework.DataType.*
-import wumo.sim.util.NOPE
+import wumo.sim.util.NONE
 
 typealias STRING = types.STRING
 typealias BOOL = types.BOOL
@@ -86,7 +86,7 @@ object types {
     override val priority = 1000
     
     override fun zero() = ""
-    override fun one() = NOPE()
+    override fun one() = NONE()
     
     override val protoType = DT_STRING
   }
@@ -148,8 +148,8 @@ object types {
     override val byteSize = 8
     override val priority = -1
     
-    override fun zero() = NOPE()
-    override fun one() = NOPE()
+    override fun zero() = NONE()
+    override fun one() = NONE()
     
     override val protoType = DT_COMPLEX64
   }
@@ -159,8 +159,8 @@ object types {
     override val byteSize = 16
     override val priority = -1
     
-    override fun zero() = NOPE()
-    override fun one() = NOPE()
+    override fun zero() = NONE()
+    override fun one() = NONE()
     
     override val protoType = DT_COMPLEX128
   }
@@ -248,8 +248,8 @@ object types {
     override val byteSize = 8
     override val priority = 105
     
-    override fun zero() = NOPE()
-    override fun one() = NOPE()
+    override fun zero() = NONE()
+    override fun one() = NONE()
     
     override val protoType = DT_UINT64
   }
@@ -315,8 +315,8 @@ object types {
     override val byteSize = -1
     override val priority = -1
     
-    override fun zero() = NOPE()
-    override fun one() = NOPE()
+    override fun zero() = NONE()
+    override fun one() = NONE()
     
     override val protoType = DT_RESOURCE
   }
@@ -326,8 +326,8 @@ object types {
     override val byteSize = -1
     override val priority = -1
     
-    override fun zero() = NOPE()
-    override fun one() = NOPE()
+    override fun zero() = NONE()
+    override fun one() = NONE()
     
     override val protoType = DT_VARIANT
     override fun toString() = name
@@ -339,7 +339,7 @@ object types {
     override val priority = 1000
     
     override fun zero() = ""
-    override fun one() = NOPE()
+    override fun one() = NONE()
     
     override val protoType = DT_STRING_REF
   }
@@ -404,8 +404,8 @@ object types {
     override val byteSize = 8
     override val priority = -1
     
-    override fun zero() = NOPE()
-    override fun one() = NOPE()
+    override fun zero() = NONE()
+    override fun one() = NONE()
     
     override val protoType = DT_COMPLEX64_REF
   }
@@ -415,8 +415,8 @@ object types {
     override val byteSize = 16
     override val priority = -1
     
-    override fun zero() = NOPE()
-    override fun one() = NOPE()
+    override fun zero() = NONE()
+    override fun one() = NONE()
     
     override val protoType = DT_COMPLEX128_REF
   }
@@ -503,8 +503,8 @@ object types {
     override val byteSize = 8
     override val priority = 105
     
-    override fun zero() = NOPE()
-    override fun one() = NOPE()
+    override fun zero() = NONE()
+    override fun one() = NONE()
     
     override val protoType = DT_UINT64_REF
   }
@@ -569,8 +569,8 @@ object types {
     override val byteSize = -1
     override val priority = -1
     
-    override fun zero() = NOPE()
-    override fun one() = NOPE()
+    override fun zero() = NONE()
+    override fun one() = NONE()
     
     override val protoType = DT_RESOURCE_REF
   }
@@ -580,8 +580,8 @@ object types {
     override val byteSize = -1
     override val priority = -1
     
-    override fun zero() = NOPE()
-    override fun one() = NOPE()
+    override fun zero() = NONE()
+    override fun one() = NONE()
     
     override val protoType = DT_VARIANT_REF
   }

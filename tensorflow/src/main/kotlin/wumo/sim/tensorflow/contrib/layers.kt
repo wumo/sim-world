@@ -153,7 +153,7 @@ package wumo.sim.tensorflow.contrib
 //        offset = beta,
 //        scale = gamma,
 //        variance_epsilon = 1e-12f)
-//    outputs.set_shape(inputs_shape)
+//    outputs.setShape(inputs_shape)
 //    if (activation_fn != null)
 //      outputs = activation_fn(outputs)
 //    return outputs

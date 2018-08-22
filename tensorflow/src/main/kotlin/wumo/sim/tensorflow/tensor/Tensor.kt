@@ -1,6 +1,6 @@
 @file:Suppress("UNCHECKED_CAST")
 
-package wumo.sim.tensorflow
+package wumo.sim.tensorflow.tensor
 
 import org.bytedeco.javacpp.*
 import org.bytedeco.javacpp.Pointer.memcpy
@@ -10,6 +10,7 @@ import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Tensor.allocateTensor
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Tensor.newTensor
 import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.tensorflow.core.check
+import wumo.sim.tensorflow.dtypeToClass
 import wumo.sim.tensorflow.types.*
 import wumo.sim.util.*
 import wumo.sim.util.Shape
