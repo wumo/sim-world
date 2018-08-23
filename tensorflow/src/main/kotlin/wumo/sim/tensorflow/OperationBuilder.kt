@@ -206,7 +206,7 @@ class OperationBuilder(val opType: String, val name: String) {
       val inputs = TF_Output(input.size.toLong())
       for ((i, _input) in input.withIndex()) {
         val t = _input
-        inputs.position(i.toLong()).oper(t.op!!.c_op).index(t.value_index)
+        inputs.position(i.toLong()).oper(t.op!!.c_op).index(t.valueIndex)
             .apply {
               input_ops += t.op
               inputLists += input
@@ -217,30 +217,14 @@ class OperationBuilder(val opType: String, val name: String) {
     if (ref) input.forEach { maybeColocateInputs += it.op!! }
     input.forEach { inputs += it }
   }
-
-//  fun addInput(input: Array<Output>, ref: Boolean = false) {
-//    inputFunctions += {
-//      val inputs = TF_Output(input.size.toLong())
-//      for ((i, _input) in input.withIndex()) {
-//        val t = checkRef(_input, ref)
-//        inputs.position(i.toLong()).oper(t.op!!.c_op).index(t.value_index)
-//            .apply {
-//              input_ops += t.op
-//              inputLists += input
-//            }
-//      }
-//      TF_AddInputList(c_op_desc, inputs.position(0L), input.size)
-//    }
-//    input.forEach { inputs += it }
-//  }
   
-  fun attr(name: String, value: String) = run {
+  fun attr(name: String, value: String) {
     attributes[name] = {
       attr(name, value.toByteArray())
     }
   }
   
-  fun attr(name: String, values: Array<String>) = run {
+  fun attr(name: String, values: Array<String>) {
     attributes[name] = {
       val attrValue = AttrValue()
       attrValue.mutable_list().apply {
@@ -252,86 +236,81 @@ class OperationBuilder(val opType: String, val name: String) {
     }
   }
   
-  fun attr(name: String, value: ByteArray) = run {
+  fun attr(name: String, value: ByteArray) {
     attributes[name] = {
       TF_SetAttrString(c_op_desc, name, BytePointer(*value), value.size.toLong())
     }
   }
   
-  fun attr(name: String, value: Boolean) = run {
+  fun attr(name: String, value: Boolean) {
     attributes[name] = {
       TF_SetAttrBool(c_op_desc, name, value.toByte())
     }
   }
   
-  fun attr(name: String, value: BooleanArray) = run {
+  fun attr(name: String, value: BooleanArray) {
     attributes[name] = {
       TF_SetAttrBoolList(c_op_desc, name,
                          ByteArray(value.size) { value[it].toByte() }, value.size)
     }
   }
   
-  fun attr(name: String, value: Int) = run {
+  fun attr(name: String, value: Int) {
     attributes[name] = {
       TF_SetAttrInt(c_op_desc, name, value.toLong())
     }
   }
   
-  fun attr(name: String, value: IntArray) = run {
+  fun attr(name: String, value: IntArray) {
     attributes[name] = {
       TF_SetAttrIntList(c_op_desc, name,
                         LongArray(value.size) { value[it].toLong() }, value.size)
     }
   }
   
-  fun attr(name: String, value: Long) = run {
+  fun attr(name: String, value: Long) {
     attributes[name] = {
       TF_SetAttrInt(c_op_desc, name, value)
     }
   }
   
-  fun attr(name: String, value: LongArray) = run {
+  fun attr(name: String, value: LongArray) {
     attributes[name] = {
       TF_SetAttrIntList(c_op_desc, name, value, value.size)
     }
   }
   
-  fun attr(name: String, value: Array<Long>) = run {
+  fun attr(name: String, value: Array<Long>) {
     attributes[name] = {
       TF_SetAttrIntList(c_op_desc, name, value.toLongArray(), value.size)
     }
   }
   
-  fun attr(name: String, value: Float) = run {
+  fun attr(name: String, value: Float) {
     attributes[name] = {
       TF_SetAttrFloat(c_op_desc, name, value)
     }
   }
   
-  fun attr(name: String, value: FloatArray) = run {
+  fun attr(name: String, value: FloatArray) {
     attributes[name] = {
       TF_SetAttrFloatList(c_op_desc, name, value, value.size)
     }
   }
   
-  fun attr(name: String, value: Array<Float>) = run {
+  fun attr(name: String, value: Array<Float>) {
     attributes[name] = {
       TF_SetAttrFloatList(c_op_desc, name, value.toFloatArray(), value.size)
     }
   }
   
-  fun attr(name: String, dtype: DataType<*>) = run {
+  fun attr(name: String, dtype: DataType<*>) {
     attributes[name] = {
       TF_SetAttrType(c_op_desc, name, dtype.cValue)
     }
   }
-//  fun attrType(name: String, dataType: Int) = run {
-//    attributes[name] = {
-//      TF_SetAttrType(c_op_desc, name, dataType)
-//    }
-//  }
   
-  fun <T : Any> attr(name: String, value: Tensor<T>) = run {
+  fun <T : Any> attr(name: String, value: Tensor<T>) {
     attributes[name] = {
       val status = newStatus()
       TF_SetAttrTensor(c_op_desc, name, value.c_tensor, status)
@@ -339,13 +318,13 @@ class OperationBuilder(val opType: String, val name: String) {
     }
   }
   
-  fun attr(name: String, value: Shape) = run {
+  fun attr(name: String, value: Shape) {
     attributes[name] = {
       TF_SetAttrShape(c_op_desc, name, value.asLongArray(), value.rank)
     }
   }
   
-  fun attr(name: String, value: NDArray<*>) = run {
+  fun attr(name: String, value: NDArray<*>) {
     attributes[name] = {
       val status = newStatus()
       TF_SetAttrTensor(c_op_desc, name, Tensor.fromNDArray(value).c_tensor, status)
@@ -353,7 +332,7 @@ class OperationBuilder(val opType: String, val name: String) {
     }
   }
   
-  fun attr(name: String, value: TensorProto) = run {
+  fun attr(name: String, value: TensorProto) {
     attributes[name] = {
       val attrValue = AttrValue()
       attrValue.mutable_tensor().CopyFrom(value)
@@ -361,7 +340,7 @@ class OperationBuilder(val opType: String, val name: String) {
     }
   }
   
-  fun attr(name: String, shapes: Array<Shape>) = run {
+  fun attr(name: String, shapes: Array<Shape>) {
     attributes[name] = {
       val attrValue = AttrValue()
       attrValue.mutable_list().apply {
@@ -377,7 +356,7 @@ class OperationBuilder(val opType: String, val name: String) {
     }
   }
   
-  fun attr(name: String, func: NameAttrList) = run {
+  fun attr(name: String, func: NameAttrList) {
     attributes[name] = {
       val attrValue = AttrValue()
       attrValue.mutable_func().put(func)
@@ -385,7 +364,7 @@ class OperationBuilder(val opType: String, val name: String) {
     }
   }
   
-  fun attr(name: String, attrValue: AttrValue) = run {
+  fun attr(name: String, attrValue: AttrValue) {
     attributes[name] = {
       val status = newStatus()
       val buf = attrValue.SerializeAsString()
@@ -394,7 +373,7 @@ class OperationBuilder(val opType: String, val name: String) {
     }
   }
   
-  fun attr(name: String, attrValue: org.tensorflow.framework.AttrValue) = run {
+  fun attr(name: String, attrValue: org.tensorflow.framework.AttrValue) {
     attributes[name] = {
       val status = newStatus()
       val buf = BytePointer(*attrValue.toByteArray())
@@ -403,7 +382,7 @@ class OperationBuilder(val opType: String, val name: String) {
     }
   }
   
-  fun attr(name: String, tensor_shape_proto: TensorShapeProto) = run {
+  fun attr(name: String, tensor_shape_proto: TensorShapeProto) {
     attributes[name] = {
       val status = newStatus()
       val buf = tensor_shape_proto.SerializeAsString()

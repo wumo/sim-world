@@ -231,6 +231,10 @@ class Op(val graph: Graph, val c_op: TF_Operation) {
   
   fun toNodeDef() =
       node.def()!!
+  
+  fun attrShape(s: String): Output {
+    TODO("not implemented")
+  }
 }
 
 internal inline fun StringAttrValueMap.forEach(block: (String, AttrValue) -> Unit) {

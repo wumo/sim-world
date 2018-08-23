@@ -4,7 +4,7 @@ import org.junit.Test
 import wumo.sim.tensorflow.ops.training.GradientDescentOptimizer
 import wumo.sim.tensorflow.tf
 
-class GradientsKtTest : BaseTest() {
+class GradientsOldKtTest : BaseTest() {
   
   @Test
   fun gradients() {

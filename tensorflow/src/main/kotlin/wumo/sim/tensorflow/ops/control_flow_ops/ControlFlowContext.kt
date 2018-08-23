@@ -3,8 +3,10 @@ package wumo.sim.tensorflow.ops.control_flow_ops
 import wumo.sim.tensorflow.ops.Op
 import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.ops.OutputLike
+import wumo.sim.tensorflow.ops.control_flow_ops.control_flow_ops.isSwitch
 import wumo.sim.tensorflow.ops.ops.graphConstructionScope
 import wumo.sim.tensorflow.tf
+import wumo.sim.tensorflow.types.RESOURCE
 import java.util.*
 
 /**
@@ -168,6 +170,39 @@ abstract class ControlFlowContext {
     } else
       emptySet<Op>()
     return internalControlInputs to externalControlInputs
+  }
+  
+  companion object {
+    /** Create a `zerosLike` op for the specified op output, while taking into account control flow contexts.
+     * @see "tensorflow.python.ops.control_flow_ops.ZerosLikeOutsideLoop"
+     */
+    internal fun zerosLikeOutsideLoop(op: Op, index: Int): Output {
+      val value = op.outputs[index]
+      return if (isSwitch(op)) {
+        op.controlFlowContext?.let {
+          it as CondContext
+          val switch = control_flow_ops.switch(op.inputs[0], it.predicate)[1 - it.branch]
+          // We are in a conditional context and so we use a switch to create zeros only when needed.
+          if (value.dataType == RESOURCE)
+            tf.controlDependencies(mutableSetOf(switch.op)) {
+              tf.zeros(tf._variableShape(switch))
+            }
+          else {
+            val zerosShape = tf.shape(switch, optimize = false)
+            // Ensure ops created within array_ops.zeros are dominated by switch in
+            // cond context.
+            tf.controlDependencies(mutableSetOf(switch.op)) {
+              tf.zeros(zerosShape, value.dataType)
+            }
+          }
+        } ?: tf.zerosLike(value, optimize = false)
+      } else {
+        if (value.dataType == RESOURCE)
+          tf.zeros(tf._variableShape(value))
+        else
+          tf.zerosLike(value, optimize = false)
+      }
+    }
   }
 }
 

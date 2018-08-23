@@ -1,8 +1,10 @@
 package wumo.sim.tensorflow.ops
 
+import wumo.sim.tensorflow.core.InvalidArgumentException
 import wumo.sim.tensorflow.ops.variables.Variable
 import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.types.*
+import wumo.sim.util.Shape
 import wumo.sim.util.a
 import wumo.sim.util.arange
 
@@ -55,6 +57,20 @@ object math_ops {
                                                              DOUBLE to 3)
   
   interface API {
+    fun accumulateNV2(inputs: List<Output>, shape: Shape? = null, name: String = "AccumulateNV2"): Output {
+      val dataType = inputs[0].dataType
+      if (inputs.any { it.dataType != dataType })
+        throw InvalidArgumentException("All input tensors must have the same data type.")
+      val inferredShape = shape ?: Shape()
+      if (inputs.any { !it.shape.isCompatibleWith(inferredShape) })
+        throw InvalidArgumentException("All input tensors must have the same shape.")
+      return when {
+        inputs.size == 1 && name.isEmpty() -> inputs[0]
+        inputs.size == 1 -> tf.identity(inputs[0], name)
+        else -> tf._accumulateNV2(inputs, inferredShape, name)
+      }
+    }
+    
     fun argmax(a: Output, axis: Int = 0, output_type: DataType<*> = INT64, name: String = "ArgMax") =
         tf.nameScope(name) {
           val dimension = tf.const(axis, "dimension")

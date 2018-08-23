@@ -729,7 +729,7 @@ object ops {
       }
     }
     
-    fun <R> attr_scope(vararg attrs: Pair<String, AttrValue>, block: () -> R): R =
+    fun <R> attrScope(vararg attrs: Pair<String, AttrValue>, block: () -> R): R =
         with(attributes = attrs.associate { it }, block = block)
     
     fun globalVariablesInitializer(): Op =

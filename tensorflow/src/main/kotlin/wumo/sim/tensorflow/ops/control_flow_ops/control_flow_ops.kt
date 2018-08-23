@@ -11,27 +11,27 @@ import wumo.sim.util.groupBy
 import kotlin.collections.component1
 import kotlin.collections.component2
 
+/** Returns `true` if the provided op is within a cond statement. */
+val Op.isInCond: Boolean
+  get() = controlFlowContext?.condContext != null
+
+/** Returns `true` if the provided op is within a while loop statement. */
+val Op.isInWhileLoop: Boolean
+  get() = controlFlowContext?.whileContext() != null
+
+/** Returns `true` if the provided op is within an XLA control flow context. */
+val Op.isInXLAContext: Boolean
+  get() = run {
+    val xlaCompile =
+        try {
+          attrBool("_XlaCompile")
+        } catch (_: IllegalArgumentException) {
+          false
+        }
+    xlaCompile || controlFlowContext?.xlaContext() != null
+  }
+
 object control_flow_ops {
-  /** Returns `true` if the provided op is within a cond statement. */
-  val Op.isInCond: Boolean
-    get() = controlFlowContext?.condContext != null
-  
-  /** Returns `true` if the provided op is within a while loop statement. */
-  val Op.isInWhileLoop: Boolean
-    get() = controlFlowContext?.whileContext() != null
-  
-  /** Returns `true` if the provided op is within an XLA control flow context. */
-  val Op.isInXLAContext: Boolean
-    get() = run {
-      val xlaCompile =
-          try {
-            attrBool("_XlaCompile")
-          } catch (_: IllegalArgumentException) {
-            false
-          }
-      xlaCompile || controlFlowContext?.xlaContext() != null
-    }
-  
   /** Returns `true` if and only if the provided op is a switch op. */
   internal fun isSwitch(op: Op): Boolean = op.opType == "Switch" || op.opType == "RefSwitch"
   

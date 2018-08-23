@@ -451,6 +451,63 @@ interface gen_data_flow_ops {
     }
   }
   
+  fun _stack(elem_type: DataType<*>, stack_name: String = "", name: String = "Stack") = run {
+    buildOpTensor("Stack", name) {
+      attr("elem_type", elem_type)
+      attr("stack_name", stack_name)
+    }
+  }
+  
+  fun _stackClose(handle: Output, name: String = "StackClose") = run {
+    buildOp("StackClose", name) {
+      addInput(handle, true)
+    }
+  }
+  
+  fun _stackCloseV2(handle: Output, name: String = "StackCloseV2") = run {
+    buildOp("StackCloseV2", name) {
+      addInput(handle, false)
+    }
+  }
+  
+  fun _stackPop(handle: Output, elem_type: DataType<*>, name: String = "StackPop") = run {
+    buildOpTensor("StackPop", name) {
+      addInput(handle, true)
+      attr("elem_type", elem_type)
+    }
+  }
+  
+  fun _stackPopV2(handle: Output, elem_type: DataType<*>, name: String = "StackPopV2") = run {
+    buildOpTensor("StackPopV2", name) {
+      addInput(handle, false)
+      attr("elem_type", elem_type)
+    }
+  }
+  
+  fun _stackPush(handle: Output, elem: Output, swap_memory: Boolean = false, name: String = "StackPush") = run {
+    buildOpTensor("StackPush", name) {
+      addInput(handle, true)
+      addInput(elem, false)
+      attr("swap_memory", swap_memory)
+    }
+  }
+  
+  fun _stackPushV2(handle: Output, elem: Output, swap_memory: Boolean = false, name: String = "StackPushV2") = run {
+    buildOpTensor("StackPushV2", name) {
+      addInput(handle, false)
+      addInput(elem, false)
+      attr("swap_memory", swap_memory)
+    }
+  }
+  
+  fun _stackV2(max_size: Output, elem_type: DataType<*>, stack_name: String = "", name: String = "StackV2") = run {
+    buildOpTensor("StackV2", name) {
+      addInput(max_size, false)
+      attr("elem_type", elem_type)
+      attr("stack_name", stack_name)
+    }
+  }
+  
   fun _stage(values: Output, capacity: Long = 0L, memory_limit: Long = 0L, container: String = "", shared_name: String = "", name: String = "Stage") = run {
     buildOp("Stage", name) {
       addInput(values, false)

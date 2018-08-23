@@ -2,6 +2,8 @@ package wumo.sim.tensorflow.ops.control_flow_ops
 
 import wumo.sim.tensorflow.ops.*
 import wumo.sim.tensorflow.tf
+import wumo.sim.tensorflow.types.RESOURCE
+import wumo.sim.util.NONE
 import wumo.sim.util.emptyMutableSet
 import wumo.sim.util.t2
 
@@ -221,6 +223,138 @@ class WhileContext(
     exit()
     return t2(exitN, nextN)
   }
+  
+  /** Adds the back-propagation loop that counts the number of iterations.
+   *
+   * This is added to the back-propagation loop. It is used to control the loop termination of the back-propagation
+   * loop. It is called in the outer context of this gradient context.
+   *
+   * The pseudocode is: `n = count; while (n >= 1) { n--; }`
+   *
+   * Note that a control dependency is added to the final exit op to ensure the correct execution order of stack pop
+   * ops.
+   *
+   * @param  count              Number of iterations for the back-propagation loop.
+   * @param  outerGradientLoopState Outer gradient loop state (`None` if not nested).
+   * @return Loop index.
+   * @see "tensorflow.python.ops.control_flow_ops.WhileContext#AddBackpropLoopCounter"
+   */
+  internal fun addBackwardLoopCounter(
+      count: Output, outerGradientLoopState: GradientLoopState?): Output {
+    val one = tf.const(1, name = "b_count")
+    enter()
+    values += count.name
+    val enterC = tf.enter(count, name, false, parallelIterations, name = "b_count")
+    loopEnters += enterC
+    val mergeCount = control_flow_ops.merge(listOf(enterC, enterC))[0]
+    
+    pivotForPredicate = mergeCount.op
+    pivot = tf._loopCond(tf.greaterEqual(mergeCount, one), name = "b_count")
+    val switchC = control_flow_ops.switch(mergeCount, pivot!!)
+    
+    val indexC = switchC[1] - one
+    pivotForBody = indexC.op
+    val nextCount = tf.nextIteration(indexC)
+    mergeCount.op.updateInput(1, nextCount)
+    
+    val exitC = tf.exit(switchC[0], name = "b_count")
+    loopExits += exitC
+    
+    // Force the stack pops of the i-th execution of an inner loop to be ordered before the pops of the (i+1)-th
+    // execution of the same inner loop.
+    outerGradientLoopState?.backwardSync?.addControlInput(exitC.op)
+    
+    exitResult(listOf(exitC))
+    exit()
+    return nextCount
+  }
+  
+  /** Adds an accumulation loop for every loop invariant.
+   *
+   * This is added to the back-propagation loop. It is used to accumulate partial gradients within each loop iteration.
+   * It is called when in the gradient while context.
+   *
+   * The pseudocode is: `acc = 0.0; while (pivot) { acc += grad; }`
+   *
+   * @param  op       Enter op for a loop invariant.
+   * @param  gradient Partial gradient of an iteration for a loop invariant.
+   * @return Gradient for a loop invariant.
+   */
+  internal fun <T : OutputLike> addBackwardAccumulator(op: Op, gradient: T): T =
+      when (gradient) {
+        is Output -> {
+          exit()
+          // We create a zeros tensor with the right shape for the accumulator. If we don't know the full shape
+          // statically, we will have to get the shape dynamically from the forward inference. Getting the shape right for
+          // the zeros is only needed for the base case when the loop exits without running any iterations.
+          val shape = gradient.shape
+          val acc: Output =
+              if (shape.isFullyDefined) {
+                outerContext?.enter()
+                val acc = tf.zerosLike(gradient, name = "b_acc")
+                outerContext?.exit()
+                acc
+              } else {
+                val value = op.inputs[0]
+                // TODO: !!! [CONTROL_FLOW] Is this even necessary for obtaining the shape?
+                when {
+                  outerContext is WhileContext && outerContext.gradLoopState != null -> {
+                    // We are in a nested while loop.
+                    val forwardContext = outerContext.gradLoopState!!.forwardContext
+                    forwardContext.outerContext?.enter()
+                    val zerosShape = tf.shape(value)
+                    forwardContext.outerContext?.exit()
+                    val outerGradientLoopState = outerContext.gradLoopState!!.outerGradState!!
+                    val historyZerosShape = outerGradientLoopState.addForwardAccumulator(zerosShape)
+                    outerContext.enter()
+                    val realShape = outerGradientLoopState.addBackwardAccumulatedValue(historyZerosShape, zerosShape)
+                    val acc = tf.zeros(realShape, gradient.dataType)
+                    outerContext.exit()
+//                  acc.setShape(gradient.shape)
+                    acc
+                  }
+                  else -> {
+                    outerContext?.enter()
+                    val zerosShape = tf.shape(value)
+                    val acc = tf.zeros(zerosShape, gradient.dataType)
+                    outerContext?.exit()
+                    // TODO: [CONTROL_FLOW] Figure out if this is necessary.
+                    // acc.setShape(g.shape)
+                    acc
+                  }
+                }
+              }
+          enter()
+          values += acc.name
+          val enterAcc = tf.enter(acc, name, false, parallelIterations, name = "b_acc")
+          loopEnters += enterAcc
+          val mergeAcc = control_flow_ops.merge(listOf(enterAcc, enterAcc))[0]
+          val switchAcc = control_flow_ops.switch(mergeAcc, pivot!!)
+          
+          val addAcc = switchAcc[1] + gradient
+          val nextAcc = tf.nextIteration(addAcc)
+          mergeAcc.op.updateInput(1, nextAcc)
+          
+          val exitAcc = tf.exit(switchAcc[0], "b_acc")
+          loopExits += exitAcc
+          exitResult(listOf(exitAcc))
+          exitAcc
+        }
+        is IndexedSlices -> {
+          TODO()
+        }
+        else -> NONE()
+      } as T
+  
+  /** Returns the shape of `value` of the shape of the variable it points to. */
+  private fun resourceSafeShape(value: Output): Output =
+      if (value.dataType == RESOURCE) {
+        var v = value
+        while (v.op.inputs.isNotEmpty())
+          v = v.op.inputs[0]
+        v.op.attrShape("shape")
+      } else
+        tf.shape(value, optimize = false)
   
   private fun isInOuterContext(op: Op): Boolean {
     val opContext = control_flow_ops.getOutputContext(op)

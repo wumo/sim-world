@@ -36,3 +36,7 @@ inline fun Logger.warn(block: () -> String) {
 inline fun Logger.info(block: () -> String) {
   if (isInfoEnabled) info(block())
 }
+
+inline fun Logger.debug(block: () -> String) {
+  if (isDebugEnabled) debug(block())
+}

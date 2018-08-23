@@ -109,14 +109,14 @@ private fun _variable(initializer: (String) -> Output, name: String, trainable: 
 //  TODO()
 ////  ops.nameScope(name) {
 ////    ops.init_scope {
-////      //Use attr_scope and device(None) to simulate the behavior of
+////      //Use attrScope and device(None) to simulate the behavior of
 ////      //colocateWith when the _variable we want to colocate with doesn't
 ////      //yet exist.
 ////      val attr = tensorflow.AttrValue()
 ////      attr.mutable_list().apply {
 ////        add_s("loc:@${ctxNs.scopeName.fullName}")
 ////      }
-////      val t = attr_scope("_class" to attr) {
+////      val t = attrScope("_class" to attr) {
 ////        val initial_value = initializer("Initializer")
 ////        val v = _variableV2(initial_value.shape, initial_value.dataType.base_dtype, name = ctxNs.scopeName)
 ////        Variable(v.op!!, 0).apply {

@@ -26,7 +26,7 @@ interface gen_lookup_ops {
       addInput(table_handle, false)
       addInput(filename, false)
       attr("key_index", key_index)
-      attr("value_index", value_index)
+      attr("valueIndex", value_index)
       attr("vocab_size", vocab_size)
       attr("delimiter", delimiter)
     }

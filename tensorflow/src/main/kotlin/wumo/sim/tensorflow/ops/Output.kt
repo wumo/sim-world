@@ -16,7 +16,7 @@ sealed class OutputLike : OutputConvertible {
   abstract val name: String
   abstract val dataType: DataType<*>
   abstract val device: String
-  abstract val op: Op?
+  abstract val op: Op
   abstract val consumers: List<Op>
 }
 
@@ -54,7 +54,7 @@ class IndexedSlices(val indices: Output, val values: Output, val denseShape: Out
       if (denseShape != null) "(shape = ${denseShape.name})" else ""
   override val dataType: DataType<*> = values.dataType
   override val device: String = values.device
-  override val op: Op? = values.op
+  override val op: Op = values.op
   override val consumers: List<Op> = values.consumers
   
   override fun toOutput(): Output {
@@ -72,7 +72,7 @@ class SparseOutput(val indices: Output, val values: Output, val denseShape: Outp
     get() = TODO("not implemented")
   override val device: String
     get() = TODO("not implemented")
-  override val op: Op?
+  override val op: Op
     get() = TODO("not implemented")
   override val consumers: List<Op>
     get() = TODO("not implemented")
@@ -120,9 +120,9 @@ class SparseOutput(val indices: Output, val values: Output, val denseShape: Outp
  * ```
  *
  * @param[op] [Op] that computes this tensor.
- * @param[value_index] Index of the operation's endpoint that produces this tensor.
+ * @param[valueIndex] Index of the operation's endpoint that produces this tensor.
  */
-class Output(override val op: Op, val value_index: Int) : OutputLike() {
+class Output(override val op: Op, val valueIndex: Int) : OutputLike() {
   
   override val graph = op!!.graph
   override val device = op!!.device
@@ -141,7 +141,7 @@ class Output(override val op: Op, val value_index: Int) : OutputLike() {
   
   override val dataType: DataType<*>
     get() = if (op != null) {
-      op.output_types[value_index]
+      op.output_types[valueIndex]
     } else throw NullPointerException("op is null")
   
   val shape: Shape
@@ -200,8 +200,8 @@ class Output(override val op: Op, val value_index: Int) : OutputLike() {
 
 //  val tf: TF by lazy { TODO("op!!.graph.tf") }
   
-  fun asTF_Output() = TF_Output().oper(op!!.c_op).index(value_index)
-  override val name: String by lazy { "${op!!.name}:$value_index" }
+  fun asTF_Output() = TF_Output().oper(op!!.c_op).index(valueIndex)
+  override val name: String by lazy { "${op!!.name}:$valueIndex" }
 //  val name: String by lazy { op!!.name }
   
   inline fun node() = op!!.c_op.node()
@@ -211,7 +211,7 @@ class Output(override val op: Op, val value_index: Int) : OutputLike() {
     if (other !is Output) return false
     
     if (op != other.op) return false
-    if (value_index != other.value_index) return false
+    if (valueIndex != other.valueIndex) return false
     if (dataType != other.dataType) return false
     
     return true
@@ -220,7 +220,7 @@ class Output(override val op: Op, val value_index: Int) : OutputLike() {
   override fun hashCode(): Int {
     if (op == null) return 0
     var result = op.hashCode()
-    result = 31 * result + value_index
+    result = 31 * result + valueIndex
     return result
   }
   
