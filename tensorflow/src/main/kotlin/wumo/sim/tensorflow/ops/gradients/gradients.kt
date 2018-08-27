@@ -1,10 +1,11 @@
-package wumo.sim.tensorflow.ops
+package wumo.sim.tensorflow.ops.gradients
 
 import wumo.sim.tensorflow.core.InvalidDataTypeException
+import wumo.sim.tensorflow.ops.*
 import wumo.sim.tensorflow.ops.control_flow_ops.ControlFlowContext
 import wumo.sim.tensorflow.ops.control_flow_ops.ControlFlowState
 import wumo.sim.tensorflow.ops.control_flow_ops.control_flow_ops
-import wumo.sim.tensorflow.ops.gradient_ops.AggregationMethod.AddAggregationMethod
+import wumo.sim.tensorflow.ops.gradients.gradient_ops.AggregationMethod.AddAggregationMethod
 import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.types.*
 import wumo.sim.tensorflow.util.attrValue
@@ -200,11 +201,12 @@ object gradient_ops {
               tf.nameScope("${op.name}_grad") {
                 // TODO: [CONTEXT] Add support for original op context.
                 val outputGradients = opGradients.map { it.firstOrNull() }
-                var inputGradients = maybeCompile(name, op) { gradientFunction(op, outputGradients) }
-                if (gateGradients && inputGradients.count { it != null } > 1)
+                val tmp = mutableListOf<OutputLike?>()
+                var inputGradients = maybeCompile(name, op) { gradientFunction(op, outputGradients, tmp);tmp }
+                if (gateGradients && tmp.count { it != null } > 1)
                   tf.device(dev = "") {
                     tf.colocateWithForGradient(mutableSetOf(), gradientUID, ignoreExisting = true) {
-                      inputGradients = tf.tuple(inputGradients)
+                      inputGradients = tf.tuple(tmp)
                     }
                   }
                 val nInp = op.inputs.size
@@ -630,8 +632,9 @@ object gradient_ops {
      * @param  function Gradient function (takes op and output gradients as inputs and returns the input gradients).
      * @see "tensorflow.python.framework.ops.RegisterGradient"
      */
-    fun register(opType: String, function: GradientFunction) {
-      registry[opType] = function
+    fun register(vararg opTypes: String, function: GradientFunction) {
+      for (opType in opTypes)
+        registry[opType] = function
     }
     
     /** Registers the provided op type as non-differentiable (i.e., having `null` as its registered gradient function).
@@ -647,8 +650,9 @@ object gradient_ops {
      *
      * @param  opType Op type to register as non-differentiable.
      */
-    fun registerNonDifferentiable(opType: String) {
-      registry[opType] = null
+    fun registerNonDifferentiable(vararg opTypes: String) {
+      for (opType in opTypes)
+        registry[opType] = null
     }
     
     /** Gets the registered gradient function for the provided op type.
@@ -664,7 +668,7 @@ object gradient_ops {
     }
   }
 }
-typealias GradientFunction = (Op, List<OutputLike?>) -> List<OutputLike?>
+typealias GradientFunction = (Op, List<OutputLike?>, MutableList<OutputLike?>) -> Unit
 
 //fun TF.gradients(y: Output, xs: Collection<Output>): List<Output> {
 //  val _xs = TF_Output(xs.size.toLong())

@@ -2,8 +2,6 @@ package wumo.sim.tensorflow.gen
 
 import com.google.protobuf.TextFormat
 import opGroups
-import org.bytedeco.javacpp.Loader
-import org.bytedeco.javacpp.tensorflow
 import org.tensorflow.framework.AttrValue
 import org.tensorflow.framework.OpDef
 import org.tensorflow.framework.OpList
@@ -14,14 +12,12 @@ import java.nio.charset.Charset
 import java.util.*
 
 fun main(args: Array<String>) {
-  Loader.load(tensorflow::class.java)
-  tensorflow.InitMain("trainer", null as IntArray?, null)
   generateFiles("tensorflow/src/main/kotlin", "wumo.sim.tensorflow.ops.gen", opGroups)
 }
 
 fun generateFiles(path: String, kotlinPackage: String, opCategory: Map<String, Array<String>>) {
   val opDef = OpList.newBuilder()
-  TextFormat.merge(readString("tensorflow-ops-generator/resources/ops.pbtxt"), opDef)
+  TextFormat.merge(readString("tensorflow-ops-generator/resources/tensorflow/tensorflow/core/ops/ops.pbtxt"), opDef)
   val opList = opDef.opList
   val opDefsMap = opList.map { it.name to it }.toMap()
   opCategory.forEach { groupName, opGroup ->

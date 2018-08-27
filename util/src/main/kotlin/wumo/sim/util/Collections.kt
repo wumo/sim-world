@@ -29,3 +29,8 @@ inline fun arrayCopy(src: Any, dst: Any, n: Int) {
 inline fun <R> emptyMutableSet(): MutableSet<R> = Collections.emptySet<R>()
 
 inline fun <K, V> emptyMutableMap(): MutableMap<K, V> = Collections.emptyMap()
+
+inline fun <E> MutableCollection<E>.append(vararg elements: E) {
+  for (element in elements)
+    add(element)
+}

@@ -4,9 +4,10 @@ import wumo.sim.tensorflow.tensor.Tensor
 import wumo.sim.tensorflow.core.Graph
 import wumo.sim.tensorflow.core.InvalidDataTypeException
 import wumo.sim.tensorflow.ops.*
-import wumo.sim.tensorflow.ops.gradient_ops.AggregationMethod.AddAggregationMethod
-import wumo.sim.tensorflow.ops.gradient_ops.GatingMethod.GraphGating
-import wumo.sim.tensorflow.ops.gradient_ops.GatingMethod.OpGating
+import wumo.sim.tensorflow.ops.gradients.gradient_ops
+import wumo.sim.tensorflow.ops.gradients.gradient_ops.AggregationMethod.AddAggregationMethod
+import wumo.sim.tensorflow.ops.gradients.gradient_ops.GatingMethod.GraphGating
+import wumo.sim.tensorflow.ops.gradients.gradient_ops.GatingMethod.OpGating
 import wumo.sim.tensorflow.ops.training.Optimizer.Companion.VariableProcessor.RefVariableProcessor
 import wumo.sim.tensorflow.ops.variables.DynamicInitializer
 import wumo.sim.tensorflow.ops.variables.Initializer

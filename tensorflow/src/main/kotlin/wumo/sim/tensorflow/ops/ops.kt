@@ -9,6 +9,7 @@ import wumo.sim.tensorflow.ops.control_flow_ops.CondContext
 import wumo.sim.tensorflow.ops.control_flow_ops.ControlFlowContext
 import wumo.sim.tensorflow.ops.control_flow_ops.control_flow_ops
 import wumo.sim.tensorflow.ops.gen.gen_ops
+import wumo.sim.tensorflow.ops.gradients.gradient_ops
 import wumo.sim.tensorflow.ops.variables.variables
 import wumo.sim.tensorflow.tf
 import wumo.sim.util.DynamicVariable

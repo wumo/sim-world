@@ -51,12 +51,12 @@ object GradOpRegistry {
   }
 }
 
-fun register_gradient_op(vararg names: String, fn: GradFunc) {
+fun registerOld(vararg names: String, fn: GradFunc) {
   for (name in names)
     register_gradient_op_uniq(name, fn)
 }
 
-fun register_no_gradient_op(vararg names: String) {
+fun registerNonDifferentiableOld(vararg names: String) {
   for (name in names)
     register_gradient_op_uniq(name, nullGradFunc)
 }
@@ -444,9 +444,4 @@ internal fun EdgeSet.iterate() = object : Iterator<Edge> {
     iter.increment()
     return e
   }
-}
-
-inline fun <E> MutableCollection<E>.append(vararg elements: E) {
-  for (element in elements)
-    add(element)
 }

@@ -10,6 +10,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>tensorflow-ops-generator</artifactId>
+    <packaging>pom</packaging>
+    <modules>
+        <module>python-interpreter</module>
+    </modules>
 
     <properties>
         <atomicfu.version>0.10.3</atomicfu.version>
