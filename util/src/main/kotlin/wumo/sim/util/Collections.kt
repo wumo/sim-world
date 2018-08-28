@@ -34,3 +34,11 @@ inline fun <E> MutableCollection<E>.append(vararg elements: E) {
   for (element in elements)
     add(element)
 }
+
+inline fun <E> Iterable<E>.firstAndRest(blockFirst: (E) -> Unit, blockRest: (E) -> Unit) {
+  val iterator = iterator()
+  val i = iterator.next()
+  blockFirst(i)
+  while (iterator.hasNext())
+    blockRest(iterator.next())
+}

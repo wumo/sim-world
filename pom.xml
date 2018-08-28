@@ -16,6 +16,7 @@
         <module>util</module>
         <module>tensorflow</module>
         <module>tensorflow-ops-generator</module>
+        <module>python-interpreter</module>
     </modules>
 
     <developers>
@@ -85,6 +86,18 @@
         <kotlin.version>1.2.60</kotlin.version>
         <kotlin.coroutines>0.24.0</kotlin.coroutines>
     </properties>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>deployment</id>
+            <url>http://maven.marslab.org/repository/maven-snapshots/</url>
+        </snapshotRepository>
+        <repository>
+            <id>deployment</id>
+            <url>http://maven.marslab.org/repository/maven-releases/</url>
+        </repository>
+    </distributionManagement>
+
 
     <dependencyManagement>
         <dependencies>

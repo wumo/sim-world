@@ -11,6 +11,10 @@ inline fun <R> File.sink(block: (BufferedSink) -> R) =
 inline fun <R> File.source(block: (BufferedSource) -> R) =
     source().buffer().use(block)
 
+inline fun BufferedSink.writeString(str: String) {
+  writeString(str, Charset.defaultCharset())
+}
+
 fun readString(file: File): String {
   file.source().buffer().use {
     return it.readString(Charset.defaultCharset())

@@ -10,10 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>tensorflow-ops-generator</artifactId>
-    <packaging>pom</packaging>
-    <modules>
-        <module>python-interpreter</module>
-    </modules>
+    <packaging>jar</packaging>
 
     <properties>
         <atomicfu.version>0.10.3</atomicfu.version>
@@ -31,6 +28,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>wumo.sim</groupId>
+            <artifactId>python-interpreter</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.7</version>
@@ -41,17 +43,6 @@
             <version>${tensorflow.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.bytedeco.javacpp-presets</groupId>
-            <artifactId>tensorflow-platform</artifactId>
-            <version>${javacpp-resets-tensorflow.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.bytedeco.javacpp-presets</groupId>
-            <artifactId>tensorflow</artifactId>
-            <version>${javacpp-resets-tensorflow.version}</version>
-            <classifier>${platform}</classifier>
-        </dependency>
         <!--<dependency>-->
         <!--<groupId>org.bytedeco.javacpp-presets</groupId>-->
         <!--<artifactId>tensorflow</artifactId>-->

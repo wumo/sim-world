@@ -9,3 +9,9 @@ inline fun String.println() = kotlin.io.println(this)
 inline operator fun StringBuilder.plusAssign(value: Any) {
   append(value)
 }
+
+inline fun sb(block: (StringBuilder) -> Unit): String {
+  val sb = StringBuilder()
+  block(sb)
+  return sb.toString()
+}
