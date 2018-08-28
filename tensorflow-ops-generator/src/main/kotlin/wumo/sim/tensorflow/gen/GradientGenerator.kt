@@ -6,10 +6,7 @@ import wumo.python3.Python3BaseVisitor
 import wumo.python3.Python3Lexer
 import wumo.python3.Python3Parser
 import wumo.python3.Python3Parser.*
-import wumo.sim.util.plusAssign
-import wumo.sim.util.readString
-import wumo.sim.util.sink
-import wumo.sim.util.writeString
+import wumo.sim.util.*
 import java.io.File
 
 fun main(args: Array<String>) {
@@ -28,12 +25,14 @@ fun generate(fromPath: String,
 val nonDiff = Regex("""ops[.]NotDifferentiable[(]("\w+")[)]""")
 
 fun translate(file: File, toPath: File) {
+  if (file.nameWithoutExtension != "math_grad") return
   File("${toPath.absolutePath}${File.separatorChar}${file.nameWithoutExtension}.kt").sink {
     val sb = StringBuilder()
     sb += """
       import wumo.sim.tensorflow.ops.gradients.gradient_ops.Registry.registerNonDifferentiable
       import wumo.sim.tensorflow.ops.gradients.gradient_ops.Registry.register
       import wumo.sim.util.append
+      import wumo.sim.tensorflow.tf
       fun register_${file.nameWithoutExtension}(){
     """
     val data = readString(file)
@@ -59,19 +58,16 @@ fun translate(file: File, toPath: File) {
             }
         
         if (opTypes.isEmpty()) return root
-        sb += """register(${opTypes.joinToString(", ")}){op,grad,gradOutputs->
-              ${handle(ctx.funcdef().suite())}
+        sb += """register(${opTypes.joinToString(", ")}){op,grad->
+              ${handle(ctx.funcdef(), CTX(isLambda = true))}
             }
             """
         return root
       }
       
-      override fun visitFuncdef(ctx: FuncdefContext?): File_inputContext {
-        ctx!!
-        sb += """fun ${ctx.NAME().text}(${ctx.parameters().text}){
-            ${handle(ctx.suite())}
-          }
-        """
+      override fun visitFuncdef(funcDef: FuncdefContext): File_inputContext {
+        funcDef!!
+        sb += handle(funcDef, CTX())
         return root
       }
     })
@@ -88,47 +84,50 @@ fun translate(file: File, toPath: File) {
   }
 }
 
-fun handle(funcDef: FuncdefContext): String {
-  val sb = StringBuilder()
-  sb += """fun ${funcDef.NAME().text}(${funcDef.parameters().text}){
-      ${handle(funcDef.suite())}
-    }
-  """
-  return sb.toString()
+fun handle(funcDef: FuncdefContext, ctx: CTX): String {
+  return if (ctx.isLambda)
+    handle(funcDef.suite(), ctx)
+  else {
+    val sb = StringBuilder()
+    sb += """fun ${funcDef.NAME().text}${funcDef.parameters().text}{
+        ${handle(funcDef.suite(), ctx)}
+      }
+    """
+    sb.toString()
+  }
 }
 
-fun handle(suite: SuiteContext): String {
+fun handle(suite: SuiteContext, ctx: CTX): String {
   val sb = StringBuilder()
-  val vars = mutableSetOf<String>()
   suite.simple_stmt()?.small_stmt()?.forEach {
-    sb += handle(it, vars)
+    sb += handle(it, ctx)
   }
   suite.stmt()?.forEach {
     it?.simple_stmt()?.small_stmt()?.forEach {
-      sb += handle(it, vars)
+      sb += handle(it, ctx)
     }
     it?.compound_stmt()?.let {
-      sb += handle(it, vars)
+      sb += handle(it, ctx)
     }
   }
   return sb.toString()
 }
 
-fun handle(ctx: Small_stmtContext, vars: MutableSet<String>): String {
+fun handle(stmt: Small_stmtContext, ctx: CTX): String {
   val sb = StringBuilder()
-  val ctx = ctx.getChild(0)
-  when (ctx) {
-    is Expr_stmtContext -> sb += handle(ctx, vars)
+  val st = stmt.getChild(0)
+  when (st) {
+    is Expr_stmtContext -> sb += handle(st, ctx)
     is Flow_stmtContext -> {
-      val ctx = ctx.getChild(0)
-      when (ctx) {
-        is Return_stmtContext -> sb += handle(ctx)
-        else -> sb += ctx.text + "\n"
+      val st = st.getChild(0)
+      when (st) {
+        is Return_stmtContext -> sb += handle(st, ctx)
+        else -> sb += st.text + "\n"
       }
     }
     else -> {
       sb += """/* ignored
-         ${ctx.text}
+         ${st.text}
          */
          """
     }
@@ -136,89 +135,134 @@ fun handle(ctx: Small_stmtContext, vars: MutableSet<String>): String {
   return sb.toString()
 }
 
-fun handle(ctx: Compound_stmtContext, vars: MutableSet<String>): String {
-  val sb = StringBuilder()
-  val ctx = ctx.getChild(0)
+fun handle(stmt: Compound_stmtContext, ctx: CTX): String = sb { out ->
+  val st = stmt.getChild(0)
   
-  when (ctx) {
+  when (st) {
     is If_stmtContext -> {
-      val tests = ctx.test()
-      val suites = ctx.suite()
+      val tests = st.test()
+      val suites = st.suite()
       
       if (tests.size == 1) {
-        sb += """if(${handle(tests[0])}){
-            ${handle(suites[0])}
+        out += """if(${handle(tests[0], ctx)}){
+            ${handle(suites[0], ctx)}
           }
         """
         if (suites.size > tests.size) {
           //else branch
-          sb += """else{
-              ${handle(suites.last())}
+          out += """else{
+              ${handle(suites.last(), ctx)}
             }
           """
         }
       } else {
-        sb += """when{
+        out += """when{
         """
         tests.zip(suites).forEach { (test, suite) ->
-          sb += """${handle(test)} -> {
-              ${handle(suite)}
+          out += """${handle(test, ctx)} -> {
+              ${handle(suite, ctx)}
             }
           """
         }
         if (suites.size > tests.size) {
           //else branch
-          sb += """else -> {
-              ${handle(suites.last())}
+          out += """else -> {
+              ${handle(suites.last(), ctx)}
             }
           """
         }
-        sb += "}\n"
+        out += "}\n"
       }
     }
     is For_stmtContext -> {
-      
-      ctx
+      out += st.text
     }
     is While_stmtContext -> {
-      ctx
+      out += st.text
     }
-    is With_itemContext -> {
-      ctx
+    is With_stmtContext -> {
+      out += st.with_item().joinToString(", ") {
+        handle(it.test(), ctx) + (it.expr()?.let { " as " + handle(it, ctx) } ?: "")
+      }
+      out += "{\n"
+      out += handle(st.suite(), ctx)
+      out += "}\n"
     }
     is FuncdefContext -> {
-      sb += handle(ctx)
+      out += handle(st, ctx)
     }
     else -> {
-      sb += ctx.text + "\n"
+      out += st.text + "\n"
     }
   }
-  return sb.toString()
 }
 
-fun handle(ctx: Return_stmtContext): String {
+fun handle(stmt: Return_stmtContext, ctx: CTX): String {
   val sb = StringBuilder()
-  sb += handle(ctx.testlist())
+  if (!ctx.isLambda)
+    sb += "return "
+  sb += handle(stmt.testlist(), ctx)
 //  sb += "gradOutputs.append(${ctx.testlist().text})\n"
   return sb.toString()
 }
 
-fun handle(ctx: Expr_stmtContext, vars: MutableSet<String>): String {
-  val sb = StringBuilder()
-  if (ctx.childCount == 3 && ctx.getChild(1).text == "=") {//assign
-    val varList = (ctx.getChild(0) as Testlist_star_exprContext).test()
-    if (varList.size > 1)
-      sb += "var (${varList.joinToString(",")}("
-    else {
-      if (varList[0].text !in vars) {
-        sb += "var "
-        vars += varList[0].text
-      }
-      sb += varList[0].text
+fun handle(stmt: Expr_stmtContext, ctx: CTX): String = sb { out ->
+  val star_expr = stmt.testlist_star_expr()
+  val ann = stmt.annassign()
+  val aug = stmt.augassign()
+  
+  when {
+    ann != null -> {
+      val tests = ann.test()
+      out += "var ${handle(star_expr[0], ctx)}: ${tests[0]}"
+      if (tests.size > 1)
+        out += "=${handle(tests[1], ctx)}"
     }
-    sb += "="
-    sb += ctx.getChild(2).text + "\n"
-  } else
-    sb += ctx.text + "\n"
-  return sb.toString()
+    aug != null -> {
+      val op = aug.getChild(0).text
+      val right = handle(stmt.testlist(), ctx)
+      val left = handle(star_expr[0], ctx)
+      out += when (op) {
+        "+=", "-=", "*=", "/=", "%=" -> "$left$op$right"
+        "&=" -> "$left=$left and $right"
+        "|=" -> "$left=$left or $right"
+        "^=" -> "$left=$left xor $right"
+        "<<=" -> "$left=$left shl $right"
+        ">>=" -> "$left=$left shr $right"
+        "**=" -> "$left=pow($left,$right)"
+        "//=" -> "$left=($left / $right).toInt()"
+        else -> error("$op")
+      }
+    }
+    else -> {
+      if (star_expr.size == 1)
+        out += handle(star_expr[0], ctx)
+      else {
+        val tests = star_expr[0].test()
+        if (tests != null && tests.size == 1) {
+          val v0 = handle(tests[0], ctx)
+          if (v0 !in ctx.vars) {
+            out += "var "
+            ctx.vars += v0
+          }
+          out += v0
+        } else {
+          out += "var " + handle(star_expr[0], ctx)
+        }
+        for (s in star_expr.drop(1))
+          out += "=" + handle(s, ctx)
+        
+      }
+      out += "\n"
+    }
+  }
+}
+
+fun handle(testlist_star: Testlist_star_exprContext, ctx: CTX): String = sb { out ->
+  testlist_star.test()?.let {
+    out += it.joinToString(", ") { handle(it, ctx) }
+  }
+  testlist_star.star_expr()?.let {
+    out += it.joinToString(", ") { handle(it, ctx) }
+  }
 }

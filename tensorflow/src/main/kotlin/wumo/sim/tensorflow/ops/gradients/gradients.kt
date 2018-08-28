@@ -201,12 +201,11 @@ object gradient_ops {
               tf.nameScope("${op.name}_grad") {
                 // TODO: [CONTEXT] Add support for original op context.
                 val outputGradients = opGradients.map { it.firstOrNull() }
-                val tmp = mutableListOf<OutputLike?>()
-                var inputGradients = maybeCompile(name, op) { gradientFunction(op, outputGradients, tmp);tmp }
-                if (gateGradients && tmp.count { it != null } > 1)
+                var inputGradients = maybeCompile(name, op) { gradientFunction(op, outputGradients) }
+                if (gateGradients && inputGradients.count { it != null } > 1)
                   tf.device(dev = "") {
                     tf.colocateWithForGradient(mutableSetOf(), gradientUID, ignoreExisting = true) {
-                      inputGradients = tf.tuple(tmp)
+                      inputGradients = tf.tuple(inputGradients)
                     }
                   }
                 val nInp = op.inputs.size
@@ -668,7 +667,7 @@ object gradient_ops {
     }
   }
 }
-typealias GradientFunction = (Op, List<OutputLike?>, MutableList<OutputLike?>) -> Unit
+typealias GradientFunction = (Op, List<OutputLike?>) -> List<OutputLike?>
 
 //fun TF.gradients(y: Output, xs: Collection<Output>): List<Output> {
 //  val _xs = TF_Output(xs.size.toLong())
