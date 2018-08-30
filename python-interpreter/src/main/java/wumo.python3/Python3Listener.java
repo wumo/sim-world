@@ -458,6 +458,46 @@ public interface Python3Listener extends ParseTreeListener {
 	 */
 	void exitTry_stmt(Python3Parser.Try_stmtContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link Python3Parser#try_suite}.
+	 * @param ctx the parse tree
+	 */
+	void enterTry_suite(Python3Parser.Try_suiteContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link Python3Parser#try_suite}.
+	 * @param ctx the parse tree
+	 */
+	void exitTry_suite(Python3Parser.Try_suiteContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link Python3Parser#except_suite}.
+	 * @param ctx the parse tree
+	 */
+	void enterExcept_suite(Python3Parser.Except_suiteContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link Python3Parser#except_suite}.
+	 * @param ctx the parse tree
+	 */
+	void exitExcept_suite(Python3Parser.Except_suiteContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link Python3Parser#else_suite}.
+	 * @param ctx the parse tree
+	 */
+	void enterElse_suite(Python3Parser.Else_suiteContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link Python3Parser#else_suite}.
+	 * @param ctx the parse tree
+	 */
+	void exitElse_suite(Python3Parser.Else_suiteContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link Python3Parser#finally_suite}.
+	 * @param ctx the parse tree
+	 */
+	void enterFinally_suite(Python3Parser.Finally_suiteContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link Python3Parser#finally_suite}.
+	 * @param ctx the parse tree
+	 */
+	void exitFinally_suite(Python3Parser.Finally_suiteContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link Python3Parser#with_stmt}.
 	 * @param ctx the parse tree
 	 */

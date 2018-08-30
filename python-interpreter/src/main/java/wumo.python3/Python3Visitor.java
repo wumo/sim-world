@@ -281,6 +281,30 @@ public interface Python3Visitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitTry_stmt(Python3Parser.Try_stmtContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link Python3Parser#try_suite}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTry_suite(Python3Parser.Try_suiteContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link Python3Parser#except_suite}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitExcept_suite(Python3Parser.Except_suiteContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link Python3Parser#else_suite}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitElse_suite(Python3Parser.Else_suiteContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link Python3Parser#finally_suite}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFinally_suite(Python3Parser.Finally_suiteContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link Python3Parser#with_stmt}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

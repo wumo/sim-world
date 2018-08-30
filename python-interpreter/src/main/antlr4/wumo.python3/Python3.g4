@@ -193,11 +193,15 @@ async_stmt: ASYNC (funcdef | with_stmt | for_stmt);
 if_stmt: 'if' test ':' suite ('elif' test ':' suite)* ('else' ':' suite)?;
 while_stmt: 'while' test ':' suite ('else' ':' suite)?;
 for_stmt: 'for' exprlist 'in' testlist ':' suite ('else' ':' suite)?;
-try_stmt: ('try' ':' suite
-           ((except_clause ':' suite)+
-            ('else' ':' suite)?
-            ('finally' ':' suite)? |
-           'finally' ':' suite));
+try_stmt: ('try' ':' try_suite
+           ((except_clause ':' except_suite)+
+            ('else' ':' else_suite)?
+            ('finally' ':' finally_suite)? |
+           'finally' ':' finally_suite));
+try_suite: suite;
+except_suite: suite;
+else_suite: suite;
+finally_suite: suite;
 with_stmt: 'with' with_item (',' with_item)*  ':' suite;
 with_item: test ('as' expr)?;
 // NB compile.c makes sure that the default except clause is last
