@@ -38,37 +38,19 @@ class Visitor(val name: String) : Python3BaseVisitor<String>() {
     return node.text
   }
   
-  val nameReplace = mapOf(
-      "_shape_tuple" to "shape",
-      "tensor_util" to "tf",
-      "constant_value" to "const",
-      "array_ops" to "tf",
-      "math_ops" to "tf",
-      "constant_op" to "tf",
-      "constant" to "const",
-      "gen_math_ops" to "tf",
-      "gen_array_ops" to "tf",
-      "dtype" to "dataType",
-      "ops" to "tf")
-  
-  fun process(name: String): String = sb {
-    val cs = name.toCharArray()
-    for ((i, c) in cs.withIndex()) {
+  fun String.toCamelCase(): String = sb {
+    val cs = this@toCamelCase.toCharArray()
+    for ((i, c) in cs.withIndex())
       if (c == '_' && i + 1 < cs.size)
         cs[i + 1] = cs[i + 1].toUpperCase()
       else
         +c
-    }
   }
   
   override fun visitTerminal(node: TerminalNode): String {
     return when (node.symbol.type) {
       NEWLINE -> ""
-      NAME -> {
-        var name = node.text
-        name = nameReplace[name] ?: name
-        process(name)
-      }
+      NAME -> node.text.toCamelCase()
       else -> node.text
     }
   }
@@ -283,11 +265,13 @@ class Visitor(val name: String) : Python3BaseVisitor<String>() {
           }
         """
       }
-      +"""
+      ctx.finally_suite()?.let {
+        +"""
         finally{
-          ${visit(ctx.finally_suite())}
+          ${visit(it)}
         }
       """
+      }
     }
   }
   
@@ -333,59 +317,179 @@ class Visitor(val name: String) : Python3BaseVisitor<String>() {
   override fun visitAnd_expr(ctx: And_exprContext): String =
       ctx.shift_expr().joinToString(" and ") { visit(it) }
   
-  override fun visitShift_expr(ctx: Shift_exprContext): String = sb {
-    val ariths = ctx.arith_expr()
-    +visit(ariths[0])
-    val rest = ariths.drop(1)
-    for ((op, arith) in List(rest.size) { ctx.getChild(it * 2 + 1) }.zip(rest))
-      when (op.text) {
-        "<<" -> +" shl ${visit(arith)}"
-        ">>" -> +" shr ${visit(arith)}"
+  override fun visitShift_expr(ctx: Shift_exprContext): String =
+      ctx.children.joinToString(" ") {
+        var result = ""
+        when (it) {
+          is Arith_exprContext -> result = visit(it)
+          is TerminalNode ->
+            when (it.symbol.type) {
+              LEFT_SHIFT -> result = "shl"
+              RIGHT_SHIFT -> result = "shr"
+            }
+        }
+        result
       }
-  }
   
-  override fun visitArith_expr(ctx: Arith_exprContext): String = sb {
-    val terms = ctx.term()
-    +visit(terms[0])
-    val rest = terms.drop(1)
-    for ((op, term) in List(rest.size) { ctx.getChild(2 * it + 1) }.zip(rest)) {
-      +op.text + visit(term)
-    }
-  }
-  
-  override fun visitTerm(ctx: TermContext): String = sb { out ->
-    val factors = ctx.factor()
-    +visit(factors[0])
-    val rest = factors.drop(1)
-    for ((op, factor) in List(rest.size) { ctx.getChild(2 * it + 1) }.zip(rest)) {
-      val op = op.text
-      +when (op) {
-        "*", "/", "%" -> op
-        "//" -> "//"
-        else -> error("not supported$op")
+  override fun visitArith_expr(ctx: Arith_exprContext): String =
+      ctx.children.joinToString(" ") {
+        var result = ""
+        when (it) {
+          is TermContext -> result = visit(it)
+          is TerminalNode -> result = it.text
+        }
+        result
       }
-      +visit(factor)
-    }
-  }
   
-  override fun visitFactor(ctx: FactorContext): String = sb { out ->
+  override fun visitTerm(ctx: TermContext): String =
+      ctx.children.joinToString(" ") {
+        var result = ""
+        when (it) {
+          is FactorContext -> result = visit(it)
+          is TerminalNode ->
+            when (it.symbol.type) {
+              STAR, DIV, MOD -> result = it.text
+              IDIV -> result = "//"
+              else -> error("not supported${it.text}")
+            }
+        }
+        result
+      }
+  
+  override fun visitFactor(ctx: FactorContext): String = sb {
     ctx.factor()?.let {
-      val op = ctx.getChild(0).text
-      when (op) {
-        "+", "-" -> +op + visit(it)
-        "~" -> +"(" + visit(it) + ").inv()"
+      val op = ctx.getChild(0) as TerminalNode
+      when (op.symbol.type) {
+        ADD, MINUS -> +op + visit(it)
+        NOT_OP -> +"(${visit(it)}).inv()"
       }
+      Unit
     }
     ctx.power()?.let {
       +visit(it)
     }
   }
   
-  override fun visitPower(ctx: PowerContext): String {
-    return super.visitPower(ctx)
+  override fun visitPower(ctx: PowerContext): String =
+      if (ctx.factor() != null)
+        "pow(${visit(ctx.atom_expr())},${visit(ctx.factor())})"
+      else
+        visit(ctx.atom_expr())
+  
+  override fun visitAtom_expr(ctx: Atom_exprContext): String = sb {
+    ctx.AWAIT()?.let { +"await " }
+    val atom = ctx.atom()
+    val trailers = ctx.trailer()
+    val c = atom.children[0] as TerminalNode
+    when (c.symbol.type) {
+      NAME -> {
+        if (trailers.isNotEmpty()) {
+          val dottedName = mutableListOf(c.text)
+          var i = 0
+          outer@ for (trailer in trailers) {
+            val t = trailer.children[0] as TerminalNode
+            when (t.symbol.type) {
+              DOT -> dottedName += trailer.NAME().text
+              else -> break@outer
+            }
+            i++
+          }
+          if (i < trailers.size) {
+            val trailer = trailers[i]
+            val t = trailer.children[0] as TerminalNode
+            if (t.symbol.type == OPEN_PAREN) {//function call
+              +functionCallReplacement(dottedName, trailer)
+              i++
+            } else
+              +dottedName.joinToString(".") { it.toCamelCase() }
+            for (j in i..trailers.lastIndex)
+              +visit(trailers[j])
+          } else {//only dotted name
+            +dottedName.joinToString(".") { it.toCamelCase() }
+          }
+        } else
+          +c.text.toCamelCase()
+      }
+      OPEN_PAREN -> {//list
+        +"listOf("
+        atom.yield_expr()?.let { +visit(it) }
+        atom.testlist_comp()?.let { +visit(it) }
+        +")"
+      }
+      OPEN_BRACK -> {//array
+        +"listOf("
+        atom.testlist_comp()?.let { +visit(it) }
+        +")"
+      }
+      OPEN_BRACE -> {//dictionary
+        +"mapOf("
+        atom.dictorsetmaker()?.let { +visit(it) }
+        +")"
+      }
+      ELLIPSIS -> +"..."
+      NUMBER -> +c.text
+      STRING -> atom.STRING().forEach { +it.text }
+      NONE -> +" null "
+      TRUE -> +" true "
+      FALSE -> +" false"
+    }
   }
   
-  override fun visitAtom(ctx: AtomContext): String {
-    return super.visitAtom(ctx)
+  fun functionCallReplacement(dottedName: List<String>,
+                              trailer: TrailerContext) = sb {
+    val argString = trailer.arglist()?.let {
+      visit(it)
+    } ?: ""
+    when {
+      dottedName.size == 1 -> {
+        val functionName = dottedName[0]
+        when (functionName) {
+          "isinstance" -> {
+            val argments = trailer.arglist().argument()
+            +"(" + visit(argments[0]) + " is " + visit(argments[1]) + ")"
+          }
+          "len" -> {
+            +"(" + argString + ").size"
+          }
+          else -> +functionName.toCamelCase() + "($argString)"
+        }
+      }
+      dottedName.size == 2 -> {
+        val packageName = dottedName[0]
+        val functionName = dottedName[1]
+        when (packageName) {
+          "tensor_util", "constant_value", "array_ops",
+          "math_ops", "constant_op", "control_flow_ops",
+          "data_flow_ops", "nn_ops", "random_ops",
+          "sparse_ops", "state_ops", "manip_ops" -> {
+            val fn = when (functionName) {
+              "constant_value", "constant" -> "const"
+              "multiply" -> "_mul"
+              "subtract" -> "sub"
+              else -> functionName
+            }
+            +"tf._${fn.toCamelCase()}($argString)"
+          }
+          "ops" -> {
+            when (functionName) {
+              "RegisterGradient" ->
+                +"register($argString)"
+              "NotDifferentiable" ->
+                +"registerNonDifferentiable($argString)"
+              else ->
+                +"tf.${functionName.toCamelCase()}($argString)"
+            }
+          }
+          else -> {
+            if (packageName.startsWith("gen_") &&
+                packageName.endsWith("_ops")) {
+              +"tf._${functionName.toCamelCase()}($argString)"
+            } else
+              +"${packageName.toCamelCase()}.${functionName.toCamelCase()}($argString)"
+          }
+        }
+      }
+      else -> +dottedName.joinToString(".") { it.toCamelCase() } + "($argString)"
+    }
   }
 }

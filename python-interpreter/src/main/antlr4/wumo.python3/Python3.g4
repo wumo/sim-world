@@ -212,7 +212,7 @@ test: or_test ('if' or_test 'else' test)? | lambdef;
 test_nocond: or_test | lambdef_nocond;
 lambdef: 'lambda' (varargslist)? ':' test;
 lambdef_nocond: 'lambda' (varargslist)? ':' test_nocond;
-or_test: and_test ('or' and_test)*;
+or_test: and_test ('or' and_test)*
 and_test: not_test ('and' not_test)*;
 not_test: 'not' not_test | comparison;
 comparison: expr (comp_op expr)*;

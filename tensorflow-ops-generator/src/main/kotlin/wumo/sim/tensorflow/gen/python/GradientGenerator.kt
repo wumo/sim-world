@@ -25,7 +25,6 @@ fun generate(fromPath: String,
 val nonDiff = Regex("""ops[.]NotDifferentiable[(]("\w+")[)]""")
 
 fun translate(file: File, toPath: File) {
-  if (file.nameWithoutExtension != "math_grad") return
   File("${toPath.absolutePath}${File.separatorChar}${file.nameWithoutExtension}.kt").sink { fileOut ->
     val data = readString(file)
     val lexer = Python3Lexer(CharStreams.fromFileName(file.absolutePath))
