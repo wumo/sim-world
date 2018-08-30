@@ -158,6 +158,12 @@ class Output(override val op: Op, val valueIndex: Int) : OutputLike() {
       return Shape(dims)
     }
   
+  val rank: Int
+    get() = shape.rank
+  
+  val size: Int
+    get() = shape.numElements()
+  
   /**
    * Updates the shape of this tensor.
   
@@ -199,7 +205,6 @@ class Output(override val op: Op, val valueIndex: Int) : OutputLike() {
   }
 
 //  val tf: TF by lazy { TODO("op!!.graph.tf") }
-  
   fun asTF_Output() = TF_Output().oper(op!!.c_op).index(valueIndex)
   override val name: String by lazy { "${op!!.name}:$valueIndex" }
 //  val name: String by lazy { op!!.name }

@@ -8,10 +8,29 @@ import wumo.sim.util.Shape
 import wumo.sim.util.a
 import wumo.sim.util.arange
 
+operator fun <T : OutputConvertible, R : OutputConvertible> T.rem(b: R) =
+    tf._floorMod(this.toOutput(), b.toOutput())
+
+infix fun <T : OutputConvertible, R : OutputConvertible> T.and(b: R) =
+    tf._logicalAnd(this.toOutput(), b.toOutput())
+
+infix fun <T : OutputConvertible, R : OutputConvertible> T.or(b: R) =
+    tf._logicalOr(this.toOutput(), b.toOutput())
+
+operator fun <T : OutputConvertible, R : OutputConvertible> T.not() =
+    tf._logicalNot(this.toOutput())
+
 operator fun <T : OutputConvertible> T.plus(b: Any) =
     tf.nameScope("add") {
       val a = this.toOutput()
-      val y = tf.const(a.dataType.base_dtype, b, name = "y")
+      val y = tf.const(a.dataType.baseDataType, b, name = "y")
+      tf._add(a, y, name = tf.currentNameScope)
+    }
+
+operator fun <T : OutputConvertible> Any.plus(b: T) =
+    tf.nameScope("add") {
+      val a = b.toOutput()
+      val y = tf.const(a.dataType.baseDataType, this, name = "y")
       tf._add(a, y, name = tf.currentNameScope)
     }
 
@@ -21,7 +40,14 @@ operator fun <T : OutputConvertible, R : OutputConvertible> T.plus(b: R) =
 operator fun <T : OutputConvertible> T.div(b: Any) =
     tf.nameScope("div") {
       val a = this.toOutput()
-      val y = tf.const(a.dataType.base_dtype, b, name = "y")
+      val y = tf.const(a.dataType.baseDataType, b, name = "y")
+      tf._div(a, y, name = tf.currentNameScope)
+    }
+
+operator fun <T : OutputConvertible> Any.div(b: T) =
+    tf.nameScope("div") {
+      val a = b.toOutput()
+      val y = tf.const(a.dataType.baseDataType, this, name = "y")
       tf._div(a, y, name = tf.currentNameScope)
     }
 
@@ -31,17 +57,31 @@ operator fun <T : OutputConvertible, R : OutputConvertible> T.div(b: R) =
 operator fun <T : OutputConvertible> T.minus(b: Any) =
     tf.nameScope("sub") {
       val a = this.toOutput()
-      val y = tf.const(a.dataType.base_dtype, b, name = "y")
+      val y = tf.const(a.dataType.baseDataType, b, name = "y")
+      tf._sub(a, y, name = tf.currentNameScope)
+    }
+
+operator fun <T : OutputConvertible> Any.minus(b: T) =
+    tf.nameScope("sub") {
+      val a = b.toOutput()
+      val y = tf.const(a.dataType.baseDataType, this, name = "y")
       tf._sub(a, y, name = tf.currentNameScope)
     }
 
 operator fun <T : OutputConvertible, R : OutputConvertible> T.minus(b: R) =
     tf._sub(this.toOutput(), b.toOutput())
 
+operator fun <T : OutputConvertible> Any.times(b: T) =
+    tf.nameScope("mul") {
+      val a = b.toOutput()
+      val y = tf.const(a.dataType.baseDataType, this, name = "y")
+      tf._mul(a, y, name = tf.currentNameScope)
+    }
+
 operator fun <T : OutputConvertible> T.times(b: Any) =
     tf.nameScope("mul") {
       val a = this.toOutput()
-      val y = tf.const(a.dataType.base_dtype, b, name = "y")
+      val y = tf.const(a.dataType.baseDataType, b, name = "y")
       tf._mul(a, y, name = tf.currentNameScope)
     }
 
@@ -90,16 +130,31 @@ object math_ops {
     }
     
     fun conj(x: Output, name: String = "Conj") =
-        if (x.dataType == COMPLEX64 || x.dataType == COMPLEX128)
-          tf._conj(x, name)
-        else
-          x
+        when {
+          x.dataType.isComplex -> tf._conj(x, name)
+          x.dataType.isNumeric -> x
+          else -> throw IllegalArgumentException("'conjugate' can only take numeric tensors as input.")
+        }
     
     fun greaterEqual(a: Output, b: Any, name: String = "GreaterEqual") =
         tf.nameScope(name) {
-          val y = tf.const(a.dataType.base_dtype, b, name = "y")
+          val y = tf.const(a.dataType.baseDataType, b, name = "y")
           tf._greaterEqual(a, y, tf.currentNameScope)
         }
+    
+    fun reducedShape(inputShape: Output, axes: Output): Output {
+      val inputShape = tf.cast(inputShape, INT32)
+      var axes = tf.cast(axes, INT32)
+      
+      val inputRank = tf._size(inputShape)
+      axes = (axes + inputRank) % inputRank
+      val axesShape = tf.shape(axes)
+      return tf._dynamicStitch(
+          listOf(tf.range(tf.const(0), inputRank),
+                 axes),
+          listOf(inputShape,
+                 tf._fill(axesShape, tf.const(1))))
+    }
     
     fun reductionDims(x: Output, axis: Output?): Output {
       if (axis != null) return axis
@@ -118,6 +173,44 @@ object math_ops {
                             else null)
           tf._mean(input, reduction_indices, keep_dims, name)
         }
+    
+    fun matMul(a: Output, b: Output, transposeA: Boolean = false, transposeB: Boolean = false,
+               conjugateA: Boolean = false,
+               conjugateB: Boolean = false,
+               aIsSparse: Boolean = false,
+               bIsSparse: Boolean = false,
+               name: String = "MatMul"): Output =
+        tf.nameScope(name, setOf(a.op, b.op)) {
+          val (cA, cB) = castArgs(a, b)
+          val sparseMatMulDataTypes = setOf(BFLOAT16, FLOAT)
+          if (!aIsSparse && !bIsSparse
+              && (cA.rank == -1 || cA.rank > 2)
+              && (cB.rank == -1 || cB.rank > 2)) {
+            // "BatchMatMul" does not support transpose, so we conjugate the matrix and use adjoint instead.
+            // The "conj" op is a no-op for real matrices.
+            val (x, adjointX) = transposeConjugateToAdjoint(cA, transposeA, conjugateA)
+            val (y, adjointY) = transposeConjugateToAdjoint(cB, transposeB, conjugateB)
+            tf._batchMatMul(x, y, adjointX, adjointY, tf.currentNameScope)
+          } else if (cA.dataType == BFLOAT16 || cB.dataType == BFLOAT16 || // "MatMul" does not currently support this type.
+              ((aIsSparse || bIsSparse) &&
+                  sparseMatMulDataTypes.contains(cA.dataType) &&
+                  sparseMatMulDataTypes.contains(cB.dataType))) {
+            val (x, transposeX) = transposeConjugateToTranspose(cA, transposeA, conjugateA)
+            val (y, transposeY) = transposeConjugateToTranspose(cB, transposeB, conjugateB)
+            tf._sparseMatMul(x, y, transposeX, transposeY, aIsSparse, bIsSparse, tf.currentNameScope)
+          } else {
+            val (x, transposeX) = transposeConjugateToTranspose(cA, transposeA, conjugateA)
+            val (y, transposeY) = transposeConjugateToTranspose(cB, transposeB, conjugateB)
+            tf._matMul(x, y, transposeX, transposeY, tf.currentNameScope)
+          }
+        }
+    
+    fun castArgs(a: Output, b: Output): Pair<Output, Output> {
+      val dataType = DataType.mostPrecise(a.dataType, b.dataType)
+      val cA = tf.cast(a, dataType)
+      val cB = tf.cast(b, dataType)
+      return Pair(cA, cB)
+    }
     
     /**
     Creates a sequence of numbers.
@@ -169,9 +262,13 @@ object math_ops {
     
     fun realDiv(a: Output, b: Any, name: String = "RealDiv") =
         tf.nameScope("truediv") {
-          val y = tf.const(a.dataType.base_dtype, b, name = "y")
+          val y = tf.const(a.dataType.baseDataType, b, name = "y")
           tf._realDiv(a, y, name = tf.currentNameScope)
         }
+    
+    fun scalarMul(scalar: Output, x: Output, name: String = "scalarMul"): Output {
+      return tf._mul(scalar, x)
+    }
     
     fun sum(input: Output, axis: Int? = null, keep_dims: Boolean = false, name: String = "sum") =
         tf.nameScope(name) {
@@ -185,8 +282,57 @@ object math_ops {
     fun sum(input: Output, axis: Output? = null, keep_dims: Boolean = false, name: String = "sum") =
         tf._sum(input, reductionDims(input, axis), keep_dims, name)
     
+    fun prod(input: Output, axis: Output? = null, keep_dims: Boolean = false, name: String = "Prod") =
+        tf._prod(input, reductionDims(input, axis), keep_dims, name)
+    
+    fun transpose(input: Output, perm: Output? = null, conjugate: Boolean = false,
+                  name: String = "Transpose"): Output {
+      val transposeFn: (Output, Output, String) -> Output = if (conjugate && input.dataType.isComplex)
+        tf::_conjugateTranspose
+      else
+        tf::_transpose
+      return if (perm == null) {
+        val rank = tf._rank(input)
+        val perm = (rank - 1) - tf._range(tf.const(0), rank, tf.const(1))
+        val transposed = transposeFn(input, perm, name)
+        val inputShape = transposed.op.inputs[0].shape
+        if (inputShape.rank != -1)
+          transposed.setShape(Shape(inputShape.asIntArray()!!.reversedArray()))
+        transposed
+      } else
+        transposeFn(input, perm, name)
+    }
+    
     fun tensordot(input: Output, kernel: Output, const: Output): Output {
       TODO()
     }
   }
+  
+  private fun transposeConjugateToAdjoint(
+      tensor: Output, transpose: Boolean, conj: Boolean): Pair<Output, Boolean> =
+      if (transpose) {
+        if (conj)
+          tensor to true
+        else
+          tf.conj(tensor) to true
+      } else {
+        if (conj)
+          tf.conj(tensor) to false
+        else
+          tensor to false
+      }
+  
+  private fun transposeConjugateToTranspose(
+      tensor: Output, transpose: Boolean, conj: Boolean): Pair<Output, Boolean> =
+      if (transpose) {
+        if (conj)
+          tf.conj(tensor) to true
+        else
+          tensor to true
+      } else {
+        if (conj)
+          tf.conj(tensor) to false
+        else
+          tensor to false
+      }
 }

@@ -29,8 +29,8 @@ or None if it cannot be calculated.
  * @see "tensorflow.python.framework.tensor_util.constant_value"
  */
 fun constantValue(tensor: Output): Tensor<*>? {
-  when (tensor.op!!.opType) {
-    "Const" -> tensor.op!!.attr
+  when (tensor.op.opType) {
+    "Const" -> tensor.op.attr
     "Shape" -> {
       val inputShape = tensor.op.inputs[0].shape
       if (inputShape.isFullyDefined)

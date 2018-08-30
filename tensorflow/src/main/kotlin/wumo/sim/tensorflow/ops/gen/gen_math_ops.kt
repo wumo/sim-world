@@ -277,6 +277,13 @@ interface gen_math_ops {
     }
   }
   
+  fun _divNoNan(x: Output, y: Output, name: String = "DivNoNan") = run {
+    buildOpTensor("DivNoNan", name) {
+      addInput(x, false)
+      addInput(y, false)
+    }
+  }
+  
   fun _equal(x: Output, y: Output, name: String = "Equal") = run {
     buildOpTensor("Equal", name) {
       addInput(x, false)

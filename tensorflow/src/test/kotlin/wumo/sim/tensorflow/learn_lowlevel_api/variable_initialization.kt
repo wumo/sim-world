@@ -10,7 +10,7 @@ class variable_initialization : BaseTest() {
   fun `variable depend on variable`() {
     val initial_value = tf.const(2f, "initial_value")
     val v = tf.currentGraph.nodeBuilder("VariableV2", "v").run {
-      attr("dataType", initial_value.dataType.base_dtype)
+      attr("dataType", initial_value.dataType.baseDataType)
       attr("shape", initial_value.shape)
       build()
     }
@@ -24,7 +24,7 @@ class variable_initialization : BaseTest() {
     val v_read = tf.identity(vt, name = "v/read")
     
     val w = tf.currentGraph.nodeBuilder("VariableV2", "w").run {
-      attr("dataType", vt.dataType.base_dtype)
+      attr("dataType", vt.dataType.baseDataType)
       attr("shape", vt.shape)
       build()
     }

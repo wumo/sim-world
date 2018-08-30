@@ -32,7 +32,7 @@ abstract class Tensor<T : Any> protected constructor(c_tensor: TF_Tensor) : Buf<
       case<ArrayBuf<*>> { Tensor(_2, Array(_1.raw.size) { _1[it].toString() }) }
     }
     
-    fun <T : Any> toNDArray(tb: Tensor<T>) = NDArray(Shape(tb.dims), tb, dtypeToClass(tb.dtype.base_dtype.cValue))
+    fun <T : Any> toNDArray(tb: Tensor<T>) = NDArray(Shape(tb.dims), tb, dtypeToClass(tb.dtype.baseDataType.cValue))
     fun <T : Any> toNDArray(c_tensor: TF_Tensor) = toNDArray(invoke<T>(c_tensor))
     fun <T : Any> fromNDArray(ndarray: NDArray<T>) = (if (ndarray.raw is Tensor<*>) ndarray.raw
     else convert_switch(ndarray.raw, ndarray.shape)) as Tensor<T>

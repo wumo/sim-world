@@ -72,7 +72,7 @@ val opGroups = mapOf(
         "Abs", "AccumulateNV2", "Acos", "Acosh", "Add", "AddN", "AddV2", "All", "Angle", "Any", "ApproximateEqual",
         "ArgMax", "ArgMin", "Asin", "Asinh", "Atan", "Atan2", "Atanh", "BatchMatMul", "BesselI0e", "BesselI1e", "Betainc",
         "Bincount", "Bucketize", "Cast", "Ceil", "ClipByValue", "CompareAndBitpack", "Complex", "ComplexAbs", "Conj", "Cos", "Cosh",
-        "Cross", "Cumprod", "Cumsum", "Digamma", "Div", "Equal", "Erf", "Erfc", "Exp", "Expm1", "Floor",
+        "Cross", "Cumprod", "Cumsum", "Digamma", "Div","DivNoNan", "Equal", "Erf", "Erfc", "Exp", "Expm1", "Floor",
         "FloorDiv", "FloorMod", "Greater", "GreaterEqual", "HistogramFixedWidth", "Igamma", "Igammac", "Imag", "Inv", "IsFinite", "IsInf",
         "IsNan", "Less", "LessEqual", "Lgamma", "LinSpace", "Log", "Log1p", "LogicalAnd", "LogicalNot", "LogicalOr", "MatMul",
         "Max", "Maximum", "Mean", "Min", "Minimum", "Mod", "Mul", "Neg", "NotEqual", "Polygamma", "Pow",

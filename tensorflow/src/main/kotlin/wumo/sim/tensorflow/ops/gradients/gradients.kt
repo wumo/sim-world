@@ -1,5 +1,7 @@
 package wumo.sim.tensorflow.ops.gradients
 
+import register_math_grad
+import register_state_grad
 import wumo.sim.tensorflow.core.InvalidDataTypeException
 import wumo.sim.tensorflow.ops.*
 import wumo.sim.tensorflow.ops.control_flow_ops.ControlFlowContext
@@ -17,7 +19,10 @@ import java.util.*
 
 object gradient_ops {
   val logger by lazyLogger()
-  
+  init {
+    register_math_grad()
+    register_state_grad()
+  }
   interface API {
 //    fun gradients(y: Output, xs: Collection<Output>): List<Output> {
 //      return addSymbolicGradients(listOf(y), xs.toList())
@@ -503,11 +508,11 @@ object gradient_ops {
   
   private val trainableTypes = setOf(FLOAT16, FLOAT, DOUBLE, COMPLEX64, COMPLEX128, RESOURCE)
   private fun isTrainable(tensor: Output): Boolean =
-      tensor.dataType.base_dtype in trainableTypes
+      tensor.dataType.baseDataType in trainableTypes
   
   private val backpropagatableTypes = setOf(BFLOAT16, RESOURCE, VARIANT)
   private fun isBackpropagatable(tensor: Output): Boolean =
-      isTrainable(tensor) || tensor.dataType.base_dtype in backpropagatableTypes
+      isTrainable(tensor) || tensor.dataType.baseDataType in backpropagatableTypes
   
   sealed class GatingMethod {
     object NoGating : GatingMethod()

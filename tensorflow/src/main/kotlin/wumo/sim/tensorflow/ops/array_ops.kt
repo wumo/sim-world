@@ -4,6 +4,77 @@ import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.types.*
 import wumo.sim.util.Shape
 
+/**
+ *
+This operation extracts the specified region from the tensor.
+The notation is similar to NumPy with the restriction that
+currently only support basic indexing. That means that
+using a non-scalar tensor as input is not currently allowed.
+
+Some useful examples:
+
+```python
+# strip leading and trailing 2 elements
+foo = constant([1,2,3,4,5,6])
+print(foo[2:-2].eval())  # => [3,4]
+
+# skip every row and reverse every column
+foo = constant([[1,2,3], [4,5,6], [7,8,9]])
+print(foo[::2,::-1].eval())  # => [[3,2,1], [9,8,7]]
+
+# Use scalar tensors as indices on both dimensions
+print(foo[constant(0), constant(2)].eval())  # => 3
+
+# Insert another dimension
+foo = constant([[1,2,3], [4,5,6], [7,8,9]])
+print(foo[newaxis, :, :].eval()) # => [[[1,2,3], [4,5,6], [7,8,9]]]
+print(foo[:, newaxis, :].eval()) # => [[[1,2,3]], [[4,5,6]], [[7,8,9]]]
+print(foo[:, :, newaxis].eval()) # => [[[1],[2],[3]], [[4],[5],[6]],
+[[7],[8],[9]]]
+
+# Ellipses (3 equivalent operations)
+foo = constant([[1,2,3], [4,5,6], [7,8,9]])
+print(foo[newaxis, :, :].eval())  # => [[[1,2,3], [4,5,6], [7,8,9]]]
+print(foo[newaxis, ...].eval())  # => [[[1,2,3], [4,5,6], [7,8,9]]]
+print(foo[newaxis].eval())  # => [[[1,2,3], [4,5,6], [7,8,9]]]
+```
+
+Notes:
+- `newaxis` is `None` as in NumPy.
+- An implicit ellipsis is placed at the end of the `slice_spec`
+- NumPy advanced indexing is currently not supported.
+ *@return The appropriate slice of "tensor", based on "slice_spec".
+ */
+operator fun Output.get(vararg slice_spec: Int): Output {
+  val begin = mutableListOf<Int>()
+  val end = mutableListOf<Int>()
+  val strides = mutableListOf<Int>()
+  var shrink_axis_mask = 0L
+  var new_axis_mask = 0L
+  var begin_mask = 0L
+  var end_mask = 0L
+  var ellipsis_mask = 0L
+  for ((index, s) in slice_spec.withIndex()) {
+    //TODO other class
+    begin += s
+    end += s + 1
+    strides += 1
+    shrink_axis_mask = shrink_axis_mask or (1L shl index)
+  }
+  return tf.nameScope("strided_slice") {
+    val packed_begin = tf.stack(begin)
+    val packed_end = tf.stack(end)
+    val packed_strides = tf.stack(strides)
+    tf._stridedSlice(this@get, packed_begin, packed_end, packed_strides,
+                     begin_mask,
+                     end_mask,
+                     shrink_axis_mask,
+                     new_axis_mask,
+                     ellipsis_mask,
+                     tf.currentNameScope)
+  }
+}
+
 object array_ops {
   interface API {
     fun <T : OutputLike> identity(data: T, name: String): Output {
@@ -28,7 +99,7 @@ object array_ops {
                     dtype: DataType<*> = FLOAT, name: String = "Placeholder"): Output =
         tf._placeholder(dtype, shape, name)
     
-    fun zerosLike(x: Output, dtype: DataType<*>? = null, optimize: Boolean = true, name: String = "ZerosLike") =
+    fun zerosLike(x: Output, dtype: DataType<*>? = null, optimize: Boolean = true, name: String = "zeros_like") =
         when {
           optimize && x.shape.isFullyDefined && x.dataType != VARIANT ->
             zeros(x.shape, dtype = dtype ?: x.dataType, name = name)
@@ -37,9 +108,20 @@ object array_ops {
           else -> tf._zerosLike(x, name)
         }
     
-    fun zeros(shape: Output, dtype: DataType<*> = FLOAT, name: String = "Ones"): Output {
-      TODO()
+    fun onesLike(x: Output, dtype: DataType<*>? = null, optimize: Boolean = true, name: String = "ones_like"): Output {
+      val outptuDataType = dtype ?: x.dataType
+      val onesShape = shape(x, optimize = optimize)
+      return ones(onesShape, outptuDataType, name = name)
     }
+    
+    fun zeros(shape: Output, dtype: DataType<*> = FLOAT, name: String = "Ones"): Output =
+        tf.nameScope(name) {
+          val zero = when (dtype) {
+            STRING -> ""
+            else -> 0
+          }
+          tf._fill(shape, tf.const(dtype, zero), tf.currentNameScope)
+        }
     
     fun zeros(shape: Shape, dtype: DataType<*> = FLOAT, name: String = "Ones"): Output =
         tf.nameScope(name) {
@@ -55,14 +137,19 @@ object array_ops {
           }
         }
     
-    fun ones(shape: Shape, dtype: DataType<*> = FLOAT, name: String = "Ones"): Output =
+    fun ones(shape: Shape, dtype: DataType<*> = FLOAT, name: String = "ones"): Output =
         tf.nameScope(name) {
           if (shape.numElements() < 1000)
             tf.const(shape, dtype, 1, tf.currentNameScope)
           else {
-            val shape = tf._reshape(tf.const(shape.asLongArray()), tf.const(-1))
-            tf._fill(shape, tf.const(dtype, 1), tf.currentNameScope)
+            tf._fill(tf.const(shape.asLongArray()),
+                     tf.const(dtype, 1), tf.currentNameScope)
           }
+        }
+    
+    fun ones(shape: Output, dtype: DataType<*> = FLOAT, name: String = "ones"): Output =
+        tf.nameScope(name) {
+          tf._fill(shape, tf.const(dtype.baseDataType, 1), tf.currentNameScope)
         }
     
     /**
@@ -81,77 +168,6 @@ object array_ops {
             tf._shape(input, out_type, name)
         }
         else -> TODO()
-      }
-    }
-    
-    /**
-     *
-    This operation extracts the specified region from the tensor.
-    The notation is similar to NumPy with the restriction that
-    currently only support basic indexing. That means that
-    using a non-scalar tensor as input is not currently allowed.
-    
-    Some useful examples:
-    
-    ```python
-    # strip leading and trailing 2 elements
-    foo = constant([1,2,3,4,5,6])
-    print(foo[2:-2].eval())  # => [3,4]
-    
-    # skip every row and reverse every column
-    foo = constant([[1,2,3], [4,5,6], [7,8,9]])
-    print(foo[::2,::-1].eval())  # => [[3,2,1], [9,8,7]]
-    
-    # Use scalar tensors as indices on both dimensions
-    print(foo[constant(0), constant(2)].eval())  # => 3
-    
-    # Insert another dimension
-    foo = constant([[1,2,3], [4,5,6], [7,8,9]])
-    print(foo[newaxis, :, :].eval()) # => [[[1,2,3], [4,5,6], [7,8,9]]]
-    print(foo[:, newaxis, :].eval()) # => [[[1,2,3]], [[4,5,6]], [[7,8,9]]]
-    print(foo[:, :, newaxis].eval()) # => [[[1],[2],[3]], [[4],[5],[6]],
-    [[7],[8],[9]]]
-    
-    # Ellipses (3 equivalent operations)
-    foo = constant([[1,2,3], [4,5,6], [7,8,9]])
-    print(foo[newaxis, :, :].eval())  # => [[[1,2,3], [4,5,6], [7,8,9]]]
-    print(foo[newaxis, ...].eval())  # => [[[1,2,3], [4,5,6], [7,8,9]]]
-    print(foo[newaxis].eval())  # => [[[1,2,3], [4,5,6], [7,8,9]]]
-    ```
-    
-    Notes:
-    - `newaxis` is `None` as in NumPy.
-    - An implicit ellipsis is placed at the end of the `slice_spec`
-    - NumPy advanced indexing is currently not supported.
-     *@return The appropriate slice of "tensor", based on "slice_spec".
-     */
-    operator fun Output.get(vararg slice_spec: Int): Output {
-      val begin = mutableListOf<Int>()
-      val end = mutableListOf<Int>()
-      val strides = mutableListOf<Int>()
-      var shrink_axis_mask = 0L
-      var new_axis_mask = 0L
-      var begin_mask = 0L
-      var end_mask = 0L
-      var ellipsis_mask = 0L
-      for ((index, s) in slice_spec.withIndex()) {
-        //TODO other class
-        begin += s
-        end += s + 1
-        strides += 1
-        shrink_axis_mask = shrink_axis_mask or (1L shl index)
-      }
-      return tf.nameScope("strided_slice") {
-        val packed_begin = stack(begin)
-        val packed_end = stack(end)
-        val packed_strides = stack(strides)
-        tf._stridedSlice(this@get, packed_begin, packed_end, packed_strides,
-                         begin_mask,
-                         end_mask,
-                         shrink_axis_mask,
-                         new_axis_mask,
-                         ellipsis_mask,
-                         tf.currentNameScope)
       }
     }
     

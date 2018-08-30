@@ -29,6 +29,9 @@ interface DataType<KotlinType> {
   val isComplex: Boolean
     get() = this in DataType.complexDataTypes
   
+  val isFloatOrComplex: Boolean
+    get() = isFloatingPoint || isComplex
+  
   /** Returns `true` if this data type represents a non-quantized integer data type. */
   val isInteger: Boolean
     get() = !isQuantized && this in DataType.integerDataTypes
@@ -54,11 +57,11 @@ interface DataType<KotlinType> {
     get() = cValue > 100
   
   ///**Returns a non-reference `DType` based on this `DType`.*/
-  val base_dtype: DataType<KotlinType>
+  val baseDataType: DataType<KotlinType>
     get() = if (isRefType) fromCValue(cValue - 100) else this
   
   val real: DataType<KotlinType>
-    get() = when (base_dtype) {
+    get() = when (baseDataType) {
       is COMPLEX64 -> FLOAT as DataType<KotlinType>
       is COMPLEX128 -> DOUBLE as DataType<KotlinType>
       else -> this
