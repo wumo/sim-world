@@ -10,8 +10,36 @@ import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.types.DataType
 import wumo.sim.tensorflow.types.INT32
 import wumo.sim.util.Shape
+import wumo.sim.util.ndarray.NDArray
 
 interface gen_array_ops {
+  fun batchMatrixBandPart(input: Output, numLower: Output, numUpper: Output, name: String = "BatchMatrixBandPart") = run {
+    buildOpTensor("BatchMatrixBandPart", name) {
+      addInput(input, false)
+      addInput(numLower, false)
+      addInput(numUpper, false)
+    }
+  }
+  
+  fun batchMatrixDiag(diagonal: Output, name: String = "BatchMatrixDiag") = run {
+    buildOpTensor("BatchMatrixDiag", name) {
+      addInput(diagonal, false)
+    }
+  }
+  
+  fun batchMatrixDiagPart(input: Output, name: String = "BatchMatrixDiagPart") = run {
+    buildOpTensor("BatchMatrixDiagPart", name) {
+      addInput(input, false)
+    }
+  }
+  
+  fun batchMatrixSetDiag(input: Output, diagonal: Output, name: String = "BatchMatrixSetDiag") = run {
+    buildOpTensor("BatchMatrixSetDiag", name) {
+      addInput(input, false)
+      addInput(diagonal, false)
+    }
+  }
+  
   fun batchToSpace(input: Output, crops: Output, blockSize: Long, name: String = "BatchToSpace") = run {
     buildOpTensor("BatchToSpace", name) {
       addInput(input, false)
@@ -42,6 +70,13 @@ interface gen_array_ops {
     }
   }
   
+  fun broadcastGradientArgs(s0: Output, s1: Output, name: String = "BroadcastGradientArgs") = run {
+    buildOpTensors("BroadcastGradientArgs", name) {
+      addInput(s0, false)
+      addInput(s1, false)
+    }
+  }
+  
   fun broadcastTo(input: Output, shape: Output, name: String = "BroadcastTo") = run {
     buildOpTensor("BroadcastTo", name) {
       addInput(input, false)
@@ -56,6 +91,20 @@ interface gen_array_ops {
     }
   }
   
+  fun concat(concatDim: Output, values: List<Output>, name: String = "Concat") = run {
+    buildOpTensor("Concat", name) {
+      addInput(concatDim, false)
+      addInput(values, false)
+    }
+  }
+  
+  fun concatOffset(concatDim: Output, shape: List<Output>, name: String = "ConcatOffset") = run {
+    buildOpTensors("ConcatOffset", name) {
+      addInput(concatDim, false)
+      addInput(shape, false)
+    }
+  }
+  
   fun concatV2(values: List<Output>, axis: Output, name: String = "ConcatV2") = run {
     buildOpTensor("ConcatV2", name) {
       addInput(values, false)
@@ -67,6 +116,13 @@ interface gen_array_ops {
     buildOpTensor("ConjugateTranspose", name) {
       addInput(x, false)
       addInput(perm, false)
+    }
+  }
+  
+  fun const(value: NDArray<*>, dtype: DataType<*>, name: String = "Const") = run {
+    buildOpTensor("Const", name) {
+      attr("value", value)
+      attr("dtype", dtype)
     }
   }
   
@@ -346,6 +402,14 @@ interface gen_array_ops {
     }
   }
   
+  fun mirrorPadGrad(input: Output, paddings: Output, mode: String, name: String = "MirrorPadGrad") = run {
+    buildOpTensor("MirrorPadGrad", name) {
+      addInput(input, false)
+      addInput(paddings, false)
+      attr("mode", mode)
+    }
+  }
+  
   fun _oneHot(indices: Output, depth: Output, onValue: Output, offValue: Output, axis: Long = -1L, name: String = "OneHot") = run {
     buildOpTensor("OneHot", name) {
       addInput(indices, false)
@@ -398,6 +462,13 @@ interface gen_array_ops {
     }
   }
   
+  fun placeholderV2(dtype: DataType<*>, shape: Shape, name: String = "PlaceholderV2") = run {
+    buildOpTensor("PlaceholderV2", name) {
+      attr("dtype", dtype)
+      attr("shape", shape)
+    }
+  }
+  
   fun placeholderWithDefault(input: Output, shape: Shape, name: String = "PlaceholderWithDefault") = run {
     buildOpTensor("PlaceholderWithDefault", name) {
       addInput(input, false)
@@ -409,6 +480,17 @@ interface gen_array_ops {
     buildOpTensor("PreventGradient", name) {
       addInput(input, false)
       attr("message", message)
+    }
+  }
+  
+  fun quantizeAndDequantize(input: Output, signedInput: Boolean = true, numBits: Long = 8L, rangeGiven: Boolean = false, inputMin: Float = 0.0f, inputMax: Float = 0.0f, name: String = "QuantizeAndDequantize") = run {
+    buildOpTensor("QuantizeAndDequantize", name) {
+      addInput(input, false)
+      attr("signed_input", signedInput)
+      attr("num_bits", numBits)
+      attr("range_given", rangeGiven)
+      attr("input_min", inputMin)
+      attr("input_max", inputMax)
     }
   }
   
@@ -482,6 +564,12 @@ interface gen_array_ops {
     }
   }
   
+  fun refIdentity(input: Output, name: String = "RefIdentity") = run {
+    buildOpTensor("RefIdentity", name) {
+      addInput(input, true)
+    }
+  }
+  
   fun reshape(tensor: Output, shape: Output, name: String = "Reshape") = run {
     buildOpTensor("Reshape", name) {
       addInput(tensor, false)
@@ -501,6 +589,13 @@ interface gen_array_ops {
       attr("ellipsis_mask", ellipsisMask)
       attr("new_axis_mask", newAxisMask)
       attr("shrink_axis_mask", shrinkAxisMask)
+    }
+  }
+  
+  fun reverse(tensor: Output, dims: Output, name: String = "Reverse") = run {
+    buildOpTensor("Reverse", name) {
+      addInput(tensor, false)
+      addInput(dims, false)
     }
   }
   
@@ -595,7 +690,7 @@ interface gen_array_ops {
     }
   }
   
-  fun split(splitDim: Output, value: Output, numSplit: Long, name: String = "Split") = run {
+  fun _split(splitDim: Output, value: Output, numSplit: Long, name: String = "Split") = run {
     buildOpTensors("Split", name) {
       addInput(splitDim, false)
       addInput(value, false)
@@ -676,6 +771,13 @@ interface gen_array_ops {
     }
   }
   
+  fun tileGrad(input: Output, multiples: Output, name: String = "TileGrad") = run {
+    buildOpTensor("TileGrad", name) {
+      addInput(input, false)
+      addInput(multiples, false)
+    }
+  }
+  
   fun transpose(x: Output, perm: Output, name: String = "Transpose") = run {
     buildOpTensor("Transpose", name) {
       addInput(x, false)
@@ -737,27 +839,6 @@ interface gen_array_ops {
   fun zerosLike(x: Output, name: String = "ZerosLike") = run {
     buildOpTensor("ZerosLike", name) {
       addInput(x, false)
-    }
-  }
-  
-  fun broadcastGradientArgs(s0: Output, s1: Output, name: String = "BroadcastGradientArgs") = run {
-    buildOpTensors("BroadcastGradientArgs", name) {
-      addInput(s0, false)
-      addInput(s1, false)
-    }
-  }
-  
-  fun mirrorPadGrad(input: Output, paddings: Output, mode: String, name: String = "MirrorPadGrad") = run {
-    buildOpTensor("MirrorPadGrad", name) {
-      addInput(input, false)
-      addInput(paddings, false)
-      attr("mode", mode)
-    }
-  }
-  
-  fun refIdentity(input: Output, name: String = "RefIdentity") = run {
-    buildOpTensor("RefIdentity", name) {
-      addInput(input, true)
     }
   }
 }

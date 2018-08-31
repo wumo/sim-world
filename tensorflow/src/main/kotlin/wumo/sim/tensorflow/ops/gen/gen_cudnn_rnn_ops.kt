@@ -47,6 +47,29 @@ interface gen_cudnn_rnn_ops {
     }
   }
   
+  fun cudnnRNNBackpropV2(input: Output, inputH: Output, inputC: Output, params: Output, output: Output, outputH: Output, outputC: Output, outputBackprop: Output, outputHBackprop: Output, outputCBackprop: Output, reserveSpace: Output, hostReserved: Output, rnnMode: String = "lstm", inputMode: String = "linear_input", direction: String = "unidirectional", dropout: Float = 0.0f, seed: Long = 0L, seed2: Long = 0L, name: String = "CudnnRNNBackpropV2") = run {
+    buildOpTensors("CudnnRNNBackpropV2", name) {
+      addInput(input, false)
+      addInput(inputH, false)
+      addInput(inputC, false)
+      addInput(params, false)
+      addInput(output, false)
+      addInput(outputH, false)
+      addInput(outputC, false)
+      addInput(outputBackprop, false)
+      addInput(outputHBackprop, false)
+      addInput(outputCBackprop, false)
+      addInput(reserveSpace, false)
+      addInput(hostReserved, false)
+      attr("rnn_mode", rnnMode)
+      attr("input_mode", inputMode)
+      attr("direction", direction)
+      attr("dropout", dropout)
+      attr("seed", seed)
+      attr("seed2", seed2)
+    }
+  }
+  
   fun cudnnRNNCanonicalToParams(numLayers: Output, numUnits: Output, inputSize: Output, weights: List<Output>, biases: List<Output>, rnnMode: String = "lstm", inputMode: String = "linear_input", direction: String = "unidirectional", dropout: Float = 0.0f, seed: Long = 0L, seed2: Long = 0L, name: String = "CudnnRNNCanonicalToParams") = run {
     buildOpTensor("CudnnRNNCanonicalToParams", name) {
       addInput(numLayers, false)
@@ -86,29 +109,6 @@ interface gen_cudnn_rnn_ops {
       addInput(inputSize, false)
       addInput(params, false)
       attr("num_params", numParams)
-      attr("rnn_mode", rnnMode)
-      attr("input_mode", inputMode)
-      attr("direction", direction)
-      attr("dropout", dropout)
-      attr("seed", seed)
-      attr("seed2", seed2)
-    }
-  }
-  
-  fun cudnnRNNBackpropV2(input: Output, inputH: Output, inputC: Output, params: Output, output: Output, outputH: Output, outputC: Output, outputBackprop: Output, outputHBackprop: Output, outputCBackprop: Output, reserveSpace: Output, hostReserved: Output, rnnMode: String = "lstm", inputMode: String = "linear_input", direction: String = "unidirectional", dropout: Float = 0.0f, seed: Long = 0L, seed2: Long = 0L, name: String = "CudnnRNNBackpropV2") = run {
-    buildOpTensors("CudnnRNNBackpropV2", name) {
-      addInput(input, false)
-      addInput(inputH, false)
-      addInput(inputC, false)
-      addInput(params, false)
-      addInput(output, false)
-      addInput(outputH, false)
-      addInput(outputC, false)
-      addInput(outputBackprop, false)
-      addInput(outputHBackprop, false)
-      addInput(outputCBackprop, false)
-      addInput(reserveSpace, false)
-      addInput(hostReserved, false)
       attr("rnn_mode", rnnMode)
       attr("input_mode", inputMode)
       attr("direction", direction)

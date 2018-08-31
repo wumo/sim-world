@@ -177,11 +177,10 @@ interface gen_math_ops {
     }
   }
   
-  fun cast(x: Output, dstT: DataType<*>, truncate: Boolean = false, name: String = "Cast") = run {
+  fun cast(x: Output, dstT: DataType<*>, name: String = "Cast") = run {
     buildOpTensor("Cast", name) {
       addInput(x, false)
       attr("DstT", dstT)
-      attr("Truncate", truncate)
     }
   }
   
@@ -277,13 +276,6 @@ interface gen_math_ops {
     }
   }
   
-  fun divNoNan(x: Output, y: Output, name: String = "DivNoNan") = run {
-    buildOpTensor("DivNoNan", name) {
-      addInput(x, false)
-      addInput(y, false)
-    }
-  }
-  
   fun equal(x: Output, y: Output, name: String = "Equal") = run {
     buildOpTensor("Equal", name) {
       addInput(x, false)
@@ -365,6 +357,13 @@ interface gen_math_ops {
     }
   }
   
+  fun igammaGradA(a: Output, x: Output, name: String = "IgammaGradA") = run {
+    buildOpTensor("IgammaGradA", name) {
+      addInput(a, false)
+      addInput(x, false)
+    }
+  }
+  
   fun igammac(a: Output, x: Output, name: String = "Igammac") = run {
     buildOpTensor("Igammac", name) {
       addInput(a, false)
@@ -382,6 +381,13 @@ interface gen_math_ops {
   fun inv(x: Output, name: String = "Inv") = run {
     buildOpTensor("Inv", name) {
       addInput(x, false)
+    }
+  }
+  
+  fun invGrad(y: Output, dy: Output, name: String = "InvGrad") = run {
+    buildOpTensor("InvGrad", name) {
+      addInput(y, false)
+      addInput(dy, false)
     }
   }
   
@@ -635,6 +641,13 @@ interface gen_math_ops {
     }
   }
   
+  fun reciprocalGrad(y: Output, dy: Output, name: String = "ReciprocalGrad") = run {
+    buildOpTensor("ReciprocalGrad", name) {
+      addInput(y, false)
+      addInput(dy, false)
+    }
+  }
+  
   fun requantizationRange(input: Output, inputMin: Output, inputMax: Output, name: String = "RequantizationRange") = run {
     buildOpTensors("RequantizationRange", name) {
       addInput(input, false)
@@ -669,6 +682,13 @@ interface gen_math_ops {
   fun rsqrt(x: Output, name: String = "Rsqrt") = run {
     buildOpTensor("Rsqrt", name) {
       addInput(x, false)
+    }
+  }
+  
+  fun rsqrtGrad(y: Output, dy: Output, name: String = "RsqrtGrad") = run {
+    buildOpTensor("RsqrtGrad", name) {
+      addInput(y, false)
+      addInput(dy, false)
     }
   }
   
@@ -718,6 +738,13 @@ interface gen_math_ops {
   fun sigmoid(x: Output, name: String = "Sigmoid") = run {
     buildOpTensor("Sigmoid", name) {
       addInput(x, false)
+    }
+  }
+  
+  fun sigmoidGrad(y: Output, dy: Output, name: String = "SigmoidGrad") = run {
+    buildOpTensor("SigmoidGrad", name) {
+      addInput(y, false)
+      addInput(dy, false)
     }
   }
   
@@ -825,6 +852,13 @@ interface gen_math_ops {
     }
   }
   
+  fun sqrtGrad(y: Output, dy: Output, name: String = "SqrtGrad") = run {
+    buildOpTensor("SqrtGrad", name) {
+      addInput(y, false)
+      addInput(dy, false)
+    }
+  }
+  
   fun square(x: Output, name: String = "Square") = run {
     buildOpTensor("Square", name) {
       addInput(x, false)
@@ -862,6 +896,13 @@ interface gen_math_ops {
   fun tanh(x: Output, name: String = "Tanh") = run {
     buildOpTensor("Tanh", name) {
       addInput(x, false)
+    }
+  }
+  
+  fun tanhGrad(y: Output, dy: Output, name: String = "TanhGrad") = run {
+    buildOpTensor("TanhGrad", name) {
+      addInput(y, false)
+      addInput(dy, false)
     }
   }
   
@@ -915,55 +956,6 @@ interface gen_math_ops {
     buildOpTensor("Zeta", name) {
       addInput(x, false)
       addInput(q, false)
-    }
-  }
-  
-  fun igammaGradA(a: Output, x: Output, name: String = "IgammaGradA") = run {
-    buildOpTensor("IgammaGradA", name) {
-      addInput(a, false)
-      addInput(x, false)
-    }
-  }
-  
-  fun invGrad(y: Output, dy: Output, name: String = "InvGrad") = run {
-    buildOpTensor("InvGrad", name) {
-      addInput(y, false)
-      addInput(dy, false)
-    }
-  }
-  
-  fun reciprocalGrad(y: Output, dy: Output, name: String = "ReciprocalGrad") = run {
-    buildOpTensor("ReciprocalGrad", name) {
-      addInput(y, false)
-      addInput(dy, false)
-    }
-  }
-  
-  fun rsqrtGrad(y: Output, dy: Output, name: String = "RsqrtGrad") = run {
-    buildOpTensor("RsqrtGrad", name) {
-      addInput(y, false)
-      addInput(dy, false)
-    }
-  }
-  
-  fun sigmoidGrad(y: Output, dy: Output, name: String = "SigmoidGrad") = run {
-    buildOpTensor("SigmoidGrad", name) {
-      addInput(y, false)
-      addInput(dy, false)
-    }
-  }
-  
-  fun sqrtGrad(y: Output, dy: Output, name: String = "SqrtGrad") = run {
-    buildOpTensor("SqrtGrad", name) {
-      addInput(y, false)
-      addInput(dy, false)
-    }
-  }
-  
-  fun tanhGrad(y: Output, dy: Output, name: String = "TanhGrad") = run {
-    buildOpTensor("TanhGrad", name) {
-      addInput(y, false)
-      addInput(dy, false)
     }
   }
 }

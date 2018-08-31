@@ -827,19 +827,6 @@ fun register_math_grad() {
     return@register listOf(tf.reshape(tf.sum(tf.realDiv(grad, y), rx), sx),
                            tf.reshape(tf.sum(grad * tf.realDiv(tf.realDiv(-x, y), y), ry), sy))
   }
-  register("DivNoNan") { op, grad ->
-    /**DivNoNan op gradient.*/
-    val grad = grad[0]!!.toOutput()
-    var x = op.inputs[0]
-    var y = op.inputs[1]
-    val sx = tf.shape(x)
-    val sy = tf.shape(y)
-    val (rx, ry) = tf.broadcastGradientArgs(sx, sy)
-    x = tf.conj(x)
-    y = tf.conj(y)
-    return@register listOf(tf.reshape(tf.sum(tf.divNoNan(grad, y), rx), sx),
-                           tf.reshape(tf.sum(grad * tf.divNoNan(tf.divNoNan(-x, y), y), ry), sy))
-  }
   register("Pow") { op, grad ->
     /**Returns grad * (y*x^(y-1), z*log(x)).*/
     val grad = grad[0]!!.toOutput()

@@ -4,10 +4,20 @@
 package wumo.sim.tensorflow.ops.gen
 
 import org.bytedeco.javacpp.tensorflow.NameAttrList
+import wumo.sim.tensorflow.buildOpTensor
 import wumo.sim.tensorflow.buildOpTensors
 import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.types.DataType
+import wumo.sim.util.Shape
 
 interface gen_functional_ops {
+  fun fakeParam(dtype: DataType<*>, shape: Shape, name: String = "FakeParam") = run {
+    buildOpTensor("FakeParam", name) {
+      attr("dtype", dtype)
+      attr("shape", shape)
+    }
+  }
+  
   fun _for(start: Output, limit: Output, delta: Output, input: Output, body: NameAttrList, name: String = "For") = run {
     buildOpTensors("For", name) {
       addInput(start, false)

@@ -8,6 +8,79 @@ import wumo.sim.tensorflow.buildOpTensors
 import wumo.sim.tensorflow.ops.Output
 
 interface gen_linalg_ops {
+  fun batchCholesky(input: Output, name: String = "BatchCholesky") = run {
+    buildOpTensor("BatchCholesky", name) {
+      addInput(input, false)
+    }
+  }
+  
+  fun batchCholeskyGrad(l: Output, grad: Output, name: String = "BatchCholeskyGrad") = run {
+    buildOpTensor("BatchCholeskyGrad", name) {
+      addInput(l, false)
+      addInput(grad, false)
+    }
+  }
+  
+  fun batchMatrixDeterminant(input: Output, name: String = "BatchMatrixDeterminant") = run {
+    buildOpTensor("BatchMatrixDeterminant", name) {
+      addInput(input, false)
+    }
+  }
+  
+  fun batchMatrixInverse(input: Output, adjoint: Boolean = false, name: String = "BatchMatrixInverse") = run {
+    buildOpTensor("BatchMatrixInverse", name) {
+      addInput(input, false)
+      attr("adjoint", adjoint)
+    }
+  }
+  
+  fun batchMatrixSolve(matrix: Output, rhs: Output, adjoint: Boolean = false, name: String = "BatchMatrixSolve") = run {
+    buildOpTensor("BatchMatrixSolve", name) {
+      addInput(matrix, false)
+      addInput(rhs, false)
+      attr("adjoint", adjoint)
+    }
+  }
+  
+  fun batchMatrixSolveLs(matrix: Output, rhs: Output, l2Regularizer: Output, fast: Boolean = true, name: String = "BatchMatrixSolveLs") = run {
+    buildOpTensor("BatchMatrixSolveLs", name) {
+      addInput(matrix, false)
+      addInput(rhs, false)
+      addInput(l2Regularizer, false)
+      attr("fast", fast)
+    }
+  }
+  
+  fun batchMatrixTriangularSolve(matrix: Output, rhs: Output, lower: Boolean = true, adjoint: Boolean = false, name: String = "BatchMatrixTriangularSolve") = run {
+    buildOpTensor("BatchMatrixTriangularSolve", name) {
+      addInput(matrix, false)
+      addInput(rhs, false)
+      attr("lower", lower)
+      attr("adjoint", adjoint)
+    }
+  }
+  
+  fun batchSelfAdjointEig(input: Output, name: String = "BatchSelfAdjointEig") = run {
+    buildOpTensor("BatchSelfAdjointEig", name) {
+      addInput(input, false)
+    }
+  }
+  
+  fun batchSelfAdjointEigV2(input: Output, computeV: Boolean = true, name: String = "BatchSelfAdjointEigV2") = run {
+    buildOpTensors("BatchSelfAdjointEigV2", name) {
+      addInput(input, false)
+      attr("compute_v", computeV)
+    }
+  }
+  
+  fun batchSvd(input: Output, computeUv: Boolean = true, fullMatrices: Boolean = false, name: String = "BatchSvd") = run {
+    buildOpTensors("BatchSvd", name) {
+      addInput(input, false)
+      attr("compute_uv", computeUv)
+      attr("full_matrices", fullMatrices)
+    }
+  }
+  
   fun cholesky(input: Output, name: String = "Cholesky") = run {
     buildOpTensor("Cholesky", name) {
       addInput(input, false)
@@ -46,6 +119,12 @@ interface gen_linalg_ops {
     }
   }
   
+  fun matrixLogarithm(input: Output, name: String = "MatrixLogarithm") = run {
+    buildOpTensor("MatrixLogarithm", name) {
+      addInput(input, false)
+    }
+  }
+  
   fun matrixSolve(matrix: Output, rhs: Output, adjoint: Boolean = false, name: String = "MatrixSolve") = run {
     buildOpTensor("MatrixSolve", name) {
       addInput(matrix, false)
@@ -79,6 +158,12 @@ interface gen_linalg_ops {
     }
   }
   
+  fun selfAdjointEig(input: Output, name: String = "SelfAdjointEig") = run {
+    buildOpTensor("SelfAdjointEig", name) {
+      addInput(input, false)
+    }
+  }
+  
   fun selfAdjointEigV2(input: Output, computeV: Boolean = true, name: String = "SelfAdjointEigV2") = run {
     buildOpTensors("SelfAdjointEigV2", name) {
       addInput(input, false)
@@ -91,12 +176,6 @@ interface gen_linalg_ops {
       addInput(input, false)
       attr("compute_uv", computeUv)
       attr("full_matrices", fullMatrices)
-    }
-  }
-  
-  fun matrixLogarithm(input: Output, name: String = "MatrixLogarithm") = run {
-    buildOpTensor("MatrixLogarithm", name) {
-      addInput(input, false)
     }
   }
 }

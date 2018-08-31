@@ -27,6 +27,16 @@ interface gen_dataset_ops {
     }
   }
   
+  fun batchDatasetV2(inputDataset: Output, batchSize: Output, dropRemainder: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "BatchDatasetV2") = run {
+    buildOpTensor("BatchDatasetV2", name) {
+      addInput(inputDataset, false)
+      addInput(batchSize, false)
+      addInput(dropRemainder, false)
+      attr("output_types", outputTypes)
+      attr("output_shapes", outputShapes)
+    }
+  }
+  
   fun bytesProducedStatsDataset(inputDataset: Output, tag: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "BytesProducedStatsDataset") = run {
     buildOpTensor("BytesProducedStatsDataset", name) {
       addInput(inputDataset, false)
@@ -54,11 +64,25 @@ interface gen_dataset_ops {
     }
   }
   
+  fun datasetToGraph(inputDataset: Output, name: String = "DatasetToGraph") = run {
+    buildOpTensor("DatasetToGraph", name) {
+      addInput(inputDataset, false)
+    }
+  }
+  
   fun datasetToSingleElement(dataset: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "DatasetToSingleElement") = run {
     buildOpTensors("DatasetToSingleElement", name) {
       addInput(dataset, false)
       attr("output_types", outputTypes)
       attr("output_shapes", outputShapes)
+    }
+  }
+  
+  fun datasetToTFRecord(inputDataset: Output, filename: Output, compressionType: Output, name: String = "DatasetToTFRecord") = run {
+    buildOp("DatasetToTFRecord", name) {
+      addInput(inputDataset, false)
+      addInput(filename, false)
+      addInput(compressionType, false)
     }
   }
   
@@ -138,6 +162,22 @@ interface gen_dataset_ops {
     }
   }
   
+  fun groupByReducerDataset(inputDataset: Output, keyFuncOtherArguments: Output, initFuncOtherArguments: Output, reduceFuncOtherArguments: Output, finalizeFuncOtherArguments: Output, keyFunc: NameAttrList, initFunc: NameAttrList, reduceFunc: NameAttrList, finalizeFunc: NameAttrList, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "GroupByReducerDataset") = run {
+    buildOpTensor("GroupByReducerDataset", name) {
+      addInput(inputDataset, false)
+      addInput(keyFuncOtherArguments, false)
+      addInput(initFuncOtherArguments, false)
+      addInput(reduceFuncOtherArguments, false)
+      addInput(finalizeFuncOtherArguments, false)
+      attr("key_func", keyFunc)
+      attr("init_func", initFunc)
+      attr("reduce_func", reduceFunc)
+      attr("finalize_func", finalizeFunc)
+      attr("output_types", outputTypes)
+      attr("output_shapes", outputShapes)
+    }
+  }
+  
   fun groupByWindowDataset(inputDataset: Output, keyFuncOtherArguments: Output, reduceFuncOtherArguments: Output, windowSizeFuncOtherArguments: Output, keyFunc: NameAttrList, reduceFunc: NameAttrList, windowSizeFunc: NameAttrList, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "GroupByWindowDataset") = run {
     buildOpTensor("GroupByWindowDataset", name) {
       addInput(inputDataset, false)
@@ -181,6 +221,14 @@ interface gen_dataset_ops {
     }
   }
   
+  fun iteratorFromStringHandleV2(stringHandle: Output, outputTypes: Array<Long> = arrayOf(), outputShapes: Array<Shape> = arrayOf(), name: String = "IteratorFromStringHandleV2") = run {
+    buildOpTensor("IteratorFromStringHandleV2", name) {
+      addInput(stringHandle, false)
+      attr("output_types", outputTypes)
+      attr("output_shapes", outputShapes)
+    }
+  }
+  
   fun iteratorGetNext(iterator: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "IteratorGetNext") = run {
     buildOpTensors("IteratorGetNext", name) {
       addInput(iterator, false)
@@ -203,6 +251,15 @@ interface gen_dataset_ops {
     }
   }
   
+  fun iteratorV2(sharedName: String, container: String, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "IteratorV2") = run {
+    buildOpTensor("IteratorV2", name) {
+      attr("shared_name", sharedName)
+      attr("container", container)
+      attr("output_types", outputTypes)
+      attr("output_shapes", outputShapes)
+    }
+  }
+  
   fun latencyStatsDataset(inputDataset: Output, tag: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "LatencyStatsDataset") = run {
     buildOpTensor("LatencyStatsDataset", name) {
       addInput(inputDataset, false)
@@ -216,6 +273,32 @@ interface gen_dataset_ops {
     buildOp("MakeIterator", name) {
       addInput(dataset, false)
       addInput(iterator, false)
+    }
+  }
+  
+  fun mapAndBatchDataset(inputDataset: Output, otherArguments: Output, batchSize: Output, numParallelBatches: Output, dropRemainder: Output, f: NameAttrList, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "MapAndBatchDataset") = run {
+    buildOpTensor("MapAndBatchDataset", name) {
+      addInput(inputDataset, false)
+      addInput(otherArguments, false)
+      addInput(batchSize, false)
+      addInput(numParallelBatches, false)
+      addInput(dropRemainder, false)
+      attr("f", f)
+      attr("output_types", outputTypes)
+      attr("output_shapes", outputShapes)
+    }
+  }
+  
+  fun mapAndBatchDatasetV2(inputDataset: Output, otherArguments: Output, batchSize: Output, numParallelCalls: Output, dropRemainder: Output, f: NameAttrList, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "MapAndBatchDatasetV2") = run {
+    buildOpTensor("MapAndBatchDatasetV2", name) {
+      addInput(inputDataset, false)
+      addInput(otherArguments, false)
+      addInput(batchSize, false)
+      addInput(numParallelCalls, false)
+      addInput(dropRemainder, false)
+      attr("f", f)
+      attr("output_types", outputTypes)
+      attr("output_shapes", outputShapes)
     }
   }
   
@@ -239,12 +322,32 @@ interface gen_dataset_ops {
     }
   }
   
+  fun optimizeDataset(inputDataset: Output, optimizations: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "OptimizeDataset") = run {
+    buildOpTensor("OptimizeDataset", name) {
+      addInput(inputDataset, false)
+      addInput(optimizations, false)
+      attr("output_types", outputTypes)
+      attr("output_shapes", outputShapes)
+    }
+  }
+  
   fun paddedBatchDataset(inputDataset: Output, batchSize: Output, paddedShapes: List<Output>, paddingValues: Output, outputShapes: Array<Shape>, name: String = "PaddedBatchDataset") = run {
     buildOpTensor("PaddedBatchDataset", name) {
       addInput(inputDataset, false)
       addInput(batchSize, false)
       addInput(paddedShapes, false)
       addInput(paddingValues, false)
+      attr("output_shapes", outputShapes)
+    }
+  }
+  
+  fun paddedBatchDatasetV2(inputDataset: Output, batchSize: Output, paddedShapes: List<Output>, paddingValues: Output, dropRemainder: Output, outputShapes: Array<Shape>, name: String = "PaddedBatchDatasetV2") = run {
+    buildOpTensor("PaddedBatchDatasetV2", name) {
+      addInput(inputDataset, false)
+      addInput(batchSize, false)
+      addInput(paddedShapes, false)
+      addInput(paddingValues, false)
+      addInput(dropRemainder, false)
       attr("output_shapes", outputShapes)
     }
   }
@@ -372,6 +475,12 @@ interface gen_dataset_ops {
     }
   }
   
+  fun sinkDataset(inputDataset: Output, name: String = "SinkDataset") = run {
+    buildOpTensor("SinkDataset", name) {
+      addInput(inputDataset, false)
+    }
+  }
+  
   fun skipDataset(inputDataset: Output, count: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "SkipDataset") = run {
     buildOpTensor("SkipDataset", name) {
       addInput(inputDataset, false)
@@ -381,12 +490,11 @@ interface gen_dataset_ops {
     }
   }
   
-  fun slideDataset(inputDataset: Output, windowSize: Output, windowShift: Output, windowStride: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "SlideDataset") = run {
+  fun slideDataset(inputDataset: Output, windowSize: Output, stride: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "SlideDataset") = run {
     buildOpTensor("SlideDataset", name) {
       addInput(inputDataset, false)
       addInput(windowSize, false)
-      addInput(windowShift, false)
-      addInput(windowStride, false)
+      addInput(stride, false)
       attr("output_types", outputTypes)
       attr("output_shapes", outputShapes)
     }
@@ -470,127 +578,18 @@ interface gen_dataset_ops {
     }
   }
   
-  fun zipDataset(inputDatasets: List<Output>, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "ZipDataset") = run {
-    buildOpTensor("ZipDataset", name) {
-      addInput(inputDatasets, false)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-    }
-  }
-  
-  fun batchDatasetV2(inputDataset: Output, batchSize: Output, dropRemainder: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "BatchDatasetV2") = run {
-    buildOpTensor("BatchDatasetV2", name) {
-      addInput(inputDataset, false)
-      addInput(batchSize, false)
-      addInput(dropRemainder, false)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-    }
-  }
-  
-  fun datasetToGraph(inputDataset: Output, name: String = "DatasetToGraph") = run {
-    buildOpTensor("DatasetToGraph", name) {
-      addInput(inputDataset, false)
-    }
-  }
-  
-  fun datasetToTFRecord(inputDataset: Output, filename: Output, compressionType: Output, name: String = "DatasetToTFRecord") = run {
-    buildOp("DatasetToTFRecord", name) {
-      addInput(inputDataset, false)
-      addInput(filename, false)
-      addInput(compressionType, false)
-    }
-  }
-  
-  fun groupByReducerDataset(inputDataset: Output, keyFuncOtherArguments: Output, initFuncOtherArguments: Output, reduceFuncOtherArguments: Output, finalizeFuncOtherArguments: Output, keyFunc: NameAttrList, initFunc: NameAttrList, reduceFunc: NameAttrList, finalizeFunc: NameAttrList, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "GroupByReducerDataset") = run {
-    buildOpTensor("GroupByReducerDataset", name) {
-      addInput(inputDataset, false)
-      addInput(keyFuncOtherArguments, false)
-      addInput(initFuncOtherArguments, false)
-      addInput(reduceFuncOtherArguments, false)
-      addInput(finalizeFuncOtherArguments, false)
-      attr("key_func", keyFunc)
-      attr("init_func", initFunc)
-      attr("reduce_func", reduceFunc)
-      attr("finalize_func", finalizeFunc)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-    }
-  }
-  
-  fun iteratorFromStringHandleV2(stringHandle: Output, outputTypes: Array<Long> = arrayOf(), outputShapes: Array<Shape> = arrayOf(), name: String = "IteratorFromStringHandleV2") = run {
-    buildOpTensor("IteratorFromStringHandleV2", name) {
-      addInput(stringHandle, false)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-    }
-  }
-  
-  fun iteratorV2(sharedName: String, container: String, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "IteratorV2") = run {
-    buildOpTensor("IteratorV2", name) {
-      attr("shared_name", sharedName)
-      attr("container", container)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-    }
-  }
-  
-  fun mapAndBatchDataset(inputDataset: Output, otherArguments: Output, batchSize: Output, numParallelBatches: Output, dropRemainder: Output, f: NameAttrList, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "MapAndBatchDataset") = run {
-    buildOpTensor("MapAndBatchDataset", name) {
-      addInput(inputDataset, false)
-      addInput(otherArguments, false)
-      addInput(batchSize, false)
-      addInput(numParallelBatches, false)
-      addInput(dropRemainder, false)
-      attr("f", f)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-    }
-  }
-  
-  fun mapAndBatchDatasetV2(inputDataset: Output, otherArguments: Output, batchSize: Output, numParallelCalls: Output, dropRemainder: Output, f: NameAttrList, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "MapAndBatchDatasetV2") = run {
-    buildOpTensor("MapAndBatchDatasetV2", name) {
-      addInput(inputDataset, false)
-      addInput(otherArguments, false)
-      addInput(batchSize, false)
-      addInput(numParallelCalls, false)
-      addInput(dropRemainder, false)
-      attr("f", f)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-    }
-  }
-  
-  fun optimizeDataset(inputDataset: Output, optimizations: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "OptimizeDataset") = run {
-    buildOpTensor("OptimizeDataset", name) {
-      addInput(inputDataset, false)
-      addInput(optimizations, false)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-    }
-  }
-  
-  fun paddedBatchDatasetV2(inputDataset: Output, batchSize: Output, paddedShapes: List<Output>, paddingValues: Output, dropRemainder: Output, outputShapes: Array<Shape>, name: String = "PaddedBatchDatasetV2") = run {
-    buildOpTensor("PaddedBatchDatasetV2", name) {
-      addInput(inputDataset, false)
-      addInput(batchSize, false)
-      addInput(paddedShapes, false)
-      addInput(paddingValues, false)
-      addInput(dropRemainder, false)
-      attr("output_shapes", outputShapes)
-    }
-  }
-  
-  fun sinkDataset(inputDataset: Output, name: String = "SinkDataset") = run {
-    buildOpTensor("SinkDataset", name) {
-      addInput(inputDataset, false)
-    }
-  }
-  
   fun windowDataset(inputDataset: Output, windowSize: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "WindowDataset") = run {
     buildOpTensor("WindowDataset", name) {
       addInput(inputDataset, false)
       addInput(windowSize, false)
+      attr("output_types", outputTypes)
+      attr("output_shapes", outputShapes)
+    }
+  }
+  
+  fun zipDataset(inputDatasets: List<Output>, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "ZipDataset") = run {
+    buildOpTensor("ZipDataset", name) {
+      addInput(inputDatasets, false)
       attr("output_types", outputTypes)
       attr("output_shapes", outputShapes)
     }

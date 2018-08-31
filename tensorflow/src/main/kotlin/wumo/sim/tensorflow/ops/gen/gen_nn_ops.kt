@@ -43,6 +43,41 @@ interface gen_nn_ops {
     }
   }
   
+  fun avgPoolGrad(origInputShape: Output, grad: Output, ksize: Array<Long>, strides: Array<Long>, padding: String, dataFormat: String = "NHWC", name: String = "AvgPoolGrad") = run {
+    buildOpTensor("AvgPoolGrad", name) {
+      addInput(origInputShape, false)
+      addInput(grad, false)
+      attr("ksize", ksize)
+      attr("strides", strides)
+      attr("padding", padding)
+      attr("data_format", dataFormat)
+    }
+  }
+  
+  fun batchNormWithGlobalNormalization(t: Output, m: Output, v: Output, beta: Output, gamma: Output, varianceEpsilon: Float, scaleAfterNormalization: Boolean, name: String = "BatchNormWithGlobalNormalization") = run {
+    buildOpTensor("BatchNormWithGlobalNormalization", name) {
+      addInput(t, false)
+      addInput(m, false)
+      addInput(v, false)
+      addInput(beta, false)
+      addInput(gamma, false)
+      attr("variance_epsilon", varianceEpsilon)
+      attr("scale_after_normalization", scaleAfterNormalization)
+    }
+  }
+  
+  fun batchNormWithGlobalNormalizationGrad(t: Output, m: Output, v: Output, gamma: Output, backprop: Output, varianceEpsilon: Float, scaleAfterNormalization: Boolean, name: String = "BatchNormWithGlobalNormalizationGrad") = run {
+    buildOpTensors("BatchNormWithGlobalNormalizationGrad", name) {
+      addInput(t, false)
+      addInput(m, false)
+      addInput(v, false)
+      addInput(gamma, false)
+      addInput(backprop, false)
+      attr("variance_epsilon", varianceEpsilon)
+      attr("scale_after_normalization", scaleAfterNormalization)
+    }
+  }
+  
   fun biasAdd(value: Output, bias: Output, dataFormat: String = "NHWC", name: String = "BiasAdd") = run {
     buildOpTensor("BiasAdd", name) {
       addInput(value, false)
@@ -55,6 +90,13 @@ interface gen_nn_ops {
     buildOpTensor("BiasAddGrad", name) {
       addInput(outBackprop, false)
       attr("data_format", dataFormat)
+    }
+  }
+  
+  fun biasAddV1(value: Output, bias: Output, name: String = "BiasAddV1") = run {
+    buildOpTensor("BiasAddV1", name) {
+      addInput(value, false)
+      addInput(bias, false)
     }
   }
   
@@ -107,6 +149,17 @@ interface gen_nn_ops {
     }
   }
   
+  fun conv3DBackpropFilter(input: Output, filter: Output, outBackprop: Output, strides: Array<Long>, padding: String, dilations: Array<Long> = arrayOf(1L, 1L, 1L, 1L, 1L), name: String = "Conv3DBackpropFilter") = run {
+    buildOpTensor("Conv3DBackpropFilter", name) {
+      addInput(input, false)
+      addInput(filter, false)
+      addInput(outBackprop, false)
+      attr("strides", strides)
+      attr("padding", padding)
+      attr("dilations", dilations)
+    }
+  }
+  
   fun conv3DBackpropFilterV2(input: Output, filterSizes: Output, outBackprop: Output, strides: Array<Long>, padding: String, dataFormat: String = "NDHWC", dilations: Array<Long> = arrayOf(1L, 1L, 1L, 1L, 1L), name: String = "Conv3DBackpropFilterV2") = run {
     buildOpTensor("Conv3DBackpropFilterV2", name) {
       addInput(input, false)
@@ -115,6 +168,17 @@ interface gen_nn_ops {
       attr("strides", strides)
       attr("padding", padding)
       attr("data_format", dataFormat)
+      attr("dilations", dilations)
+    }
+  }
+  
+  fun conv3DBackpropInput(input: Output, filter: Output, outBackprop: Output, strides: Array<Long>, padding: String, dilations: Array<Long> = arrayOf(1L, 1L, 1L, 1L, 1L), name: String = "Conv3DBackpropInput") = run {
+    buildOpTensor("Conv3DBackpropInput", name) {
+      addInput(input, false)
+      addInput(filter, false)
+      addInput(outBackprop, false)
+      attr("strides", strides)
+      attr("padding", padding)
       attr("dilations", dilations)
     }
   }
@@ -220,6 +284,13 @@ interface gen_nn_ops {
     }
   }
   
+  fun eluGrad(gradients: Output, outputs: Output, name: String = "EluGrad") = run {
+    buildOpTensor("EluGrad", name) {
+      addInput(gradients, false)
+      addInput(outputs, false)
+    }
+  }
+  
   fun fractionalAvgPool(value: Output, poolingRatio: Array<Float>, pseudoRandom: Boolean = false, overlapping: Boolean = false, deterministic: Boolean = false, seed: Long = 0L, seed2: Long = 0L, name: String = "FractionalAvgPool") = run {
     buildOpTensors("FractionalAvgPool", name) {
       addInput(value, false)
@@ -232,6 +303,16 @@ interface gen_nn_ops {
     }
   }
   
+  fun fractionalAvgPoolGrad(origInputTensorShape: Output, outBackprop: Output, rowPoolingSequence: Output, colPoolingSequence: Output, overlapping: Boolean = false, name: String = "FractionalAvgPoolGrad") = run {
+    buildOpTensor("FractionalAvgPoolGrad", name) {
+      addInput(origInputTensorShape, false)
+      addInput(outBackprop, false)
+      addInput(rowPoolingSequence, false)
+      addInput(colPoolingSequence, false)
+      attr("overlapping", overlapping)
+    }
+  }
+  
   fun fractionalMaxPool(value: Output, poolingRatio: Array<Float>, pseudoRandom: Boolean = false, overlapping: Boolean = false, deterministic: Boolean = false, seed: Long = 0L, seed2: Long = 0L, name: String = "FractionalMaxPool") = run {
     buildOpTensors("FractionalMaxPool", name) {
       addInput(value, false)
@@ -241,6 +322,17 @@ interface gen_nn_ops {
       attr("deterministic", deterministic)
       attr("seed", seed)
       attr("seed2", seed2)
+    }
+  }
+  
+  fun fractionalMaxPoolGrad(origInput: Output, origOutput: Output, outBackprop: Output, rowPoolingSequence: Output, colPoolingSequence: Output, overlapping: Boolean = false, name: String = "FractionalMaxPoolGrad") = run {
+    buildOpTensor("FractionalMaxPoolGrad", name) {
+      addInput(origInput, false)
+      addInput(origOutput, false)
+      addInput(outBackprop, false)
+      addInput(rowPoolingSequence, false)
+      addInput(colPoolingSequence, false)
+      attr("overlapping", overlapping)
     }
   }
   
@@ -352,6 +444,18 @@ interface gen_nn_ops {
     }
   }
   
+  fun lRNGrad(inputGrads: Output, inputImage: Output, outputImage: Output, depthRadius: Long = 5L, bias: Float = 1.0f, alpha: Float = 1.0f, beta: Float = 0.5f, name: String = "LRNGrad") = run {
+    buildOpTensor("LRNGrad", name) {
+      addInput(inputGrads, false)
+      addInput(inputImage, false)
+      addInput(outputImage, false)
+      attr("depth_radius", depthRadius)
+      attr("bias", bias)
+      attr("alpha", alpha)
+      attr("beta", beta)
+    }
+  }
+  
   fun logSoftmax(logits: Output, name: String = "LogSoftmax") = run {
     buildOpTensor("LogSoftmax", name) {
       addInput(logits, false)
@@ -392,6 +496,18 @@ interface gen_nn_ops {
   
   fun maxPool3DGradGrad(origInput: Output, origOutput: Output, grad: Output, ksize: Array<Long>, strides: Array<Long>, padding: String, dataFormat: String = "NDHWC", name: String = "MaxPool3DGradGrad") = run {
     buildOpTensor("MaxPool3DGradGrad", name) {
+      addInput(origInput, false)
+      addInput(origOutput, false)
+      addInput(grad, false)
+      attr("ksize", ksize)
+      attr("strides", strides)
+      attr("padding", padding)
+      attr("data_format", dataFormat)
+    }
+  }
+  
+  fun maxPoolGrad(origInput: Output, origOutput: Output, grad: Output, ksize: Array<Long>, strides: Array<Long>, padding: String, dataFormat: String = "NHWC", name: String = "MaxPoolGrad") = run {
+    buildOpTensor("MaxPoolGrad", name) {
       addInput(origInput, false)
       addInput(origOutput, false)
       addInput(grad, false)
@@ -446,6 +562,17 @@ interface gen_nn_ops {
       addInput(strides, false)
       attr("padding", padding)
       attr("data_format", dataFormat)
+    }
+  }
+  
+  fun maxPoolGradWithArgmax(input: Output, grad: Output, argmax: Output, ksize: Array<Long>, strides: Array<Long>, padding: String, name: String = "MaxPoolGradWithArgmax") = run {
+    buildOpTensor("MaxPoolGradWithArgmax", name) {
+      addInput(input, false)
+      addInput(grad, false)
+      addInput(argmax, false)
+      attr("ksize", ksize)
+      attr("strides", strides)
+      attr("padding", padding)
     }
   }
   
@@ -589,9 +716,30 @@ interface gen_nn_ops {
     }
   }
   
+  fun relu6Grad(gradients: Output, features: Output, name: String = "Relu6Grad") = run {
+    buildOpTensor("Relu6Grad", name) {
+      addInput(gradients, false)
+      addInput(features, false)
+    }
+  }
+  
+  fun reluGrad(gradients: Output, features: Output, name: String = "ReluGrad") = run {
+    buildOpTensor("ReluGrad", name) {
+      addInput(gradients, false)
+      addInput(features, false)
+    }
+  }
+  
   fun selu(features: Output, name: String = "Selu") = run {
     buildOpTensor("Selu", name) {
       addInput(features, false)
+    }
+  }
+  
+  fun seluGrad(gradients: Output, outputs: Output, name: String = "SeluGrad") = run {
+    buildOpTensor("SeluGrad", name) {
+      addInput(gradients, false)
+      addInput(outputs, false)
     }
   }
   
@@ -614,8 +762,22 @@ interface gen_nn_ops {
     }
   }
   
+  fun softplusGrad(gradients: Output, features: Output, name: String = "SoftplusGrad") = run {
+    buildOpTensor("SoftplusGrad", name) {
+      addInput(gradients, false)
+      addInput(features, false)
+    }
+  }
+  
   fun softsign(features: Output, name: String = "Softsign") = run {
     buildOpTensor("Softsign", name) {
+      addInput(features, false)
+    }
+  }
+  
+  fun softsignGrad(gradients: Output, features: Output, name: String = "SoftsignGrad") = run {
+    buildOpTensor("SoftsignGrad", name) {
+      addInput(gradients, false)
       addInput(features, false)
     }
   }
@@ -627,120 +789,19 @@ interface gen_nn_ops {
     }
   }
   
+  fun topK(input: Output, k: Long, sorted: Boolean = true, name: String = "TopK") = run {
+    buildOpTensors("TopK", name) {
+      addInput(input, false)
+      attr("k", k)
+      attr("sorted", sorted)
+    }
+  }
+  
   fun topKV2(input: Output, k: Output, sorted: Boolean = true, name: String = "TopKV2") = run {
     buildOpTensors("TopKV2", name) {
       addInput(input, false)
       addInput(k, false)
       attr("sorted", sorted)
-    }
-  }
-  
-  fun avgPoolGrad(origInputShape: Output, grad: Output, ksize: Array<Long>, strides: Array<Long>, padding: String, dataFormat: String = "NHWC", name: String = "AvgPoolGrad") = run {
-    buildOpTensor("AvgPoolGrad", name) {
-      addInput(origInputShape, false)
-      addInput(grad, false)
-      attr("ksize", ksize)
-      attr("strides", strides)
-      attr("padding", padding)
-      attr("data_format", dataFormat)
-    }
-  }
-  
-  fun eluGrad(gradients: Output, outputs: Output, name: String = "EluGrad") = run {
-    buildOpTensor("EluGrad", name) {
-      addInput(gradients, false)
-      addInput(outputs, false)
-    }
-  }
-  
-  fun fractionalAvgPoolGrad(origInputTensorShape: Output, outBackprop: Output, rowPoolingSequence: Output, colPoolingSequence: Output, overlapping: Boolean = false, name: String = "FractionalAvgPoolGrad") = run {
-    buildOpTensor("FractionalAvgPoolGrad", name) {
-      addInput(origInputTensorShape, false)
-      addInput(outBackprop, false)
-      addInput(rowPoolingSequence, false)
-      addInput(colPoolingSequence, false)
-      attr("overlapping", overlapping)
-    }
-  }
-  
-  fun fractionalMaxPoolGrad(origInput: Output, origOutput: Output, outBackprop: Output, rowPoolingSequence: Output, colPoolingSequence: Output, overlapping: Boolean = false, name: String = "FractionalMaxPoolGrad") = run {
-    buildOpTensor("FractionalMaxPoolGrad", name) {
-      addInput(origInput, false)
-      addInput(origOutput, false)
-      addInput(outBackprop, false)
-      addInput(rowPoolingSequence, false)
-      addInput(colPoolingSequence, false)
-      attr("overlapping", overlapping)
-    }
-  }
-  
-  fun lRNGrad(inputGrads: Output, inputImage: Output, outputImage: Output, depthRadius: Long = 5L, bias: Float = 1.0f, alpha: Float = 1.0f, beta: Float = 0.5f, name: String = "LRNGrad") = run {
-    buildOpTensor("LRNGrad", name) {
-      addInput(inputGrads, false)
-      addInput(inputImage, false)
-      addInput(outputImage, false)
-      attr("depth_radius", depthRadius)
-      attr("bias", bias)
-      attr("alpha", alpha)
-      attr("beta", beta)
-    }
-  }
-  
-  fun maxPoolGrad(origInput: Output, origOutput: Output, grad: Output, ksize: Array<Long>, strides: Array<Long>, padding: String, dataFormat: String = "NHWC", name: String = "MaxPoolGrad") = run {
-    buildOpTensor("MaxPoolGrad", name) {
-      addInput(origInput, false)
-      addInput(origOutput, false)
-      addInput(grad, false)
-      attr("ksize", ksize)
-      attr("strides", strides)
-      attr("padding", padding)
-      attr("data_format", dataFormat)
-    }
-  }
-  
-  fun maxPoolGradWithArgmax(input: Output, grad: Output, argmax: Output, ksize: Array<Long>, strides: Array<Long>, padding: String, name: String = "MaxPoolGradWithArgmax") = run {
-    buildOpTensor("MaxPoolGradWithArgmax", name) {
-      addInput(input, false)
-      addInput(grad, false)
-      addInput(argmax, false)
-      attr("ksize", ksize)
-      attr("strides", strides)
-      attr("padding", padding)
-    }
-  }
-  
-  fun relu6Grad(gradients: Output, features: Output, name: String = "Relu6Grad") = run {
-    buildOpTensor("Relu6Grad", name) {
-      addInput(gradients, false)
-      addInput(features, false)
-    }
-  }
-  
-  fun reluGrad(gradients: Output, features: Output, name: String = "ReluGrad") = run {
-    buildOpTensor("ReluGrad", name) {
-      addInput(gradients, false)
-      addInput(features, false)
-    }
-  }
-  
-  fun seluGrad(gradients: Output, outputs: Output, name: String = "SeluGrad") = run {
-    buildOpTensor("SeluGrad", name) {
-      addInput(gradients, false)
-      addInput(outputs, false)
-    }
-  }
-  
-  fun softplusGrad(gradients: Output, features: Output, name: String = "SoftplusGrad") = run {
-    buildOpTensor("SoftplusGrad", name) {
-      addInput(gradients, false)
-      addInput(features, false)
-    }
-  }
-  
-  fun softsignGrad(gradients: Output, features: Output, name: String = "SoftsignGrad") = run {
-    buildOpTensor("SoftsignGrad", name) {
-      addInput(gradients, false)
-      addInput(features, false)
     }
   }
 }

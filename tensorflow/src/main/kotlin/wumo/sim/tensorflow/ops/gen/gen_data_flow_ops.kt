@@ -119,6 +119,16 @@ interface gen_data_flow_ops {
     }
   }
   
+  fun fIFOQueue(componentTypes: Array<Long>, shapes: Array<Shape> = arrayOf(), capacity: Long = -1L, container: String = "", sharedName: String = "", name: String = "FIFOQueue") = run {
+    buildOpTensor("FIFOQueue", name) {
+      attr("component_types", componentTypes)
+      attr("shapes", shapes)
+      attr("capacity", capacity)
+      attr("container", container)
+      attr("shared_name", sharedName)
+    }
+  }
+  
   fun fIFOQueueV2(componentTypes: Array<Long>, shapes: Array<Shape> = arrayOf(), capacity: Long = -1L, container: String = "", sharedName: String = "", name: String = "FIFOQueueV2") = run {
     buildOpTensor("FIFOQueueV2", name) {
       attr("component_types", componentTypes)
@@ -126,6 +136,12 @@ interface gen_data_flow_ops {
       attr("capacity", capacity)
       attr("container", container)
       attr("shared_name", sharedName)
+    }
+  }
+  
+  fun fakeQueue(resource: Output, name: String = "FakeQueue") = run {
+    buildOpTensor("FakeQueue", name) {
+      addInput(resource, false)
     }
   }
   
@@ -304,6 +320,16 @@ interface gen_data_flow_ops {
     }
   }
   
+  fun paddingFIFOQueue(componentTypes: Array<Long>, shapes: Array<Shape> = arrayOf(), capacity: Long = -1L, container: String = "", sharedName: String = "", name: String = "PaddingFIFOQueue") = run {
+    buildOpTensor("PaddingFIFOQueue", name) {
+      attr("component_types", componentTypes)
+      attr("shapes", shapes)
+      attr("capacity", capacity)
+      attr("container", container)
+      attr("shared_name", sharedName)
+    }
+  }
+  
   fun paddingFIFOQueueV2(componentTypes: Array<Long>, shapes: Array<Shape> = arrayOf(), capacity: Long = -1L, container: String = "", sharedName: String = "", name: String = "PaddingFIFOQueueV2") = run {
     buildOpTensor("PaddingFIFOQueueV2", name) {
       attr("component_types", componentTypes)
@@ -321,6 +347,16 @@ interface gen_data_flow_ops {
     }
   }
   
+  fun priorityQueue(shapes: Array<Shape>, componentTypes: Array<Long> = arrayOf(), capacity: Long = -1L, container: String = "", sharedName: String = "", name: String = "PriorityQueue") = run {
+    buildOpTensor("PriorityQueue", name) {
+      attr("shapes", shapes)
+      attr("component_types", componentTypes)
+      attr("capacity", capacity)
+      attr("container", container)
+      attr("shared_name", sharedName)
+    }
+  }
+  
   fun priorityQueueV2(shapes: Array<Shape>, componentTypes: Array<Long> = arrayOf(), capacity: Long = -1L, container: String = "", sharedName: String = "", name: String = "PriorityQueueV2") = run {
     buildOpTensor("PriorityQueueV2", name) {
       attr("shapes", shapes)
@@ -331,6 +367,13 @@ interface gen_data_flow_ops {
     }
   }
   
+  fun queueClose(handle: Output, cancelPendingEnqueues: Boolean = false, name: String = "QueueClose") = run {
+    buildOp("QueueClose", name) {
+      addInput(handle, true)
+      attr("cancel_pending_enqueues", cancelPendingEnqueues)
+    }
+  }
+  
   fun queueCloseV2(handle: Output, cancelPendingEnqueues: Boolean = false, name: String = "QueueCloseV2") = run {
     buildOp("QueueCloseV2", name) {
       addInput(handle, false)
@@ -338,9 +381,35 @@ interface gen_data_flow_ops {
     }
   }
   
+  fun queueDequeue(handle: Output, componentTypes: Array<Long>, timeoutMs: Long = -1L, name: String = "QueueDequeue") = run {
+    buildOpTensors("QueueDequeue", name) {
+      addInput(handle, true)
+      attr("component_types", componentTypes)
+      attr("timeout_ms", timeoutMs)
+    }
+  }
+  
+  fun queueDequeueMany(handle: Output, n: Output, componentTypes: Array<Long>, timeoutMs: Long = -1L, name: String = "QueueDequeueMany") = run {
+    buildOpTensors("QueueDequeueMany", name) {
+      addInput(handle, true)
+      addInput(n, false)
+      attr("component_types", componentTypes)
+      attr("timeout_ms", timeoutMs)
+    }
+  }
+  
   fun queueDequeueManyV2(handle: Output, n: Output, componentTypes: Array<Long>, timeoutMs: Long = -1L, name: String = "QueueDequeueManyV2") = run {
     buildOpTensors("QueueDequeueManyV2", name) {
       addInput(handle, false)
+      addInput(n, false)
+      attr("component_types", componentTypes)
+      attr("timeout_ms", timeoutMs)
+    }
+  }
+  
+  fun queueDequeueUpTo(handle: Output, n: Output, componentTypes: Array<Long>, timeoutMs: Long = -1L, name: String = "QueueDequeueUpTo") = run {
+    buildOpTensors("QueueDequeueUpTo", name) {
+      addInput(handle, true)
       addInput(n, false)
       attr("component_types", componentTypes)
       attr("timeout_ms", timeoutMs)
@@ -360,6 +429,22 @@ interface gen_data_flow_ops {
     buildOpTensors("QueueDequeueV2", name) {
       addInput(handle, false)
       attr("component_types", componentTypes)
+      attr("timeout_ms", timeoutMs)
+    }
+  }
+  
+  fun queueEnqueue(handle: Output, components: Output, timeoutMs: Long = -1L, name: String = "QueueEnqueue") = run {
+    buildOp("QueueEnqueue", name) {
+      addInput(handle, true)
+      addInput(components, false)
+      attr("timeout_ms", timeoutMs)
+    }
+  }
+  
+  fun queueEnqueueMany(handle: Output, components: Output, timeoutMs: Long = -1L, name: String = "QueueEnqueueMany") = run {
+    buildOp("QueueEnqueueMany", name) {
+      addInput(handle, true)
+      addInput(components, false)
       attr("timeout_ms", timeoutMs)
     }
   }
@@ -392,9 +477,28 @@ interface gen_data_flow_ops {
     }
   }
   
+  fun queueSize(handle: Output, name: String = "QueueSize") = run {
+    buildOpTensor("QueueSize", name) {
+      addInput(handle, true)
+    }
+  }
+  
   fun queueSizeV2(handle: Output, name: String = "QueueSizeV2") = run {
     buildOpTensor("QueueSizeV2", name) {
       addInput(handle, false)
+    }
+  }
+  
+  fun randomShuffleQueue(componentTypes: Array<Long>, shapes: Array<Shape> = arrayOf(), capacity: Long = -1L, minAfterDequeue: Long = 0L, seed: Long = 0L, seed2: Long = 0L, container: String = "", sharedName: String = "", name: String = "RandomShuffleQueue") = run {
+    buildOpTensor("RandomShuffleQueue", name) {
+      attr("component_types", componentTypes)
+      attr("shapes", shapes)
+      attr("capacity", capacity)
+      attr("min_after_dequeue", minAfterDequeue)
+      attr("seed", seed)
+      attr("seed2", seed2)
+      attr("container", container)
+      attr("shared_name", sharedName)
     }
   }
   
@@ -549,9 +653,50 @@ interface gen_data_flow_ops {
     }
   }
   
+  fun tensorArray(size: Output, dtype: DataType<*>, dynamicSize: Boolean = false, clearAfterRead: Boolean = true, tensorArrayName: String = "", elementShape: Shape = Shape(), name: String = "TensorArray") = run {
+    buildOpTensor("TensorArray", name) {
+      addInput(size, false)
+      attr("dtype", dtype)
+      attr("dynamic_size", dynamicSize)
+      attr("clear_after_read", clearAfterRead)
+      attr("tensor_array_name", tensorArrayName)
+      attr("element_shape", elementShape)
+    }
+  }
+  
+  fun tensorArrayClose(handle: Output, name: String = "TensorArrayClose") = run {
+    buildOp("TensorArrayClose", name) {
+      addInput(handle, true)
+    }
+  }
+  
+  fun tensorArrayCloseV2(handle: Output, name: String = "TensorArrayCloseV2") = run {
+    buildOp("TensorArrayCloseV2", name) {
+      addInput(handle, false)
+    }
+  }
+  
   fun tensorArrayCloseV3(handle: Output, name: String = "TensorArrayCloseV3") = run {
     buildOp("TensorArrayCloseV3", name) {
       addInput(handle, false)
+    }
+  }
+  
+  fun tensorArrayConcat(handle: Output, flowIn: Output, dtype: DataType<*>, elementShapeExcept0: Shape = Shape(), name: String = "TensorArrayConcat") = run {
+    buildOpTensors("TensorArrayConcat", name) {
+      addInput(handle, true)
+      addInput(flowIn, false)
+      attr("dtype", dtype)
+      attr("element_shape_except0", elementShapeExcept0)
+    }
+  }
+  
+  fun tensorArrayConcatV2(handle: Output, flowIn: Output, dtype: DataType<*>, elementShapeExcept0: Shape = Shape(), name: String = "TensorArrayConcatV2") = run {
+    buildOpTensors("TensorArrayConcatV2", name) {
+      addInput(handle, false)
+      addInput(flowIn, false)
+      attr("dtype", dtype)
+      attr("element_shape_except0", elementShapeExcept0)
     }
   }
   
@@ -564,6 +709,26 @@ interface gen_data_flow_ops {
     }
   }
   
+  fun tensorArrayGather(handle: Output, indices: Output, flowIn: Output, dtype: DataType<*>, elementShape: Shape = Shape(), name: String = "TensorArrayGather") = run {
+    buildOpTensor("TensorArrayGather", name) {
+      addInput(handle, true)
+      addInput(indices, false)
+      addInput(flowIn, false)
+      attr("dtype", dtype)
+      attr("element_shape", elementShape)
+    }
+  }
+  
+  fun tensorArrayGatherV2(handle: Output, indices: Output, flowIn: Output, dtype: DataType<*>, elementShape: Shape = Shape(), name: String = "TensorArrayGatherV2") = run {
+    buildOpTensor("TensorArrayGatherV2", name) {
+      addInput(handle, false)
+      addInput(indices, false)
+      addInput(flowIn, false)
+      attr("dtype", dtype)
+      attr("element_shape", elementShape)
+    }
+  }
+  
   fun tensorArrayGatherV3(handle: Output, indices: Output, flowIn: Output, dtype: DataType<*>, elementShape: Shape = Shape(), name: String = "TensorArrayGatherV3") = run {
     buildOpTensor("TensorArrayGatherV3", name) {
       addInput(handle, false)
@@ -571,6 +736,22 @@ interface gen_data_flow_ops {
       addInput(flowIn, false)
       attr("dtype", dtype)
       attr("element_shape", elementShape)
+    }
+  }
+  
+  fun tensorArrayGrad(handle: Output, flowIn: Output, source: String, name: String = "TensorArrayGrad") = run {
+    buildOpTensor("TensorArrayGrad", name) {
+      addInput(handle, false)
+      addInput(flowIn, false)
+      attr("source", source)
+    }
+  }
+  
+  fun tensorArrayGradV2(handle: Output, flowIn: Output, source: String, name: String = "TensorArrayGradV2") = run {
+    buildOpTensor("TensorArrayGradV2", name) {
+      addInput(handle, false)
+      addInput(flowIn, false)
+      attr("source", source)
     }
   }
   
@@ -591,12 +772,57 @@ interface gen_data_flow_ops {
     }
   }
   
+  fun tensorArrayPack(handle: Output, flowIn: Output, dtype: DataType<*>, elementShape: Shape = Shape(), name: String = "TensorArrayPack") = run {
+    buildOpTensor("TensorArrayPack", name) {
+      addInput(handle, true)
+      addInput(flowIn, false)
+      attr("dtype", dtype)
+      attr("element_shape", elementShape)
+    }
+  }
+  
+  fun tensorArrayRead(handle: Output, index: Output, flowIn: Output, dtype: DataType<*>, name: String = "TensorArrayRead") = run {
+    buildOpTensor("TensorArrayRead", name) {
+      addInput(handle, true)
+      addInput(index, false)
+      addInput(flowIn, false)
+      attr("dtype", dtype)
+    }
+  }
+  
+  fun tensorArrayReadV2(handle: Output, index: Output, flowIn: Output, dtype: DataType<*>, name: String = "TensorArrayReadV2") = run {
+    buildOpTensor("TensorArrayReadV2", name) {
+      addInput(handle, false)
+      addInput(index, false)
+      addInput(flowIn, false)
+      attr("dtype", dtype)
+    }
+  }
+  
   fun tensorArrayReadV3(handle: Output, index: Output, flowIn: Output, dtype: DataType<*>, name: String = "TensorArrayReadV3") = run {
     buildOpTensor("TensorArrayReadV3", name) {
       addInput(handle, false)
       addInput(index, false)
       addInput(flowIn, false)
       attr("dtype", dtype)
+    }
+  }
+  
+  fun tensorArrayScatter(handle: Output, indices: Output, value: Output, flowIn: Output, name: String = "TensorArrayScatter") = run {
+    buildOpTensor("TensorArrayScatter", name) {
+      addInput(handle, true)
+      addInput(indices, false)
+      addInput(value, false)
+      addInput(flowIn, false)
+    }
+  }
+  
+  fun tensorArrayScatterV2(handle: Output, indices: Output, value: Output, flowIn: Output, name: String = "TensorArrayScatterV2") = run {
+    buildOpTensor("TensorArrayScatterV2", name) {
+      addInput(handle, false)
+      addInput(indices, false)
+      addInput(value, false)
+      addInput(flowIn, false)
     }
   }
   
@@ -609,9 +835,41 @@ interface gen_data_flow_ops {
     }
   }
   
+  fun tensorArraySize(handle: Output, flowIn: Output, name: String = "TensorArraySize") = run {
+    buildOpTensor("TensorArraySize", name) {
+      addInput(handle, true)
+      addInput(flowIn, false)
+    }
+  }
+  
+  fun tensorArraySizeV2(handle: Output, flowIn: Output, name: String = "TensorArraySizeV2") = run {
+    buildOpTensor("TensorArraySizeV2", name) {
+      addInput(handle, false)
+      addInput(flowIn, false)
+    }
+  }
+  
   fun tensorArraySizeV3(handle: Output, flowIn: Output, name: String = "TensorArraySizeV3") = run {
     buildOpTensor("TensorArraySizeV3", name) {
       addInput(handle, false)
+      addInput(flowIn, false)
+    }
+  }
+  
+  fun tensorArraySplit(handle: Output, value: Output, lengths: Output, flowIn: Output, name: String = "TensorArraySplit") = run {
+    buildOpTensor("TensorArraySplit", name) {
+      addInput(handle, true)
+      addInput(value, false)
+      addInput(lengths, false)
+      addInput(flowIn, false)
+    }
+  }
+  
+  fun tensorArraySplitV2(handle: Output, value: Output, lengths: Output, flowIn: Output, name: String = "TensorArraySplitV2") = run {
+    buildOpTensor("TensorArraySplitV2", name) {
+      addInput(handle, false)
+      addInput(value, false)
+      addInput(lengths, false)
       addInput(flowIn, false)
     }
   }
@@ -625,6 +883,25 @@ interface gen_data_flow_ops {
     }
   }
   
+  fun tensorArrayUnpack(handle: Output, value: Output, flowIn: Output, name: String = "TensorArrayUnpack") = run {
+    buildOpTensor("TensorArrayUnpack", name) {
+      addInput(handle, true)
+      addInput(value, false)
+      addInput(flowIn, false)
+    }
+  }
+  
+  fun tensorArrayV2(size: Output, dtype: DataType<*>, elementShape: Shape = Shape(), dynamicSize: Boolean = false, clearAfterRead: Boolean = true, tensorArrayName: String = "", name: String = "TensorArrayV2") = run {
+    buildOpTensor("TensorArrayV2", name) {
+      addInput(size, false)
+      attr("dtype", dtype)
+      attr("element_shape", elementShape)
+      attr("dynamic_size", dynamicSize)
+      attr("clear_after_read", clearAfterRead)
+      attr("tensor_array_name", tensorArrayName)
+    }
+  }
+  
   fun tensorArrayV3(size: Output, dtype: DataType<*>, elementShape: Shape = Shape(), dynamicSize: Boolean = false, clearAfterRead: Boolean = true, identicalElementShapes: Boolean = false, tensorArrayName: String = "", name: String = "TensorArrayV3") = run {
     buildOpTensors("TensorArrayV3", name) {
       addInput(size, false)
@@ -634,6 +911,24 @@ interface gen_data_flow_ops {
       attr("clear_after_read", clearAfterRead)
       attr("identical_element_shapes", identicalElementShapes)
       attr("tensor_array_name", tensorArrayName)
+    }
+  }
+  
+  fun tensorArrayWrite(handle: Output, index: Output, value: Output, flowIn: Output, name: String = "TensorArrayWrite") = run {
+    buildOpTensor("TensorArrayWrite", name) {
+      addInput(handle, true)
+      addInput(index, false)
+      addInput(value, false)
+      addInput(flowIn, false)
+    }
+  }
+  
+  fun tensorArrayWriteV2(handle: Output, index: Output, value: Output, flowIn: Output, name: String = "TensorArrayWriteV2") = run {
+    buildOpTensor("TensorArrayWriteV2", name) {
+      addInput(handle, false)
+      addInput(index, false)
+      addInput(value, false)
+      addInput(flowIn, false)
     }
   }
   

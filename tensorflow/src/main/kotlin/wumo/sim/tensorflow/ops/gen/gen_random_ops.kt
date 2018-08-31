@@ -40,6 +40,22 @@ interface gen_random_ops {
     }
   }
   
+  fun randomGammaGrad(alpha: Output, sample: Output, name: String = "RandomGammaGrad") = run {
+    buildOpTensor("RandomGammaGrad", name) {
+      addInput(alpha, false)
+      addInput(sample, false)
+    }
+  }
+  
+  fun randomPoisson(shape: Output, rate: Output, seed: Long = 0L, seed2: Long = 0L, name: String = "RandomPoisson") = run {
+    buildOpTensor("RandomPoisson", name) {
+      addInput(shape, false)
+      addInput(rate, false)
+      attr("seed", seed)
+      attr("seed2", seed2)
+    }
+  }
+  
   fun randomPoissonV2(shape: Output, rate: Output, seed: Long = 0L, seed2: Long = 0L, dtype: DataType<*> = INT64, name: String = "RandomPoissonV2") = run {
     buildOpTensor("RandomPoissonV2", name) {
       addInput(shape, false)
@@ -92,13 +108,6 @@ interface gen_random_ops {
       attr("dtype", dtype)
       attr("seed", seed)
       attr("seed2", seed2)
-    }
-  }
-  
-  fun randomGammaGrad(alpha: Output, sample: Output, name: String = "RandomGammaGrad") = run {
-    buildOpTensor("RandomGammaGrad", name) {
-      addInput(alpha, false)
-      addInput(sample, false)
     }
   }
 }

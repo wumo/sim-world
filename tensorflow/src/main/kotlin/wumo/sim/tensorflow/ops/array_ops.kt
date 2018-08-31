@@ -1,5 +1,6 @@
 package wumo.sim.tensorflow.ops
 
+import wumo.sim.tensorflow.core.InvalidArgumentException
 import wumo.sim.tensorflow.ops.gen.gen_array_ops
 import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.types.*
@@ -153,6 +154,15 @@ object array_ops {
         }
         else -> TODO()
       }
+    }
+    
+    fun split(input: Output, splitSizes: Output, axis: Output = tf.const(0), name: String = "split"): List<Output> {
+      val splitSizesShape = splitSizes.shape
+      if (splitSizesShape.isUnknown)
+        throw InvalidArgumentException("Cannot infer the number of splits from the shape '$splitSizesShape'.")
+      if (splitSizesShape.rank == 0 && splitSizes.dataType.isInteger)
+        return super._split(axis, input, splitSizesShape[0].toLong(), name)
+      return super.splitV(input, splitSizes, axis, splitSizesShape[0].toLong(), name)
     }
     
     /**

@@ -151,6 +151,11 @@ class Op(val graph: Graph, val c_op: TF_Operation) {
     }
   }
   
+  fun attrType(name: String): Int {
+    val value = attrs.Find(name)
+    return value.type()
+  }
+  
   fun attrString(name: String): String {
     val value = attrs.Find(name)
     return value.s().string

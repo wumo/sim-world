@@ -58,6 +58,9 @@ class Shape(private val dims: IntArray? = null) : Iterable<Int> {
   val isFullyDefined: Boolean
     get() = dims?.all { it >= 0 } ?: false
   
+  val isUnknown: Boolean
+    get() = !isFullyDefined
+  
   fun numElements() =
       if (!isFullyDefined) -1
       else {

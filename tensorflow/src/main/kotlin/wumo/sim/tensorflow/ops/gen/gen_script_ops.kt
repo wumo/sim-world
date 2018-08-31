@@ -14,4 +14,20 @@ interface gen_script_ops {
       attr("Tout", tout)
     }
   }
+  
+  fun pyFunc(input: Output, token: String, tout: Array<Long>, name: String = "PyFunc") = run {
+    buildOpTensors("PyFunc", name) {
+      addInput(input, false)
+      attr("token", token)
+      attr("Tout", tout)
+    }
+  }
+  
+  fun pyFuncStateless(input: Output, token: String, tout: Array<Long>, name: String = "PyFuncStateless") = run {
+    buildOpTensors("PyFuncStateless", name) {
+      addInput(input, false)
+      attr("token", token)
+      attr("Tout", tout)
+    }
+  }
 }

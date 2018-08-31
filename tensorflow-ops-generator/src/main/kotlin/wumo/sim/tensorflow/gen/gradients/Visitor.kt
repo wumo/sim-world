@@ -1,4 +1,4 @@
-package wumo.sim.tensorflow.gen.python
+package wumo.sim.tensorflow.gen.gradients
 
 import org.antlr.v4.runtime.tree.ErrorNode
 import org.antlr.v4.runtime.tree.TerminalNode
@@ -114,7 +114,7 @@ class Visitor(val name: String) : Python3BaseVisitor<String>() {
     when {
       ann != null -> {
         val tests = ann.test()
-        +"var ${visit(star_expr[0])}: ${tests[0]}"
+        +"val ${visit(star_expr[0])}: ${tests[0]}"
         if (tests.size > 1)
           +"=${visit(tests[1])}"
       }
@@ -142,12 +142,12 @@ class Visitor(val name: String) : Python3BaseVisitor<String>() {
           if (tests != null && tests.size == 1) {
             val v0 = visit(tests[0])
             if (v0 !in currentContext.vars) {
-              +"var "
+              +"val "
               currentContext.vars += v0
             }
             +v0
           } else
-            +"var (${visit(star_expr[0])})"
+            +"val (${visit(star_expr[0])})"
           for (s in star_expr.drop(1))
             +"=${visit(s)}"
         }
@@ -428,29 +428,48 @@ class Visitor(val name: String) : Python3BaseVisitor<String>() {
         atom.yield_expr()?.let { +visit(it) }
         atom.testlist_comp()?.let { +visit(it) }
         +")"
+        trailers?.forEach { +visit(it) }
       }
       OPEN_BRACK -> {//array
         +"listOf("
         atom.testlist_comp()?.let { +visit(it) }
         +")"
+        trailers?.forEach { +visit(it) }
       }
       OPEN_BRACE -> {//dictionary
         +"mapOf("
         atom.dictorsetmaker()?.let { +visit(it) }
         +")"
+        trailers?.forEach { +visit(it) }
       }
-      ELLIPSIS -> +"..."
-      NUMBER -> +c.text
+      ELLIPSIS -> {
+        +"..."
+        trailers?.forEach { +visit(it) }
+      }
+      NUMBER -> {
+        +c.text
+        trailers?.forEach { +visit(it) }
+      }
       STRING -> atom.STRING().forEach {
         var text = it.text
         if (text.startsWith("\"\"\"") &&
             text.endsWith("\"\"\""))
           text = "/**" + text.substring(3, text.length - 3) + "*/"
         +text
+        trailers?.forEach { +visit(it) }
       }
-      NONE -> +" null "
-      TRUE -> +" true "
-      FALSE -> +" false"
+      NONE -> {
+        +" null "
+        trailers?.forEach { +visit(it) }
+      }
+      TRUE -> {
+        +" true "
+        trailers?.forEach { +visit(it) }
+      }
+      FALSE -> {
+        +" false"
+        trailers?.forEach { +visit(it) }
+      }
     }
   }
   
@@ -480,7 +499,8 @@ class Visitor(val name: String) : Python3BaseVisitor<String>() {
           "tensor_util", "constant_value", "array_ops",
           "math_ops", "constant_op", "control_flow_ops",
           "data_flow_ops", "nn_ops", "random_ops",
-          "sparse_ops", "state_ops", "manip_ops" -> {
+          "sparse_ops", "state_ops", "manip_ops",
+          "tensor_array_ops"-> {
             val fn = when (functionName) {
               "constant" -> "const"
               "multiply" -> "mul"

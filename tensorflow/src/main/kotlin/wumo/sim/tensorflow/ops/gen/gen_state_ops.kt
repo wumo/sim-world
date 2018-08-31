@@ -179,6 +179,15 @@ interface gen_state_ops {
     }
   }
   
+  fun variable(shape: Shape, dtype: DataType<*>, container: String = "", sharedName: String = "", name: String = "Variable") = run {
+    buildOpTensor("Variable", name) {
+      attr("shape", shape)
+      attr("dtype", dtype)
+      attr("container", container)
+      attr("shared_name", sharedName)
+    }
+  }
+  
   fun variableV2(shape: Shape, dtype: DataType<*>, container: String = "", sharedName: String = "", name: String = "VariableV2") = run {
     buildOpTensor("VariableV2", name) {
       attr("shape", shape)

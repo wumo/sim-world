@@ -1,4 +1,4 @@
-package wumo.sim.tensorflow.gen.python
+package wumo.sim.tensorflow.gen.gradients
 
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
@@ -10,7 +10,7 @@ import wumo.sim.util.writeString
 import java.io.File
 
 fun main(args: Array<String>) {
-  generate("tensorflow-ops-generator/resources/tensorflow/tensorflow/python/ops",
+  generate("tensorflow-ops-generator/resources/gen_gradients",
            "tensorflow/src/main/kotlin/wumo/sim/tensorflow/ops/gradients/gen")
 }
 
@@ -23,7 +23,12 @@ fun generate(fromPath: String,
   }.forEach { translate(it, toDir) }
 }
 
-val exceptionalFiles = setOf("math_grad", "state_grad","array_grad")
+val exceptionalFiles = setOf("math_grad",
+                             "state_grad",
+                             "array_grad",
+                             "cudnn_rnn_grad",
+                             "random_grad",
+                             "manip_grad")
 
 fun translate(file: File, toPath: File) {
   File("${toPath.absolutePath}${File.separatorChar}${file.nameWithoutExtension}.kt").sink { fileOut ->

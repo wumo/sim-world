@@ -7,6 +7,42 @@ import wumo.sim.tensorflow.buildOpTensor
 import wumo.sim.tensorflow.ops.Output
 
 interface gen_spectral_ops {
+  fun batchFFT(input: Output, name: String = "BatchFFT") = run {
+    buildOpTensor("BatchFFT", name) {
+      addInput(input, false)
+    }
+  }
+  
+  fun batchFFT2D(input: Output, name: String = "BatchFFT2D") = run {
+    buildOpTensor("BatchFFT2D", name) {
+      addInput(input, false)
+    }
+  }
+  
+  fun batchFFT3D(input: Output, name: String = "BatchFFT3D") = run {
+    buildOpTensor("BatchFFT3D", name) {
+      addInput(input, false)
+    }
+  }
+  
+  fun batchIFFT(input: Output, name: String = "BatchIFFT") = run {
+    buildOpTensor("BatchIFFT", name) {
+      addInput(input, false)
+    }
+  }
+  
+  fun batchIFFT2D(input: Output, name: String = "BatchIFFT2D") = run {
+    buildOpTensor("BatchIFFT2D", name) {
+      addInput(input, false)
+    }
+  }
+  
+  fun batchIFFT3D(input: Output, name: String = "BatchIFFT3D") = run {
+    buildOpTensor("BatchIFFT3D", name) {
+      addInput(input, false)
+    }
+  }
+  
   fun fFT(input: Output, name: String = "FFT") = run {
     buildOpTensor("FFT", name) {
       addInput(input, false)

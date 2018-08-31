@@ -21,6 +21,21 @@ interface gen_control_flow_ops {
     }
   }
   
+  fun enter(data: Output, frameName: String, isConstant: Boolean = false, parallelIterations: Long = 10L, name: String = "Enter") = run {
+    buildOpTensor("Enter", name) {
+      addInput(data, false)
+      attr("frame_name", frameName)
+      attr("is_constant", isConstant)
+      attr("parallel_iterations", parallelIterations)
+    }
+  }
+  
+  fun exit(data: Output, name: String = "Exit") = run {
+    buildOpTensor("Exit", name) {
+      addInput(data, false)
+    }
+  }
+  
   fun loopCond(input: Output, name: String = "LoopCond") = run {
     buildOpTensor("LoopCond", name) {
       addInput(input, false)
@@ -36,6 +51,32 @@ interface gen_control_flow_ops {
   fun nextIteration(data: Output, name: String = "NextIteration") = run {
     buildOpTensor("NextIteration", name) {
       addInput(data, false)
+    }
+  }
+  
+  fun noOp(name: String = "NoOp") = run {
+    buildOp("NoOp", name) {
+    }
+  }
+  
+  fun refEnter(data: Output, frameName: String, isConstant: Boolean = false, parallelIterations: Long = 10L, name: String = "RefEnter") = run {
+    buildOpTensor("RefEnter", name) {
+      addInput(data, true)
+      attr("frame_name", frameName)
+      attr("is_constant", isConstant)
+      attr("parallel_iterations", parallelIterations)
+    }
+  }
+  
+  fun refExit(data: Output, name: String = "RefExit") = run {
+    buildOpTensor("RefExit", name) {
+      addInput(data, true)
+    }
+  }
+  
+  fun refMerge(inputs: List<Output>, name: String = "RefMerge") = run {
+    buildOpTensors("RefMerge", name) {
+      addInput(inputs, true)
     }
   }
   
@@ -63,42 +104,6 @@ interface gen_control_flow_ops {
     buildOpTensors("Switch", name) {
       addInput(data, false)
       addInput(pred, false)
-    }
-  }
-  
-  fun enter(data: Output, frameName: String, isConstant: Boolean = false, parallelIterations: Long = 10L, name: String = "Enter") = run {
-    buildOpTensor("Enter", name) {
-      addInput(data, false)
-      attr("frame_name", frameName)
-      attr("is_constant", isConstant)
-      attr("parallel_iterations", parallelIterations)
-    }
-  }
-  
-  fun exit(data: Output, name: String = "Exit") = run {
-    buildOpTensor("Exit", name) {
-      addInput(data, false)
-    }
-  }
-  
-  fun refEnter(data: Output, frameName: String, isConstant: Boolean = false, parallelIterations: Long = 10L, name: String = "RefEnter") = run {
-    buildOpTensor("RefEnter", name) {
-      addInput(data, true)
-      attr("frame_name", frameName)
-      attr("is_constant", isConstant)
-      attr("parallel_iterations", parallelIterations)
-    }
-  }
-  
-  fun refExit(data: Output, name: String = "RefExit") = run {
-    buildOpTensor("RefExit", name) {
-      addInput(data, true)
-    }
-  }
-  
-  fun refMerge(inputs: List<Output>, name: String = "RefMerge") = run {
-    buildOpTensors("RefMerge", name) {
-      addInput(inputs, true)
     }
   }
 }

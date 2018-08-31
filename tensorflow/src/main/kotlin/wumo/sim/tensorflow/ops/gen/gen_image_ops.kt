@@ -11,6 +11,15 @@ import wumo.sim.tensorflow.types.INT32
 import wumo.sim.tensorflow.types.UINT8
 
 interface gen_image_ops {
+  fun adjustContrast(images: Output, contrastFactor: Output, minValue: Output, maxValue: Output, name: String = "AdjustContrast") = run {
+    buildOpTensor("AdjustContrast", name) {
+      addInput(images, false)
+      addInput(contrastFactor, false)
+      addInput(minValue, false)
+      addInput(maxValue, false)
+    }
+  }
+  
   fun adjustContrastv2(images: Output, contrastFactor: Output, name: String = "AdjustContrastv2") = run {
     buildOpTensor("AdjustContrastv2", name) {
       addInput(images, false)
@@ -217,6 +226,15 @@ interface gen_image_ops {
     }
   }
   
+  fun randomCrop(image: Output, size: Output, seed: Long = 0L, seed2: Long = 0L, name: String = "RandomCrop") = run {
+    buildOpTensor("RandomCrop", name) {
+      addInput(image, false)
+      addInput(size, false)
+      attr("seed", seed)
+      attr("seed2", seed2)
+    }
+  }
+  
   fun resizeArea(images: Output, size: Output, alignCorners: Boolean = false, name: String = "ResizeArea") = run {
     buildOpTensor("ResizeArea", name) {
       addInput(images, false)
@@ -233,6 +251,14 @@ interface gen_image_ops {
     }
   }
   
+  fun resizeBicubicGrad(grads: Output, originalImage: Output, alignCorners: Boolean = false, name: String = "ResizeBicubicGrad") = run {
+    buildOpTensor("ResizeBicubicGrad", name) {
+      addInput(grads, false)
+      addInput(originalImage, false)
+      attr("align_corners", alignCorners)
+    }
+  }
+  
   fun resizeBilinear(images: Output, size: Output, alignCorners: Boolean = false, name: String = "ResizeBilinear") = run {
     buildOpTensor("ResizeBilinear", name) {
       addInput(images, false)
@@ -241,9 +267,25 @@ interface gen_image_ops {
     }
   }
   
+  fun resizeBilinearGrad(grads: Output, originalImage: Output, alignCorners: Boolean = false, name: String = "ResizeBilinearGrad") = run {
+    buildOpTensor("ResizeBilinearGrad", name) {
+      addInput(grads, false)
+      addInput(originalImage, false)
+      attr("align_corners", alignCorners)
+    }
+  }
+  
   fun resizeNearestNeighbor(images: Output, size: Output, alignCorners: Boolean = false, name: String = "ResizeNearestNeighbor") = run {
     buildOpTensor("ResizeNearestNeighbor", name) {
       addInput(images, false)
+      addInput(size, false)
+      attr("align_corners", alignCorners)
+    }
+  }
+  
+  fun resizeNearestNeighborGrad(grads: Output, size: Output, alignCorners: Boolean = false, name: String = "ResizeNearestNeighborGrad") = run {
+    buildOpTensor("ResizeNearestNeighborGrad", name) {
+      addInput(grads, false)
       addInput(size, false)
       attr("align_corners", alignCorners)
     }
@@ -274,30 +316,6 @@ interface gen_image_ops {
       attr("area_range", areaRange)
       attr("max_attempts", maxAttempts)
       attr("use_image_if_no_bounding_boxes", useImageIfNoBoundingBoxes)
-    }
-  }
-  
-  fun resizeBicubicGrad(grads: Output, originalImage: Output, alignCorners: Boolean = false, name: String = "ResizeBicubicGrad") = run {
-    buildOpTensor("ResizeBicubicGrad", name) {
-      addInput(grads, false)
-      addInput(originalImage, false)
-      attr("align_corners", alignCorners)
-    }
-  }
-  
-  fun resizeBilinearGrad(grads: Output, originalImage: Output, alignCorners: Boolean = false, name: String = "ResizeBilinearGrad") = run {
-    buildOpTensor("ResizeBilinearGrad", name) {
-      addInput(grads, false)
-      addInput(originalImage, false)
-      attr("align_corners", alignCorners)
-    }
-  }
-  
-  fun resizeNearestNeighborGrad(grads: Output, size: Output, alignCorners: Boolean = false, name: String = "ResizeNearestNeighborGrad") = run {
-    buildOpTensor("ResizeNearestNeighborGrad", name) {
-      addInput(grads, false)
-      addInput(size, false)
-      attr("align_corners", alignCorners)
     }
   }
 }

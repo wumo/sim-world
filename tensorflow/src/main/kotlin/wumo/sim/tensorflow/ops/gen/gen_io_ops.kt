@@ -10,6 +10,17 @@ import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.types.DataType
 
 interface gen_io_ops {
+  fun fixedLengthRecordReader(recordBytes: Long, headerBytes: Long = 0L, footerBytes: Long = 0L, hopBytes: Long = 0L, container: String = "", sharedName: String = "", name: String = "FixedLengthRecordReader") = run {
+    buildOpTensor("FixedLengthRecordReader", name) {
+      attr("record_bytes", recordBytes)
+      attr("header_bytes", headerBytes)
+      attr("footer_bytes", footerBytes)
+      attr("hop_bytes", hopBytes)
+      attr("container", container)
+      attr("shared_name", sharedName)
+    }
+  }
+  
   fun fixedLengthRecordReaderV2(recordBytes: Long, headerBytes: Long = 0L, footerBytes: Long = 0L, hopBytes: Long = 0L, container: String = "", sharedName: String = "", encoding: String = "", name: String = "FixedLengthRecordReaderV2") = run {
     buildOpTensor("FixedLengthRecordReaderV2", name) {
       attr("record_bytes", recordBytes)
@@ -19,6 +30,13 @@ interface gen_io_ops {
       attr("container", container)
       attr("shared_name", sharedName)
       attr("encoding", encoding)
+    }
+  }
+  
+  fun identityReader(container: String = "", sharedName: String = "", name: String = "IdentityReader") = run {
+    buildOpTensor("IdentityReader", name) {
+      attr("container", container)
+      attr("shared_name", sharedName)
     }
   }
   
@@ -56,15 +74,42 @@ interface gen_io_ops {
     }
   }
   
+  fun readerNumRecordsProduced(readerHandle: Output, name: String = "ReaderNumRecordsProduced") = run {
+    buildOpTensor("ReaderNumRecordsProduced", name) {
+      addInput(readerHandle, true)
+    }
+  }
+  
   fun readerNumRecordsProducedV2(readerHandle: Output, name: String = "ReaderNumRecordsProducedV2") = run {
     buildOpTensor("ReaderNumRecordsProducedV2", name) {
       addInput(readerHandle, false)
     }
   }
   
+  fun readerNumWorkUnitsCompleted(readerHandle: Output, name: String = "ReaderNumWorkUnitsCompleted") = run {
+    buildOpTensor("ReaderNumWorkUnitsCompleted", name) {
+      addInput(readerHandle, true)
+    }
+  }
+  
   fun readerNumWorkUnitsCompletedV2(readerHandle: Output, name: String = "ReaderNumWorkUnitsCompletedV2") = run {
     buildOpTensor("ReaderNumWorkUnitsCompletedV2", name) {
       addInput(readerHandle, false)
+    }
+  }
+  
+  fun readerRead(readerHandle: Output, queueHandle: Output, name: String = "ReaderRead") = run {
+    buildOpTensors("ReaderRead", name) {
+      addInput(readerHandle, true)
+      addInput(queueHandle, true)
+    }
+  }
+  
+  fun readerReadUpTo(readerHandle: Output, queueHandle: Output, numRecords: Output, name: String = "ReaderReadUpTo") = run {
+    buildOpTensors("ReaderReadUpTo", name) {
+      addInput(readerHandle, true)
+      addInput(queueHandle, true)
+      addInput(numRecords, false)
     }
   }
   
@@ -83,9 +128,22 @@ interface gen_io_ops {
     }
   }
   
+  fun readerReset(readerHandle: Output, name: String = "ReaderReset") = run {
+    buildOp("ReaderReset", name) {
+      addInput(readerHandle, true)
+    }
+  }
+  
   fun readerResetV2(readerHandle: Output, name: String = "ReaderResetV2") = run {
     buildOp("ReaderResetV2", name) {
       addInput(readerHandle, false)
+    }
+  }
+  
+  fun readerRestoreState(readerHandle: Output, state: Output, name: String = "ReaderRestoreState") = run {
+    buildOp("ReaderRestoreState", name) {
+      addInput(readerHandle, true)
+      addInput(state, false)
     }
   }
   
@@ -93,6 +151,12 @@ interface gen_io_ops {
     buildOp("ReaderRestoreStateV2", name) {
       addInput(readerHandle, false)
       addInput(state, false)
+    }
+  }
+  
+  fun readerSerializeState(readerHandle: Output, name: String = "ReaderSerializeState") = run {
+    buildOpTensor("ReaderSerializeState", name) {
+      addInput(readerHandle, true)
     }
   }
   
@@ -171,6 +235,14 @@ interface gen_io_ops {
     }
   }
   
+  fun tFRecordReader(container: String = "", sharedName: String = "", compressionType: String = "", name: String = "TFRecordReader") = run {
+    buildOpTensor("TFRecordReader", name) {
+      attr("container", container)
+      attr("shared_name", sharedName)
+      attr("compression_type", compressionType)
+    }
+  }
+  
   fun tFRecordReaderV2(container: String = "", sharedName: String = "", compressionType: String = "", name: String = "TFRecordReaderV2") = run {
     buildOpTensor("TFRecordReaderV2", name) {
       attr("container", container)
@@ -179,9 +251,24 @@ interface gen_io_ops {
     }
   }
   
+  fun textLineReader(skipHeaderLines: Long = 0L, container: String = "", sharedName: String = "", name: String = "TextLineReader") = run {
+    buildOpTensor("TextLineReader", name) {
+      attr("skip_header_lines", skipHeaderLines)
+      attr("container", container)
+      attr("shared_name", sharedName)
+    }
+  }
+  
   fun textLineReaderV2(skipHeaderLines: Long = 0L, container: String = "", sharedName: String = "", name: String = "TextLineReaderV2") = run {
     buildOpTensor("TextLineReaderV2", name) {
       attr("skip_header_lines", skipHeaderLines)
+      attr("container", container)
+      attr("shared_name", sharedName)
+    }
+  }
+  
+  fun wholeFileReader(container: String = "", sharedName: String = "", name: String = "WholeFileReader") = run {
+    buildOpTensor("WholeFileReader", name) {
       attr("container", container)
       attr("shared_name", sharedName)
     }

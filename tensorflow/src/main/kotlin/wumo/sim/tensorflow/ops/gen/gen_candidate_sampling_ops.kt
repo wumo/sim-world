@@ -70,6 +70,18 @@ interface gen_candidate_sampling_ops {
     }
   }
   
+  fun threadUnsafeUnigramCandidateSampler(trueClasses: Output, numTrue: Long, numSampled: Long, unique: Boolean, rangeMax: Long, seed: Long = 0L, seed2: Long = 0L, name: String = "ThreadUnsafeUnigramCandidateSampler") = run {
+    buildOpTensors("ThreadUnsafeUnigramCandidateSampler", name) {
+      addInput(trueClasses, false)
+      attr("num_true", numTrue)
+      attr("num_sampled", numSampled)
+      attr("unique", unique)
+      attr("range_max", rangeMax)
+      attr("seed", seed)
+      attr("seed2", seed2)
+    }
+  }
+  
   fun uniformCandidateSampler(trueClasses: Output, numTrue: Long, numSampled: Long, unique: Boolean, rangeMax: Long, seed: Long = 0L, seed2: Long = 0L, name: String = "UniformCandidateSampler") = run {
     buildOpTensors("UniformCandidateSampler", name) {
       addInput(trueClasses, false)

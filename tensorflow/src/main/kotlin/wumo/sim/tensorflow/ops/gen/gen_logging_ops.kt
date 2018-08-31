@@ -17,6 +17,15 @@ interface gen_logging_ops {
     }
   }
   
+  fun audioSummary(tag: Output, tensor: Output, sampleRate: Float, maxOutputs: Long = 3L, name: String = "AudioSummary") = run {
+    buildOpTensor("AudioSummary", name) {
+      addInput(tag, false)
+      addInput(tensor, false)
+      attr("sample_rate", sampleRate)
+      attr("max_outputs", maxOutputs)
+    }
+  }
+  
   fun audioSummaryV2(tag: Output, tensor: Output, sampleRate: Output, maxOutputs: Long = 3L, name: String = "AudioSummaryV2") = run {
     buildOpTensor("AudioSummaryV2", name) {
       addInput(tag, false)
