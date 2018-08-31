@@ -84,7 +84,7 @@ class Visitor(val name: String) : Python3BaseVisitor<String>() {
           args[0].text
         }
     if (opTypes.isEmpty()) return@sb
-    +"register(${opTypes.joinToString(", ")}){op,grad->"
+    +"register(${opTypes.joinToString(", ")}){op,grad->\nval grad = grad[0]!!.toOutput()\n"
     context({ isRegister = true }) {
       +visit(ctx.funcdef())
     }
@@ -155,7 +155,7 @@ class Visitor(val name: String) : Python3BaseVisitor<String>() {
             }
             +v0
           } else
-            +"var ${visit(star_expr[0])}"
+            +"var (${visit(star_expr[0])})"
           for (s in star_expr.drop(1))
             +"=${visit(s)}"
         }
@@ -170,10 +170,16 @@ class Visitor(val name: String) : Python3BaseVisitor<String>() {
   override fun visitRaise_stmt(ctx: Raise_stmtContext) = "${ctx.text}\n"
   override fun visitAssert_stmt(ctx: Assert_stmtContext) = "${ctx.text}\n"
   override fun visitReturn_stmt(ctx: Return_stmtContext) = sb {
-    +if (currentContext.isRegister)
-      "return@${currentContext.functionName} ${ctx.testlist()?.let { visit(it) }}"
-    else {
-      "return ${ctx.testlist()?.let { visit(it) }}"
+    if (currentContext.isRegister) {
+      ctx.testlist()?.let {
+        val text = visit(it)
+        if (it.test().size == 1 && text.startsWith("listOf("))
+          +text + " //return@register"
+        else
+          +"listOf(${visit(it)})  //return@register"
+      }
+    } else {
+      +"return ${ctx.testlist()?.let { visit(it) }}"
     }
   }
   
@@ -347,9 +353,9 @@ class Visitor(val name: String) : Python3BaseVisitor<String>() {
         when (it) {
           is FactorContext -> result = visit(it)
           is TerminalNode ->
-            when (it.symbol.type) {
-              STAR, DIV, MOD -> result = it.text
-              IDIV -> result = "//"
+            result = when (it.symbol.type) {
+              STAR, DIV, MOD -> it.text
+              IDIV -> "//"
               else -> error("not supported${it.text}")
             }
         }
@@ -402,16 +408,29 @@ class Visitor(val name: String) : Python3BaseVisitor<String>() {
               i++
             } else
               +dottedName.joinToString(".") { it.toCamelCase() }
-            for (j in i..trailers.lastIndex)
-              +visit(trailers[j])
+            for (j in i..trailers.lastIndex) {
+              val trailer = trailers[j]
+              trailer.NAME()?.let {
+                when (it.text) {
+                  "dtype" -> +".dataType"
+                  else -> +".${it.text}"
+                }
+              } ?: +visit(trailer)
+            }
           } else {//only dotted name
-            +dottedName.joinToString(".") { it.toCamelCase() }
+            var text = dottedName.joinToString(".") { it.toCamelCase() }
+            if (text.startsWith("ops.dtypes.") ||
+                text.startsWith("dtypes.")) {
+              val i = text.lastIndexOf('.')
+              text = text.substring(i + 1).toUpperCase()
+            }
+            +text
           }
         } else
           +c.text.toCamelCase()
       }
       OPEN_PAREN -> {//list
-        +"listOf("
+        +"("
         atom.yield_expr()?.let { +visit(it) }
         atom.testlist_comp()?.let { +visit(it) }
         +")"
@@ -428,7 +447,13 @@ class Visitor(val name: String) : Python3BaseVisitor<String>() {
       }
       ELLIPSIS -> +"..."
       NUMBER -> +c.text
-      STRING -> atom.STRING().forEach { +it.text }
+      STRING -> atom.STRING().forEach {
+        var text = it.text
+        if (text.startsWith("\"\"\"") &&
+            text.endsWith("\"\"\""))
+          text = "/**" + text.substring(3, text.length - 3) + "*/"
+        +text
+      }
       NONE -> +" null "
       TRUE -> +" true "
       FALSE -> +" false"
@@ -464,11 +489,12 @@ class Visitor(val name: String) : Python3BaseVisitor<String>() {
           "sparse_ops", "state_ops", "manip_ops" -> {
             val fn = when (functionName) {
               "constant_value", "constant" -> "const"
-              "multiply" -> "_mul"
+              "multiply" -> "mul"
               "subtract" -> "sub"
+              "reduce_sum" -> "sum"
               else -> functionName
             }
-            +"tf._${fn.toCamelCase()}($argString)"
+            +"tf.${fn.toCamelCase()}($argString)"
           }
           "ops" -> {
             when (functionName) {
@@ -483,7 +509,7 @@ class Visitor(val name: String) : Python3BaseVisitor<String>() {
           else -> {
             if (packageName.startsWith("gen_") &&
                 packageName.endsWith("_ops")) {
-              +"tf._${functionName.toCamelCase()}($argString)"
+              +"tf.${functionName.toCamelCase()}($argString)"
             } else
               +"${packageName.toCamelCase()}.${functionName.toCamelCase()}($argString)"
           }

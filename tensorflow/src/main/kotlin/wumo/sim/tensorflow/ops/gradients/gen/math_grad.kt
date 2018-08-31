@@ -166,9 +166,9 @@ fun register_math_grad() {
     
     val inputRank = tf.rank(op.inputs[0])
     val onesShape = tf.concatV2(listOf(tf.shape(op.inputs[1]),
-                                        tf.fill(tf.expandDims(inputRank - 1, zero),
-                                                 tf.const(inputRank.dataType, 1))),
-                                 zero)
+                                       tf.fill(tf.expandDims(inputRank - 1, zero),
+                                               tf.const(inputRank.dataType, 1))),
+                                zero)
     val ones = tf.fill(onesShape, tf.const(grad.dataType, 1))
     val scaledGrad = tf.div(grad, tf.segmentSum(ones, op.inputs[1]))
     return@register listOf(tf.gather(scaledGrad, op.inputs[1]), null)
