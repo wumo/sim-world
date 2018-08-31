@@ -5,6 +5,7 @@ import opGroups
 import org.tensorflow.framework.AttrValue
 import org.tensorflow.framework.OpDef
 import org.tensorflow.framework.OpList
+import renames
 import wumo.sim.util.readString
 import wumo.sim.util.sink
 import java.io.File
@@ -80,6 +81,11 @@ fun generateGroupFiles(path: String, group: String, opDefs: List<OpDef>, kotlinP
 
 class OpGenerator(val opDef: OpDef, val sb: StringBuilder) {
   val name = processName(opDef.name).let { n -> if (n.startsWith("_")) n else n }
+      .let { name ->
+        if (renames.any { name.equals(it, true) })
+          "_$name"
+        else name
+      }
   val argumentTypes = hashMapOf<String, String>()
   val inputs = mutableListOf<Pair<String, String>>()
   val inputsRef = hashMapOf<String, Boolean>()

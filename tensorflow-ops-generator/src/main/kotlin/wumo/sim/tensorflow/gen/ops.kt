@@ -72,11 +72,12 @@ val opGroups = mapOf(
         "Abs", "AccumulateNV2", "Acos", "Acosh", "Add", "AddN", "AddV2", "All", "Angle", "Any", "ApproximateEqual",
         "ArgMax", "ArgMin", "Asin", "Asinh", "Atan", "Atan2", "Atanh", "BatchMatMul", "BesselI0e", "BesselI1e", "Betainc",
         "Bincount", "Bucketize", "Cast", "Ceil", "ClipByValue", "CompareAndBitpack", "Complex", "ComplexAbs", "Conj", "Cos", "Cosh",
-        "Cross", "Cumprod", "Cumsum", "Digamma", "Div","DivNoNan", "Equal", "Erf", "Erfc", "Exp", "Expm1", "Floor",
+        "Cross", "Cumprod", "Cumsum", "Digamma", "Div", "DivNoNan", "Equal", "Erf", "Erfc", "Exp", "Expm1", "Floor",
         "FloorDiv", "FloorMod", "Greater", "GreaterEqual", "HistogramFixedWidth", "Igamma", "Igammac", "Imag", "Inv", "IsFinite", "IsInf",
         "IsNan", "Less", "LessEqual", "Lgamma", "LinSpace", "Log", "Log1p", "LogicalAnd", "LogicalNot", "LogicalOr", "MatMul",
         "Max", "Maximum", "Mean", "Min", "Minimum", "Mod", "Mul", "Neg", "NotEqual", "Polygamma", "Pow",
-        "Prod", "QuantizeDownAndShrinkRange", "QuantizedAdd", "QuantizedMatMul", "QuantizedMul", "Range", "Real", "RealDiv", "Reciprocal", "RequantizationRange", "Requantize",
+        "Prod", "QuantizeDownAndShrinkRange", "QuantizedAdd", "QuantizedMatMul", "QuantizedMul",
+        "Range", "Real", "RealDiv", "Reciprocal", "RequantizationRange", "Requantize",
         "Rint", "Round", "Rsqrt", "SegmentMax", "SegmentMean", "SegmentMin", "SegmentProd", "SegmentSum", "Select", "Sigmoid", "Sign",
         "Sin", "Sinh", "SparseMatMul", "SparseSegmentMean", "SparseSegmentMeanGrad", "SparseSegmentMeanWithNumSegments", "SparseSegmentSqrtN", "SparseSegmentSqrtNGrad", "SparseSegmentSqrtNWithNumSegments", "SparseSegmentSum", "SparseSegmentSumWithNumSegments",
         "Sqrt", "Square", "SquaredDifference", "Sub", "Sum", "Tan", "Tanh", "TruncateDiv", "TruncateMod", "UnsortedSegmentMax", "UnsortedSegmentMin",
@@ -130,3 +131,5 @@ val opGroups = mapOf(
         "SparseApplyMomentum", "SparseApplyProximalAdagrad", "SparseApplyProximalGradientDescent", "SparseApplyRMSProp", "ApplyAdaMax", "ResourceApplyAdaMax"),
     "user_ops" to a(
         "Fact"))
+
+val renames = setOf("Gather", "OneHot", "Prod", "Range", "Sum")
