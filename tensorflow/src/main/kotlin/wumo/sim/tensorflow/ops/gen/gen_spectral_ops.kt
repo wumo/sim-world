@@ -43,45 +43,45 @@ interface gen_spectral_ops {
     }
   }
   
-  fun iRFFT(input: Output, fft_length: Output, name: String = "IRFFT") = run {
+  fun iRFFT(input: Output, fftLength: Output, name: String = "IRFFT") = run {
     buildOpTensor("IRFFT", name) {
       addInput(input, false)
-      addInput(fft_length, false)
+      addInput(fftLength, false)
     }
   }
   
-  fun iRFFT2D(input: Output, fft_length: Output, name: String = "IRFFT2D") = run {
+  fun iRFFT2D(input: Output, fftLength: Output, name: String = "IRFFT2D") = run {
     buildOpTensor("IRFFT2D", name) {
       addInput(input, false)
-      addInput(fft_length, false)
+      addInput(fftLength, false)
     }
   }
   
-  fun iRFFT3D(input: Output, fft_length: Output, name: String = "IRFFT3D") = run {
+  fun iRFFT3D(input: Output, fftLength: Output, name: String = "IRFFT3D") = run {
     buildOpTensor("IRFFT3D", name) {
       addInput(input, false)
-      addInput(fft_length, false)
+      addInput(fftLength, false)
     }
   }
   
-  fun rFFT(input: Output, fft_length: Output, name: String = "RFFT") = run {
+  fun rFFT(input: Output, fftLength: Output, name: String = "RFFT") = run {
     buildOpTensor("RFFT", name) {
       addInput(input, false)
-      addInput(fft_length, false)
+      addInput(fftLength, false)
     }
   }
   
-  fun rFFT2D(input: Output, fft_length: Output, name: String = "RFFT2D") = run {
+  fun rFFT2D(input: Output, fftLength: Output, name: String = "RFFT2D") = run {
     buildOpTensor("RFFT2D", name) {
       addInput(input, false)
-      addInput(fft_length, false)
+      addInput(fftLength, false)
     }
   }
   
-  fun rFFT3D(input: Output, fft_length: Output, name: String = "RFFT3D") = run {
+  fun rFFT3D(input: Output, fftLength: Output, name: String = "RFFT3D") = run {
     buildOpTensor("RFFT3D", name) {
       addInput(input, false)
-      addInput(fft_length, false)
+      addInput(fftLength, false)
     }
   }
 }

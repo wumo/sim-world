@@ -9,91 +9,91 @@ import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.types.DataType
 
 interface gen_list_ops {
-  fun emptyTensorList(element_shape: Output, element_dtype: DataType<*>, name: String = "EmptyTensorList") = run {
+  fun emptyTensorList(elementShape: Output, elementDtype: DataType<*>, name: String = "EmptyTensorList") = run {
     buildOpTensor("EmptyTensorList", name) {
-      addInput(element_shape, false)
-      attr("element_dtype", element_dtype)
+      addInput(elementShape, false)
+      attr("element_dtype", elementDtype)
     }
   }
   
-  fun tensorListConcatLists(input_a: Output, input_b: Output, element_dtype: DataType<*>, name: String = "TensorListConcatLists") = run {
+  fun tensorListConcatLists(inputA: Output, inputB: Output, elementDtype: DataType<*>, name: String = "TensorListConcatLists") = run {
     buildOpTensor("TensorListConcatLists", name) {
-      addInput(input_a, false)
-      addInput(input_b, false)
-      attr("element_dtype", element_dtype)
+      addInput(inputA, false)
+      addInput(inputB, false)
+      attr("element_dtype", elementDtype)
     }
   }
   
-  fun tensorListElementShape(input_handle: Output, shape_type: DataType<*>, name: String = "TensorListElementShape") = run {
+  fun tensorListElementShape(inputHandle: Output, shapeType: DataType<*>, name: String = "TensorListElementShape") = run {
     buildOpTensor("TensorListElementShape", name) {
-      addInput(input_handle, false)
-      attr("shape_type", shape_type)
+      addInput(inputHandle, false)
+      attr("shape_type", shapeType)
     }
   }
   
-  fun tensorListFromTensor(tensor: Output, element_shape: Output, name: String = "TensorListFromTensor") = run {
+  fun tensorListFromTensor(tensor: Output, elementShape: Output, name: String = "TensorListFromTensor") = run {
     buildOpTensor("TensorListFromTensor", name) {
       addInput(tensor, false)
-      addInput(element_shape, false)
+      addInput(elementShape, false)
     }
   }
   
-  fun tensorListGetItem(input_handle: Output, index: Output, element_dtype: DataType<*>, name: String = "TensorListGetItem") = run {
+  fun tensorListGetItem(inputHandle: Output, index: Output, elementDtype: DataType<*>, name: String = "TensorListGetItem") = run {
     buildOpTensor("TensorListGetItem", name) {
-      addInput(input_handle, false)
+      addInput(inputHandle, false)
       addInput(index, false)
-      attr("element_dtype", element_dtype)
+      attr("element_dtype", elementDtype)
     }
   }
   
-  fun tensorListLength(input_handle: Output, name: String = "TensorListLength") = run {
+  fun tensorListLength(inputHandle: Output, name: String = "TensorListLength") = run {
     buildOpTensor("TensorListLength", name) {
-      addInput(input_handle, false)
+      addInput(inputHandle, false)
     }
   }
   
-  fun tensorListPopBack(input_handle: Output, element_dtype: DataType<*>, name: String = "TensorListPopBack") = run {
+  fun tensorListPopBack(inputHandle: Output, elementDtype: DataType<*>, name: String = "TensorListPopBack") = run {
     buildOpTensors("TensorListPopBack", name) {
-      addInput(input_handle, false)
-      attr("element_dtype", element_dtype)
+      addInput(inputHandle, false)
+      attr("element_dtype", elementDtype)
     }
   }
   
-  fun tensorListPushBack(input_handle: Output, tensor: Output, name: String = "TensorListPushBack") = run {
+  fun tensorListPushBack(inputHandle: Output, tensor: Output, name: String = "TensorListPushBack") = run {
     buildOpTensor("TensorListPushBack", name) {
-      addInput(input_handle, false)
+      addInput(inputHandle, false)
       addInput(tensor, false)
     }
   }
   
-  fun tensorListPushBackBatch(input_handles: Output, tensor: Output, name: String = "TensorListPushBackBatch") = run {
+  fun tensorListPushBackBatch(inputHandles: Output, tensor: Output, name: String = "TensorListPushBackBatch") = run {
     buildOpTensor("TensorListPushBackBatch", name) {
-      addInput(input_handles, false)
+      addInput(inputHandles, false)
       addInput(tensor, false)
     }
   }
   
-  fun tensorListReserve(element_shape: Output, num_elements: Output, element_dtype: DataType<*>, name: String = "TensorListReserve") = run {
+  fun tensorListReserve(elementShape: Output, numElements: Output, elementDtype: DataType<*>, name: String = "TensorListReserve") = run {
     buildOpTensor("TensorListReserve", name) {
-      addInput(element_shape, false)
-      addInput(num_elements, false)
-      attr("element_dtype", element_dtype)
+      addInput(elementShape, false)
+      addInput(numElements, false)
+      attr("element_dtype", elementDtype)
     }
   }
   
-  fun tensorListSetItem(input_handle: Output, index: Output, item: Output, name: String = "TensorListSetItem") = run {
+  fun tensorListSetItem(inputHandle: Output, index: Output, item: Output, name: String = "TensorListSetItem") = run {
     buildOpTensor("TensorListSetItem", name) {
-      addInput(input_handle, false)
+      addInput(inputHandle, false)
       addInput(index, false)
       addInput(item, false)
     }
   }
   
-  fun tensorListStack(input_handle: Output, element_dtype: DataType<*>, num_elements: Long = -1L, name: String = "TensorListStack") = run {
+  fun tensorListStack(inputHandle: Output, elementDtype: DataType<*>, numElements: Long = -1L, name: String = "TensorListStack") = run {
     buildOpTensor("TensorListStack", name) {
-      addInput(input_handle, false)
-      attr("element_dtype", element_dtype)
-      attr("num_elements", num_elements)
+      addInput(inputHandle, false)
+      attr("element_dtype", elementDtype)
+      attr("num_elements", numElements)
     }
   }
 }

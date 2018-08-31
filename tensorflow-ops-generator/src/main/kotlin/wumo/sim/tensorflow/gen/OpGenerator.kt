@@ -107,14 +107,14 @@ class OpGenerator(val opDef: OpDef, val sb: StringBuilder) {
         val value = attrValueToKotlin(argumentTypes[name]!!, parameterDefaults[name]!!)
         if (value != null) " = $value" else ""
       } else ""
-      "$kotlinName: $paramType$defaultValue"
+      "${kotlinName.toCamelCase(false)}: $paramType$defaultValue"
     }.trim()
     kotlinArguments += "${if (kotlinArguments.isNotBlank()) ", " else ""}name: String = \"${opDef.name}\""
-    val addInput = inputs.joinToString("\n") { p ->
-      "addInput(${p.second},${inputsRef[p.first]})"
+    val addInput = inputs.joinToString("\n") { (name, kotlinName) ->
+      "addInput(${kotlinName.toCamelCase(false)},${inputsRef[name]})"
     }
     val addAttr = parameters.joinToString("\n") { (name, kotlinName) ->
-      "attr(\"$name\", $kotlinName)"
+      "attr(\"$name\", ${kotlinName.toCamelCase(false)})"
     }
     val buildFunc = when (numOutputs) {
       0 -> "buildOp"

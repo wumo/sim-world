@@ -16,7 +16,7 @@ class c_api_test {
     
     val A = tf.const(4 x 1, f(1f, 2f, 3f, 4f))
     val B = tf.const(4 x 1, f(1f, 2f, 3f, 4f))
-    val C = tf.matMul(A, B, transpose_a = true, transpose_b = false)
+    val C = tf.matMul(A, B, transposeA = true, transposeB = false)
     val pa = BoolPointer(1L)
     val pb = BoolPointer(1)
     tensorflow.GetNodeAttr(C.node().attrs(), BytePointer("transpose_a"), pa)

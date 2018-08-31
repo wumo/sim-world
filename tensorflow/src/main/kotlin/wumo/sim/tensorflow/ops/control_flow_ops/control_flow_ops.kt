@@ -276,7 +276,7 @@ object control_flow_ops {
    */
   fun _switchRefOrTensor(input: Output,
                          predicate: Output,
-                         name: String = "Switch"): Array<Output> {
+                         name: String = "Switch"): List<Output> {
     // The device colocation below addresses the following scenario:
     //
     // Assume you execute Optimizer.applyGradients() in a branch of a cond() and:
@@ -299,7 +299,7 @@ object control_flow_ops {
     }
   }
   
-  fun <T : OutputLike> switch(input: T, predicate: Output, name: String = "Switch"): Array<Output> {
+  fun <T : OutputLike> switch(input: T, predicate: Output, name: String = "Switch"): List<Output> {
     val _input = input as OutputLike
     return when (_input) {
       is Output -> tf.switch(_input, predicate, name)
@@ -329,7 +329,7 @@ object control_flow_ops {
    * @param name A name for this operation (optional).
    * @return A tuple containing the chosen input tensor and its index in `inputs`.
    */
-  fun <T : OutputLike> merge(inputs: List<T>, name: String = "Merge"): Array<Output> {
+  fun <T : OutputLike> merge(inputs: List<T>, name: String = "Merge"): List<Output> {
     return when {
       inputs.all { it is Output } -> {
         inputs as List<Output>

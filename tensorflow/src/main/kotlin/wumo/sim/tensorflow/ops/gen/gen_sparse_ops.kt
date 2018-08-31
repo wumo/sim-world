@@ -10,198 +10,198 @@ import wumo.sim.tensorflow.types.DataType
 import wumo.sim.tensorflow.types.STRING
 
 interface gen_sparse_ops {
-  fun addManySparseToTensorsMap(sparse_indices: Output, sparse_values: Output, sparse_shape: Output, container: String = "", shared_name: String = "", name: String = "AddManySparseToTensorsMap") = run {
+  fun addManySparseToTensorsMap(sparseIndices: Output, sparseValues: Output, sparseShape: Output, container: String = "", sharedName: String = "", name: String = "AddManySparseToTensorsMap") = run {
     buildOpTensor("AddManySparseToTensorsMap", name) {
-      addInput(sparse_indices, false)
-      addInput(sparse_values, false)
-      addInput(sparse_shape, false)
+      addInput(sparseIndices, false)
+      addInput(sparseValues, false)
+      addInput(sparseShape, false)
       attr("container", container)
-      attr("shared_name", shared_name)
+      attr("shared_name", sharedName)
     }
   }
   
-  fun addSparseToTensorsMap(sparse_indices: Output, sparse_values: Output, sparse_shape: Output, container: String = "", shared_name: String = "", name: String = "AddSparseToTensorsMap") = run {
+  fun addSparseToTensorsMap(sparseIndices: Output, sparseValues: Output, sparseShape: Output, container: String = "", sharedName: String = "", name: String = "AddSparseToTensorsMap") = run {
     buildOpTensor("AddSparseToTensorsMap", name) {
-      addInput(sparse_indices, false)
-      addInput(sparse_values, false)
-      addInput(sparse_shape, false)
+      addInput(sparseIndices, false)
+      addInput(sparseValues, false)
+      addInput(sparseShape, false)
       attr("container", container)
-      attr("shared_name", shared_name)
+      attr("shared_name", sharedName)
     }
   }
   
-  fun deserializeManySparse(serialized_sparse: Output, dtype: DataType<*>, name: String = "DeserializeManySparse") = run {
+  fun deserializeManySparse(serializedSparse: Output, dtype: DataType<*>, name: String = "DeserializeManySparse") = run {
     buildOpTensors("DeserializeManySparse", name) {
-      addInput(serialized_sparse, false)
+      addInput(serializedSparse, false)
       attr("dtype", dtype)
     }
   }
   
-  fun deserializeSparse(serialized_sparse: Output, dtype: DataType<*>, name: String = "DeserializeSparse") = run {
+  fun deserializeSparse(serializedSparse: Output, dtype: DataType<*>, name: String = "DeserializeSparse") = run {
     buildOpTensors("DeserializeSparse", name) {
-      addInput(serialized_sparse, false)
+      addInput(serializedSparse, false)
       attr("dtype", dtype)
     }
   }
   
-  fun serializeManySparse(sparse_indices: Output, sparse_values: Output, sparse_shape: Output, out_type: DataType<*> = STRING, name: String = "SerializeManySparse") = run {
+  fun serializeManySparse(sparseIndices: Output, sparseValues: Output, sparseShape: Output, outType: DataType<*> = STRING, name: String = "SerializeManySparse") = run {
     buildOpTensor("SerializeManySparse", name) {
-      addInput(sparse_indices, false)
-      addInput(sparse_values, false)
-      addInput(sparse_shape, false)
-      attr("out_type", out_type)
+      addInput(sparseIndices, false)
+      addInput(sparseValues, false)
+      addInput(sparseShape, false)
+      attr("out_type", outType)
     }
   }
   
-  fun serializeSparse(sparse_indices: Output, sparse_values: Output, sparse_shape: Output, out_type: DataType<*> = STRING, name: String = "SerializeSparse") = run {
+  fun serializeSparse(sparseIndices: Output, sparseValues: Output, sparseShape: Output, outType: DataType<*> = STRING, name: String = "SerializeSparse") = run {
     buildOpTensor("SerializeSparse", name) {
-      addInput(sparse_indices, false)
-      addInput(sparse_values, false)
-      addInput(sparse_shape, false)
-      attr("out_type", out_type)
+      addInput(sparseIndices, false)
+      addInput(sparseValues, false)
+      addInput(sparseShape, false)
+      attr("out_type", outType)
     }
   }
   
-  fun sparseAdd(a_indices: Output, a_values: Output, a_shape: Output, b_indices: Output, b_values: Output, b_shape: Output, thresh: Output, name: String = "SparseAdd") = run {
+  fun sparseAdd(aIndices: Output, aValues: Output, aShape: Output, bIndices: Output, bValues: Output, bShape: Output, thresh: Output, name: String = "SparseAdd") = run {
     buildOpTensors("SparseAdd", name) {
-      addInput(a_indices, false)
-      addInput(a_values, false)
-      addInput(a_shape, false)
-      addInput(b_indices, false)
-      addInput(b_values, false)
-      addInput(b_shape, false)
+      addInput(aIndices, false)
+      addInput(aValues, false)
+      addInput(aShape, false)
+      addInput(bIndices, false)
+      addInput(bValues, false)
+      addInput(bShape, false)
       addInput(thresh, false)
     }
   }
   
-  fun sparseAddGrad(backprop_val_grad: Output, a_indices: Output, b_indices: Output, sum_indices: Output, name: String = "SparseAddGrad") = run {
+  fun sparseAddGrad(backpropValGrad: Output, aIndices: Output, bIndices: Output, sumIndices: Output, name: String = "SparseAddGrad") = run {
     buildOpTensors("SparseAddGrad", name) {
-      addInput(backprop_val_grad, false)
-      addInput(a_indices, false)
-      addInput(b_indices, false)
-      addInput(sum_indices, false)
+      addInput(backpropValGrad, false)
+      addInput(aIndices, false)
+      addInput(bIndices, false)
+      addInput(sumIndices, false)
     }
   }
   
-  fun sparseConcat(indices: List<Output>, values: List<Output>, shapes: List<Output>, concat_dim: Long, name: String = "SparseConcat") = run {
+  fun sparseConcat(indices: List<Output>, values: List<Output>, shapes: List<Output>, concatDim: Long, name: String = "SparseConcat") = run {
     buildOpTensors("SparseConcat", name) {
       addInput(indices, false)
       addInput(values, false)
       addInput(shapes, false)
-      attr("concat_dim", concat_dim)
+      attr("concat_dim", concatDim)
     }
   }
   
-  fun sparseCross(indices: List<Output>, values: Output, shapes: List<Output>, dense_inputs: Output, hashed_output: Boolean, num_buckets: Long, hash_key: Long, out_type: DataType<*>, internal_type: DataType<*>, name: String = "SparseCross") = run {
+  fun sparseCross(indices: List<Output>, values: Output, shapes: List<Output>, denseInputs: Output, hashedOutput: Boolean, numBuckets: Long, hashKey: Long, outType: DataType<*>, internalType: DataType<*>, name: String = "SparseCross") = run {
     buildOpTensors("SparseCross", name) {
       addInput(indices, false)
       addInput(values, false)
       addInput(shapes, false)
-      addInput(dense_inputs, false)
-      attr("hashed_output", hashed_output)
-      attr("num_buckets", num_buckets)
-      attr("hash_key", hash_key)
-      attr("out_type", out_type)
-      attr("internal_type", internal_type)
+      addInput(denseInputs, false)
+      attr("hashed_output", hashedOutput)
+      attr("num_buckets", numBuckets)
+      attr("hash_key", hashKey)
+      attr("out_type", outType)
+      attr("internal_type", internalType)
     }
   }
   
-  fun sparseDenseCwiseAdd(sp_indices: Output, sp_values: Output, sp_shape: Output, dense: Output, name: String = "SparseDenseCwiseAdd") = run {
+  fun sparseDenseCwiseAdd(spIndices: Output, spValues: Output, spShape: Output, dense: Output, name: String = "SparseDenseCwiseAdd") = run {
     buildOpTensor("SparseDenseCwiseAdd", name) {
-      addInput(sp_indices, false)
-      addInput(sp_values, false)
-      addInput(sp_shape, false)
+      addInput(spIndices, false)
+      addInput(spValues, false)
+      addInput(spShape, false)
       addInput(dense, false)
     }
   }
   
-  fun sparseDenseCwiseDiv(sp_indices: Output, sp_values: Output, sp_shape: Output, dense: Output, name: String = "SparseDenseCwiseDiv") = run {
+  fun sparseDenseCwiseDiv(spIndices: Output, spValues: Output, spShape: Output, dense: Output, name: String = "SparseDenseCwiseDiv") = run {
     buildOpTensor("SparseDenseCwiseDiv", name) {
-      addInput(sp_indices, false)
-      addInput(sp_values, false)
-      addInput(sp_shape, false)
+      addInput(spIndices, false)
+      addInput(spValues, false)
+      addInput(spShape, false)
       addInput(dense, false)
     }
   }
   
-  fun sparseDenseCwiseMul(sp_indices: Output, sp_values: Output, sp_shape: Output, dense: Output, name: String = "SparseDenseCwiseMul") = run {
+  fun sparseDenseCwiseMul(spIndices: Output, spValues: Output, spShape: Output, dense: Output, name: String = "SparseDenseCwiseMul") = run {
     buildOpTensor("SparseDenseCwiseMul", name) {
-      addInput(sp_indices, false)
-      addInput(sp_values, false)
-      addInput(sp_shape, false)
+      addInput(spIndices, false)
+      addInput(spValues, false)
+      addInput(spShape, false)
       addInput(dense, false)
     }
   }
   
-  fun sparseFillEmptyRows(indices: Output, values: Output, dense_shape: Output, default_value: Output, name: String = "SparseFillEmptyRows") = run {
+  fun sparseFillEmptyRows(indices: Output, values: Output, denseShape: Output, defaultValue: Output, name: String = "SparseFillEmptyRows") = run {
     buildOpTensors("SparseFillEmptyRows", name) {
       addInput(indices, false)
       addInput(values, false)
-      addInput(dense_shape, false)
-      addInput(default_value, false)
+      addInput(denseShape, false)
+      addInput(defaultValue, false)
     }
   }
   
-  fun sparseFillEmptyRowsGrad(reverse_index_map: Output, grad_values: Output, name: String = "SparseFillEmptyRowsGrad") = run {
+  fun sparseFillEmptyRowsGrad(reverseIndexMap: Output, gradValues: Output, name: String = "SparseFillEmptyRowsGrad") = run {
     buildOpTensors("SparseFillEmptyRowsGrad", name) {
-      addInput(reverse_index_map, false)
-      addInput(grad_values, false)
+      addInput(reverseIndexMap, false)
+      addInput(gradValues, false)
     }
   }
   
-  fun sparseReduceMax(input_indices: Output, input_values: Output, input_shape: Output, reduction_axes: Output, keep_dims: Boolean = false, name: String = "SparseReduceMax") = run {
+  fun sparseReduceMax(inputIndices: Output, inputValues: Output, inputShape: Output, reductionAxes: Output, keepDims: Boolean = false, name: String = "SparseReduceMax") = run {
     buildOpTensor("SparseReduceMax", name) {
-      addInput(input_indices, false)
-      addInput(input_values, false)
-      addInput(input_shape, false)
-      addInput(reduction_axes, false)
-      attr("keep_dims", keep_dims)
+      addInput(inputIndices, false)
+      addInput(inputValues, false)
+      addInput(inputShape, false)
+      addInput(reductionAxes, false)
+      attr("keep_dims", keepDims)
     }
   }
   
-  fun sparseReduceMaxSparse(input_indices: Output, input_values: Output, input_shape: Output, reduction_axes: Output, keep_dims: Boolean = false, name: String = "SparseReduceMaxSparse") = run {
+  fun sparseReduceMaxSparse(inputIndices: Output, inputValues: Output, inputShape: Output, reductionAxes: Output, keepDims: Boolean = false, name: String = "SparseReduceMaxSparse") = run {
     buildOpTensors("SparseReduceMaxSparse", name) {
-      addInput(input_indices, false)
-      addInput(input_values, false)
-      addInput(input_shape, false)
-      addInput(reduction_axes, false)
-      attr("keep_dims", keep_dims)
+      addInput(inputIndices, false)
+      addInput(inputValues, false)
+      addInput(inputShape, false)
+      addInput(reductionAxes, false)
+      attr("keep_dims", keepDims)
     }
   }
   
-  fun sparseReduceSum(input_indices: Output, input_values: Output, input_shape: Output, reduction_axes: Output, keep_dims: Boolean = false, name: String = "SparseReduceSum") = run {
+  fun sparseReduceSum(inputIndices: Output, inputValues: Output, inputShape: Output, reductionAxes: Output, keepDims: Boolean = false, name: String = "SparseReduceSum") = run {
     buildOpTensor("SparseReduceSum", name) {
-      addInput(input_indices, false)
-      addInput(input_values, false)
-      addInput(input_shape, false)
-      addInput(reduction_axes, false)
-      attr("keep_dims", keep_dims)
+      addInput(inputIndices, false)
+      addInput(inputValues, false)
+      addInput(inputShape, false)
+      addInput(reductionAxes, false)
+      attr("keep_dims", keepDims)
     }
   }
   
-  fun sparseReduceSumSparse(input_indices: Output, input_values: Output, input_shape: Output, reduction_axes: Output, keep_dims: Boolean = false, name: String = "SparseReduceSumSparse") = run {
+  fun sparseReduceSumSparse(inputIndices: Output, inputValues: Output, inputShape: Output, reductionAxes: Output, keepDims: Boolean = false, name: String = "SparseReduceSumSparse") = run {
     buildOpTensors("SparseReduceSumSparse", name) {
-      addInput(input_indices, false)
-      addInput(input_values, false)
-      addInput(input_shape, false)
-      addInput(reduction_axes, false)
-      attr("keep_dims", keep_dims)
+      addInput(inputIndices, false)
+      addInput(inputValues, false)
+      addInput(inputShape, false)
+      addInput(reductionAxes, false)
+      attr("keep_dims", keepDims)
     }
   }
   
-  fun sparseReorder(input_indices: Output, input_values: Output, input_shape: Output, name: String = "SparseReorder") = run {
+  fun sparseReorder(inputIndices: Output, inputValues: Output, inputShape: Output, name: String = "SparseReorder") = run {
     buildOpTensors("SparseReorder", name) {
-      addInput(input_indices, false)
-      addInput(input_values, false)
-      addInput(input_shape, false)
+      addInput(inputIndices, false)
+      addInput(inputValues, false)
+      addInput(inputShape, false)
     }
   }
   
-  fun sparseReshape(input_indices: Output, input_shape: Output, new_shape: Output, name: String = "SparseReshape") = run {
+  fun sparseReshape(inputIndices: Output, inputShape: Output, newShape: Output, name: String = "SparseReshape") = run {
     buildOpTensors("SparseReshape", name) {
-      addInput(input_indices, false)
-      addInput(input_shape, false)
-      addInput(new_shape, false)
+      addInput(inputIndices, false)
+      addInput(inputShape, false)
+      addInput(newShape, false)
     }
   }
   
@@ -215,91 +215,91 @@ interface gen_sparse_ops {
     }
   }
   
-  fun sparseSliceGrad(backprop_val_grad: Output, input_indices: Output, input_start: Output, output_indices: Output, name: String = "SparseSliceGrad") = run {
+  fun sparseSliceGrad(backpropValGrad: Output, inputIndices: Output, inputStart: Output, outputIndices: Output, name: String = "SparseSliceGrad") = run {
     buildOpTensor("SparseSliceGrad", name) {
-      addInput(backprop_val_grad, false)
-      addInput(input_indices, false)
-      addInput(input_start, false)
-      addInput(output_indices, false)
+      addInput(backpropValGrad, false)
+      addInput(inputIndices, false)
+      addInput(inputStart, false)
+      addInput(outputIndices, false)
     }
   }
   
-  fun sparseSoftmax(sp_indices: Output, sp_values: Output, sp_shape: Output, name: String = "SparseSoftmax") = run {
+  fun sparseSoftmax(spIndices: Output, spValues: Output, spShape: Output, name: String = "SparseSoftmax") = run {
     buildOpTensor("SparseSoftmax", name) {
-      addInput(sp_indices, false)
-      addInput(sp_values, false)
-      addInput(sp_shape, false)
+      addInput(spIndices, false)
+      addInput(spValues, false)
+      addInput(spShape, false)
     }
   }
   
-  fun sparseSparseMaximum(a_indices: Output, a_values: Output, a_shape: Output, b_indices: Output, b_values: Output, b_shape: Output, name: String = "SparseSparseMaximum") = run {
+  fun sparseSparseMaximum(aIndices: Output, aValues: Output, aShape: Output, bIndices: Output, bValues: Output, bShape: Output, name: String = "SparseSparseMaximum") = run {
     buildOpTensors("SparseSparseMaximum", name) {
-      addInput(a_indices, false)
-      addInput(a_values, false)
-      addInput(a_shape, false)
-      addInput(b_indices, false)
-      addInput(b_values, false)
-      addInput(b_shape, false)
+      addInput(aIndices, false)
+      addInput(aValues, false)
+      addInput(aShape, false)
+      addInput(bIndices, false)
+      addInput(bValues, false)
+      addInput(bShape, false)
     }
   }
   
-  fun sparseSparseMinimum(a_indices: Output, a_values: Output, a_shape: Output, b_indices: Output, b_values: Output, b_shape: Output, name: String = "SparseSparseMinimum") = run {
+  fun sparseSparseMinimum(aIndices: Output, aValues: Output, aShape: Output, bIndices: Output, bValues: Output, bShape: Output, name: String = "SparseSparseMinimum") = run {
     buildOpTensors("SparseSparseMinimum", name) {
-      addInput(a_indices, false)
-      addInput(a_values, false)
-      addInput(a_shape, false)
-      addInput(b_indices, false)
-      addInput(b_values, false)
-      addInput(b_shape, false)
+      addInput(aIndices, false)
+      addInput(aValues, false)
+      addInput(aShape, false)
+      addInput(bIndices, false)
+      addInput(bValues, false)
+      addInput(bShape, false)
     }
   }
   
-  fun sparseSplit(split_dim: Output, indices: Output, values: Output, shape: Output, num_split: Long, name: String = "SparseSplit") = run {
+  fun sparseSplit(splitDim: Output, indices: Output, values: Output, shape: Output, numSplit: Long, name: String = "SparseSplit") = run {
     buildOpTensors("SparseSplit", name) {
-      addInput(split_dim, false)
+      addInput(splitDim, false)
       addInput(indices, false)
       addInput(values, false)
       addInput(shape, false)
-      attr("num_split", num_split)
+      attr("num_split", numSplit)
     }
   }
   
-  fun sparseTensorDenseAdd(a_indices: Output, a_values: Output, a_shape: Output, b: Output, name: String = "SparseTensorDenseAdd") = run {
+  fun sparseTensorDenseAdd(aIndices: Output, aValues: Output, aShape: Output, b: Output, name: String = "SparseTensorDenseAdd") = run {
     buildOpTensor("SparseTensorDenseAdd", name) {
-      addInput(a_indices, false)
-      addInput(a_values, false)
-      addInput(a_shape, false)
+      addInput(aIndices, false)
+      addInput(aValues, false)
+      addInput(aShape, false)
       addInput(b, false)
     }
   }
   
-  fun sparseTensorDenseMatMul(a_indices: Output, a_values: Output, a_shape: Output, b: Output, adjoint_a: Boolean = false, adjoint_b: Boolean = false, name: String = "SparseTensorDenseMatMul") = run {
+  fun sparseTensorDenseMatMul(aIndices: Output, aValues: Output, aShape: Output, b: Output, adjointA: Boolean = false, adjointB: Boolean = false, name: String = "SparseTensorDenseMatMul") = run {
     buildOpTensor("SparseTensorDenseMatMul", name) {
-      addInput(a_indices, false)
-      addInput(a_values, false)
-      addInput(a_shape, false)
+      addInput(aIndices, false)
+      addInput(aValues, false)
+      addInput(aShape, false)
       addInput(b, false)
-      attr("adjoint_a", adjoint_a)
-      attr("adjoint_b", adjoint_b)
+      attr("adjoint_a", adjointA)
+      attr("adjoint_b", adjointB)
     }
   }
   
-  fun sparseToDense(sparse_indices: Output, output_shape: Output, sparse_values: Output, default_value: Output, validate_indices: Boolean = true, name: String = "SparseToDense") = run {
+  fun sparseToDense(sparseIndices: Output, outputShape: Output, sparseValues: Output, defaultValue: Output, validateIndices: Boolean = true, name: String = "SparseToDense") = run {
     buildOpTensor("SparseToDense", name) {
-      addInput(sparse_indices, false)
-      addInput(output_shape, false)
-      addInput(sparse_values, false)
-      addInput(default_value, false)
-      attr("validate_indices", validate_indices)
+      addInput(sparseIndices, false)
+      addInput(outputShape, false)
+      addInput(sparseValues, false)
+      addInput(defaultValue, false)
+      attr("validate_indices", validateIndices)
     }
   }
   
-  fun takeManySparseFromTensorsMap(sparse_handles: Output, dtype: DataType<*>, container: String = "", shared_name: String = "", name: String = "TakeManySparseFromTensorsMap") = run {
+  fun takeManySparseFromTensorsMap(sparseHandles: Output, dtype: DataType<*>, container: String = "", sharedName: String = "", name: String = "TakeManySparseFromTensorsMap") = run {
     buildOpTensors("TakeManySparseFromTensorsMap", name) {
-      addInput(sparse_handles, false)
+      addInput(sparseHandles, false)
       attr("dtype", dtype)
       attr("container", container)
-      attr("shared_name", shared_name)
+      attr("shared_name", sharedName)
     }
   }
 }

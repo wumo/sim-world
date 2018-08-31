@@ -198,7 +198,7 @@ class Variable(
 //            add_s("loc:@$trueName")
 //          }
             val variableHandle = tf.variableV2(inferredShape, inferredDataType.baseDataType,
-                                                shared_name = trueName, name = scopeName)
+                                                sharedName = trueName, name = scopeName)
             val initialValue = tf.nameScope("Initializer") {
               tf.colocateWith(variableHandle.op!!) {
                 initializer(inferredShape, inferredDataType)

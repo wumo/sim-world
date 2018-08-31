@@ -930,20 +930,20 @@ fun register_math_grad() {
     lateinit var gradB: Output
     when {
       !tA && !tB -> {
-        gradA = tf.matMul(grad, b, transpose_b = true)
-        gradB = tf.matMul(a, grad, transpose_a = true)
+        gradA = tf.matMul(grad, b, transposeB = true)
+        gradB = tf.matMul(a, grad, transposeA = true)
       }
       !tA && tB -> {
         gradA = tf.matMul(grad, b)
-        gradB = tf.matMul(grad, a, transpose_a = true)
+        gradB = tf.matMul(grad, a, transposeA = true)
       }
       tA && !tB -> {
-        gradA = tf.matMul(b, grad, transpose_b = true)
+        gradA = tf.matMul(b, grad, transposeB = true)
         gradB = tf.matMul(a, grad)
       }
       tA && tB -> {
-        gradA = tf.matMul(b, grad, transpose_a = true, transpose_b = true)
-        gradB = tf.matMul(grad, a, transpose_a = true, transpose_b = true)
+        gradA = tf.matMul(b, grad, transposeA = true, transposeB = true)
+        gradB = tf.matMul(grad, a, transposeA = true, transposeB = true)
       }
     }
     return@register listOf(gradA, gradB)

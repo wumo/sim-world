@@ -18,13 +18,13 @@ interface gen_functional_ops {
     }
   }
   
-  fun _if(cond: Output, input: Output, tout: Array<Long>, then_branch: NameAttrList, else_branch: NameAttrList, name: String = "If") = run {
+  fun _if(cond: Output, input: Output, tout: Array<Long>, thenBranch: NameAttrList, elseBranch: NameAttrList, name: String = "If") = run {
     buildOpTensors("If", name) {
       addInput(cond, false)
       addInput(input, false)
       attr("Tout", tout)
-      attr("then_branch", then_branch)
-      attr("else_branch", else_branch)
+      attr("then_branch", thenBranch)
+      attr("else_branch", elseBranch)
     }
   }
   

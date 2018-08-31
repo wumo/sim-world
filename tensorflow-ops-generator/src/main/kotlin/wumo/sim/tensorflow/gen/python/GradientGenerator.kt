@@ -23,7 +23,7 @@ fun generate(fromPath: String,
   }.forEach { translate(it, toDir) }
 }
 
-val exceptionalFiles = setOf("math_grad", "state_grad")
+val exceptionalFiles = setOf("math_grad", "state_grad","array_grad")
 
 fun translate(file: File, toPath: File) {
   File("${toPath.absolutePath}${File.separatorChar}${file.nameWithoutExtension}.kt").sink { fileOut ->

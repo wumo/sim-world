@@ -26,6 +26,8 @@ object const_ops {
     //TODO add support for Tensor and NDArray
   }
   
+  fun isConstant(op: Op) = op.opType == "Const"
+  
   interface API {
     fun const(value: Float, name: String = "Const") = const(scalarDimension, value, name)
     fun const(value: Double, name: String = "Const") = const(scalarDimension, value, name)

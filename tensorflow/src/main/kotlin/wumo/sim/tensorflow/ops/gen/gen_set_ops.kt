@@ -8,45 +8,45 @@ import wumo.sim.tensorflow.buildOpTensors
 import wumo.sim.tensorflow.ops.Output
 
 interface gen_set_ops {
-  fun denseToDenseSetOperation(set1: Output, set2: Output, set_operation: String, validate_indices: Boolean = true, name: String = "DenseToDenseSetOperation") = run {
+  fun denseToDenseSetOperation(set1: Output, set2: Output, setOperation: String, validateIndices: Boolean = true, name: String = "DenseToDenseSetOperation") = run {
     buildOpTensors("DenseToDenseSetOperation", name) {
       addInput(set1, false)
       addInput(set2, false)
-      attr("set_operation", set_operation)
-      attr("validate_indices", validate_indices)
+      attr("set_operation", setOperation)
+      attr("validate_indices", validateIndices)
     }
   }
   
-  fun denseToSparseSetOperation(set1: Output, set2_indices: Output, set2_values: Output, set2_shape: Output, set_operation: String, validate_indices: Boolean = true, name: String = "DenseToSparseSetOperation") = run {
+  fun denseToSparseSetOperation(set1: Output, set2Indices: Output, set2Values: Output, set2Shape: Output, setOperation: String, validateIndices: Boolean = true, name: String = "DenseToSparseSetOperation") = run {
     buildOpTensors("DenseToSparseSetOperation", name) {
       addInput(set1, false)
-      addInput(set2_indices, false)
-      addInput(set2_values, false)
-      addInput(set2_shape, false)
-      attr("set_operation", set_operation)
-      attr("validate_indices", validate_indices)
+      addInput(set2Indices, false)
+      addInput(set2Values, false)
+      addInput(set2Shape, false)
+      attr("set_operation", setOperation)
+      attr("validate_indices", validateIndices)
     }
   }
   
-  fun setSize(set_indices: Output, set_values: Output, set_shape: Output, validate_indices: Boolean = true, name: String = "SetSize") = run {
+  fun setSize(setIndices: Output, setValues: Output, setShape: Output, validateIndices: Boolean = true, name: String = "SetSize") = run {
     buildOpTensor("SetSize", name) {
-      addInput(set_indices, false)
-      addInput(set_values, false)
-      addInput(set_shape, false)
-      attr("validate_indices", validate_indices)
+      addInput(setIndices, false)
+      addInput(setValues, false)
+      addInput(setShape, false)
+      attr("validate_indices", validateIndices)
     }
   }
   
-  fun sparseToSparseSetOperation(set1_indices: Output, set1_values: Output, set1_shape: Output, set2_indices: Output, set2_values: Output, set2_shape: Output, set_operation: String, validate_indices: Boolean = true, name: String = "SparseToSparseSetOperation") = run {
+  fun sparseToSparseSetOperation(set1Indices: Output, set1Values: Output, set1Shape: Output, set2Indices: Output, set2Values: Output, set2Shape: Output, setOperation: String, validateIndices: Boolean = true, name: String = "SparseToSparseSetOperation") = run {
     buildOpTensors("SparseToSparseSetOperation", name) {
-      addInput(set1_indices, false)
-      addInput(set1_values, false)
-      addInput(set1_shape, false)
-      addInput(set2_indices, false)
-      addInput(set2_values, false)
-      addInput(set2_shape, false)
-      attr("set_operation", set_operation)
-      attr("validate_indices", validate_indices)
+      addInput(set1Indices, false)
+      addInput(set1Values, false)
+      addInput(set1Shape, false)
+      addInput(set2Indices, false)
+      addInput(set2Values, false)
+      addInput(set2Shape, false)
+      attr("set_operation", setOperation)
+      attr("validate_indices", validateIndices)
     }
   }
 }

@@ -15,23 +15,23 @@ interface gen_sdca_ops {
     }
   }
   
-  fun sdcaOptimizer(sparse_example_indices: List<Output>, sparse_feature_indices: List<Output>, sparse_feature_values: List<Output>, dense_features: List<Output>, example_weights: Output, example_labels: Output, sparse_indices: List<Output>, sparse_weights: List<Output>, dense_weights: List<Output>, example_state_data: Output, loss_type: String, l1: Float, l2: Float, num_loss_partitions: Long, num_inner_iterations: Long, adaptative: Boolean = false, name: String = "SdcaOptimizer") = run {
+  fun sdcaOptimizer(sparseExampleIndices: List<Output>, sparseFeatureIndices: List<Output>, sparseFeatureValues: List<Output>, denseFeatures: List<Output>, exampleWeights: Output, exampleLabels: Output, sparseIndices: List<Output>, sparseWeights: List<Output>, denseWeights: List<Output>, exampleStateData: Output, lossType: String, l1: Float, l2: Float, numLossPartitions: Long, numInnerIterations: Long, adaptative: Boolean = false, name: String = "SdcaOptimizer") = run {
     buildOpTensors("SdcaOptimizer", name) {
-      addInput(sparse_example_indices, false)
-      addInput(sparse_feature_indices, false)
-      addInput(sparse_feature_values, false)
-      addInput(dense_features, false)
-      addInput(example_weights, false)
-      addInput(example_labels, false)
-      addInput(sparse_indices, false)
-      addInput(sparse_weights, false)
-      addInput(dense_weights, false)
-      addInput(example_state_data, false)
-      attr("loss_type", loss_type)
+      addInput(sparseExampleIndices, false)
+      addInput(sparseFeatureIndices, false)
+      addInput(sparseFeatureValues, false)
+      addInput(denseFeatures, false)
+      addInput(exampleWeights, false)
+      addInput(exampleLabels, false)
+      addInput(sparseIndices, false)
+      addInput(sparseWeights, false)
+      addInput(denseWeights, false)
+      addInput(exampleStateData, false)
+      attr("loss_type", lossType)
       attr("l1", l1)
       attr("l2", l2)
-      attr("num_loss_partitions", num_loss_partitions)
-      attr("num_inner_iterations", num_inner_iterations)
+      attr("num_loss_partitions", numLossPartitions)
+      attr("num_inner_iterations", numInnerIterations)
       attr("adaptative", adaptative)
     }
   }

@@ -32,16 +32,16 @@ interface gen_resource_variable_ops {
     }
   }
   
-  fun consumeMutexLock(mutex_lock: Output, name: String = "ConsumeMutexLock") = run {
+  fun consumeMutexLock(mutexLock: Output, name: String = "ConsumeMutexLock") = run {
     buildOp("ConsumeMutexLock", name) {
-      addInput(mutex_lock, false)
+      addInput(mutexLock, false)
     }
   }
   
-  fun destroyResourceOp(resource: Output, ignore_lookup_error: Boolean = true, name: String = "DestroyResourceOp") = run {
+  fun destroyResourceOp(resource: Output, ignoreLookupError: Boolean = true, name: String = "DestroyResourceOp") = run {
     buildOp("DestroyResourceOp", name) {
       addInput(resource, false)
-      attr("ignore_lookup_error", ignore_lookup_error)
+      attr("ignore_lookup_error", ignoreLookupError)
     }
   }
   
@@ -51,10 +51,10 @@ interface gen_resource_variable_ops {
     }
   }
   
-  fun mutexV2(container: String = "", shared_name: String = "", name: String = "MutexV2") = run {
+  fun mutexV2(container: String = "", sharedName: String = "", name: String = "MutexV2") = run {
     buildOpTensor("MutexV2", name) {
       attr("container", container)
-      attr("shared_name", shared_name)
+      attr("shared_name", sharedName)
     }
   }
   
@@ -65,12 +65,12 @@ interface gen_resource_variable_ops {
     }
   }
   
-  fun resourceGather(resource: Output, indices: Output, dtype: DataType<*>, validate_indices: Boolean = true, name: String = "ResourceGather") = run {
+  fun resourceGather(resource: Output, indices: Output, dtype: DataType<*>, validateIndices: Boolean = true, name: String = "ResourceGather") = run {
     buildOpTensor("ResourceGather", name) {
       addInput(resource, false)
       addInput(indices, false)
       attr("dtype", dtype)
-      attr("validate_indices", validate_indices)
+      attr("validate_indices", validateIndices)
     }
   }
   
@@ -130,12 +130,12 @@ interface gen_resource_variable_ops {
     }
   }
   
-  fun varHandleOp(dtype: DataType<*>, shape: Shape, container: String = "", shared_name: String = "", name: String = "VarHandleOp") = run {
+  fun varHandleOp(dtype: DataType<*>, shape: Shape, container: String = "", sharedName: String = "", name: String = "VarHandleOp") = run {
     buildOpTensor("VarHandleOp", name) {
       attr("dtype", dtype)
       attr("shape", shape)
       attr("container", container)
-      attr("shared_name", shared_name)
+      attr("shared_name", sharedName)
     }
   }
   
@@ -145,10 +145,10 @@ interface gen_resource_variable_ops {
     }
   }
   
-  fun variableShape(input: Output, out_type: DataType<*> = INT32, name: String = "VariableShape") = run {
+  fun variableShape(input: Output, outType: DataType<*> = INT32, name: String = "VariableShape") = run {
     buildOpTensor("VariableShape", name) {
       addInput(input, false)
-      attr("out_type", out_type)
+      attr("out_type", outType)
     }
   }
 }

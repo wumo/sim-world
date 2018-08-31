@@ -9,10 +9,10 @@ import wumo.sim.tensorflow.buildOpTensors
 import wumo.sim.tensorflow.ops.Output
 
 interface gen_control_flow_ops {
-  fun abort(error_msg: String = "", exit_without_error: Boolean = false, name: String = "Abort") = run {
+  fun abort(errorMsg: String = "", exitWithoutError: Boolean = false, name: String = "Abort") = run {
     buildOp("Abort", name) {
-      attr("error_msg", error_msg)
-      attr("exit_without_error", exit_without_error)
+      attr("error_msg", errorMsg)
+      attr("exit_without_error", exitWithoutError)
     }
   }
   
@@ -66,12 +66,12 @@ interface gen_control_flow_ops {
     }
   }
   
-  fun enter(data: Output, frame_name: String, is_constant: Boolean = false, parallel_iterations: Long = 10L, name: String = "Enter") = run {
+  fun enter(data: Output, frameName: String, isConstant: Boolean = false, parallelIterations: Long = 10L, name: String = "Enter") = run {
     buildOpTensor("Enter", name) {
       addInput(data, false)
-      attr("frame_name", frame_name)
-      attr("is_constant", is_constant)
-      attr("parallel_iterations", parallel_iterations)
+      attr("frame_name", frameName)
+      attr("is_constant", isConstant)
+      attr("parallel_iterations", parallelIterations)
     }
   }
   
@@ -81,12 +81,12 @@ interface gen_control_flow_ops {
     }
   }
   
-  fun refEnter(data: Output, frame_name: String, is_constant: Boolean = false, parallel_iterations: Long = 10L, name: String = "RefEnter") = run {
+  fun refEnter(data: Output, frameName: String, isConstant: Boolean = false, parallelIterations: Long = 10L, name: String = "RefEnter") = run {
     buildOpTensor("RefEnter", name) {
       addInput(data, true)
-      attr("frame_name", frame_name)
-      attr("is_constant", is_constant)
-      attr("parallel_iterations", parallel_iterations)
+      attr("frame_name", frameName)
+      attr("is_constant", isConstant)
+      attr("parallel_iterations", parallelIterations)
     }
   }
   

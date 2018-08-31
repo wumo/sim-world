@@ -54,11 +54,11 @@ interface gen_linalg_ops {
     }
   }
   
-  fun matrixSolveLs(matrix: Output, rhs: Output, l2_regularizer: Output, fast: Boolean = true, name: String = "MatrixSolveLs") = run {
+  fun matrixSolveLs(matrix: Output, rhs: Output, l2Regularizer: Output, fast: Boolean = true, name: String = "MatrixSolveLs") = run {
     buildOpTensor("MatrixSolveLs", name) {
       addInput(matrix, false)
       addInput(rhs, false)
-      addInput(l2_regularizer, false)
+      addInput(l2Regularizer, false)
       attr("fast", fast)
     }
   }
@@ -72,25 +72,25 @@ interface gen_linalg_ops {
     }
   }
   
-  fun qr(input: Output, full_matrices: Boolean = false, name: String = "Qr") = run {
+  fun qr(input: Output, fullMatrices: Boolean = false, name: String = "Qr") = run {
     buildOpTensors("Qr", name) {
       addInput(input, false)
-      attr("full_matrices", full_matrices)
+      attr("full_matrices", fullMatrices)
     }
   }
   
-  fun selfAdjointEigV2(input: Output, compute_v: Boolean = true, name: String = "SelfAdjointEigV2") = run {
+  fun selfAdjointEigV2(input: Output, computeV: Boolean = true, name: String = "SelfAdjointEigV2") = run {
     buildOpTensors("SelfAdjointEigV2", name) {
       addInput(input, false)
-      attr("compute_v", compute_v)
+      attr("compute_v", computeV)
     }
   }
   
-  fun svd(input: Output, compute_uv: Boolean = true, full_matrices: Boolean = false, name: String = "Svd") = run {
+  fun svd(input: Output, computeUv: Boolean = true, fullMatrices: Boolean = false, name: String = "Svd") = run {
     buildOpTensors("Svd", name) {
       addInput(input, false)
-      attr("compute_uv", compute_uv)
-      attr("full_matrices", full_matrices)
+      attr("compute_uv", computeUv)
+      attr("full_matrices", fullMatrices)
     }
   }
   

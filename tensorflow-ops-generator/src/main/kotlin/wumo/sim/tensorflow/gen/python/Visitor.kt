@@ -4,6 +4,7 @@ import org.antlr.v4.runtime.tree.ErrorNode
 import org.antlr.v4.runtime.tree.TerminalNode
 import wumo.python3.Python3BaseVisitor
 import wumo.python3.Python3Parser.*
+import wumo.sim.tensorflow.gen.toCamelCase
 import wumo.sim.util.sb
 
 open class Context(var outer: Context? = null) {
@@ -36,15 +37,6 @@ fun <R> context(init: Context.() -> Unit = {}, block: () -> R): R {
 class Visitor(val name: String) : Python3BaseVisitor<String>() {
   override fun visitErrorNode(node: ErrorNode): String {
     return node.text
-  }
-  
-  fun String.toCamelCase(): String = sb {
-    val cs = this@toCamelCase.toCharArray()
-    for ((i, c) in cs.withIndex())
-      if (c == '_' && i + 1 < cs.size)
-        cs[i + 1] = cs[i + 1].toUpperCase()
-      else
-        +c
   }
   
   override fun visitTerminal(node: TerminalNode): String {
@@ -107,7 +99,7 @@ class Visitor(val name: String) : Python3BaseVisitor<String>() {
       if (currentContext.isRegister)
         +visit(ctx.suite())
       else {
-        +"fun ${ctx.NAME().text}${ctx.parameters().text}{"
+        +"fun ${ctx.NAME().text.toCamelCase()}${ctx.parameters().text.toCamelCase()}{"
         +visit(ctx.suite())
         +"}\n"
       }
@@ -419,10 +411,12 @@ class Visitor(val name: String) : Python3BaseVisitor<String>() {
             }
           } else {//only dotted name
             var text = dottedName.joinToString(".") { it.toCamelCase() }
-            if (text.startsWith("ops.dtypes.") ||
+            text = if (text.startsWith("ops.dtypes.") ||
                 text.startsWith("dtypes.")) {
               val i = text.lastIndexOf('.')
-              text = text.substring(i + 1).toUpperCase()
+              text.substring(i + 1).toUpperCase()
+            } else {
+              text.replace(".dtype", ".dataType")
             }
             +text
           }
@@ -488,7 +482,7 @@ class Visitor(val name: String) : Python3BaseVisitor<String>() {
           "data_flow_ops", "nn_ops", "random_ops",
           "sparse_ops", "state_ops", "manip_ops" -> {
             val fn = when (functionName) {
-              "constant_value", "constant" -> "const"
+              "constant" -> "const"
               "multiply" -> "mul"
               "subtract" -> "sub"
               "reduce_sum" -> "sum"

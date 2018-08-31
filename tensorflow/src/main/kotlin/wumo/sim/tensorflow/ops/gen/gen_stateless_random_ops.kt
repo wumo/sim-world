@@ -10,12 +10,12 @@ import wumo.sim.tensorflow.types.FLOAT
 import wumo.sim.tensorflow.types.INT64
 
 interface gen_stateless_random_ops {
-  fun statelessMultinomial(logits: Output, num_samples: Output, seed: Output, output_dtype: DataType<*> = INT64, name: String = "StatelessMultinomial") = run {
+  fun statelessMultinomial(logits: Output, numSamples: Output, seed: Output, outputDtype: DataType<*> = INT64, name: String = "StatelessMultinomial") = run {
     buildOpTensor("StatelessMultinomial", name) {
       addInput(logits, false)
-      addInput(num_samples, false)
+      addInput(numSamples, false)
       addInput(seed, false)
-      attr("output_dtype", output_dtype)
+      attr("output_dtype", outputDtype)
     }
   }
   

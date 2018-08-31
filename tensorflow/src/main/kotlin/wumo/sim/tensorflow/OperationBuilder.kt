@@ -45,7 +45,7 @@ fun buildOpTensors(op: String, name: String, setAttr: OperationBuilder.() -> Uni
     setAttr(builder)
     val _op = builder.build()
     val outputs = _op.c_op.node().num_outputs()
-    Array(outputs) { Output(_op, it) }
+    List(outputs) { Output(_op, it) }
   }
 }
 

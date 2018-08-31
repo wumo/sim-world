@@ -78,6 +78,13 @@ operator fun Output.get(vararg slice_spec: Int): Output {
 
 object array_ops {
   interface API : gen_array_ops {
+    fun gather(params: Output, indices: Output, axis: Int = 0, name: String = "GatherV2"): Output {
+      if (axis == 0) {
+      }
+      //TODO detect resource variables
+      return super.gatherV2(params, indices, tf.const(axis), name)
+    }
+    
     fun <T : OutputLike> identity(data: T, name: String): Output {
       return when (data) {
         is Output -> {
@@ -96,48 +103,6 @@ object array_ops {
                off_value: Output = tf.const(0f, "off_value"), axis: Long = -1L, name: String = "OneHot") =
         super._oneHot(indices, depth, on_value, off_value, axis, name)
     
-    fun placeholder(shape: Shape = Shape(),
-                    dtype: DataType<*> = FLOAT, name: String = "Placeholder"): Output =
-        super.placeholder(dtype, shape, name)
-    
-    fun zerosLike(x: Output, dtype: DataType<*>? = null, optimize: Boolean = true, name: String = "zeros_like") =
-        when {
-          optimize && x.shape.isFullyDefined && x.dataType != VARIANT ->
-            zeros(x.shape, dtype = dtype ?: x.dataType, name = name)
-          dtype != null && dtype != x.dataType && dtype != VARIANT ->
-            zeros(shape(x, optimize = optimize), dtype = dtype, name = name)
-          else -> super.zerosLike(x, name)
-        }
-    
-    fun onesLike(x: Output, dtype: DataType<*>? = null, optimize: Boolean = true, name: String = "ones_like"): Output {
-      val outptuDataType = dtype ?: x.dataType
-      val onesShape = shape(x, optimize = optimize)
-      return ones(onesShape, outptuDataType, name = name)
-    }
-    
-    fun zeros(shape: Output, dtype: DataType<*> = FLOAT, name: String = "Ones"): Output =
-        tf.nameScope(name) {
-          val zero = when (dtype) {
-            STRING -> ""
-            else -> 0
-          }
-          super.fill(shape, tf.const(dtype, zero), tf.currentNameScope)
-        }
-    
-    fun zeros(shape: Shape, dtype: DataType<*> = FLOAT, name: String = "Ones"): Output =
-        tf.nameScope(name) {
-          val zero = when (dtype) {
-            STRING -> ""
-            else -> 0
-          }
-          if (shape.numElements() < 1000)
-            tf.const(shape, dtype, zero, tf.currentNameScope)
-          else {
-            val shape = super.reshape(tf.const(shape.asLongArray()), tf.const(-1), name)
-            super.fill(shape, tf.const(dtype, zero), tf.currentNameScope)
-          }
-        }
-    
     fun ones(shape: Shape, dtype: DataType<*> = FLOAT, name: String = "ones"): Output =
         tf.nameScope(name) {
           if (shape.numElements() < 1000)
@@ -152,6 +117,24 @@ object array_ops {
         tf.nameScope(name) {
           super.fill(shape, tf.const(dtype.baseDataType, 1), tf.currentNameScope)
         }
+    
+    fun onesLike(x: Output, dtype: DataType<*>? = null, optimize: Boolean = true, name: String = "ones_like"): Output {
+      val outptuDataType = dtype ?: x.dataType
+      val onesShape = shape(x, optimize = optimize)
+      return ones(onesShape, outptuDataType, name = name)
+    }
+    
+    fun placeholder(shape: Shape = Shape(),
+                    dtype: DataType<*> = FLOAT, name: String = "Placeholder"): Output =
+        super.placeholder(dtype, shape, name)
+    
+    fun rank(input: Output, name: String = "Rank", optimize: Boolean = true): Output {
+      //TODO SparseOutput
+      val input_shape = input.shape
+      if (optimize && input_shape.isFullyDefined)
+        return tf.const(input_shape.rank, name)
+      return super.rank(input, name)
+    }
     
     /**
      * Returns the shape of a tensor.
@@ -170,27 +153,6 @@ object array_ops {
         }
         else -> TODO()
       }
-    }
-    
-    class StridedSliceAttrs(var begin_mask_: Int = 0,
-                            var end_mask_: Int = 0,
-                            var ellipsis_mask_: Int = 0,
-                            var new_axis_mask_: Int = 0,
-                            var shrink_axis_mask_: Int = 0)
-    
-    fun gather(params: Output, indices: Output, axis: Int = 0, name: String = "GatherV2"): Output {
-      if (axis == 0) {
-      }
-      //TODO detect resource variables
-      return super.gatherV2(params, indices, tf.const(axis), name)
-    }
-    
-    fun rank(input: Output, name: String = "Rank", optimize: Boolean = true): Output {
-      //TODO SparseOutput
-      val input_shape = input.shape
-      if (optimize && input_shape.isFullyDefined)
-        return tf.const(input_shape.rank, name)
-      return super.rank(input, name)
     }
     
     /**
@@ -239,6 +201,20 @@ object array_ops {
       TODO()
     }
     
+    fun unstack(input: Output, num: Int = -1, axis: Int = 0, name: String = "unstack"): List<Output> {
+      val number = if (num >= 0) num else {
+        val inputShape = input.shape
+        val inputShapeRank = inputShape.rank
+        if (inputShapeRank != -1 && (axis < -inputShapeRank || axis >= inputShapeRank))
+          throw IndexOutOfBoundsException(
+              "Provided axis, $axis, is not in [${-inputShapeRank}, $inputShapeRank).")
+        inputShape[axis]
+      }
+      if (number == -1)
+        throw IllegalArgumentException("Cannot infer number of tensors to unstack from shape '${input.shape}'.")
+      return super.unpack(input, number.toLong(), axis.toLong(), name)
+    }
+    
     /**
      * Return the elements, either from `x` or `y`, depending on the `condition`.
      *
@@ -267,6 +243,44 @@ object array_ops {
      */
     fun where(condition: Output, x: Output, y: Output, name: String = "Where") =
         tf.select(condition, x, y, name)
+    
+    fun zerosLike(x: Output, dtype: DataType<*>? = null, optimize: Boolean = true, name: String = "zeros_like") =
+        when {
+          optimize && x.shape.isFullyDefined && x.dataType != VARIANT ->
+            zeros(x.shape, dtype = dtype ?: x.dataType, name = name)
+          dtype != null && dtype != x.dataType && dtype != VARIANT ->
+            zeros(shape(x, optimize = optimize), dtype = dtype, name = name)
+          else -> super.zerosLike(x, name)
+        }
+    
+    fun zeros(shape: Output, dtype: DataType<*> = FLOAT, name: String = "Ones"): Output =
+        tf.nameScope(name) {
+          val zero = when (dtype) {
+            STRING -> ""
+            else -> 0
+          }
+          super.fill(shape, tf.const(dtype, zero), tf.currentNameScope)
+        }
+    
+    fun zeros(shape: Shape, dtype: DataType<*> = FLOAT, name: String = "Ones"): Output =
+        tf.nameScope(name) {
+          val zero = when (dtype) {
+            STRING -> ""
+            else -> 0
+          }
+          if (shape.numElements() < 1000)
+            tf.const(shape, dtype, zero, tf.currentNameScope)
+          else {
+            val shape = super.reshape(tf.const(shape.asLongArray()), tf.const(-1), name)
+            super.fill(shape, tf.const(dtype, zero), tf.currentNameScope)
+          }
+        }
+    
+    class StridedSliceAttrs(var begin_mask_: Int = 0,
+                            var end_mask_: Int = 0,
+                            var ellipsis_mask_: Int = 0,
+                            var new_axis_mask_: Int = 0,
+                            var shrink_axis_mask_: Int = 0)
     
     /**Output conversion function that automatically packs arguments.*/
     fun autopack(v: Array<Output>, name: String = "packed"): Output {

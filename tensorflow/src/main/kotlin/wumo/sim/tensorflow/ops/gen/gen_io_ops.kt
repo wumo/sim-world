@@ -10,29 +10,29 @@ import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.types.DataType
 
 interface gen_io_ops {
-  fun fixedLengthRecordReaderV2(record_bytes: Long, header_bytes: Long = 0L, footer_bytes: Long = 0L, hop_bytes: Long = 0L, container: String = "", shared_name: String = "", encoding: String = "", name: String = "FixedLengthRecordReaderV2") = run {
+  fun fixedLengthRecordReaderV2(recordBytes: Long, headerBytes: Long = 0L, footerBytes: Long = 0L, hopBytes: Long = 0L, container: String = "", sharedName: String = "", encoding: String = "", name: String = "FixedLengthRecordReaderV2") = run {
     buildOpTensor("FixedLengthRecordReaderV2", name) {
-      attr("record_bytes", record_bytes)
-      attr("header_bytes", header_bytes)
-      attr("footer_bytes", footer_bytes)
-      attr("hop_bytes", hop_bytes)
+      attr("record_bytes", recordBytes)
+      attr("header_bytes", headerBytes)
+      attr("footer_bytes", footerBytes)
+      attr("hop_bytes", hopBytes)
       attr("container", container)
-      attr("shared_name", shared_name)
+      attr("shared_name", sharedName)
       attr("encoding", encoding)
     }
   }
   
-  fun identityReaderV2(container: String = "", shared_name: String = "", name: String = "IdentityReaderV2") = run {
+  fun identityReaderV2(container: String = "", sharedName: String = "", name: String = "IdentityReaderV2") = run {
     buildOpTensor("IdentityReaderV2", name) {
       attr("container", container)
-      attr("shared_name", shared_name)
+      attr("shared_name", sharedName)
     }
   }
   
-  fun lMDBReader(container: String = "", shared_name: String = "", name: String = "LMDBReader") = run {
+  fun lMDBReader(container: String = "", sharedName: String = "", name: String = "LMDBReader") = run {
     buildOpTensor("LMDBReader", name) {
       attr("container", container)
-      attr("shared_name", shared_name)
+      attr("shared_name", sharedName)
     }
   }
   
@@ -42,11 +42,11 @@ interface gen_io_ops {
     }
   }
   
-  fun mergeV2Checkpoints(checkpoint_prefixes: Output, destination_prefix: Output, delete_old_dirs: Boolean = true, name: String = "MergeV2Checkpoints") = run {
+  fun mergeV2Checkpoints(checkpointPrefixes: Output, destinationPrefix: Output, deleteOldDirs: Boolean = true, name: String = "MergeV2Checkpoints") = run {
     buildOp("MergeV2Checkpoints", name) {
-      addInput(checkpoint_prefixes, false)
-      addInput(destination_prefix, false)
-      attr("delete_old_dirs", delete_old_dirs)
+      addInput(checkpointPrefixes, false)
+      addInput(destinationPrefix, false)
+      attr("delete_old_dirs", deleteOldDirs)
     }
   }
   
@@ -56,141 +56,141 @@ interface gen_io_ops {
     }
   }
   
-  fun readerNumRecordsProducedV2(reader_handle: Output, name: String = "ReaderNumRecordsProducedV2") = run {
+  fun readerNumRecordsProducedV2(readerHandle: Output, name: String = "ReaderNumRecordsProducedV2") = run {
     buildOpTensor("ReaderNumRecordsProducedV2", name) {
-      addInput(reader_handle, false)
+      addInput(readerHandle, false)
     }
   }
   
-  fun readerNumWorkUnitsCompletedV2(reader_handle: Output, name: String = "ReaderNumWorkUnitsCompletedV2") = run {
+  fun readerNumWorkUnitsCompletedV2(readerHandle: Output, name: String = "ReaderNumWorkUnitsCompletedV2") = run {
     buildOpTensor("ReaderNumWorkUnitsCompletedV2", name) {
-      addInput(reader_handle, false)
+      addInput(readerHandle, false)
     }
   }
   
-  fun readerReadUpToV2(reader_handle: Output, queue_handle: Output, num_records: Output, name: String = "ReaderReadUpToV2") = run {
+  fun readerReadUpToV2(readerHandle: Output, queueHandle: Output, numRecords: Output, name: String = "ReaderReadUpToV2") = run {
     buildOpTensors("ReaderReadUpToV2", name) {
-      addInput(reader_handle, false)
-      addInput(queue_handle, false)
-      addInput(num_records, false)
+      addInput(readerHandle, false)
+      addInput(queueHandle, false)
+      addInput(numRecords, false)
     }
   }
   
-  fun readerReadV2(reader_handle: Output, queue_handle: Output, name: String = "ReaderReadV2") = run {
+  fun readerReadV2(readerHandle: Output, queueHandle: Output, name: String = "ReaderReadV2") = run {
     buildOpTensors("ReaderReadV2", name) {
-      addInput(reader_handle, false)
-      addInput(queue_handle, false)
+      addInput(readerHandle, false)
+      addInput(queueHandle, false)
     }
   }
   
-  fun readerResetV2(reader_handle: Output, name: String = "ReaderResetV2") = run {
+  fun readerResetV2(readerHandle: Output, name: String = "ReaderResetV2") = run {
     buildOp("ReaderResetV2", name) {
-      addInput(reader_handle, false)
+      addInput(readerHandle, false)
     }
   }
   
-  fun readerRestoreStateV2(reader_handle: Output, state: Output, name: String = "ReaderRestoreStateV2") = run {
+  fun readerRestoreStateV2(readerHandle: Output, state: Output, name: String = "ReaderRestoreStateV2") = run {
     buildOp("ReaderRestoreStateV2", name) {
-      addInput(reader_handle, false)
+      addInput(readerHandle, false)
       addInput(state, false)
     }
   }
   
-  fun readerSerializeStateV2(reader_handle: Output, name: String = "ReaderSerializeStateV2") = run {
+  fun readerSerializeStateV2(readerHandle: Output, name: String = "ReaderSerializeStateV2") = run {
     buildOpTensor("ReaderSerializeStateV2", name) {
-      addInput(reader_handle, false)
+      addInput(readerHandle, false)
     }
   }
   
-  fun restore(file_pattern: Output, tensor_name: Output, dt: DataType<*>, preferred_shard: Long = -1L, name: String = "Restore") = run {
+  fun restore(filePattern: Output, tensorName: Output, dt: DataType<*>, preferredShard: Long = -1L, name: String = "Restore") = run {
     buildOpTensor("Restore", name) {
-      addInput(file_pattern, false)
-      addInput(tensor_name, false)
+      addInput(filePattern, false)
+      addInput(tensorName, false)
       attr("dt", dt)
-      attr("preferred_shard", preferred_shard)
+      attr("preferred_shard", preferredShard)
     }
   }
   
-  fun restoreSlice(file_pattern: Output, tensor_name: Output, shape_and_slice: Output, dt: DataType<*>, preferred_shard: Long = -1L, name: String = "RestoreSlice") = run {
+  fun restoreSlice(filePattern: Output, tensorName: Output, shapeAndSlice: Output, dt: DataType<*>, preferredShard: Long = -1L, name: String = "RestoreSlice") = run {
     buildOpTensor("RestoreSlice", name) {
-      addInput(file_pattern, false)
-      addInput(tensor_name, false)
-      addInput(shape_and_slice, false)
+      addInput(filePattern, false)
+      addInput(tensorName, false)
+      addInput(shapeAndSlice, false)
       attr("dt", dt)
-      attr("preferred_shard", preferred_shard)
+      attr("preferred_shard", preferredShard)
     }
   }
   
-  fun restoreV2(prefix: Output, tensor_names: Output, shape_and_slices: Output, dtypes: Array<Long>, name: String = "RestoreV2") = run {
+  fun restoreV2(prefix: Output, tensorNames: Output, shapeAndSlices: Output, dtypes: Array<Long>, name: String = "RestoreV2") = run {
     buildOpTensors("RestoreV2", name) {
       addInput(prefix, false)
-      addInput(tensor_names, false)
-      addInput(shape_and_slices, false)
+      addInput(tensorNames, false)
+      addInput(shapeAndSlices, false)
       attr("dtypes", dtypes)
     }
   }
   
-  fun save(filename: Output, tensor_names: Output, data: Output, name: String = "Save") = run {
+  fun save(filename: Output, tensorNames: Output, data: Output, name: String = "Save") = run {
     buildOp("Save", name) {
       addInput(filename, false)
-      addInput(tensor_names, false)
+      addInput(tensorNames, false)
       addInput(data, false)
     }
   }
   
-  fun saveSlices(filename: Output, tensor_names: Output, shapes_and_slices: Output, data: Output, name: String = "SaveSlices") = run {
+  fun saveSlices(filename: Output, tensorNames: Output, shapesAndSlices: Output, data: Output, name: String = "SaveSlices") = run {
     buildOp("SaveSlices", name) {
       addInput(filename, false)
-      addInput(tensor_names, false)
-      addInput(shapes_and_slices, false)
+      addInput(tensorNames, false)
+      addInput(shapesAndSlices, false)
       addInput(data, false)
     }
   }
   
-  fun saveV2(prefix: Output, tensor_names: Output, shape_and_slices: Output, tensors: Output, name: String = "SaveV2") = run {
+  fun saveV2(prefix: Output, tensorNames: Output, shapeAndSlices: Output, tensors: Output, name: String = "SaveV2") = run {
     buildOp("SaveV2", name) {
       addInput(prefix, false)
-      addInput(tensor_names, false)
-      addInput(shape_and_slices, false)
+      addInput(tensorNames, false)
+      addInput(shapeAndSlices, false)
       addInput(tensors, false)
     }
   }
   
-  fun shardedFilename(basename: Output, shard: Output, num_shards: Output, name: String = "ShardedFilename") = run {
+  fun shardedFilename(basename: Output, shard: Output, numShards: Output, name: String = "ShardedFilename") = run {
     buildOpTensor("ShardedFilename", name) {
       addInput(basename, false)
       addInput(shard, false)
-      addInput(num_shards, false)
+      addInput(numShards, false)
     }
   }
   
-  fun shardedFilespec(basename: Output, num_shards: Output, name: String = "ShardedFilespec") = run {
+  fun shardedFilespec(basename: Output, numShards: Output, name: String = "ShardedFilespec") = run {
     buildOpTensor("ShardedFilespec", name) {
       addInput(basename, false)
-      addInput(num_shards, false)
+      addInput(numShards, false)
     }
   }
   
-  fun tFRecordReaderV2(container: String = "", shared_name: String = "", compression_type: String = "", name: String = "TFRecordReaderV2") = run {
+  fun tFRecordReaderV2(container: String = "", sharedName: String = "", compressionType: String = "", name: String = "TFRecordReaderV2") = run {
     buildOpTensor("TFRecordReaderV2", name) {
       attr("container", container)
-      attr("shared_name", shared_name)
-      attr("compression_type", compression_type)
+      attr("shared_name", sharedName)
+      attr("compression_type", compressionType)
     }
   }
   
-  fun textLineReaderV2(skip_header_lines: Long = 0L, container: String = "", shared_name: String = "", name: String = "TextLineReaderV2") = run {
+  fun textLineReaderV2(skipHeaderLines: Long = 0L, container: String = "", sharedName: String = "", name: String = "TextLineReaderV2") = run {
     buildOpTensor("TextLineReaderV2", name) {
-      attr("skip_header_lines", skip_header_lines)
+      attr("skip_header_lines", skipHeaderLines)
       attr("container", container)
-      attr("shared_name", shared_name)
+      attr("shared_name", sharedName)
     }
   }
   
-  fun wholeFileReaderV2(container: String = "", shared_name: String = "", name: String = "WholeFileReaderV2") = run {
+  fun wholeFileReaderV2(container: String = "", sharedName: String = "", name: String = "WholeFileReaderV2") = run {
     buildOpTensor("WholeFileReaderV2", name) {
       attr("container", container)
-      attr("shared_name", shared_name)
+      attr("shared_name", sharedName)
     }
   }
   

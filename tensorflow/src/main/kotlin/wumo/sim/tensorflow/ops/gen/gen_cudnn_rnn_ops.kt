@@ -9,37 +9,37 @@ import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.types.DataType
 
 interface gen_cudnn_rnn_ops {
-  fun cudnnRNN(input: Output, input_h: Output, input_c: Output, params: Output, rnn_mode: String = "lstm", input_mode: String = "linear_input", direction: String = "unidirectional", dropout: Float = 0.0f, seed: Long = 0L, seed2: Long = 0L, is_training: Boolean = true, name: String = "CudnnRNN") = run {
+  fun cudnnRNN(input: Output, inputH: Output, inputC: Output, params: Output, rnnMode: String = "lstm", inputMode: String = "linear_input", direction: String = "unidirectional", dropout: Float = 0.0f, seed: Long = 0L, seed2: Long = 0L, isTraining: Boolean = true, name: String = "CudnnRNN") = run {
     buildOpTensors("CudnnRNN", name) {
       addInput(input, false)
-      addInput(input_h, false)
-      addInput(input_c, false)
+      addInput(inputH, false)
+      addInput(inputC, false)
       addInput(params, false)
-      attr("rnn_mode", rnn_mode)
-      attr("input_mode", input_mode)
+      attr("rnn_mode", rnnMode)
+      attr("input_mode", inputMode)
       attr("direction", direction)
       attr("dropout", dropout)
       attr("seed", seed)
       attr("seed2", seed2)
-      attr("is_training", is_training)
+      attr("is_training", isTraining)
     }
   }
   
-  fun cudnnRNNBackprop(input: Output, input_h: Output, input_c: Output, params: Output, output: Output, output_h: Output, output_c: Output, output_backprop: Output, output_h_backprop: Output, output_c_backprop: Output, reserve_space: Output, rnn_mode: String = "lstm", input_mode: String = "linear_input", direction: String = "unidirectional", dropout: Float = 0.0f, seed: Long = 0L, seed2: Long = 0L, name: String = "CudnnRNNBackprop") = run {
+  fun cudnnRNNBackprop(input: Output, inputH: Output, inputC: Output, params: Output, output: Output, outputH: Output, outputC: Output, outputBackprop: Output, outputHBackprop: Output, outputCBackprop: Output, reserveSpace: Output, rnnMode: String = "lstm", inputMode: String = "linear_input", direction: String = "unidirectional", dropout: Float = 0.0f, seed: Long = 0L, seed2: Long = 0L, name: String = "CudnnRNNBackprop") = run {
     buildOpTensors("CudnnRNNBackprop", name) {
       addInput(input, false)
-      addInput(input_h, false)
-      addInput(input_c, false)
+      addInput(inputH, false)
+      addInput(inputC, false)
       addInput(params, false)
       addInput(output, false)
-      addInput(output_h, false)
-      addInput(output_c, false)
-      addInput(output_backprop, false)
-      addInput(output_h_backprop, false)
-      addInput(output_c_backprop, false)
-      addInput(reserve_space, false)
-      attr("rnn_mode", rnn_mode)
-      attr("input_mode", input_mode)
+      addInput(outputH, false)
+      addInput(outputC, false)
+      addInput(outputBackprop, false)
+      addInput(outputHBackprop, false)
+      addInput(outputCBackprop, false)
+      addInput(reserveSpace, false)
+      attr("rnn_mode", rnnMode)
+      attr("input_mode", inputMode)
       attr("direction", direction)
       attr("dropout", dropout)
       attr("seed", seed)
@@ -47,15 +47,15 @@ interface gen_cudnn_rnn_ops {
     }
   }
   
-  fun cudnnRNNCanonicalToParams(num_layers: Output, num_units: Output, input_size: Output, weights: List<Output>, biases: List<Output>, rnn_mode: String = "lstm", input_mode: String = "linear_input", direction: String = "unidirectional", dropout: Float = 0.0f, seed: Long = 0L, seed2: Long = 0L, name: String = "CudnnRNNCanonicalToParams") = run {
+  fun cudnnRNNCanonicalToParams(numLayers: Output, numUnits: Output, inputSize: Output, weights: List<Output>, biases: List<Output>, rnnMode: String = "lstm", inputMode: String = "linear_input", direction: String = "unidirectional", dropout: Float = 0.0f, seed: Long = 0L, seed2: Long = 0L, name: String = "CudnnRNNCanonicalToParams") = run {
     buildOpTensor("CudnnRNNCanonicalToParams", name) {
-      addInput(num_layers, false)
-      addInput(num_units, false)
-      addInput(input_size, false)
+      addInput(numLayers, false)
+      addInput(numUnits, false)
+      addInput(inputSize, false)
       addInput(weights, false)
       addInput(biases, false)
-      attr("rnn_mode", rnn_mode)
-      attr("input_mode", input_mode)
+      attr("rnn_mode", rnnMode)
+      attr("input_mode", inputMode)
       attr("direction", direction)
       attr("dropout", dropout)
       attr("seed", seed)
@@ -63,15 +63,15 @@ interface gen_cudnn_rnn_ops {
     }
   }
   
-  fun cudnnRNNParamsSize(num_layers: Output, num_units: Output, input_size: Output, t: DataType<*>, s: DataType<*>, rnn_mode: String = "lstm", input_mode: String = "linear_input", direction: String = "unidirectional", dropout: Float = 0.0f, seed: Long = 0L, seed2: Long = 0L, name: String = "CudnnRNNParamsSize") = run {
+  fun cudnnRNNParamsSize(numLayers: Output, numUnits: Output, inputSize: Output, t: DataType<*>, s: DataType<*>, rnnMode: String = "lstm", inputMode: String = "linear_input", direction: String = "unidirectional", dropout: Float = 0.0f, seed: Long = 0L, seed2: Long = 0L, name: String = "CudnnRNNParamsSize") = run {
     buildOpTensor("CudnnRNNParamsSize", name) {
-      addInput(num_layers, false)
-      addInput(num_units, false)
-      addInput(input_size, false)
+      addInput(numLayers, false)
+      addInput(numUnits, false)
+      addInput(inputSize, false)
       attr("T", t)
       attr("S", s)
-      attr("rnn_mode", rnn_mode)
-      attr("input_mode", input_mode)
+      attr("rnn_mode", rnnMode)
+      attr("input_mode", inputMode)
       attr("direction", direction)
       attr("dropout", dropout)
       attr("seed", seed)
@@ -79,15 +79,15 @@ interface gen_cudnn_rnn_ops {
     }
   }
   
-  fun cudnnRNNParamsToCanonical(num_layers: Output, num_units: Output, input_size: Output, params: Output, num_params: Long, rnn_mode: String = "lstm", input_mode: String = "linear_input", direction: String = "unidirectional", dropout: Float = 0.0f, seed: Long = 0L, seed2: Long = 0L, name: String = "CudnnRNNParamsToCanonical") = run {
+  fun cudnnRNNParamsToCanonical(numLayers: Output, numUnits: Output, inputSize: Output, params: Output, numParams: Long, rnnMode: String = "lstm", inputMode: String = "linear_input", direction: String = "unidirectional", dropout: Float = 0.0f, seed: Long = 0L, seed2: Long = 0L, name: String = "CudnnRNNParamsToCanonical") = run {
     buildOpTensors("CudnnRNNParamsToCanonical", name) {
-      addInput(num_layers, false)
-      addInput(num_units, false)
-      addInput(input_size, false)
+      addInput(numLayers, false)
+      addInput(numUnits, false)
+      addInput(inputSize, false)
       addInput(params, false)
-      attr("num_params", num_params)
-      attr("rnn_mode", rnn_mode)
-      attr("input_mode", input_mode)
+      attr("num_params", numParams)
+      attr("rnn_mode", rnnMode)
+      attr("input_mode", inputMode)
       attr("direction", direction)
       attr("dropout", dropout)
       attr("seed", seed)
@@ -95,22 +95,22 @@ interface gen_cudnn_rnn_ops {
     }
   }
   
-  fun cudnnRNNBackpropV2(input: Output, input_h: Output, input_c: Output, params: Output, output: Output, output_h: Output, output_c: Output, output_backprop: Output, output_h_backprop: Output, output_c_backprop: Output, reserve_space: Output, host_reserved: Output, rnn_mode: String = "lstm", input_mode: String = "linear_input", direction: String = "unidirectional", dropout: Float = 0.0f, seed: Long = 0L, seed2: Long = 0L, name: String = "CudnnRNNBackpropV2") = run {
+  fun cudnnRNNBackpropV2(input: Output, inputH: Output, inputC: Output, params: Output, output: Output, outputH: Output, outputC: Output, outputBackprop: Output, outputHBackprop: Output, outputCBackprop: Output, reserveSpace: Output, hostReserved: Output, rnnMode: String = "lstm", inputMode: String = "linear_input", direction: String = "unidirectional", dropout: Float = 0.0f, seed: Long = 0L, seed2: Long = 0L, name: String = "CudnnRNNBackpropV2") = run {
     buildOpTensors("CudnnRNNBackpropV2", name) {
       addInput(input, false)
-      addInput(input_h, false)
-      addInput(input_c, false)
+      addInput(inputH, false)
+      addInput(inputC, false)
       addInput(params, false)
       addInput(output, false)
-      addInput(output_h, false)
-      addInput(output_c, false)
-      addInput(output_backprop, false)
-      addInput(output_h_backprop, false)
-      addInput(output_c_backprop, false)
-      addInput(reserve_space, false)
-      addInput(host_reserved, false)
-      attr("rnn_mode", rnn_mode)
-      attr("input_mode", input_mode)
+      addInput(outputH, false)
+      addInput(outputC, false)
+      addInput(outputBackprop, false)
+      addInput(outputHBackprop, false)
+      addInput(outputCBackprop, false)
+      addInput(reserveSpace, false)
+      addInput(hostReserved, false)
+      attr("rnn_mode", rnnMode)
+      attr("input_mode", inputMode)
       attr("direction", direction)
       attr("dropout", dropout)
       attr("seed", seed)
@@ -118,19 +118,19 @@ interface gen_cudnn_rnn_ops {
     }
   }
   
-  fun cudnnRNNV2(input: Output, input_h: Output, input_c: Output, params: Output, rnn_mode: String = "lstm", input_mode: String = "linear_input", direction: String = "unidirectional", dropout: Float = 0.0f, seed: Long = 0L, seed2: Long = 0L, is_training: Boolean = true, name: String = "CudnnRNNV2") = run {
+  fun cudnnRNNV2(input: Output, inputH: Output, inputC: Output, params: Output, rnnMode: String = "lstm", inputMode: String = "linear_input", direction: String = "unidirectional", dropout: Float = 0.0f, seed: Long = 0L, seed2: Long = 0L, isTraining: Boolean = true, name: String = "CudnnRNNV2") = run {
     buildOpTensors("CudnnRNNV2", name) {
       addInput(input, false)
-      addInput(input_h, false)
-      addInput(input_c, false)
+      addInput(inputH, false)
+      addInput(inputC, false)
       addInput(params, false)
-      attr("rnn_mode", rnn_mode)
-      attr("input_mode", input_mode)
+      attr("rnn_mode", rnnMode)
+      attr("input_mode", inputMode)
       attr("direction", direction)
       attr("dropout", dropout)
       attr("seed", seed)
       attr("seed2", seed2)
-      attr("is_training", is_training)
+      attr("is_training", isTraining)
     }
   }
 }

@@ -9,13 +9,13 @@ import wumo.sim.tensorflow.types.DataType
 import wumo.sim.tensorflow.types.INT64
 
 interface gen_random_ops {
-  fun multinomial(logits: Output, num_samples: Output, seed: Long = 0L, seed2: Long = 0L, output_dtype: DataType<*> = INT64, name: String = "Multinomial") = run {
+  fun multinomial(logits: Output, numSamples: Output, seed: Long = 0L, seed2: Long = 0L, outputDtype: DataType<*> = INT64, name: String = "Multinomial") = run {
     buildOpTensor("Multinomial", name) {
       addInput(logits, false)
-      addInput(num_samples, false)
+      addInput(numSamples, false)
       attr("seed", seed)
       attr("seed2", seed2)
-      attr("output_dtype", output_dtype)
+      attr("output_dtype", outputDtype)
     }
   }
   

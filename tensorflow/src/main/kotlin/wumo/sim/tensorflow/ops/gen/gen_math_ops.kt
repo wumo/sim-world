@@ -55,11 +55,11 @@ interface gen_math_ops {
     }
   }
   
-  fun all(input: Output, reduction_indices: Output, keep_dims: Boolean = false, name: String = "All") = run {
+  fun all(input: Output, reductionIndices: Output, keepDims: Boolean = false, name: String = "All") = run {
     buildOpTensor("All", name) {
       addInput(input, false)
-      addInput(reduction_indices, false)
-      attr("keep_dims", keep_dims)
+      addInput(reductionIndices, false)
+      attr("keep_dims", keepDims)
     }
   }
   
@@ -70,11 +70,11 @@ interface gen_math_ops {
     }
   }
   
-  fun any(input: Output, reduction_indices: Output, keep_dims: Boolean = false, name: String = "Any") = run {
+  fun any(input: Output, reductionIndices: Output, keepDims: Boolean = false, name: String = "Any") = run {
     buildOpTensor("Any", name) {
       addInput(input, false)
-      addInput(reduction_indices, false)
-      attr("keep_dims", keep_dims)
+      addInput(reductionIndices, false)
+      attr("keep_dims", keepDims)
     }
   }
   
@@ -86,19 +86,19 @@ interface gen_math_ops {
     }
   }
   
-  fun argMax(input: Output, dimension: Output, output_type: DataType<*> = INT64, name: String = "ArgMax") = run {
+  fun argMax(input: Output, dimension: Output, outputType: DataType<*> = INT64, name: String = "ArgMax") = run {
     buildOpTensor("ArgMax", name) {
       addInput(input, false)
       addInput(dimension, false)
-      attr("output_type", output_type)
+      attr("output_type", outputType)
     }
   }
   
-  fun argMin(input: Output, dimension: Output, output_type: DataType<*> = INT64, name: String = "ArgMin") = run {
+  fun argMin(input: Output, dimension: Output, outputType: DataType<*> = INT64, name: String = "ArgMin") = run {
     buildOpTensor("ArgMin", name) {
       addInput(input, false)
       addInput(dimension, false)
-      attr("output_type", output_type)
+      attr("output_type", outputType)
     }
   }
   
@@ -133,12 +133,12 @@ interface gen_math_ops {
     }
   }
   
-  fun batchMatMul(x: Output, y: Output, adj_x: Boolean = false, adj_y: Boolean = false, name: String = "BatchMatMul") = run {
+  fun batchMatMul(x: Output, y: Output, adjX: Boolean = false, adjY: Boolean = false, name: String = "BatchMatMul") = run {
     buildOpTensor("BatchMatMul", name) {
       addInput(x, false)
       addInput(y, false)
-      attr("adj_x", adj_x)
-      attr("adj_y", adj_y)
+      attr("adj_x", adjX)
+      attr("adj_y", adjY)
     }
   }
   
@@ -191,11 +191,11 @@ interface gen_math_ops {
     }
   }
   
-  fun clipByValue(t: Output, clip_value_min: Output, clip_value_max: Output, name: String = "ClipByValue") = run {
+  fun clipByValue(t: Output, clipValueMin: Output, clipValueMax: Output, name: String = "ClipByValue") = run {
     buildOpTensor("ClipByValue", name) {
       addInput(t, false)
-      addInput(clip_value_min, false)
-      addInput(clip_value_max, false)
+      addInput(clipValueMin, false)
+      addInput(clipValueMax, false)
     }
   }
   
@@ -349,10 +349,10 @@ interface gen_math_ops {
     }
   }
   
-  fun histogramFixedWidth(values: Output, value_range: Output, nbins: Output, dtype: DataType<*> = INT32, name: String = "HistogramFixedWidth") = run {
+  fun histogramFixedWidth(values: Output, valueRange: Output, nbins: Output, dtype: DataType<*> = INT32, name: String = "HistogramFixedWidth") = run {
     buildOpTensor("HistogramFixedWidth", name) {
       addInput(values, false)
-      addInput(value_range, false)
+      addInput(valueRange, false)
       addInput(nbins, false)
       attr("dtype", dtype)
     }
@@ -463,20 +463,20 @@ interface gen_math_ops {
     }
   }
   
-  fun matMul(a: Output, b: Output, transpose_a: Boolean = false, transpose_b: Boolean = false, name: String = "MatMul") = run {
+  fun matMul(a: Output, b: Output, transposeA: Boolean = false, transposeB: Boolean = false, name: String = "MatMul") = run {
     buildOpTensor("MatMul", name) {
       addInput(a, false)
       addInput(b, false)
-      attr("transpose_a", transpose_a)
-      attr("transpose_b", transpose_b)
+      attr("transpose_a", transposeA)
+      attr("transpose_b", transposeB)
     }
   }
   
-  fun max(input: Output, reduction_indices: Output, keep_dims: Boolean = false, name: String = "Max") = run {
+  fun max(input: Output, reductionIndices: Output, keepDims: Boolean = false, name: String = "Max") = run {
     buildOpTensor("Max", name) {
       addInput(input, false)
-      addInput(reduction_indices, false)
-      attr("keep_dims", keep_dims)
+      addInput(reductionIndices, false)
+      attr("keep_dims", keepDims)
     }
   }
   
@@ -487,19 +487,19 @@ interface gen_math_ops {
     }
   }
   
-  fun mean(input: Output, reduction_indices: Output, keep_dims: Boolean = false, name: String = "Mean") = run {
+  fun mean(input: Output, reductionIndices: Output, keepDims: Boolean = false, name: String = "Mean") = run {
     buildOpTensor("Mean", name) {
       addInput(input, false)
-      addInput(reduction_indices, false)
-      attr("keep_dims", keep_dims)
+      addInput(reductionIndices, false)
+      attr("keep_dims", keepDims)
     }
   }
   
-  fun min(input: Output, reduction_indices: Output, keep_dims: Boolean = false, name: String = "Min") = run {
+  fun min(input: Output, reductionIndices: Output, keepDims: Boolean = false, name: String = "Min") = run {
     buildOpTensor("Min", name) {
       addInput(input, false)
-      addInput(reduction_indices, false)
-      attr("keep_dims", keep_dims)
+      addInput(reductionIndices, false)
+      attr("keep_dims", keepDims)
     }
   }
   
@@ -551,58 +551,58 @@ interface gen_math_ops {
     }
   }
   
-  fun _prod(input: Output, reduction_indices: Output, keep_dims: Boolean = false, name: String = "Prod") = run {
+  fun _prod(input: Output, reductionIndices: Output, keepDims: Boolean = false, name: String = "Prod") = run {
     buildOpTensor("Prod", name) {
       addInput(input, false)
-      addInput(reduction_indices, false)
-      attr("keep_dims", keep_dims)
+      addInput(reductionIndices, false)
+      attr("keep_dims", keepDims)
     }
   }
   
-  fun quantizeDownAndShrinkRange(input: Output, input_min: Output, input_max: Output, out_type: DataType<*>, name: String = "QuantizeDownAndShrinkRange") = run {
+  fun quantizeDownAndShrinkRange(input: Output, inputMin: Output, inputMax: Output, outType: DataType<*>, name: String = "QuantizeDownAndShrinkRange") = run {
     buildOpTensors("QuantizeDownAndShrinkRange", name) {
       addInput(input, false)
-      addInput(input_min, false)
-      addInput(input_max, false)
-      attr("out_type", out_type)
+      addInput(inputMin, false)
+      addInput(inputMax, false)
+      attr("out_type", outType)
     }
   }
   
-  fun quantizedAdd(x: Output, y: Output, min_x: Output, max_x: Output, min_y: Output, max_y: Output, toutput: DataType<*> = QINT32, name: String = "QuantizedAdd") = run {
+  fun quantizedAdd(x: Output, y: Output, minX: Output, maxX: Output, minY: Output, maxY: Output, toutput: DataType<*> = QINT32, name: String = "QuantizedAdd") = run {
     buildOpTensors("QuantizedAdd", name) {
       addInput(x, false)
       addInput(y, false)
-      addInput(min_x, false)
-      addInput(max_x, false)
-      addInput(min_y, false)
-      addInput(max_y, false)
+      addInput(minX, false)
+      addInput(maxX, false)
+      addInput(minY, false)
+      addInput(maxY, false)
       attr("Toutput", toutput)
     }
   }
   
-  fun quantizedMatMul(a: Output, b: Output, min_a: Output, max_a: Output, min_b: Output, max_b: Output, toutput: DataType<*> = QINT32, transpose_a: Boolean = false, transpose_b: Boolean = false, tactivation: DataType<*> = QUINT8, name: String = "QuantizedMatMul") = run {
+  fun quantizedMatMul(a: Output, b: Output, minA: Output, maxA: Output, minB: Output, maxB: Output, toutput: DataType<*> = QINT32, transposeA: Boolean = false, transposeB: Boolean = false, tactivation: DataType<*> = QUINT8, name: String = "QuantizedMatMul") = run {
     buildOpTensors("QuantizedMatMul", name) {
       addInput(a, false)
       addInput(b, false)
-      addInput(min_a, false)
-      addInput(max_a, false)
-      addInput(min_b, false)
-      addInput(max_b, false)
+      addInput(minA, false)
+      addInput(maxA, false)
+      addInput(minB, false)
+      addInput(maxB, false)
       attr("Toutput", toutput)
-      attr("transpose_a", transpose_a)
-      attr("transpose_b", transpose_b)
+      attr("transpose_a", transposeA)
+      attr("transpose_b", transposeB)
       attr("Tactivation", tactivation)
     }
   }
   
-  fun quantizedMul(x: Output, y: Output, min_x: Output, max_x: Output, min_y: Output, max_y: Output, toutput: DataType<*> = QINT32, name: String = "QuantizedMul") = run {
+  fun quantizedMul(x: Output, y: Output, minX: Output, maxX: Output, minY: Output, maxY: Output, toutput: DataType<*> = QINT32, name: String = "QuantizedMul") = run {
     buildOpTensors("QuantizedMul", name) {
       addInput(x, false)
       addInput(y, false)
-      addInput(min_x, false)
-      addInput(max_x, false)
-      addInput(min_y, false)
-      addInput(max_y, false)
+      addInput(minX, false)
+      addInput(maxX, false)
+      addInput(minY, false)
+      addInput(maxY, false)
       attr("Toutput", toutput)
     }
   }
@@ -635,22 +635,22 @@ interface gen_math_ops {
     }
   }
   
-  fun requantizationRange(input: Output, input_min: Output, input_max: Output, name: String = "RequantizationRange") = run {
+  fun requantizationRange(input: Output, inputMin: Output, inputMax: Output, name: String = "RequantizationRange") = run {
     buildOpTensors("RequantizationRange", name) {
       addInput(input, false)
-      addInput(input_min, false)
-      addInput(input_max, false)
+      addInput(inputMin, false)
+      addInput(inputMax, false)
     }
   }
   
-  fun requantize(input: Output, input_min: Output, input_max: Output, requested_output_min: Output, requested_output_max: Output, out_type: DataType<*>, name: String = "Requantize") = run {
+  fun requantize(input: Output, inputMin: Output, inputMax: Output, requestedOutputMin: Output, requestedOutputMax: Output, outType: DataType<*>, name: String = "Requantize") = run {
     buildOpTensors("Requantize", name) {
       addInput(input, false)
-      addInput(input_min, false)
-      addInput(input_max, false)
-      addInput(requested_output_min, false)
-      addInput(requested_output_max, false)
-      attr("out_type", out_type)
+      addInput(inputMin, false)
+      addInput(inputMax, false)
+      addInput(requestedOutputMin, false)
+      addInput(requestedOutputMax, false)
+      attr("out_type", outType)
     }
   }
   
@@ -672,38 +672,38 @@ interface gen_math_ops {
     }
   }
   
-  fun segmentMax(data: Output, segment_ids: Output, name: String = "SegmentMax") = run {
+  fun segmentMax(data: Output, segmentIds: Output, name: String = "SegmentMax") = run {
     buildOpTensor("SegmentMax", name) {
       addInput(data, false)
-      addInput(segment_ids, false)
+      addInput(segmentIds, false)
     }
   }
   
-  fun segmentMean(data: Output, segment_ids: Output, name: String = "SegmentMean") = run {
+  fun segmentMean(data: Output, segmentIds: Output, name: String = "SegmentMean") = run {
     buildOpTensor("SegmentMean", name) {
       addInput(data, false)
-      addInput(segment_ids, false)
+      addInput(segmentIds, false)
     }
   }
   
-  fun segmentMin(data: Output, segment_ids: Output, name: String = "SegmentMin") = run {
+  fun segmentMin(data: Output, segmentIds: Output, name: String = "SegmentMin") = run {
     buildOpTensor("SegmentMin", name) {
       addInput(data, false)
-      addInput(segment_ids, false)
+      addInput(segmentIds, false)
     }
   }
   
-  fun segmentProd(data: Output, segment_ids: Output, name: String = "SegmentProd") = run {
+  fun segmentProd(data: Output, segmentIds: Output, name: String = "SegmentProd") = run {
     buildOpTensor("SegmentProd", name) {
       addInput(data, false)
-      addInput(segment_ids, false)
+      addInput(segmentIds, false)
     }
   }
   
-  fun segmentSum(data: Output, segment_ids: Output, name: String = "SegmentSum") = run {
+  fun segmentSum(data: Output, segmentIds: Output, name: String = "SegmentSum") = run {
     buildOpTensor("SegmentSum", name) {
       addInput(data, false)
-      addInput(segment_ids, false)
+      addInput(segmentIds, false)
     }
   }
   
@@ -739,83 +739,83 @@ interface gen_math_ops {
     }
   }
   
-  fun sparseMatMul(a: Output, b: Output, transpose_a: Boolean = false, transpose_b: Boolean = false, a_is_sparse: Boolean = false, b_is_sparse: Boolean = false, name: String = "SparseMatMul") = run {
+  fun sparseMatMul(a: Output, b: Output, transposeA: Boolean = false, transposeB: Boolean = false, aIsSparse: Boolean = false, bIsSparse: Boolean = false, name: String = "SparseMatMul") = run {
     buildOpTensor("SparseMatMul", name) {
       addInput(a, false)
       addInput(b, false)
-      attr("transpose_a", transpose_a)
-      attr("transpose_b", transpose_b)
-      attr("a_is_sparse", a_is_sparse)
-      attr("b_is_sparse", b_is_sparse)
+      attr("transpose_a", transposeA)
+      attr("transpose_b", transposeB)
+      attr("a_is_sparse", aIsSparse)
+      attr("b_is_sparse", bIsSparse)
     }
   }
   
-  fun sparseSegmentMean(data: Output, indices: Output, segment_ids: Output, name: String = "SparseSegmentMean") = run {
+  fun sparseSegmentMean(data: Output, indices: Output, segmentIds: Output, name: String = "SparseSegmentMean") = run {
     buildOpTensor("SparseSegmentMean", name) {
       addInput(data, false)
       addInput(indices, false)
-      addInput(segment_ids, false)
+      addInput(segmentIds, false)
     }
   }
   
-  fun sparseSegmentMeanGrad(grad: Output, indices: Output, segment_ids: Output, output_dim0: Output, name: String = "SparseSegmentMeanGrad") = run {
+  fun sparseSegmentMeanGrad(grad: Output, indices: Output, segmentIds: Output, outputDim0: Output, name: String = "SparseSegmentMeanGrad") = run {
     buildOpTensor("SparseSegmentMeanGrad", name) {
       addInput(grad, false)
       addInput(indices, false)
-      addInput(segment_ids, false)
-      addInput(output_dim0, false)
+      addInput(segmentIds, false)
+      addInput(outputDim0, false)
     }
   }
   
-  fun sparseSegmentMeanWithNumSegments(data: Output, indices: Output, segment_ids: Output, num_segments: Output, name: String = "SparseSegmentMeanWithNumSegments") = run {
+  fun sparseSegmentMeanWithNumSegments(data: Output, indices: Output, segmentIds: Output, numSegments: Output, name: String = "SparseSegmentMeanWithNumSegments") = run {
     buildOpTensor("SparseSegmentMeanWithNumSegments", name) {
       addInput(data, false)
       addInput(indices, false)
-      addInput(segment_ids, false)
-      addInput(num_segments, false)
+      addInput(segmentIds, false)
+      addInput(numSegments, false)
     }
   }
   
-  fun sparseSegmentSqrtN(data: Output, indices: Output, segment_ids: Output, name: String = "SparseSegmentSqrtN") = run {
+  fun sparseSegmentSqrtN(data: Output, indices: Output, segmentIds: Output, name: String = "SparseSegmentSqrtN") = run {
     buildOpTensor("SparseSegmentSqrtN", name) {
       addInput(data, false)
       addInput(indices, false)
-      addInput(segment_ids, false)
+      addInput(segmentIds, false)
     }
   }
   
-  fun sparseSegmentSqrtNGrad(grad: Output, indices: Output, segment_ids: Output, output_dim0: Output, name: String = "SparseSegmentSqrtNGrad") = run {
+  fun sparseSegmentSqrtNGrad(grad: Output, indices: Output, segmentIds: Output, outputDim0: Output, name: String = "SparseSegmentSqrtNGrad") = run {
     buildOpTensor("SparseSegmentSqrtNGrad", name) {
       addInput(grad, false)
       addInput(indices, false)
-      addInput(segment_ids, false)
-      addInput(output_dim0, false)
+      addInput(segmentIds, false)
+      addInput(outputDim0, false)
     }
   }
   
-  fun sparseSegmentSqrtNWithNumSegments(data: Output, indices: Output, segment_ids: Output, num_segments: Output, name: String = "SparseSegmentSqrtNWithNumSegments") = run {
+  fun sparseSegmentSqrtNWithNumSegments(data: Output, indices: Output, segmentIds: Output, numSegments: Output, name: String = "SparseSegmentSqrtNWithNumSegments") = run {
     buildOpTensor("SparseSegmentSqrtNWithNumSegments", name) {
       addInput(data, false)
       addInput(indices, false)
-      addInput(segment_ids, false)
-      addInput(num_segments, false)
+      addInput(segmentIds, false)
+      addInput(numSegments, false)
     }
   }
   
-  fun sparseSegmentSum(data: Output, indices: Output, segment_ids: Output, name: String = "SparseSegmentSum") = run {
+  fun sparseSegmentSum(data: Output, indices: Output, segmentIds: Output, name: String = "SparseSegmentSum") = run {
     buildOpTensor("SparseSegmentSum", name) {
       addInput(data, false)
       addInput(indices, false)
-      addInput(segment_ids, false)
+      addInput(segmentIds, false)
     }
   }
   
-  fun sparseSegmentSumWithNumSegments(data: Output, indices: Output, segment_ids: Output, num_segments: Output, name: String = "SparseSegmentSumWithNumSegments") = run {
+  fun sparseSegmentSumWithNumSegments(data: Output, indices: Output, segmentIds: Output, numSegments: Output, name: String = "SparseSegmentSumWithNumSegments") = run {
     buildOpTensor("SparseSegmentSumWithNumSegments", name) {
       addInput(data, false)
       addInput(indices, false)
-      addInput(segment_ids, false)
-      addInput(num_segments, false)
+      addInput(segmentIds, false)
+      addInput(numSegments, false)
     }
   }
   
@@ -845,11 +845,11 @@ interface gen_math_ops {
     }
   }
   
-  fun _sum(input: Output, reduction_indices: Output, keep_dims: Boolean = false, name: String = "Sum") = run {
+  fun _sum(input: Output, reductionIndices: Output, keepDims: Boolean = false, name: String = "Sum") = run {
     buildOpTensor("Sum", name) {
       addInput(input, false)
-      addInput(reduction_indices, false)
-      attr("keep_dims", keep_dims)
+      addInput(reductionIndices, false)
+      attr("keep_dims", keepDims)
     }
   }
   
@@ -879,35 +879,35 @@ interface gen_math_ops {
     }
   }
   
-  fun unsortedSegmentMax(data: Output, segment_ids: Output, num_segments: Output, name: String = "UnsortedSegmentMax") = run {
+  fun unsortedSegmentMax(data: Output, segmentIds: Output, numSegments: Output, name: String = "UnsortedSegmentMax") = run {
     buildOpTensor("UnsortedSegmentMax", name) {
       addInput(data, false)
-      addInput(segment_ids, false)
-      addInput(num_segments, false)
+      addInput(segmentIds, false)
+      addInput(numSegments, false)
     }
   }
   
-  fun unsortedSegmentMin(data: Output, segment_ids: Output, num_segments: Output, name: String = "UnsortedSegmentMin") = run {
+  fun unsortedSegmentMin(data: Output, segmentIds: Output, numSegments: Output, name: String = "UnsortedSegmentMin") = run {
     buildOpTensor("UnsortedSegmentMin", name) {
       addInput(data, false)
-      addInput(segment_ids, false)
-      addInput(num_segments, false)
+      addInput(segmentIds, false)
+      addInput(numSegments, false)
     }
   }
   
-  fun unsortedSegmentProd(data: Output, segment_ids: Output, num_segments: Output, name: String = "UnsortedSegmentProd") = run {
+  fun unsortedSegmentProd(data: Output, segmentIds: Output, numSegments: Output, name: String = "UnsortedSegmentProd") = run {
     buildOpTensor("UnsortedSegmentProd", name) {
       addInput(data, false)
-      addInput(segment_ids, false)
-      addInput(num_segments, false)
+      addInput(segmentIds, false)
+      addInput(numSegments, false)
     }
   }
   
-  fun unsortedSegmentSum(data: Output, segment_ids: Output, num_segments: Output, name: String = "UnsortedSegmentSum") = run {
+  fun unsortedSegmentSum(data: Output, segmentIds: Output, numSegments: Output, name: String = "UnsortedSegmentSum") = run {
     buildOpTensor("UnsortedSegmentSum", name) {
       addInput(data, false)
-      addInput(segment_ids, false)
-      addInput(num_segments, false)
+      addInput(segmentIds, false)
+      addInput(numSegments, false)
     }
   }
   

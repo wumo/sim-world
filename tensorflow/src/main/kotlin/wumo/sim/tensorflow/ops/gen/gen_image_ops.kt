@@ -11,10 +11,10 @@ import wumo.sim.tensorflow.types.INT32
 import wumo.sim.tensorflow.types.UINT8
 
 interface gen_image_ops {
-  fun adjustContrastv2(images: Output, contrast_factor: Output, name: String = "AdjustContrastv2") = run {
+  fun adjustContrastv2(images: Output, contrastFactor: Output, name: String = "AdjustContrastv2") = run {
     buildOpTensor("AdjustContrastv2", name) {
       addInput(images, false)
-      addInput(contrast_factor, false)
+      addInput(contrastFactor, false)
     }
   }
   
@@ -32,48 +32,48 @@ interface gen_image_ops {
     }
   }
   
-  fun cropAndResize(image: Output, boxes: Output, box_ind: Output, crop_size: Output, method: String = "bilinear", extrapolation_value: Float = 0.0f, name: String = "CropAndResize") = run {
+  fun cropAndResize(image: Output, boxes: Output, boxInd: Output, cropSize: Output, method: String = "bilinear", extrapolationValue: Float = 0.0f, name: String = "CropAndResize") = run {
     buildOpTensor("CropAndResize", name) {
       addInput(image, false)
       addInput(boxes, false)
-      addInput(box_ind, false)
-      addInput(crop_size, false)
+      addInput(boxInd, false)
+      addInput(cropSize, false)
       attr("method", method)
-      attr("extrapolation_value", extrapolation_value)
+      attr("extrapolation_value", extrapolationValue)
     }
   }
   
-  fun cropAndResizeGradBoxes(grads: Output, image: Output, boxes: Output, box_ind: Output, method: String = "bilinear", name: String = "CropAndResizeGradBoxes") = run {
+  fun cropAndResizeGradBoxes(grads: Output, image: Output, boxes: Output, boxInd: Output, method: String = "bilinear", name: String = "CropAndResizeGradBoxes") = run {
     buildOpTensor("CropAndResizeGradBoxes", name) {
       addInput(grads, false)
       addInput(image, false)
       addInput(boxes, false)
-      addInput(box_ind, false)
+      addInput(boxInd, false)
       attr("method", method)
     }
   }
   
-  fun cropAndResizeGradImage(grads: Output, boxes: Output, box_ind: Output, image_size: Output, t: DataType<*>, method: String = "bilinear", name: String = "CropAndResizeGradImage") = run {
+  fun cropAndResizeGradImage(grads: Output, boxes: Output, boxInd: Output, imageSize: Output, t: DataType<*>, method: String = "bilinear", name: String = "CropAndResizeGradImage") = run {
     buildOpTensor("CropAndResizeGradImage", name) {
       addInput(grads, false)
       addInput(boxes, false)
-      addInput(box_ind, false)
-      addInput(image_size, false)
+      addInput(boxInd, false)
+      addInput(imageSize, false)
       attr("T", t)
       attr("method", method)
     }
   }
   
-  fun decodeAndCropJpeg(contents: Output, crop_window: Output, channels: Long = 0L, ratio: Long = 1L, fancy_upscaling: Boolean = true, try_recover_truncated: Boolean = false, acceptable_fraction: Float = 1.0f, dct_method: String = "", name: String = "DecodeAndCropJpeg") = run {
+  fun decodeAndCropJpeg(contents: Output, cropWindow: Output, channels: Long = 0L, ratio: Long = 1L, fancyUpscaling: Boolean = true, tryRecoverTruncated: Boolean = false, acceptableFraction: Float = 1.0f, dctMethod: String = "", name: String = "DecodeAndCropJpeg") = run {
     buildOpTensor("DecodeAndCropJpeg", name) {
       addInput(contents, false)
-      addInput(crop_window, false)
+      addInput(cropWindow, false)
       attr("channels", channels)
       attr("ratio", ratio)
-      attr("fancy_upscaling", fancy_upscaling)
-      attr("try_recover_truncated", try_recover_truncated)
-      attr("acceptable_fraction", acceptable_fraction)
-      attr("dct_method", dct_method)
+      attr("fancy_upscaling", fancyUpscaling)
+      attr("try_recover_truncated", tryRecoverTruncated)
+      attr("acceptable_fraction", acceptableFraction)
+      attr("dct_method", dctMethod)
     }
   }
   
@@ -90,15 +90,15 @@ interface gen_image_ops {
     }
   }
   
-  fun decodeJpeg(contents: Output, channels: Long = 0L, ratio: Long = 1L, fancy_upscaling: Boolean = true, try_recover_truncated: Boolean = false, acceptable_fraction: Float = 1.0f, dct_method: String = "", name: String = "DecodeJpeg") = run {
+  fun decodeJpeg(contents: Output, channels: Long = 0L, ratio: Long = 1L, fancyUpscaling: Boolean = true, tryRecoverTruncated: Boolean = false, acceptableFraction: Float = 1.0f, dctMethod: String = "", name: String = "DecodeJpeg") = run {
     buildOpTensor("DecodeJpeg", name) {
       addInput(contents, false)
       attr("channels", channels)
       attr("ratio", ratio)
-      attr("fancy_upscaling", fancy_upscaling)
-      attr("try_recover_truncated", try_recover_truncated)
-      attr("acceptable_fraction", acceptable_fraction)
-      attr("dct_method", dct_method)
+      attr("fancy_upscaling", fancyUpscaling)
+      attr("try_recover_truncated", tryRecoverTruncated)
+      attr("acceptable_fraction", acceptableFraction)
+      attr("dct_method", dctMethod)
     }
   }
   
@@ -117,18 +117,18 @@ interface gen_image_ops {
     }
   }
   
-  fun encodeJpeg(image: Output, format: String = "", quality: Long = 95L, progressive: Boolean = false, optimize_size: Boolean = false, chroma_downsampling: Boolean = true, density_unit: String = "in", x_density: Long = 300L, y_density: Long = 300L, xmp_metadata: String = "", name: String = "EncodeJpeg") = run {
+  fun encodeJpeg(image: Output, format: String = "", quality: Long = 95L, progressive: Boolean = false, optimizeSize: Boolean = false, chromaDownsampling: Boolean = true, densityUnit: String = "in", xDensity: Long = 300L, yDensity: Long = 300L, xmpMetadata: String = "", name: String = "EncodeJpeg") = run {
     buildOpTensor("EncodeJpeg", name) {
       addInput(image, false)
       attr("format", format)
       attr("quality", quality)
       attr("progressive", progressive)
-      attr("optimize_size", optimize_size)
-      attr("chroma_downsampling", chroma_downsampling)
-      attr("density_unit", density_unit)
-      attr("x_density", x_density)
-      attr("y_density", y_density)
-      attr("xmp_metadata", xmp_metadata)
+      attr("optimize_size", optimizeSize)
+      attr("chroma_downsampling", chromaDownsampling)
+      attr("density_unit", densityUnit)
+      attr("x_density", xDensity)
+      attr("y_density", yDensity)
+      attr("xmp_metadata", xmpMetadata)
     }
   }
   
@@ -139,21 +139,21 @@ interface gen_image_ops {
     }
   }
   
-  fun extractGlimpse(input: Output, size: Output, offsets: Output, centered: Boolean = true, normalized: Boolean = true, uniform_noise: Boolean = true, name: String = "ExtractGlimpse") = run {
+  fun extractGlimpse(input: Output, size: Output, offsets: Output, centered: Boolean = true, normalized: Boolean = true, uniformNoise: Boolean = true, name: String = "ExtractGlimpse") = run {
     buildOpTensor("ExtractGlimpse", name) {
       addInput(input, false)
       addInput(size, false)
       addInput(offsets, false)
       attr("centered", centered)
       attr("normalized", normalized)
-      attr("uniform_noise", uniform_noise)
+      attr("uniform_noise", uniformNoise)
     }
   }
   
-  fun extractJpegShape(contents: Output, output_type: DataType<*> = INT32, name: String = "ExtractJpegShape") = run {
+  fun extractJpegShape(contents: Output, outputType: DataType<*> = INT32, name: String = "ExtractJpegShape") = run {
     buildOpTensor("ExtractJpegShape", name) {
       addInput(contents, false)
-      attr("output_type", output_type)
+      attr("output_type", outputType)
     }
   }
   
@@ -163,51 +163,51 @@ interface gen_image_ops {
     }
   }
   
-  fun nonMaxSuppression(boxes: Output, scores: Output, max_output_size: Output, iou_threshold: Float = 0.5f, name: String = "NonMaxSuppression") = run {
+  fun nonMaxSuppression(boxes: Output, scores: Output, maxOutputSize: Output, iouThreshold: Float = 0.5f, name: String = "NonMaxSuppression") = run {
     buildOpTensor("NonMaxSuppression", name) {
       addInput(boxes, false)
       addInput(scores, false)
-      addInput(max_output_size, false)
-      attr("iou_threshold", iou_threshold)
+      addInput(maxOutputSize, false)
+      attr("iou_threshold", iouThreshold)
     }
   }
   
-  fun nonMaxSuppressionV2(boxes: Output, scores: Output, max_output_size: Output, iou_threshold: Output, name: String = "NonMaxSuppressionV2") = run {
+  fun nonMaxSuppressionV2(boxes: Output, scores: Output, maxOutputSize: Output, iouThreshold: Output, name: String = "NonMaxSuppressionV2") = run {
     buildOpTensor("NonMaxSuppressionV2", name) {
       addInput(boxes, false)
       addInput(scores, false)
-      addInput(max_output_size, false)
-      addInput(iou_threshold, false)
+      addInput(maxOutputSize, false)
+      addInput(iouThreshold, false)
     }
   }
   
-  fun nonMaxSuppressionV3(boxes: Output, scores: Output, max_output_size: Output, iou_threshold: Output, score_threshold: Output, name: String = "NonMaxSuppressionV3") = run {
+  fun nonMaxSuppressionV3(boxes: Output, scores: Output, maxOutputSize: Output, iouThreshold: Output, scoreThreshold: Output, name: String = "NonMaxSuppressionV3") = run {
     buildOpTensor("NonMaxSuppressionV3", name) {
       addInput(boxes, false)
       addInput(scores, false)
-      addInput(max_output_size, false)
-      addInput(iou_threshold, false)
-      addInput(score_threshold, false)
+      addInput(maxOutputSize, false)
+      addInput(iouThreshold, false)
+      addInput(scoreThreshold, false)
     }
   }
   
-  fun nonMaxSuppressionWithOverlaps(overlaps: Output, scores: Output, max_output_size: Output, overlap_threshold: Output, score_threshold: Output, name: String = "NonMaxSuppressionWithOverlaps") = run {
+  fun nonMaxSuppressionWithOverlaps(overlaps: Output, scores: Output, maxOutputSize: Output, overlapThreshold: Output, scoreThreshold: Output, name: String = "NonMaxSuppressionWithOverlaps") = run {
     buildOpTensor("NonMaxSuppressionWithOverlaps", name) {
       addInput(overlaps, false)
       addInput(scores, false)
-      addInput(max_output_size, false)
-      addInput(overlap_threshold, false)
-      addInput(score_threshold, false)
+      addInput(maxOutputSize, false)
+      addInput(overlapThreshold, false)
+      addInput(scoreThreshold, false)
     }
   }
   
-  fun quantizedResizeBilinear(images: Output, size: Output, min: Output, max: Output, align_corners: Boolean = false, name: String = "QuantizedResizeBilinear") = run {
+  fun quantizedResizeBilinear(images: Output, size: Output, min: Output, max: Output, alignCorners: Boolean = false, name: String = "QuantizedResizeBilinear") = run {
     buildOpTensors("QuantizedResizeBilinear", name) {
       addInput(images, false)
       addInput(size, false)
       addInput(min, false)
       addInput(max, false)
-      attr("align_corners", align_corners)
+      attr("align_corners", alignCorners)
     }
   }
   
@@ -217,87 +217,87 @@ interface gen_image_ops {
     }
   }
   
-  fun resizeArea(images: Output, size: Output, align_corners: Boolean = false, name: String = "ResizeArea") = run {
+  fun resizeArea(images: Output, size: Output, alignCorners: Boolean = false, name: String = "ResizeArea") = run {
     buildOpTensor("ResizeArea", name) {
       addInput(images, false)
       addInput(size, false)
-      attr("align_corners", align_corners)
+      attr("align_corners", alignCorners)
     }
   }
   
-  fun resizeBicubic(images: Output, size: Output, align_corners: Boolean = false, name: String = "ResizeBicubic") = run {
+  fun resizeBicubic(images: Output, size: Output, alignCorners: Boolean = false, name: String = "ResizeBicubic") = run {
     buildOpTensor("ResizeBicubic", name) {
       addInput(images, false)
       addInput(size, false)
-      attr("align_corners", align_corners)
+      attr("align_corners", alignCorners)
     }
   }
   
-  fun resizeBilinear(images: Output, size: Output, align_corners: Boolean = false, name: String = "ResizeBilinear") = run {
+  fun resizeBilinear(images: Output, size: Output, alignCorners: Boolean = false, name: String = "ResizeBilinear") = run {
     buildOpTensor("ResizeBilinear", name) {
       addInput(images, false)
       addInput(size, false)
-      attr("align_corners", align_corners)
+      attr("align_corners", alignCorners)
     }
   }
   
-  fun resizeNearestNeighbor(images: Output, size: Output, align_corners: Boolean = false, name: String = "ResizeNearestNeighbor") = run {
+  fun resizeNearestNeighbor(images: Output, size: Output, alignCorners: Boolean = false, name: String = "ResizeNearestNeighbor") = run {
     buildOpTensor("ResizeNearestNeighbor", name) {
       addInput(images, false)
       addInput(size, false)
-      attr("align_corners", align_corners)
+      attr("align_corners", alignCorners)
     }
   }
   
-  fun sampleDistortedBoundingBox(image_size: Output, bounding_boxes: Output, seed: Long = 0L, seed2: Long = 0L, min_object_covered: Float = 0.1f, aspect_ratio_range: Array<Float> = arrayOf(0.75f, 1.33f), area_range: Array<Float> = arrayOf(0.05f, 1.0f), max_attempts: Long = 100L, use_image_if_no_bounding_boxes: Boolean = false, name: String = "SampleDistortedBoundingBox") = run {
+  fun sampleDistortedBoundingBox(imageSize: Output, boundingBoxes: Output, seed: Long = 0L, seed2: Long = 0L, minObjectCovered: Float = 0.1f, aspectRatioRange: Array<Float> = arrayOf(0.75f, 1.33f), areaRange: Array<Float> = arrayOf(0.05f, 1.0f), maxAttempts: Long = 100L, useImageIfNoBoundingBoxes: Boolean = false, name: String = "SampleDistortedBoundingBox") = run {
     buildOpTensors("SampleDistortedBoundingBox", name) {
-      addInput(image_size, false)
-      addInput(bounding_boxes, false)
+      addInput(imageSize, false)
+      addInput(boundingBoxes, false)
       attr("seed", seed)
       attr("seed2", seed2)
-      attr("min_object_covered", min_object_covered)
-      attr("aspect_ratio_range", aspect_ratio_range)
-      attr("area_range", area_range)
-      attr("max_attempts", max_attempts)
-      attr("use_image_if_no_bounding_boxes", use_image_if_no_bounding_boxes)
+      attr("min_object_covered", minObjectCovered)
+      attr("aspect_ratio_range", aspectRatioRange)
+      attr("area_range", areaRange)
+      attr("max_attempts", maxAttempts)
+      attr("use_image_if_no_bounding_boxes", useImageIfNoBoundingBoxes)
     }
   }
   
-  fun sampleDistortedBoundingBoxV2(image_size: Output, bounding_boxes: Output, min_object_covered: Output, seed: Long = 0L, seed2: Long = 0L, aspect_ratio_range: Array<Float> = arrayOf(0.75f, 1.33f), area_range: Array<Float> = arrayOf(0.05f, 1.0f), max_attempts: Long = 100L, use_image_if_no_bounding_boxes: Boolean = false, name: String = "SampleDistortedBoundingBoxV2") = run {
+  fun sampleDistortedBoundingBoxV2(imageSize: Output, boundingBoxes: Output, minObjectCovered: Output, seed: Long = 0L, seed2: Long = 0L, aspectRatioRange: Array<Float> = arrayOf(0.75f, 1.33f), areaRange: Array<Float> = arrayOf(0.05f, 1.0f), maxAttempts: Long = 100L, useImageIfNoBoundingBoxes: Boolean = false, name: String = "SampleDistortedBoundingBoxV2") = run {
     buildOpTensors("SampleDistortedBoundingBoxV2", name) {
-      addInput(image_size, false)
-      addInput(bounding_boxes, false)
-      addInput(min_object_covered, false)
+      addInput(imageSize, false)
+      addInput(boundingBoxes, false)
+      addInput(minObjectCovered, false)
       attr("seed", seed)
       attr("seed2", seed2)
-      attr("aspect_ratio_range", aspect_ratio_range)
-      attr("area_range", area_range)
-      attr("max_attempts", max_attempts)
-      attr("use_image_if_no_bounding_boxes", use_image_if_no_bounding_boxes)
+      attr("aspect_ratio_range", aspectRatioRange)
+      attr("area_range", areaRange)
+      attr("max_attempts", maxAttempts)
+      attr("use_image_if_no_bounding_boxes", useImageIfNoBoundingBoxes)
     }
   }
   
-  fun resizeBicubicGrad(grads: Output, original_image: Output, align_corners: Boolean = false, name: String = "ResizeBicubicGrad") = run {
+  fun resizeBicubicGrad(grads: Output, originalImage: Output, alignCorners: Boolean = false, name: String = "ResizeBicubicGrad") = run {
     buildOpTensor("ResizeBicubicGrad", name) {
       addInput(grads, false)
-      addInput(original_image, false)
-      attr("align_corners", align_corners)
+      addInput(originalImage, false)
+      attr("align_corners", alignCorners)
     }
   }
   
-  fun resizeBilinearGrad(grads: Output, original_image: Output, align_corners: Boolean = false, name: String = "ResizeBilinearGrad") = run {
+  fun resizeBilinearGrad(grads: Output, originalImage: Output, alignCorners: Boolean = false, name: String = "ResizeBilinearGrad") = run {
     buildOpTensor("ResizeBilinearGrad", name) {
       addInput(grads, false)
-      addInput(original_image, false)
-      attr("align_corners", align_corners)
+      addInput(originalImage, false)
+      attr("align_corners", alignCorners)
     }
   }
   
-  fun resizeNearestNeighborGrad(grads: Output, size: Output, align_corners: Boolean = false, name: String = "ResizeNearestNeighborGrad") = run {
+  fun resizeNearestNeighborGrad(grads: Output, size: Output, alignCorners: Boolean = false, name: String = "ResizeNearestNeighborGrad") = run {
     buildOpTensor("ResizeNearestNeighborGrad", name) {
       addInput(grads, false)
       addInput(size, false)
-      attr("align_corners", align_corners)
+      attr("align_corners", alignCorners)
     }
   }
 }

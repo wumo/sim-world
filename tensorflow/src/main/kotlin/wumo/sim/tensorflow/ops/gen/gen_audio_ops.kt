@@ -8,38 +8,38 @@ import wumo.sim.tensorflow.buildOpTensors
 import wumo.sim.tensorflow.ops.Output
 
 interface gen_audio_ops {
-  fun audioSpectrogram(input: Output, window_size: Long, stride: Long, magnitude_squared: Boolean = false, name: String = "AudioSpectrogram") = run {
+  fun audioSpectrogram(input: Output, windowSize: Long, stride: Long, magnitudeSquared: Boolean = false, name: String = "AudioSpectrogram") = run {
     buildOpTensor("AudioSpectrogram", name) {
       addInput(input, false)
-      attr("window_size", window_size)
+      attr("window_size", windowSize)
       attr("stride", stride)
-      attr("magnitude_squared", magnitude_squared)
+      attr("magnitude_squared", magnitudeSquared)
     }
   }
   
-  fun decodeWav(contents: Output, desired_channels: Long = -1L, desired_samples: Long = -1L, name: String = "DecodeWav") = run {
+  fun decodeWav(contents: Output, desiredChannels: Long = -1L, desiredSamples: Long = -1L, name: String = "DecodeWav") = run {
     buildOpTensors("DecodeWav", name) {
       addInput(contents, false)
-      attr("desired_channels", desired_channels)
-      attr("desired_samples", desired_samples)
+      attr("desired_channels", desiredChannels)
+      attr("desired_samples", desiredSamples)
     }
   }
   
-  fun encodeWav(audio: Output, sample_rate: Output, name: String = "EncodeWav") = run {
+  fun encodeWav(audio: Output, sampleRate: Output, name: String = "EncodeWav") = run {
     buildOpTensor("EncodeWav", name) {
       addInput(audio, false)
-      addInput(sample_rate, false)
+      addInput(sampleRate, false)
     }
   }
   
-  fun mfcc(spectrogram: Output, sample_rate: Output, upper_frequency_limit: Float = 4000.0f, lower_frequency_limit: Float = 20.0f, filterbank_channel_count: Long = 40L, dct_coefficient_count: Long = 13L, name: String = "Mfcc") = run {
+  fun mfcc(spectrogram: Output, sampleRate: Output, upperFrequencyLimit: Float = 4000.0f, lowerFrequencyLimit: Float = 20.0f, filterbankChannelCount: Long = 40L, dctCoefficientCount: Long = 13L, name: String = "Mfcc") = run {
     buildOpTensor("Mfcc", name) {
       addInput(spectrogram, false)
-      addInput(sample_rate, false)
-      attr("upper_frequency_limit", upper_frequency_limit)
-      attr("lower_frequency_limit", lower_frequency_limit)
-      attr("filterbank_channel_count", filterbank_channel_count)
-      attr("dct_coefficient_count", dct_coefficient_count)
+      addInput(sampleRate, false)
+      attr("upper_frequency_limit", upperFrequencyLimit)
+      attr("lower_frequency_limit", lowerFrequencyLimit)
+      attr("filterbank_channel_count", filterbankChannelCount)
+      attr("dct_coefficient_count", dctCoefficientCount)
     }
   }
 }

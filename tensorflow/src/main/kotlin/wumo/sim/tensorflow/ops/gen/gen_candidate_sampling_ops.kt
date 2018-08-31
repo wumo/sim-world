@@ -7,38 +7,38 @@ import wumo.sim.tensorflow.buildOpTensors
 import wumo.sim.tensorflow.ops.Output
 
 interface gen_candidate_sampling_ops {
-  fun allCandidateSampler(true_classes: Output, num_true: Long, num_sampled: Long, unique: Boolean, seed: Long = 0L, seed2: Long = 0L, name: String = "AllCandidateSampler") = run {
+  fun allCandidateSampler(trueClasses: Output, numTrue: Long, numSampled: Long, unique: Boolean, seed: Long = 0L, seed2: Long = 0L, name: String = "AllCandidateSampler") = run {
     buildOpTensors("AllCandidateSampler", name) {
-      addInput(true_classes, false)
-      attr("num_true", num_true)
-      attr("num_sampled", num_sampled)
+      addInput(trueClasses, false)
+      attr("num_true", numTrue)
+      attr("num_sampled", numSampled)
       attr("unique", unique)
       attr("seed", seed)
       attr("seed2", seed2)
     }
   }
   
-  fun computeAccidentalHits(true_classes: Output, sampled_candidates: Output, num_true: Long, seed: Long = 0L, seed2: Long = 0L, name: String = "ComputeAccidentalHits") = run {
+  fun computeAccidentalHits(trueClasses: Output, sampledCandidates: Output, numTrue: Long, seed: Long = 0L, seed2: Long = 0L, name: String = "ComputeAccidentalHits") = run {
     buildOpTensors("ComputeAccidentalHits", name) {
-      addInput(true_classes, false)
-      addInput(sampled_candidates, false)
-      attr("num_true", num_true)
+      addInput(trueClasses, false)
+      addInput(sampledCandidates, false)
+      attr("num_true", numTrue)
       attr("seed", seed)
       attr("seed2", seed2)
     }
   }
   
-  fun fixedUnigramCandidateSampler(true_classes: Output, num_true: Long, num_sampled: Long, unique: Boolean, range_max: Long, vocab_file: String = "", distortion: Float = 1.0f, num_reserved_ids: Long = 0L, num_shards: Long = 1L, shard: Long = 0L, unigrams: Array<Float> = arrayOf(), seed: Long = 0L, seed2: Long = 0L, name: String = "FixedUnigramCandidateSampler") = run {
+  fun fixedUnigramCandidateSampler(trueClasses: Output, numTrue: Long, numSampled: Long, unique: Boolean, rangeMax: Long, vocabFile: String = "", distortion: Float = 1.0f, numReservedIds: Long = 0L, numShards: Long = 1L, shard: Long = 0L, unigrams: Array<Float> = arrayOf(), seed: Long = 0L, seed2: Long = 0L, name: String = "FixedUnigramCandidateSampler") = run {
     buildOpTensors("FixedUnigramCandidateSampler", name) {
-      addInput(true_classes, false)
-      attr("num_true", num_true)
-      attr("num_sampled", num_sampled)
+      addInput(trueClasses, false)
+      attr("num_true", numTrue)
+      attr("num_sampled", numSampled)
       attr("unique", unique)
-      attr("range_max", range_max)
-      attr("vocab_file", vocab_file)
+      attr("range_max", rangeMax)
+      attr("vocab_file", vocabFile)
       attr("distortion", distortion)
-      attr("num_reserved_ids", num_reserved_ids)
-      attr("num_shards", num_shards)
+      attr("num_reserved_ids", numReservedIds)
+      attr("num_shards", numShards)
       attr("shard", shard)
       attr("unigrams", unigrams)
       attr("seed", seed)
@@ -46,37 +46,37 @@ interface gen_candidate_sampling_ops {
     }
   }
   
-  fun learnedUnigramCandidateSampler(true_classes: Output, num_true: Long, num_sampled: Long, unique: Boolean, range_max: Long, seed: Long = 0L, seed2: Long = 0L, name: String = "LearnedUnigramCandidateSampler") = run {
+  fun learnedUnigramCandidateSampler(trueClasses: Output, numTrue: Long, numSampled: Long, unique: Boolean, rangeMax: Long, seed: Long = 0L, seed2: Long = 0L, name: String = "LearnedUnigramCandidateSampler") = run {
     buildOpTensors("LearnedUnigramCandidateSampler", name) {
-      addInput(true_classes, false)
-      attr("num_true", num_true)
-      attr("num_sampled", num_sampled)
+      addInput(trueClasses, false)
+      attr("num_true", numTrue)
+      attr("num_sampled", numSampled)
       attr("unique", unique)
-      attr("range_max", range_max)
+      attr("range_max", rangeMax)
       attr("seed", seed)
       attr("seed2", seed2)
     }
   }
   
-  fun logUniformCandidateSampler(true_classes: Output, num_true: Long, num_sampled: Long, unique: Boolean, range_max: Long, seed: Long = 0L, seed2: Long = 0L, name: String = "LogUniformCandidateSampler") = run {
+  fun logUniformCandidateSampler(trueClasses: Output, numTrue: Long, numSampled: Long, unique: Boolean, rangeMax: Long, seed: Long = 0L, seed2: Long = 0L, name: String = "LogUniformCandidateSampler") = run {
     buildOpTensors("LogUniformCandidateSampler", name) {
-      addInput(true_classes, false)
-      attr("num_true", num_true)
-      attr("num_sampled", num_sampled)
+      addInput(trueClasses, false)
+      attr("num_true", numTrue)
+      attr("num_sampled", numSampled)
       attr("unique", unique)
-      attr("range_max", range_max)
+      attr("range_max", rangeMax)
       attr("seed", seed)
       attr("seed2", seed2)
     }
   }
   
-  fun uniformCandidateSampler(true_classes: Output, num_true: Long, num_sampled: Long, unique: Boolean, range_max: Long, seed: Long = 0L, seed2: Long = 0L, name: String = "UniformCandidateSampler") = run {
+  fun uniformCandidateSampler(trueClasses: Output, numTrue: Long, numSampled: Long, unique: Boolean, rangeMax: Long, seed: Long = 0L, seed2: Long = 0L, name: String = "UniformCandidateSampler") = run {
     buildOpTensors("UniformCandidateSampler", name) {
-      addInput(true_classes, false)
-      attr("num_true", num_true)
-      attr("num_sampled", num_sampled)
+      addInput(trueClasses, false)
+      attr("num_true", numTrue)
+      attr("num_sampled", numSampled)
       attr("unique", unique)
-      attr("range_max", range_max)
+      attr("range_max", rangeMax)
       attr("seed", seed)
       attr("seed2", seed2)
     }

@@ -17,12 +17,12 @@ interface gen_logging_ops {
     }
   }
   
-  fun audioSummaryV2(tag: Output, tensor: Output, sample_rate: Output, max_outputs: Long = 3L, name: String = "AudioSummaryV2") = run {
+  fun audioSummaryV2(tag: Output, tensor: Output, sampleRate: Output, maxOutputs: Long = 3L, name: String = "AudioSummaryV2") = run {
     buildOpTensor("AudioSummaryV2", name) {
       addInput(tag, false)
       addInput(tensor, false)
-      addInput(sample_rate, false)
-      attr("max_outputs", max_outputs)
+      addInput(sampleRate, false)
+      attr("max_outputs", maxOutputs)
     }
   }
   
@@ -33,12 +33,12 @@ interface gen_logging_ops {
     }
   }
   
-  fun imageSummary(tag: Output, tensor: Output, max_images: Long = 3L, bad_color: NDArray<*>, name: String = "ImageSummary") = run {
+  fun imageSummary(tag: Output, tensor: Output, maxImages: Long = 3L, badColor: NDArray<*>, name: String = "ImageSummary") = run {
     buildOpTensor("ImageSummary", name) {
       addInput(tag, false)
       addInput(tensor, false)
-      attr("max_images", max_images)
-      attr("bad_color", bad_color)
+      attr("max_images", maxImages)
+      attr("bad_color", badColor)
     }
   }
   
@@ -48,12 +48,12 @@ interface gen_logging_ops {
     }
   }
   
-  fun print(input: Output, data: Output, message: String = "", first_n: Long = -1L, summarize: Long = 3L, name: String = "Print") = run {
+  fun print(input: Output, data: Output, message: String = "", firstN: Long = -1L, summarize: Long = 3L, name: String = "Print") = run {
     buildOpTensor("Print", name) {
       addInput(input, false)
       addInput(data, false)
       attr("message", message)
-      attr("first_n", first_n)
+      attr("first_n", firstN)
       attr("summarize", summarize)
     }
   }
@@ -65,20 +65,20 @@ interface gen_logging_ops {
     }
   }
   
-  fun tensorSummary(tensor: Output, description: String = "", labels: Array<String> = arrayOf(), display_name: String = "", name: String = "TensorSummary") = run {
+  fun tensorSummary(tensor: Output, description: String = "", labels: Array<String> = arrayOf(), displayName: String = "", name: String = "TensorSummary") = run {
     buildOpTensor("TensorSummary", name) {
       addInput(tensor, false)
       attr("description", description)
       attr("labels", labels)
-      attr("display_name", display_name)
+      attr("display_name", displayName)
     }
   }
   
-  fun tensorSummaryV2(tag: Output, tensor: Output, serialized_summary_metadata: Output, name: String = "TensorSummaryV2") = run {
+  fun tensorSummaryV2(tag: Output, tensor: Output, serializedSummaryMetadata: Output, name: String = "TensorSummaryV2") = run {
     buildOpTensor("TensorSummaryV2", name) {
       addInput(tag, false)
       addInput(tensor, false)
-      addInput(serialized_summary_metadata, false)
+      addInput(serializedSummaryMetadata, false)
     }
   }
   
