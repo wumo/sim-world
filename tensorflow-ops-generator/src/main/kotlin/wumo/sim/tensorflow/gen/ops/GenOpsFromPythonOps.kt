@@ -8,8 +8,6 @@ import wumo.sim.util.sink
 import wumo.sim.util.writeString
 import java.io.File
 
-val renames = setOf("Gather", "OneHot", "Split", "Prod", "Range", "Sum")
-
 fun main(args: Array<String>) {
   generateOpsFromPythonOps("tensorflow-ops-generator/resources/gen_ops",
                                                        "tensorflow/src/main/kotlin/wumo/sim/tensorflow/ops/gen",

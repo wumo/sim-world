@@ -127,7 +127,7 @@ object math_ops {
     fun cast(x: Output, dstT: DataType<*>, name: String = "Cast"): Output = run {
       val x = (x as? Variable)?.value ?: x
       if (x.dataType == dstT) x
-      else super.cast(x, dstT, false, name)
+      else super._cast(x, dstT, name)
     }
     
     override fun conj(x: Output, name: String) =

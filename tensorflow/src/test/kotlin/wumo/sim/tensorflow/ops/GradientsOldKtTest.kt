@@ -11,8 +11,17 @@ class GradientsOldKtTest : BaseTest() {
     val x = tf.variable(1f, name = "x")
     val y = x * x
     val trainer = GradientDescentOptimizer({ 0.1 })
-    val update=trainer.minimize(y)
+    val update = trainer.minimize(y)
+    val init = tf.globalVariablesInitializer()
     printGraph()
+    tf.session {
+      init.run()
+      repeat(10) {
+        update.run()
+        val (_x, _y) = eval<Float, Float>(x.toOutput(), y)
+        println("$_y,$_x")
+      }
+    }
   }
   
   @Test

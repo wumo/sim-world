@@ -177,7 +177,7 @@ interface gen_math_ops {
     }
   }
   
-  fun cast(x: Output, dstT: DataType<*>, name: String = "Cast") = run {
+  fun _cast(x: Output, dstT: DataType<*>, name: String = "Cast") = run {
     buildOpTensor("Cast", name) {
       addInput(x, false)
       attr("DstT", dstT)

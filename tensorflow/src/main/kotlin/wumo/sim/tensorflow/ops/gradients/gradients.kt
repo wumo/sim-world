@@ -1,6 +1,10 @@
 package wumo.sim.tensorflow.ops.gradients
 
+import register_array_grad
+import register_cudnn_rnn_grad
+import register_manip_grad
 import register_math_grad
+import register_random_grad
 import register_state_grad
 import wumo.sim.tensorflow.core.InvalidDataTypeException
 import wumo.sim.tensorflow.ops.*
@@ -19,10 +23,16 @@ import java.util.*
 
 object gradient_ops {
   val logger by lazyLogger()
+  
   init {
+    register_array_grad()
+    register_cudnn_rnn_grad()
+    register_manip_grad()
     register_math_grad()
+    register_random_grad()
     register_state_grad()
   }
+  
   interface API {
 //    fun gradients(y: Output, xs: Collection<Output>): List<Output> {
 //      return addSymbolicGradients(listOf(y), xs.toList())
@@ -333,7 +343,7 @@ object gradient_ops {
           gradFn()
         }
       }
-    } catch (e: IllegalArgumentException) {
+    } catch (e: Exception) {
       gradFn()
     }
   }
@@ -365,7 +375,7 @@ object gradient_ops {
           throw InvalidDataTypeException(
               "Gradients of complex tensors must set 'gradients' (variable.dataType = '${y.dataType}').")
         tf.fill(tf.shape(y),
-                 tf.const(y.dataType, 1, name = "grad_ys_$index"))
+                tf.const(y.dataType, 1, name = "grad_ys_$index"))
       } else {
         when {
           y.dataType.isFloatingPoint || y.dataType.isInteger ->

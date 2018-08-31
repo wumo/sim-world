@@ -3,6 +3,7 @@ package wumo.sim.tensorflow.gen.ops
 import com.google.protobuf.TextFormat
 import org.tensorflow.framework.AttrValue
 import org.tensorflow.framework.OpDef
+import renames
 import wumo.sim.tensorflow.gen.toCamelCase
 import java.util.*
 

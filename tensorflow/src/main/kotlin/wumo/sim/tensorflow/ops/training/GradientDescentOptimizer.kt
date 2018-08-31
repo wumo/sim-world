@@ -20,6 +20,7 @@ class GradientDescentOptimizer(
   protected fun getLearningRate(variable: Variable, iteration: Variable?): Output {
     if (!::learningRateTensor.isInitialized)
       throw IllegalStateException("Method 'prepare' has not been called on this optimizer.")
+    
     return tf.cast(learningRateTensor, variable.dataType)
   }
   

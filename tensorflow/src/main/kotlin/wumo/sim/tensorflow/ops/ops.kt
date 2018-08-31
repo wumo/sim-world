@@ -324,14 +324,15 @@ object ops {
       gen_dataset_ops,
       gen_data_flow_ops,
       gen_functional_ops,
+      gen_gru_ops,
       gen_image_ops,
       gen_io_ops,
       gen_linalg_ops,
       gen_list_ops,
       gen_logging_ops,
       gen_lookup_ops,
+      gen_lstm_ops,
       gen_manip_ops,
-      gen_no_op,
       gen_parsing_ops,
       gen_resource_variable_ops,
       gen_script_ops,
@@ -343,7 +344,8 @@ object ops {
       gen_string_ops,
       gen_summary_ops,
       gen_training_ops,
-      gen_user_ops {
+      gen_user_ops,
+      gen_variable_ops {
     
     /** Returns the graph of the current op creation context. */
     val currentGraph get() = graphConstructionScope.value.graph
