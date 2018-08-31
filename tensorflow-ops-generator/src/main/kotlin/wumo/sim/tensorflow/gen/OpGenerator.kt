@@ -79,7 +79,7 @@ fun generateGroupFiles(path: String, group: String, opDefs: List<OpDef>, kotlinP
 }
 
 class OpGenerator(val opDef: OpDef, val sb: StringBuilder) {
-  val name = processName(opDef.name).let { n -> if (n.startsWith("_")) n else "_$n" }
+  val name = processName(opDef.name).let { n -> if (n.startsWith("_")) n else n }
   val argumentTypes = hashMapOf<String, String>()
   val inputs = mutableListOf<Pair<String, String>>()
   val inputsRef = hashMapOf<String, Boolean>()
@@ -189,7 +189,7 @@ class OpGenerator(val opDef: OpDef, val sb: StringBuilder) {
         "package", "as", "type", "class", "this", "val", "var", "fun", "extension", "for",
         "null", "typeof", "new", "true", "false", "is", "in", "throw", "return", "break", "continue",
         "object", "if", "else", "while", "do", "when", "out", "ref", "try",
-        "where", "by", "get", "set", "import", "final", "abstract", "enum",
+        "by", "get", "set", "import", "final", "abstract", "enum",
         "open", "annotation", "override", "private", "public", "internal",
         "protected", "catch", "finally")
     

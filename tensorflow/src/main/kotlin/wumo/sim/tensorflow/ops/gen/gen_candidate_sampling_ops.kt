@@ -7,7 +7,7 @@ import wumo.sim.tensorflow.buildOpTensors
 import wumo.sim.tensorflow.ops.Output
 
 interface gen_candidate_sampling_ops {
-  fun _allCandidateSampler(true_classes: Output, num_true: Long, num_sampled: Long, unique: Boolean, seed: Long = 0L, seed2: Long = 0L, name: String = "AllCandidateSampler") = run {
+  fun allCandidateSampler(true_classes: Output, num_true: Long, num_sampled: Long, unique: Boolean, seed: Long = 0L, seed2: Long = 0L, name: String = "AllCandidateSampler") = run {
     buildOpTensors("AllCandidateSampler", name) {
       addInput(true_classes, false)
       attr("num_true", num_true)
@@ -18,7 +18,7 @@ interface gen_candidate_sampling_ops {
     }
   }
   
-  fun _computeAccidentalHits(true_classes: Output, sampled_candidates: Output, num_true: Long, seed: Long = 0L, seed2: Long = 0L, name: String = "ComputeAccidentalHits") = run {
+  fun computeAccidentalHits(true_classes: Output, sampled_candidates: Output, num_true: Long, seed: Long = 0L, seed2: Long = 0L, name: String = "ComputeAccidentalHits") = run {
     buildOpTensors("ComputeAccidentalHits", name) {
       addInput(true_classes, false)
       addInput(sampled_candidates, false)
@@ -28,7 +28,7 @@ interface gen_candidate_sampling_ops {
     }
   }
   
-  fun _fixedUnigramCandidateSampler(true_classes: Output, num_true: Long, num_sampled: Long, unique: Boolean, range_max: Long, vocab_file: String = "", distortion: Float = 1.0f, num_reserved_ids: Long = 0L, num_shards: Long = 1L, shard: Long = 0L, unigrams: Array<Float> = arrayOf(), seed: Long = 0L, seed2: Long = 0L, name: String = "FixedUnigramCandidateSampler") = run {
+  fun fixedUnigramCandidateSampler(true_classes: Output, num_true: Long, num_sampled: Long, unique: Boolean, range_max: Long, vocab_file: String = "", distortion: Float = 1.0f, num_reserved_ids: Long = 0L, num_shards: Long = 1L, shard: Long = 0L, unigrams: Array<Float> = arrayOf(), seed: Long = 0L, seed2: Long = 0L, name: String = "FixedUnigramCandidateSampler") = run {
     buildOpTensors("FixedUnigramCandidateSampler", name) {
       addInput(true_classes, false)
       attr("num_true", num_true)
@@ -46,7 +46,7 @@ interface gen_candidate_sampling_ops {
     }
   }
   
-  fun _learnedUnigramCandidateSampler(true_classes: Output, num_true: Long, num_sampled: Long, unique: Boolean, range_max: Long, seed: Long = 0L, seed2: Long = 0L, name: String = "LearnedUnigramCandidateSampler") = run {
+  fun learnedUnigramCandidateSampler(true_classes: Output, num_true: Long, num_sampled: Long, unique: Boolean, range_max: Long, seed: Long = 0L, seed2: Long = 0L, name: String = "LearnedUnigramCandidateSampler") = run {
     buildOpTensors("LearnedUnigramCandidateSampler", name) {
       addInput(true_classes, false)
       attr("num_true", num_true)
@@ -58,7 +58,7 @@ interface gen_candidate_sampling_ops {
     }
   }
   
-  fun _logUniformCandidateSampler(true_classes: Output, num_true: Long, num_sampled: Long, unique: Boolean, range_max: Long, seed: Long = 0L, seed2: Long = 0L, name: String = "LogUniformCandidateSampler") = run {
+  fun logUniformCandidateSampler(true_classes: Output, num_true: Long, num_sampled: Long, unique: Boolean, range_max: Long, seed: Long = 0L, seed2: Long = 0L, name: String = "LogUniformCandidateSampler") = run {
     buildOpTensors("LogUniformCandidateSampler", name) {
       addInput(true_classes, false)
       attr("num_true", num_true)
@@ -70,7 +70,7 @@ interface gen_candidate_sampling_ops {
     }
   }
   
-  fun _uniformCandidateSampler(true_classes: Output, num_true: Long, num_sampled: Long, unique: Boolean, range_max: Long, seed: Long = 0L, seed2: Long = 0L, name: String = "UniformCandidateSampler") = run {
+  fun uniformCandidateSampler(true_classes: Output, num_true: Long, num_sampled: Long, unique: Boolean, range_max: Long, seed: Long = 0L, seed2: Long = 0L, name: String = "UniformCandidateSampler") = run {
     buildOpTensors("UniformCandidateSampler", name) {
       addInput(true_classes, false)
       attr("num_true", num_true)

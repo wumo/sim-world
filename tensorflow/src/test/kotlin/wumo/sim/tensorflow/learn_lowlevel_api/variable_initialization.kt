@@ -31,10 +31,10 @@ class variable_initialization : BaseTest() {
     
     val wt = Output(w, 0)
     
-    val v_is_initialized = tf._isVariableInitialized(vt, "v_is_initialized")
-    val v_initialized = tf._refSwitch(vt, v_is_initialized, "switch_v_initialized")[1]
-    val v_not_initialized = tf._switch(initial_value, v_is_initialized, "switch_v_not_initialized")[0]
-//    val v_initialized_value = tf._merge(v_initialized, v_not_initialized, name = "v_initialized_value")[0]
+    val v_is_initialized = tf.isVariableInitialized(vt, "v_is_initialized")
+    val v_initialized = tf.refSwitch(vt, v_is_initialized, "switch_v_initialized")[1]
+    val v_not_initialized = tf.switch(initial_value, v_is_initialized, "switch_v_not_initialized")[0]
+//    val v_initialized_value = tf.merge(v_initialized, v_not_initialized, name = "v_initialized_value")[0]
     
     val w_init = tf.currentGraph.nodeBuilder("Assign", "w/init").run {
       addInput(wt)

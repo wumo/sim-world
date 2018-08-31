@@ -10,7 +10,7 @@ import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.types.DataType
 
 interface gen_io_ops {
-  fun _fixedLengthRecordReaderV2(record_bytes: Long, header_bytes: Long = 0L, footer_bytes: Long = 0L, hop_bytes: Long = 0L, container: String = "", shared_name: String = "", encoding: String = "", name: String = "FixedLengthRecordReaderV2") = run {
+  fun fixedLengthRecordReaderV2(record_bytes: Long, header_bytes: Long = 0L, footer_bytes: Long = 0L, hop_bytes: Long = 0L, container: String = "", shared_name: String = "", encoding: String = "", name: String = "FixedLengthRecordReaderV2") = run {
     buildOpTensor("FixedLengthRecordReaderV2", name) {
       attr("record_bytes", record_bytes)
       attr("header_bytes", header_bytes)
@@ -22,27 +22,27 @@ interface gen_io_ops {
     }
   }
   
-  fun _identityReaderV2(container: String = "", shared_name: String = "", name: String = "IdentityReaderV2") = run {
+  fun identityReaderV2(container: String = "", shared_name: String = "", name: String = "IdentityReaderV2") = run {
     buildOpTensor("IdentityReaderV2", name) {
       attr("container", container)
       attr("shared_name", shared_name)
     }
   }
   
-  fun _lMDBReader(container: String = "", shared_name: String = "", name: String = "LMDBReader") = run {
+  fun lMDBReader(container: String = "", shared_name: String = "", name: String = "LMDBReader") = run {
     buildOpTensor("LMDBReader", name) {
       attr("container", container)
       attr("shared_name", shared_name)
     }
   }
   
-  fun _matchingFiles(pattern: Output, name: String = "MatchingFiles") = run {
+  fun matchingFiles(pattern: Output, name: String = "MatchingFiles") = run {
     buildOpTensor("MatchingFiles", name) {
       addInput(pattern, false)
     }
   }
   
-  fun _mergeV2Checkpoints(checkpoint_prefixes: Output, destination_prefix: Output, delete_old_dirs: Boolean = true, name: String = "MergeV2Checkpoints") = run {
+  fun mergeV2Checkpoints(checkpoint_prefixes: Output, destination_prefix: Output, delete_old_dirs: Boolean = true, name: String = "MergeV2Checkpoints") = run {
     buildOp("MergeV2Checkpoints", name) {
       addInput(checkpoint_prefixes, false)
       addInput(destination_prefix, false)
@@ -50,25 +50,25 @@ interface gen_io_ops {
     }
   }
   
-  fun _readFile(filename: Output, name: String = "ReadFile") = run {
+  fun readFile(filename: Output, name: String = "ReadFile") = run {
     buildOpTensor("ReadFile", name) {
       addInput(filename, false)
     }
   }
   
-  fun _readerNumRecordsProducedV2(reader_handle: Output, name: String = "ReaderNumRecordsProducedV2") = run {
+  fun readerNumRecordsProducedV2(reader_handle: Output, name: String = "ReaderNumRecordsProducedV2") = run {
     buildOpTensor("ReaderNumRecordsProducedV2", name) {
       addInput(reader_handle, false)
     }
   }
   
-  fun _readerNumWorkUnitsCompletedV2(reader_handle: Output, name: String = "ReaderNumWorkUnitsCompletedV2") = run {
+  fun readerNumWorkUnitsCompletedV2(reader_handle: Output, name: String = "ReaderNumWorkUnitsCompletedV2") = run {
     buildOpTensor("ReaderNumWorkUnitsCompletedV2", name) {
       addInput(reader_handle, false)
     }
   }
   
-  fun _readerReadUpToV2(reader_handle: Output, queue_handle: Output, num_records: Output, name: String = "ReaderReadUpToV2") = run {
+  fun readerReadUpToV2(reader_handle: Output, queue_handle: Output, num_records: Output, name: String = "ReaderReadUpToV2") = run {
     buildOpTensors("ReaderReadUpToV2", name) {
       addInput(reader_handle, false)
       addInput(queue_handle, false)
@@ -76,33 +76,33 @@ interface gen_io_ops {
     }
   }
   
-  fun _readerReadV2(reader_handle: Output, queue_handle: Output, name: String = "ReaderReadV2") = run {
+  fun readerReadV2(reader_handle: Output, queue_handle: Output, name: String = "ReaderReadV2") = run {
     buildOpTensors("ReaderReadV2", name) {
       addInput(reader_handle, false)
       addInput(queue_handle, false)
     }
   }
   
-  fun _readerResetV2(reader_handle: Output, name: String = "ReaderResetV2") = run {
+  fun readerResetV2(reader_handle: Output, name: String = "ReaderResetV2") = run {
     buildOp("ReaderResetV2", name) {
       addInput(reader_handle, false)
     }
   }
   
-  fun _readerRestoreStateV2(reader_handle: Output, state: Output, name: String = "ReaderRestoreStateV2") = run {
+  fun readerRestoreStateV2(reader_handle: Output, state: Output, name: String = "ReaderRestoreStateV2") = run {
     buildOp("ReaderRestoreStateV2", name) {
       addInput(reader_handle, false)
       addInput(state, false)
     }
   }
   
-  fun _readerSerializeStateV2(reader_handle: Output, name: String = "ReaderSerializeStateV2") = run {
+  fun readerSerializeStateV2(reader_handle: Output, name: String = "ReaderSerializeStateV2") = run {
     buildOpTensor("ReaderSerializeStateV2", name) {
       addInput(reader_handle, false)
     }
   }
   
-  fun _restore(file_pattern: Output, tensor_name: Output, dt: DataType<*>, preferred_shard: Long = -1L, name: String = "Restore") = run {
+  fun restore(file_pattern: Output, tensor_name: Output, dt: DataType<*>, preferred_shard: Long = -1L, name: String = "Restore") = run {
     buildOpTensor("Restore", name) {
       addInput(file_pattern, false)
       addInput(tensor_name, false)
@@ -111,7 +111,7 @@ interface gen_io_ops {
     }
   }
   
-  fun _restoreSlice(file_pattern: Output, tensor_name: Output, shape_and_slice: Output, dt: DataType<*>, preferred_shard: Long = -1L, name: String = "RestoreSlice") = run {
+  fun restoreSlice(file_pattern: Output, tensor_name: Output, shape_and_slice: Output, dt: DataType<*>, preferred_shard: Long = -1L, name: String = "RestoreSlice") = run {
     buildOpTensor("RestoreSlice", name) {
       addInput(file_pattern, false)
       addInput(tensor_name, false)
@@ -121,7 +121,7 @@ interface gen_io_ops {
     }
   }
   
-  fun _restoreV2(prefix: Output, tensor_names: Output, shape_and_slices: Output, dtypes: Array<Long>, name: String = "RestoreV2") = run {
+  fun restoreV2(prefix: Output, tensor_names: Output, shape_and_slices: Output, dtypes: Array<Long>, name: String = "RestoreV2") = run {
     buildOpTensors("RestoreV2", name) {
       addInput(prefix, false)
       addInput(tensor_names, false)
@@ -130,7 +130,7 @@ interface gen_io_ops {
     }
   }
   
-  fun _save(filename: Output, tensor_names: Output, data: Output, name: String = "Save") = run {
+  fun save(filename: Output, tensor_names: Output, data: Output, name: String = "Save") = run {
     buildOp("Save", name) {
       addInput(filename, false)
       addInput(tensor_names, false)
@@ -138,7 +138,7 @@ interface gen_io_ops {
     }
   }
   
-  fun _saveSlices(filename: Output, tensor_names: Output, shapes_and_slices: Output, data: Output, name: String = "SaveSlices") = run {
+  fun saveSlices(filename: Output, tensor_names: Output, shapes_and_slices: Output, data: Output, name: String = "SaveSlices") = run {
     buildOp("SaveSlices", name) {
       addInput(filename, false)
       addInput(tensor_names, false)
@@ -147,7 +147,7 @@ interface gen_io_ops {
     }
   }
   
-  fun _saveV2(prefix: Output, tensor_names: Output, shape_and_slices: Output, tensors: Output, name: String = "SaveV2") = run {
+  fun saveV2(prefix: Output, tensor_names: Output, shape_and_slices: Output, tensors: Output, name: String = "SaveV2") = run {
     buildOp("SaveV2", name) {
       addInput(prefix, false)
       addInput(tensor_names, false)
@@ -156,7 +156,7 @@ interface gen_io_ops {
     }
   }
   
-  fun _shardedFilename(basename: Output, shard: Output, num_shards: Output, name: String = "ShardedFilename") = run {
+  fun shardedFilename(basename: Output, shard: Output, num_shards: Output, name: String = "ShardedFilename") = run {
     buildOpTensor("ShardedFilename", name) {
       addInput(basename, false)
       addInput(shard, false)
@@ -164,14 +164,14 @@ interface gen_io_ops {
     }
   }
   
-  fun _shardedFilespec(basename: Output, num_shards: Output, name: String = "ShardedFilespec") = run {
+  fun shardedFilespec(basename: Output, num_shards: Output, name: String = "ShardedFilespec") = run {
     buildOpTensor("ShardedFilespec", name) {
       addInput(basename, false)
       addInput(num_shards, false)
     }
   }
   
-  fun _tFRecordReaderV2(container: String = "", shared_name: String = "", compression_type: String = "", name: String = "TFRecordReaderV2") = run {
+  fun tFRecordReaderV2(container: String = "", shared_name: String = "", compression_type: String = "", name: String = "TFRecordReaderV2") = run {
     buildOpTensor("TFRecordReaderV2", name) {
       attr("container", container)
       attr("shared_name", shared_name)
@@ -179,7 +179,7 @@ interface gen_io_ops {
     }
   }
   
-  fun _textLineReaderV2(skip_header_lines: Long = 0L, container: String = "", shared_name: String = "", name: String = "TextLineReaderV2") = run {
+  fun textLineReaderV2(skip_header_lines: Long = 0L, container: String = "", shared_name: String = "", name: String = "TextLineReaderV2") = run {
     buildOpTensor("TextLineReaderV2", name) {
       attr("skip_header_lines", skip_header_lines)
       attr("container", container)
@@ -187,14 +187,14 @@ interface gen_io_ops {
     }
   }
   
-  fun _wholeFileReaderV2(container: String = "", shared_name: String = "", name: String = "WholeFileReaderV2") = run {
+  fun wholeFileReaderV2(container: String = "", shared_name: String = "", name: String = "WholeFileReaderV2") = run {
     buildOpTensor("WholeFileReaderV2", name) {
       attr("container", container)
       attr("shared_name", shared_name)
     }
   }
   
-  fun _writeFile(filename: Output, contents: Output, name: String = "WriteFile") = run {
+  fun writeFile(filename: Output, contents: Output, name: String = "WriteFile") = run {
     buildOp("WriteFile", name) {
       addInput(filename, false)
       addInput(contents, false)

@@ -1,12 +1,13 @@
 package wumo.sim.tensorflow.ops
 
+import wumo.sim.tensorflow.ops.gen.gen_nn_ops
 import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.types.FLOAT
 import wumo.sim.tensorflow.types.HALF
 import wumo.sim.util.a
 
 object nn_ops {
-  interface API {
+  interface API :gen_nn_ops{
     
     /**
      * Calculate the mean and variance of `x`.
@@ -44,11 +45,11 @@ object nn_ops {
           //Compute true mean while keeping the dims for proper broadcasting.
           var mean = tf.mean(y, axes, keep_dims = true, name = "mean")
           //sample variance, not unbiased variance
-          var variance = tf.mean(tf._squaredDifference(y, tf._stopGradient(mean)),
+          var variance = tf.mean(tf.squaredDifference(y, tf.stopGradient(mean)),
                                  axes, keep_dims = true, name = "variance")
           if (!keep_dims) {
-            mean = tf._squeeze(mean, axes.toTypedArray())
-            variance = tf._squeeze(variance, axes.toTypedArray())
+            mean = tf.squeeze(mean, axes.toTypedArray())
+            variance = tf.squeeze(variance, axes.toTypedArray())
           }
           if (x.dataType == HALF)
             a(tf.cast(mean, HALF), tf.cast(variance, HALF))
@@ -102,7 +103,7 @@ object nn_ops {
                             name: String = "batchnorm"): Output =
         tf.nameScope(name) {
           //    val _variance_epsilon = tf.const(variance_epsilon)
-          var inv = tf._rsqrt(variance + variance_epsilon)
+          var inv = tf.rsqrt(variance + variance_epsilon)
           if (scale != null)
             inv *= scale
           x * inv + (if (offset != null) offset - mean * inv else -mean * inv)

@@ -7,7 +7,7 @@ import wumo.sim.tensorflow.buildOpTensors
 import wumo.sim.tensorflow.ops.Output
 
 interface gen_script_ops {
-  fun _eagerPyFunc(input: Output, token: String, tout: Array<Long>, name: String = "EagerPyFunc") = run {
+  fun eagerPyFunc(input: Output, token: String, tout: Array<Long>, name: String = "EagerPyFunc") = run {
     buildOpTensors("EagerPyFunc", name) {
       addInput(input, false)
       attr("token", token)

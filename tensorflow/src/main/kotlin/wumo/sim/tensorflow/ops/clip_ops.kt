@@ -40,14 +40,14 @@ object clip_ops {
           val clip_norm = tf.cast(clip_norm, t.dataType)
           // Calculate L2-norm, clip elements by ratio of clip_norm to L2-norm
           
-          val l2norm = tf._sqrt(tf.sum(t * t, axes, keep_dims = true))
+          val l2norm = tf.sqrt(tf.sum(t * t, axes, keep_dims = true))
           val intermediate = t * clip_norm
           // Assert that the shape is compatible with the initial shape,
           // to prevent unintentional broadcasting.
 //    t.shape x intermediate.shape
           assert(t.shape.isCompatibleWith(intermediate.shape))
           tf.identity(
-              intermediate / tf._maximum(l2norm, clip_norm), name = tf.currentNameScope)
+              intermediate / tf.maximum(l2norm, clip_norm), name = tf.currentNameScope)
         }
   }
 }

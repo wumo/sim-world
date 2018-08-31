@@ -8,7 +8,7 @@ class ControlFlowTest {
   fun cond() {
     val x = tf.const(0, name = "x")
     val y = tf.const(1, name = "y")
-    val z = tf.cond(tf._less(x, y), { x * 17 }, { y * 23 })
+    val z = tf.cond(tf.less(x, y), { x * 17 }, { y * 23 })
     tf.printGraph()
   }
 }

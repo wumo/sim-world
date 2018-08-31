@@ -10,7 +10,7 @@ import wumo.sim.tensorflow.types.FLOAT
 import wumo.sim.tensorflow.types.INT64
 
 interface gen_stateless_random_ops {
-  fun _statelessMultinomial(logits: Output, num_samples: Output, seed: Output, output_dtype: DataType<*> = INT64, name: String = "StatelessMultinomial") = run {
+  fun statelessMultinomial(logits: Output, num_samples: Output, seed: Output, output_dtype: DataType<*> = INT64, name: String = "StatelessMultinomial") = run {
     buildOpTensor("StatelessMultinomial", name) {
       addInput(logits, false)
       addInput(num_samples, false)
@@ -19,7 +19,7 @@ interface gen_stateless_random_ops {
     }
   }
   
-  fun _statelessRandomNormal(shape: Output, seed: Output, dtype: DataType<*> = FLOAT, name: String = "StatelessRandomNormal") = run {
+  fun statelessRandomNormal(shape: Output, seed: Output, dtype: DataType<*> = FLOAT, name: String = "StatelessRandomNormal") = run {
     buildOpTensor("StatelessRandomNormal", name) {
       addInput(shape, false)
       addInput(seed, false)
@@ -27,7 +27,7 @@ interface gen_stateless_random_ops {
     }
   }
   
-  fun _statelessRandomUniform(shape: Output, seed: Output, dtype: DataType<*> = FLOAT, name: String = "StatelessRandomUniform") = run {
+  fun statelessRandomUniform(shape: Output, seed: Output, dtype: DataType<*> = FLOAT, name: String = "StatelessRandomUniform") = run {
     buildOpTensor("StatelessRandomUniform", name) {
       addInput(shape, false)
       addInput(seed, false)
@@ -35,7 +35,7 @@ interface gen_stateless_random_ops {
     }
   }
   
-  fun _statelessTruncatedNormal(shape: Output, seed: Output, dtype: DataType<*> = FLOAT, name: String = "StatelessTruncatedNormal") = run {
+  fun statelessTruncatedNormal(shape: Output, seed: Output, dtype: DataType<*> = FLOAT, name: String = "StatelessTruncatedNormal") = run {
     buildOpTensor("StatelessTruncatedNormal", name) {
       addInput(shape, false)
       addInput(seed, false)

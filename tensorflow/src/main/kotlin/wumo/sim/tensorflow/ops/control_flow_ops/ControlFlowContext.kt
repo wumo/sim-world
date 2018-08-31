@@ -185,7 +185,7 @@ abstract class ControlFlowContext {
           // We are in a conditional context and so we use a switch to create zeros only when needed.
           if (value.dataType == RESOURCE)
             tf.controlDependencies(mutableSetOf(switch.op)) {
-              tf.zeros(tf._variableShape(switch))
+              tf.zeros(tf.variableShape(switch))
             }
           else {
             val zerosShape = tf.shape(switch, optimize = false)
@@ -198,7 +198,7 @@ abstract class ControlFlowContext {
         } ?: tf.zerosLike(value, optimize = false)
       } else {
         if (value.dataType == RESOURCE)
-          tf.zeros(tf._variableShape(value))
+          tf.zeros(tf.variableShape(value))
         else
           tf.zerosLike(value, optimize = false)
       }

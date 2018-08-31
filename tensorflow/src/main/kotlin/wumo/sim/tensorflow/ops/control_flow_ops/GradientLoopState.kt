@@ -88,7 +88,7 @@ class GradientLoopState(val forwardContext: WhileContext, val outerGradState: Gr
    * executed in the iteration order. */
   internal val forwardSync: Op by lazy {
     val syncOp = tf.controlDependencies(mutableSetOf()) {
-      tf._controlTrigger("f_sync")
+      tf.controlTrigger("f_sync")
     }
     syncOp.controlFlowContext = forwardContext
     forwardIndex.op.addControlInput(syncOp)
@@ -99,7 +99,7 @@ class GradientLoopState(val forwardContext: WhileContext, val outerGradState: Gr
    * executed in the iteration order. */
   internal val backwardSync: Op by lazy {
     val syncOp = tf.controlDependencies(mutableSetOf()) {
-      tf._controlTrigger("b_sync")
+      tf.controlTrigger("b_sync")
     }
     syncOp.controlFlowContext = backwardContext
     backwardIndex.op.addControlInput(syncOp)
@@ -187,7 +187,7 @@ class GradientLoopState(val forwardContext: WhileContext, val outerGradState: Gr
               control_flow_ops.getMaxSizeFromNestedMaximumIterations(value, forwardContext)
             else
               tf.const(-1)
-        tf._stackV2(maxSize, value.dataType, name = "ForwardAccumulator")
+        tf.stackV2(maxSize, value.dataType, name = "ForwardAccumulator")
       }
       currentContext?.exit()
       // Make the `accumulator` available in the forward context.
@@ -198,7 +198,7 @@ class GradientLoopState(val forwardContext: WhileContext, val outerGradState: Gr
         forwardContext -> {
           // `value` is not nested in the forward context.
           forwardContext.enter()
-          val stackPushOp = tf._stackPushV2(enterAccumulator, value, forwardContext.swapMemory).op
+          val stackPushOp = tf.stackPushV2(enterAccumulator, value, forwardContext.swapMemory).op
           forwardContext.exit()
           // Protect the stack push and order it before `forwardIndex`.
           forwardIndex.op.addControlInput(stackPushOp)
@@ -210,13 +210,13 @@ class GradientLoopState(val forwardContext: WhileContext, val outerGradState: Gr
               if (deadBranch) {
                 // Special case for creating a zero tensor for a dead branch of a switch.
                 valueContext.outerContext?.enter()
-                val stackPushOp = tf._stackPushV2(enterAccumulator, value, forwardContext.swapMemory).op
+                val stackPushOp = tf.stackPushV2(enterAccumulator, value, forwardContext.swapMemory).op
                 valueContext.outerContext?.exit()
                 stackPushOp.controlFlowContext = valueContext
                 stackPushOp
               } else {
                 valueContext.enter()
-                val stackPushOp = tf._stackPushV2(enterAccumulator, value, forwardContext.swapMemory).op
+                val stackPushOp = tf.stackPushV2(enterAccumulator, value, forwardContext.swapMemory).op
                 valueContext.exit()
                 stackPushOp
               }
@@ -270,7 +270,7 @@ class GradientLoopState(val forwardContext: WhileContext, val outerGradState: Gr
         val branch = if (deadBranch) 1 - condContext.branch else condContext.branch
         control_flow_ops._switchRefOrTensor(historyValue, predicate)[branch]
       } ?: historyValue
-      val stackPopOp = tf._stackPopV2(stackHandle, value.dataType)
+      val stackPopOp = tf.stackPopV2(stackHandle, value.dataType)
       stackPopOp.setShape(value.shape)
       backwardContext.exit()
       stackPopOp

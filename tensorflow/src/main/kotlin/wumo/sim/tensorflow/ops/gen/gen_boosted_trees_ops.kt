@@ -9,7 +9,7 @@ import wumo.sim.tensorflow.buildOpTensors
 import wumo.sim.tensorflow.ops.Output
 
 interface gen_boosted_trees_ops {
-  fun _boostedTreesCalculateBestGainsPerFeature(node_id_range: Output, stats_summary_list: List<Output>, l1: Output, l2: Output, tree_complexity: Output, min_node_weight: Output, max_splits: Long, name: String = "BoostedTreesCalculateBestGainsPerFeature") = run {
+  fun boostedTreesCalculateBestGainsPerFeature(node_id_range: Output, stats_summary_list: List<Output>, l1: Output, l2: Output, tree_complexity: Output, min_node_weight: Output, max_splits: Long, name: String = "BoostedTreesCalculateBestGainsPerFeature") = run {
     buildOpTensors("BoostedTreesCalculateBestGainsPerFeature", name) {
       addInput(node_id_range, false)
       addInput(stats_summary_list, false)
@@ -21,7 +21,7 @@ interface gen_boosted_trees_ops {
     }
   }
   
-  fun _boostedTreesCenterBias(tree_ensemble_handle: Output, mean_gradients: Output, mean_hessians: Output, l1: Output, l2: Output, name: String = "BoostedTreesCenterBias") = run {
+  fun boostedTreesCenterBias(tree_ensemble_handle: Output, mean_gradients: Output, mean_hessians: Output, l1: Output, l2: Output, name: String = "BoostedTreesCenterBias") = run {
     buildOpTensor("BoostedTreesCenterBias", name) {
       addInput(tree_ensemble_handle, false)
       addInput(mean_gradients, false)
@@ -31,7 +31,7 @@ interface gen_boosted_trees_ops {
     }
   }
   
-  fun _boostedTreesCreateEnsemble(tree_ensemble_handle: Output, stamp_token: Output, tree_ensemble_serialized: Output, name: String = "BoostedTreesCreateEnsemble") = run {
+  fun boostedTreesCreateEnsemble(tree_ensemble_handle: Output, stamp_token: Output, tree_ensemble_serialized: Output, name: String = "BoostedTreesCreateEnsemble") = run {
     buildOp("BoostedTreesCreateEnsemble", name) {
       addInput(tree_ensemble_handle, false)
       addInput(stamp_token, false)
@@ -39,7 +39,7 @@ interface gen_boosted_trees_ops {
     }
   }
   
-  fun _boostedTreesDeserializeEnsemble(tree_ensemble_handle: Output, stamp_token: Output, tree_ensemble_serialized: Output, name: String = "BoostedTreesDeserializeEnsemble") = run {
+  fun boostedTreesDeserializeEnsemble(tree_ensemble_handle: Output, stamp_token: Output, tree_ensemble_serialized: Output, name: String = "BoostedTreesDeserializeEnsemble") = run {
     buildOp("BoostedTreesDeserializeEnsemble", name) {
       addInput(tree_ensemble_handle, false)
       addInput(stamp_token, false)
@@ -47,14 +47,14 @@ interface gen_boosted_trees_ops {
     }
   }
   
-  fun _boostedTreesEnsembleResourceHandleOp(container: String = "", shared_name: String = "", name: String = "BoostedTreesEnsembleResourceHandleOp") = run {
+  fun boostedTreesEnsembleResourceHandleOp(container: String = "", shared_name: String = "", name: String = "BoostedTreesEnsembleResourceHandleOp") = run {
     buildOpTensor("BoostedTreesEnsembleResourceHandleOp", name) {
       attr("container", container)
       attr("shared_name", shared_name)
     }
   }
   
-  fun _boostedTreesExampleDebugOutputs(tree_ensemble_handle: Output, bucketized_features: List<Output>, logits_dimension: Long, name: String = "BoostedTreesExampleDebugOutputs") = run {
+  fun boostedTreesExampleDebugOutputs(tree_ensemble_handle: Output, bucketized_features: List<Output>, logits_dimension: Long, name: String = "BoostedTreesExampleDebugOutputs") = run {
     buildOpTensor("BoostedTreesExampleDebugOutputs", name) {
       addInput(tree_ensemble_handle, false)
       addInput(bucketized_features, false)
@@ -62,13 +62,13 @@ interface gen_boosted_trees_ops {
     }
   }
   
-  fun _boostedTreesGetEnsembleStates(tree_ensemble_handle: Output, name: String = "BoostedTreesGetEnsembleStates") = run {
+  fun boostedTreesGetEnsembleStates(tree_ensemble_handle: Output, name: String = "BoostedTreesGetEnsembleStates") = run {
     buildOpTensors("BoostedTreesGetEnsembleStates", name) {
       addInput(tree_ensemble_handle, false)
     }
   }
   
-  fun _boostedTreesMakeStatsSummary(node_ids: Output, gradients: Output, hessians: Output, bucketized_features_list: List<Output>, max_splits: Long, num_buckets: Long, name: String = "BoostedTreesMakeStatsSummary") = run {
+  fun boostedTreesMakeStatsSummary(node_ids: Output, gradients: Output, hessians: Output, bucketized_features_list: List<Output>, max_splits: Long, num_buckets: Long, name: String = "BoostedTreesMakeStatsSummary") = run {
     buildOpTensor("BoostedTreesMakeStatsSummary", name) {
       addInput(node_ids, false)
       addInput(gradients, false)
@@ -79,7 +79,7 @@ interface gen_boosted_trees_ops {
     }
   }
   
-  fun _boostedTreesPredict(tree_ensemble_handle: Output, bucketized_features: List<Output>, logits_dimension: Long, name: String = "BoostedTreesPredict") = run {
+  fun boostedTreesPredict(tree_ensemble_handle: Output, bucketized_features: List<Output>, logits_dimension: Long, name: String = "BoostedTreesPredict") = run {
     buildOpTensor("BoostedTreesPredict", name) {
       addInput(tree_ensemble_handle, false)
       addInput(bucketized_features, false)
@@ -87,13 +87,13 @@ interface gen_boosted_trees_ops {
     }
   }
   
-  fun _boostedTreesSerializeEnsemble(tree_ensemble_handle: Output, name: String = "BoostedTreesSerializeEnsemble") = run {
+  fun boostedTreesSerializeEnsemble(tree_ensemble_handle: Output, name: String = "BoostedTreesSerializeEnsemble") = run {
     buildOpTensors("BoostedTreesSerializeEnsemble", name) {
       addInput(tree_ensemble_handle, false)
     }
   }
   
-  fun _boostedTreesTrainingPredict(tree_ensemble_handle: Output, cached_tree_ids: Output, cached_node_ids: Output, bucketized_features: List<Output>, logits_dimension: Long, name: String = "BoostedTreesTrainingPredict") = run {
+  fun boostedTreesTrainingPredict(tree_ensemble_handle: Output, cached_tree_ids: Output, cached_node_ids: Output, bucketized_features: List<Output>, logits_dimension: Long, name: String = "BoostedTreesTrainingPredict") = run {
     buildOpTensors("BoostedTreesTrainingPredict", name) {
       addInput(tree_ensemble_handle, false)
       addInput(cached_tree_ids, false)
@@ -103,7 +103,7 @@ interface gen_boosted_trees_ops {
     }
   }
   
-  fun _boostedTreesUpdateEnsemble(tree_ensemble_handle: Output, feature_ids: Output, node_ids: List<Output>, gains: List<Output>, thresholds: List<Output>, left_node_contribs: List<Output>, right_node_contribs: List<Output>, max_depth: Output, learning_rate: Output, pruning_mode: Long, name: String = "BoostedTreesUpdateEnsemble") = run {
+  fun boostedTreesUpdateEnsemble(tree_ensemble_handle: Output, feature_ids: Output, node_ids: List<Output>, gains: List<Output>, thresholds: List<Output>, left_node_contribs: List<Output>, right_node_contribs: List<Output>, max_depth: Output, learning_rate: Output, pruning_mode: Long, name: String = "BoostedTreesUpdateEnsemble") = run {
     buildOp("BoostedTreesUpdateEnsemble", name) {
       addInput(tree_ensemble_handle, false)
       addInput(feature_ids, false)
@@ -118,7 +118,7 @@ interface gen_boosted_trees_ops {
     }
   }
   
-  fun _isBoostedTreesEnsembleInitialized(tree_ensemble_handle: Output, name: String = "IsBoostedTreesEnsembleInitialized") = run {
+  fun isBoostedTreesEnsembleInitialized(tree_ensemble_handle: Output, name: String = "IsBoostedTreesEnsembleInitialized") = run {
     buildOpTensor("IsBoostedTreesEnsembleInitialized", name) {
       addInput(tree_ensemble_handle, false)
     }

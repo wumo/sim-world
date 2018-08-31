@@ -3,6 +3,7 @@ package wumo.sim.tensorflow.ops.control_flow_ops
 import wumo.sim.tensorflow.core.InvalidArgumentException
 import wumo.sim.tensorflow.core.InvalidDataTypeException
 import wumo.sim.tensorflow.ops.*
+import wumo.sim.tensorflow.ops.gen.gen_control_flow_ops
 import wumo.sim.tensorflow.tensor.constantValue
 import wumo.sim.tensorflow.tf
 import wumo.sim.util.NONE
@@ -260,7 +261,7 @@ object control_flow_ops {
   
   private fun groupControlDeps(dev: String, deps: MutableSet<Op>, name: String = "noOp") =
       tf.with(device = dev, controlDependencies = deps) {
-        tf._noOp(name)
+        tf.noOp(name)
       }
   
   /** Creates an op that forwards [input] to the output port determined by [predicate], while making sure the new op is
@@ -292,7 +293,7 @@ object control_flow_ops {
     // `Op.colocateWith(Set(data.op)) { }` block to ignore the existing stack.
     return tf.colocateWith(input, ignoreExisting = true) {
       if (input.dataType.isRefType)
-        tf._refSwitch(input, predicate, name)
+        tf.refSwitch(input, predicate, name)
       else
         switch(input, predicate, name)
     }
@@ -301,7 +302,7 @@ object control_flow_ops {
   fun <T : OutputLike> switch(input: T, predicate: Output, name: String = "Switch"): Array<Output> {
     val _input = input as OutputLike
     return when (_input) {
-      is Output -> tf._switch(_input, predicate, name)
+      is Output -> tf.switch(_input, predicate, name)
       is IndexedSlices -> {
         TODO()
       }
@@ -333,16 +334,16 @@ object control_flow_ops {
       inputs.all { it is Output } -> {
         inputs as List<Output>
         if (inputs.all { it.dataType.isRefType })
-          tf._refMerge(inputs, name)
+          tf.refMerge(inputs, name)
         else
-          tf._merge(inputs, name)
+          tf.merge(inputs, name)
       }
       inputs.all { it is SparseOutput } -> TODO()
       else -> TODO()
     }
   }
   
-  interface API {
+  interface API:gen_control_flow_ops {
     
     /** Creates an op that produces the content of `input` only after all ops in `dependencies` have finished executing.
      *
@@ -394,7 +395,7 @@ object control_flow_ops {
             groupControlDeps(dev, ops)
           }
       return tf.controlDependencies(deps) {
-        tf._noOp(name)
+        tf.noOp(name)
       }
     }
     
@@ -459,9 +460,9 @@ object control_flow_ops {
                  name: String = "cond"): T =
         tf.nameScope(name) {
           val (p_false, p_true) = switch(pred, pred)
-          val pivot_true = tf._identity(p_true, name = "switch_t")
-          val pivot_false = tf._identity(p_false, name = "switch_f")
-          val pred_id = tf._identity(pred, name = "pred_id")
+          val pivot_true = tf.identity(p_true, name = "switch_t")
+          val pivot_false = tf.identity(p_false, name = "switch_f")
+          val pred_id = tf.identity(pred, name = "pred_id")
           //Disable the fetching of tensors that are only on one branch of cond.
           for (tensor in a(p_true, p_false, pivot_true, pivot_false, pred_id))
             tensor.op!!.graph.preventFetching(tensor.op)
@@ -518,9 +519,9 @@ object control_flow_ops {
         when (input) {
           is Output -> {
             val result = if (input.dataType.isRefType && useRef)
-              tf._refEnter(input, frameName, isContant, parallelIterations.toLong(), name)
+              tf.refEnter(input, frameName, isContant, parallelIterations.toLong(), name)
             else
-              tf._enter(input, frameName, isContant, parallelIterations.toLong(), name)
+              tf.enter(input, frameName, isContant, parallelIterations.toLong(), name)
             if (useInputShape)
               result.setShape(input.shape)
             result
@@ -553,21 +554,21 @@ object control_flow_ops {
     fun <T : OutputLike> exit(input: T, name: String = "Exit"): T =
         when (input) {
           is Output -> if (input.dataType.isRefType)
-            tf._refExit(input, name)
+            tf.refExit(input, name)
           else
-            tf._exit(input, name)
+            tf.exit(input, name)
           is IndexedSlices -> {
             val values = tf.exit(input.values, name)
-            val indices = tf._exit(input.indices, "indices")
+            val indices = tf.exit(input.indices, "indices")
             val denseShape = if (input.denseShape != null)
-              tf._exit(input.denseShape, name)
+              tf.exit(input.denseShape, name)
             else null
             IndexedSlices(indices, values, denseShape)
           }
           is SparseOutput -> {
             val values = tf.exit(input.values, name)
-            val indices = tf._exit(input.indices, "indices")
-            val denseShape = tf._exit(input.denseShape!!, name)
+            val indices = tf.exit(input.indices, "indices")
+            val denseShape = tf.exit(input.denseShape!!, name)
             SparseOutput(indices, values, denseShape)
           }
           else -> NONE()
@@ -583,21 +584,21 @@ object control_flow_ops {
         when (input) {
           is Output ->
             if (input.dataType.isRefType)
-              tf._refNextIteration(input, name)
+              tf.refNextIteration(input, name)
             else
-              tf._nextIteration(input, name)
+              tf.nextIteration(input, name)
           is IndexedSlices -> {
             val values = tf.nextIteration(input.values, name)
-            val indices = tf._nextIteration(input.indices, "indices")
+            val indices = tf.nextIteration(input.indices, "indices")
             val denseShape = if (input.denseShape != null)
-              tf._nextIteration(input.denseShape, "dense_shape")
+              tf.nextIteration(input.denseShape, "dense_shape")
             else null
             IndexedSlices(indices, values, denseShape)
           }
           is SparseOutput -> {
             val values = tf.nextIteration(input.values, name)
-            val indices = tf._nextIteration(input.indices, "indices")
-            val denseShape = tf._nextIteration(input.denseShape!!, "dense_shape")
+            val indices = tf.nextIteration(input.indices, "indices")
+            val denseShape = tf.nextIteration(input.denseShape!!, "dense_shape")
             SparseOutput(indices, values, denseShape)
           }
           else -> NONE()

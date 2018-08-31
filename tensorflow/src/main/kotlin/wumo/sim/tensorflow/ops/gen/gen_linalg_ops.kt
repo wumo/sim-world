@@ -8,45 +8,45 @@ import wumo.sim.tensorflow.buildOpTensors
 import wumo.sim.tensorflow.ops.Output
 
 interface gen_linalg_ops {
-  fun _cholesky(input: Output, name: String = "Cholesky") = run {
+  fun cholesky(input: Output, name: String = "Cholesky") = run {
     buildOpTensor("Cholesky", name) {
       addInput(input, false)
     }
   }
   
-  fun _choleskyGrad(l: Output, grad: Output, name: String = "CholeskyGrad") = run {
+  fun choleskyGrad(l: Output, grad: Output, name: String = "CholeskyGrad") = run {
     buildOpTensor("CholeskyGrad", name) {
       addInput(l, false)
       addInput(grad, false)
     }
   }
   
-  fun _logMatrixDeterminant(input: Output, name: String = "LogMatrixDeterminant") = run {
+  fun logMatrixDeterminant(input: Output, name: String = "LogMatrixDeterminant") = run {
     buildOpTensors("LogMatrixDeterminant", name) {
       addInput(input, false)
     }
   }
   
-  fun _matrixDeterminant(input: Output, name: String = "MatrixDeterminant") = run {
+  fun matrixDeterminant(input: Output, name: String = "MatrixDeterminant") = run {
     buildOpTensor("MatrixDeterminant", name) {
       addInput(input, false)
     }
   }
   
-  fun _matrixExponential(input: Output, name: String = "MatrixExponential") = run {
+  fun matrixExponential(input: Output, name: String = "MatrixExponential") = run {
     buildOpTensor("MatrixExponential", name) {
       addInput(input, false)
     }
   }
   
-  fun _matrixInverse(input: Output, adjoint: Boolean = false, name: String = "MatrixInverse") = run {
+  fun matrixInverse(input: Output, adjoint: Boolean = false, name: String = "MatrixInverse") = run {
     buildOpTensor("MatrixInverse", name) {
       addInput(input, false)
       attr("adjoint", adjoint)
     }
   }
   
-  fun _matrixSolve(matrix: Output, rhs: Output, adjoint: Boolean = false, name: String = "MatrixSolve") = run {
+  fun matrixSolve(matrix: Output, rhs: Output, adjoint: Boolean = false, name: String = "MatrixSolve") = run {
     buildOpTensor("MatrixSolve", name) {
       addInput(matrix, false)
       addInput(rhs, false)
@@ -54,7 +54,7 @@ interface gen_linalg_ops {
     }
   }
   
-  fun _matrixSolveLs(matrix: Output, rhs: Output, l2_regularizer: Output, fast: Boolean = true, name: String = "MatrixSolveLs") = run {
+  fun matrixSolveLs(matrix: Output, rhs: Output, l2_regularizer: Output, fast: Boolean = true, name: String = "MatrixSolveLs") = run {
     buildOpTensor("MatrixSolveLs", name) {
       addInput(matrix, false)
       addInput(rhs, false)
@@ -63,7 +63,7 @@ interface gen_linalg_ops {
     }
   }
   
-  fun _matrixTriangularSolve(matrix: Output, rhs: Output, lower: Boolean = true, adjoint: Boolean = false, name: String = "MatrixTriangularSolve") = run {
+  fun matrixTriangularSolve(matrix: Output, rhs: Output, lower: Boolean = true, adjoint: Boolean = false, name: String = "MatrixTriangularSolve") = run {
     buildOpTensor("MatrixTriangularSolve", name) {
       addInput(matrix, false)
       addInput(rhs, false)
@@ -72,21 +72,21 @@ interface gen_linalg_ops {
     }
   }
   
-  fun _qr(input: Output, full_matrices: Boolean = false, name: String = "Qr") = run {
+  fun qr(input: Output, full_matrices: Boolean = false, name: String = "Qr") = run {
     buildOpTensors("Qr", name) {
       addInput(input, false)
       attr("full_matrices", full_matrices)
     }
   }
   
-  fun _selfAdjointEigV2(input: Output, compute_v: Boolean = true, name: String = "SelfAdjointEigV2") = run {
+  fun selfAdjointEigV2(input: Output, compute_v: Boolean = true, name: String = "SelfAdjointEigV2") = run {
     buildOpTensors("SelfAdjointEigV2", name) {
       addInput(input, false)
       attr("compute_v", compute_v)
     }
   }
   
-  fun _svd(input: Output, compute_uv: Boolean = true, full_matrices: Boolean = false, name: String = "Svd") = run {
+  fun svd(input: Output, compute_uv: Boolean = true, full_matrices: Boolean = false, name: String = "Svd") = run {
     buildOpTensors("Svd", name) {
       addInput(input, false)
       attr("compute_uv", compute_uv)
@@ -94,7 +94,7 @@ interface gen_linalg_ops {
     }
   }
   
-  fun _matrixLogarithm(input: Output, name: String = "MatrixLogarithm") = run {
+  fun matrixLogarithm(input: Output, name: String = "MatrixLogarithm") = run {
     buildOpTensor("MatrixLogarithm", name) {
       addInput(input, false)
     }

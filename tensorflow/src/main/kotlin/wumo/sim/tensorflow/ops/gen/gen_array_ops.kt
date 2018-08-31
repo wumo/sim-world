@@ -12,7 +12,7 @@ import wumo.sim.tensorflow.types.INT32
 import wumo.sim.util.Shape
 
 interface gen_array_ops {
-  fun _batchToSpace(input: Output, crops: Output, block_size: Long, name: String = "BatchToSpace") = run {
+  fun batchToSpace(input: Output, crops: Output, block_size: Long, name: String = "BatchToSpace") = run {
     buildOpTensor("BatchToSpace", name) {
       addInput(input, false)
       addInput(crops, false)
@@ -20,7 +20,7 @@ interface gen_array_ops {
     }
   }
   
-  fun _batchToSpaceND(input: Output, block_shape: Output, crops: Output, name: String = "BatchToSpaceND") = run {
+  fun batchToSpaceND(input: Output, block_shape: Output, crops: Output, name: String = "BatchToSpaceND") = run {
     buildOpTensor("BatchToSpaceND", name) {
       addInput(input, false)
       addInput(block_shape, false)
@@ -28,67 +28,67 @@ interface gen_array_ops {
     }
   }
   
-  fun _bitcast(input: Output, _type: DataType<*>, name: String = "Bitcast") = run {
+  fun bitcast(input: Output, _type: DataType<*>, name: String = "Bitcast") = run {
     buildOpTensor("Bitcast", name) {
       addInput(input, false)
       attr("type", _type)
     }
   }
   
-  fun _broadcastArgs(s0: Output, s1: Output, name: String = "BroadcastArgs") = run {
+  fun broadcastArgs(s0: Output, s1: Output, name: String = "BroadcastArgs") = run {
     buildOpTensor("BroadcastArgs", name) {
       addInput(s0, false)
       addInput(s1, false)
     }
   }
   
-  fun _broadcastTo(input: Output, shape: Output, name: String = "BroadcastTo") = run {
+  fun broadcastTo(input: Output, shape: Output, name: String = "BroadcastTo") = run {
     buildOpTensor("BroadcastTo", name) {
       addInput(input, false)
       addInput(shape, false)
     }
   }
   
-  fun _checkNumerics(tensor: Output, message: String, name: String = "CheckNumerics") = run {
+  fun checkNumerics(tensor: Output, message: String, name: String = "CheckNumerics") = run {
     buildOpTensor("CheckNumerics", name) {
       addInput(tensor, false)
       attr("message", message)
     }
   }
   
-  fun _concatV2(values: List<Output>, axis: Output, name: String = "ConcatV2") = run {
+  fun concatV2(values: List<Output>, axis: Output, name: String = "ConcatV2") = run {
     buildOpTensor("ConcatV2", name) {
       addInput(values, false)
       addInput(axis, false)
     }
   }
   
-  fun _conjugateTranspose(x: Output, perm: Output, name: String = "ConjugateTranspose") = run {
+  fun conjugateTranspose(x: Output, perm: Output, name: String = "ConjugateTranspose") = run {
     buildOpTensor("ConjugateTranspose", name) {
       addInput(x, false)
       addInput(perm, false)
     }
   }
   
-  fun _debugGradientIdentity(input: Output, name: String = "DebugGradientIdentity") = run {
+  fun debugGradientIdentity(input: Output, name: String = "DebugGradientIdentity") = run {
     buildOpTensor("DebugGradientIdentity", name) {
       addInput(input, false)
     }
   }
   
-  fun _debugGradientRefIdentity(input: Output, name: String = "DebugGradientRefIdentity") = run {
+  fun debugGradientRefIdentity(input: Output, name: String = "DebugGradientRefIdentity") = run {
     buildOpTensor("DebugGradientRefIdentity", name) {
       addInput(input, true)
     }
   }
   
-  fun _deepCopy(x: Output, name: String = "DeepCopy") = run {
+  fun deepCopy(x: Output, name: String = "DeepCopy") = run {
     buildOpTensor("DeepCopy", name) {
       addInput(x, false)
     }
   }
   
-  fun _depthToSpace(input: Output, block_size: Long, data_format: String = "NHWC", name: String = "DepthToSpace") = run {
+  fun depthToSpace(input: Output, block_size: Long, data_format: String = "NHWC", name: String = "DepthToSpace") = run {
     buildOpTensor("DepthToSpace", name) {
       addInput(input, false)
       attr("block_size", block_size)
@@ -96,7 +96,7 @@ interface gen_array_ops {
     }
   }
   
-  fun _dequantize(input: Output, min_range: Output, max_range: Output, mode: String = "MIN_COMBINED", name: String = "Dequantize") = run {
+  fun dequantize(input: Output, min_range: Output, max_range: Output, mode: String = "MIN_COMBINED", name: String = "Dequantize") = run {
     buildOpTensor("Dequantize", name) {
       addInput(input, false)
       addInput(min_range, false)
@@ -105,19 +105,19 @@ interface gen_array_ops {
     }
   }
   
-  fun _diag(diagonal: Output, name: String = "Diag") = run {
+  fun diag(diagonal: Output, name: String = "Diag") = run {
     buildOpTensor("Diag", name) {
       addInput(diagonal, false)
     }
   }
   
-  fun _diagPart(input: Output, name: String = "DiagPart") = run {
+  fun diagPart(input: Output, name: String = "DiagPart") = run {
     buildOpTensor("DiagPart", name) {
       addInput(input, false)
     }
   }
   
-  fun _editDistance(hypothesis_indices: Output, hypothesis_values: Output, hypothesis_shape: Output, truth_indices: Output, truth_values: Output, truth_shape: Output, normalize: Boolean = true, name: String = "EditDistance") = run {
+  fun editDistance(hypothesis_indices: Output, hypothesis_values: Output, hypothesis_shape: Output, truth_indices: Output, truth_values: Output, truth_shape: Output, normalize: Boolean = true, name: String = "EditDistance") = run {
     buildOpTensor("EditDistance", name) {
       addInput(hypothesis_indices, false)
       addInput(hypothesis_values, false)
@@ -129,7 +129,7 @@ interface gen_array_ops {
     }
   }
   
-  fun _empty(shape: Output, dtype: DataType<*>, init: Boolean = false, name: String = "Empty") = run {
+  fun empty(shape: Output, dtype: DataType<*>, init: Boolean = false, name: String = "Empty") = run {
     buildOpTensor("Empty", name) {
       addInput(shape, false)
       attr("dtype", dtype)
@@ -137,14 +137,14 @@ interface gen_array_ops {
     }
   }
   
-  fun _expandDims(input: Output, dim: Output, name: String = "ExpandDims") = run {
+  fun expandDims(input: Output, dim: Output, name: String = "ExpandDims") = run {
     buildOpTensor("ExpandDims", name) {
       addInput(input, false)
       addInput(dim, false)
     }
   }
   
-  fun _extractImagePatches(images: Output, ksizes: Array<Long>, strides: Array<Long>, rates: Array<Long>, padding: String, name: String = "ExtractImagePatches") = run {
+  fun extractImagePatches(images: Output, ksizes: Array<Long>, strides: Array<Long>, rates: Array<Long>, padding: String, name: String = "ExtractImagePatches") = run {
     buildOpTensor("ExtractImagePatches", name) {
       addInput(images, false)
       attr("ksizes", ksizes)
@@ -154,7 +154,7 @@ interface gen_array_ops {
     }
   }
   
-  fun _fakeQuantWithMinMaxArgs(inputs: Output, min: Float = -6.0f, max: Float = 6.0f, num_bits: Long = 8L, narrow_range: Boolean = false, name: String = "FakeQuantWithMinMaxArgs") = run {
+  fun fakeQuantWithMinMaxArgs(inputs: Output, min: Float = -6.0f, max: Float = 6.0f, num_bits: Long = 8L, narrow_range: Boolean = false, name: String = "FakeQuantWithMinMaxArgs") = run {
     buildOpTensor("FakeQuantWithMinMaxArgs", name) {
       addInput(inputs, false)
       attr("min", min)
@@ -164,7 +164,7 @@ interface gen_array_ops {
     }
   }
   
-  fun _fakeQuantWithMinMaxArgsGradient(gradients: Output, inputs: Output, min: Float = -6.0f, max: Float = 6.0f, num_bits: Long = 8L, narrow_range: Boolean = false, name: String = "FakeQuantWithMinMaxArgsGradient") = run {
+  fun fakeQuantWithMinMaxArgsGradient(gradients: Output, inputs: Output, min: Float = -6.0f, max: Float = 6.0f, num_bits: Long = 8L, narrow_range: Boolean = false, name: String = "FakeQuantWithMinMaxArgsGradient") = run {
     buildOpTensor("FakeQuantWithMinMaxArgsGradient", name) {
       addInput(gradients, false)
       addInput(inputs, false)
@@ -175,7 +175,7 @@ interface gen_array_ops {
     }
   }
   
-  fun _fakeQuantWithMinMaxVars(inputs: Output, min: Output, max: Output, num_bits: Long = 8L, narrow_range: Boolean = false, name: String = "FakeQuantWithMinMaxVars") = run {
+  fun fakeQuantWithMinMaxVars(inputs: Output, min: Output, max: Output, num_bits: Long = 8L, narrow_range: Boolean = false, name: String = "FakeQuantWithMinMaxVars") = run {
     buildOpTensor("FakeQuantWithMinMaxVars", name) {
       addInput(inputs, false)
       addInput(min, false)
@@ -185,7 +185,7 @@ interface gen_array_ops {
     }
   }
   
-  fun _fakeQuantWithMinMaxVarsGradient(gradients: Output, inputs: Output, min: Output, max: Output, num_bits: Long = 8L, narrow_range: Boolean = false, name: String = "FakeQuantWithMinMaxVarsGradient") = run {
+  fun fakeQuantWithMinMaxVarsGradient(gradients: Output, inputs: Output, min: Output, max: Output, num_bits: Long = 8L, narrow_range: Boolean = false, name: String = "FakeQuantWithMinMaxVarsGradient") = run {
     buildOpTensors("FakeQuantWithMinMaxVarsGradient", name) {
       addInput(gradients, false)
       addInput(inputs, false)
@@ -196,7 +196,7 @@ interface gen_array_ops {
     }
   }
   
-  fun _fakeQuantWithMinMaxVarsPerChannel(inputs: Output, min: Output, max: Output, num_bits: Long = 8L, narrow_range: Boolean = false, name: String = "FakeQuantWithMinMaxVarsPerChannel") = run {
+  fun fakeQuantWithMinMaxVarsPerChannel(inputs: Output, min: Output, max: Output, num_bits: Long = 8L, narrow_range: Boolean = false, name: String = "FakeQuantWithMinMaxVarsPerChannel") = run {
     buildOpTensor("FakeQuantWithMinMaxVarsPerChannel", name) {
       addInput(inputs, false)
       addInput(min, false)
@@ -206,7 +206,7 @@ interface gen_array_ops {
     }
   }
   
-  fun _fakeQuantWithMinMaxVarsPerChannelGradient(gradients: Output, inputs: Output, min: Output, max: Output, num_bits: Long = 8L, narrow_range: Boolean = false, name: String = "FakeQuantWithMinMaxVarsPerChannelGradient") = run {
+  fun fakeQuantWithMinMaxVarsPerChannelGradient(gradients: Output, inputs: Output, min: Output, max: Output, num_bits: Long = 8L, narrow_range: Boolean = false, name: String = "FakeQuantWithMinMaxVarsPerChannelGradient") = run {
     buildOpTensors("FakeQuantWithMinMaxVarsPerChannelGradient", name) {
       addInput(gradients, false)
       addInput(inputs, false)
@@ -217,7 +217,7 @@ interface gen_array_ops {
     }
   }
   
-  fun _fill(dims: Output, value: Output, name: String = "Fill") = run {
+  fun fill(dims: Output, value: Output, name: String = "Fill") = run {
     buildOpTensor("Fill", name) {
       addInput(dims, false)
       addInput(value, false)
@@ -232,14 +232,14 @@ interface gen_array_ops {
     }
   }
   
-  fun _gatherNd(params: Output, indices: Output, name: String = "GatherNd") = run {
+  fun gatherNd(params: Output, indices: Output, name: String = "GatherNd") = run {
     buildOpTensor("GatherNd", name) {
       addInput(params, false)
       addInput(indices, false)
     }
   }
   
-  fun _gatherV2(params: Output, indices: Output, axis: Output, name: String = "GatherV2") = run {
+  fun gatherV2(params: Output, indices: Output, axis: Output, name: String = "GatherV2") = run {
     buildOpTensor("GatherV2", name) {
       addInput(params, false)
       addInput(indices, false)
@@ -247,25 +247,25 @@ interface gen_array_ops {
     }
   }
   
-  fun _guaranteeConst(input: Output, name: String = "GuaranteeConst") = run {
+  fun guaranteeConst(input: Output, name: String = "GuaranteeConst") = run {
     buildOpTensor("GuaranteeConst", name) {
       addInput(input, false)
     }
   }
   
-  fun _identity(input: Output, name: String = "Identity") = run {
+  fun identity(input: Output, name: String = "Identity") = run {
     buildOpTensor("Identity", name) {
       addInput(input, false)
     }
   }
   
-  fun _identityN(input: Output, name: String = "IdentityN") = run {
+  fun identityN(input: Output, name: String = "IdentityN") = run {
     buildOpTensors("IdentityN", name) {
       addInput(input, false)
     }
   }
   
-  fun _immutableConst(dtype: DataType<*>, shape: Shape, memory_region_name: String, name: String = "ImmutableConst") = run {
+  fun immutableConst(dtype: DataType<*>, shape: Shape, memory_region_name: String, name: String = "ImmutableConst") = run {
     buildOpTensor("ImmutableConst", name) {
       attr("dtype", dtype)
       attr("shape", shape)
@@ -273,7 +273,7 @@ interface gen_array_ops {
     }
   }
   
-  fun _inplaceAdd(x: Output, i: Output, v: Output, name: String = "InplaceAdd") = run {
+  fun inplaceAdd(x: Output, i: Output, v: Output, name: String = "InplaceAdd") = run {
     buildOpTensor("InplaceAdd", name) {
       addInput(x, false)
       addInput(i, false)
@@ -281,7 +281,7 @@ interface gen_array_ops {
     }
   }
   
-  fun _inplaceSub(x: Output, i: Output, v: Output, name: String = "InplaceSub") = run {
+  fun inplaceSub(x: Output, i: Output, v: Output, name: String = "InplaceSub") = run {
     buildOpTensor("InplaceSub", name) {
       addInput(x, false)
       addInput(i, false)
@@ -289,7 +289,7 @@ interface gen_array_ops {
     }
   }
   
-  fun _inplaceUpdate(x: Output, i: Output, v: Output, name: String = "InplaceUpdate") = run {
+  fun inplaceUpdate(x: Output, i: Output, v: Output, name: String = "InplaceUpdate") = run {
     buildOpTensor("InplaceUpdate", name) {
       addInput(x, false)
       addInput(i, false)
@@ -297,13 +297,13 @@ interface gen_array_ops {
     }
   }
   
-  fun _invertPermutation(x: Output, name: String = "InvertPermutation") = run {
+  fun invertPermutation(x: Output, name: String = "InvertPermutation") = run {
     buildOpTensor("InvertPermutation", name) {
       addInput(x, false)
     }
   }
   
-  fun _listDiff(x: Output, y: Output, out_idx: DataType<*> = INT32, name: String = "ListDiff") = run {
+  fun listDiff(x: Output, y: Output, out_idx: DataType<*> = INT32, name: String = "ListDiff") = run {
     buildOpTensors("ListDiff", name) {
       addInput(x, false)
       addInput(y, false)
@@ -311,7 +311,7 @@ interface gen_array_ops {
     }
   }
   
-  fun _matrixBandPart(input: Output, num_lower: Output, num_upper: Output, name: String = "MatrixBandPart") = run {
+  fun matrixBandPart(input: Output, num_lower: Output, num_upper: Output, name: String = "MatrixBandPart") = run {
     buildOpTensor("MatrixBandPart", name) {
       addInput(input, false)
       addInput(num_lower, false)
@@ -319,26 +319,26 @@ interface gen_array_ops {
     }
   }
   
-  fun _matrixDiag(diagonal: Output, name: String = "MatrixDiag") = run {
+  fun matrixDiag(diagonal: Output, name: String = "MatrixDiag") = run {
     buildOpTensor("MatrixDiag", name) {
       addInput(diagonal, false)
     }
   }
   
-  fun _matrixDiagPart(input: Output, name: String = "MatrixDiagPart") = run {
+  fun matrixDiagPart(input: Output, name: String = "MatrixDiagPart") = run {
     buildOpTensor("MatrixDiagPart", name) {
       addInput(input, false)
     }
   }
   
-  fun _matrixSetDiag(input: Output, diagonal: Output, name: String = "MatrixSetDiag") = run {
+  fun matrixSetDiag(input: Output, diagonal: Output, name: String = "MatrixSetDiag") = run {
     buildOpTensor("MatrixSetDiag", name) {
       addInput(input, false)
       addInput(diagonal, false)
     }
   }
   
-  fun _mirrorPad(input: Output, paddings: Output, mode: String, name: String = "MirrorPad") = run {
+  fun mirrorPad(input: Output, paddings: Output, mode: String, name: String = "MirrorPad") = run {
     buildOpTensor("MirrorPad", name) {
       addInput(input, false)
       addInput(paddings, false)
@@ -356,27 +356,27 @@ interface gen_array_ops {
     }
   }
   
-  fun _onesLike(x: Output, name: String = "OnesLike") = run {
+  fun onesLike(x: Output, name: String = "OnesLike") = run {
     buildOpTensor("OnesLike", name) {
       addInput(x, false)
     }
   }
   
-  fun _pack(values: List<Output>, axis: Long = 0L, name: String = "Pack") = run {
+  fun pack(values: List<Output>, axis: Long = 0L, name: String = "Pack") = run {
     buildOpTensor("Pack", name) {
       addInput(values, false)
       attr("axis", axis)
     }
   }
   
-  fun _pad(input: Output, paddings: Output, name: String = "Pad") = run {
+  fun pad(input: Output, paddings: Output, name: String = "Pad") = run {
     buildOpTensor("Pad", name) {
       addInput(input, false)
       addInput(paddings, false)
     }
   }
   
-  fun _padV2(input: Output, paddings: Output, constant_values: Output, name: String = "PadV2") = run {
+  fun padV2(input: Output, paddings: Output, constant_values: Output, name: String = "PadV2") = run {
     buildOpTensor("PadV2", name) {
       addInput(input, false)
       addInput(paddings, false)
@@ -384,35 +384,35 @@ interface gen_array_ops {
     }
   }
   
-  fun _parallelConcat(values: List<Output>, shape: Shape, name: String = "ParallelConcat") = run {
+  fun parallelConcat(values: List<Output>, shape: Shape, name: String = "ParallelConcat") = run {
     buildOpTensor("ParallelConcat", name) {
       addInput(values, false)
       attr("shape", shape)
     }
   }
   
-  fun _placeholder(dtype: DataType<*>, shape: Shape = Shape(), name: String = "Placeholder") = run {
+  fun placeholder(dtype: DataType<*>, shape: Shape = Shape(), name: String = "Placeholder") = run {
     buildOpTensor("Placeholder", name) {
       attr("dtype", dtype)
       attr("shape", shape)
     }
   }
   
-  fun _placeholderWithDefault(input: Output, shape: Shape, name: String = "PlaceholderWithDefault") = run {
+  fun placeholderWithDefault(input: Output, shape: Shape, name: String = "PlaceholderWithDefault") = run {
     buildOpTensor("PlaceholderWithDefault", name) {
       addInput(input, false)
       attr("shape", shape)
     }
   }
   
-  fun _preventGradient(input: Output, message: String = "", name: String = "PreventGradient") = run {
+  fun preventGradient(input: Output, message: String = "", name: String = "PreventGradient") = run {
     buildOpTensor("PreventGradient", name) {
       addInput(input, false)
       attr("message", message)
     }
   }
   
-  fun _quantizeAndDequantizeV2(input: Output, input_min: Output, input_max: Output, signed_input: Boolean = true, num_bits: Long = 8L, range_given: Boolean = false, name: String = "QuantizeAndDequantizeV2") = run {
+  fun quantizeAndDequantizeV2(input: Output, input_min: Output, input_max: Output, signed_input: Boolean = true, num_bits: Long = 8L, range_given: Boolean = false, name: String = "QuantizeAndDequantizeV2") = run {
     buildOpTensor("QuantizeAndDequantizeV2", name) {
       addInput(input, false)
       addInput(input_min, false)
@@ -423,7 +423,7 @@ interface gen_array_ops {
     }
   }
   
-  fun _quantizeAndDequantizeV3(input: Output, input_min: Output, input_max: Output, num_bits: Output, signed_input: Boolean = true, range_given: Boolean = true, name: String = "QuantizeAndDequantizeV3") = run {
+  fun quantizeAndDequantizeV3(input: Output, input_min: Output, input_max: Output, num_bits: Output, signed_input: Boolean = true, range_given: Boolean = true, name: String = "QuantizeAndDequantizeV3") = run {
     buildOpTensor("QuantizeAndDequantizeV3", name) {
       addInput(input, false)
       addInput(input_min, false)
@@ -434,7 +434,7 @@ interface gen_array_ops {
     }
   }
   
-  fun _quantizeV2(input: Output, min_range: Output, max_range: Output, t: DataType<*>, mode: String = "MIN_COMBINED", round_mode: String = "HALF_AWAY_FROM_ZERO", name: String = "QuantizeV2") = run {
+  fun quantizeV2(input: Output, min_range: Output, max_range: Output, t: DataType<*>, mode: String = "MIN_COMBINED", round_mode: String = "HALF_AWAY_FROM_ZERO", name: String = "QuantizeV2") = run {
     buildOpTensors("QuantizeV2", name) {
       addInput(input, false)
       addInput(min_range, false)
@@ -445,7 +445,7 @@ interface gen_array_ops {
     }
   }
   
-  fun _quantizedConcat(concat_dim: Output, values: List<Output>, input_mins: List<Output>, input_maxes: List<Output>, name: String = "QuantizedConcat") = run {
+  fun quantizedConcat(concat_dim: Output, values: List<Output>, input_mins: List<Output>, input_maxes: List<Output>, name: String = "QuantizedConcat") = run {
     buildOpTensors("QuantizedConcat", name) {
       addInput(concat_dim, false)
       addInput(values, false)
@@ -454,7 +454,7 @@ interface gen_array_ops {
     }
   }
   
-  fun _quantizedInstanceNorm(x: Output, x_min: Output, x_max: Output, output_range_given: Boolean = false, given_y_min: Float = 0.0f, given_y_max: Float = 0.0f, variance_epsilon: Float = 1.0E-5f, min_separation: Float = 0.001f, name: String = "QuantizedInstanceNorm") = run {
+  fun quantizedInstanceNorm(x: Output, x_min: Output, x_max: Output, output_range_given: Boolean = false, given_y_min: Float = 0.0f, given_y_max: Float = 0.0f, variance_epsilon: Float = 1.0E-5f, min_separation: Float = 0.001f, name: String = "QuantizedInstanceNorm") = run {
     buildOpTensors("QuantizedInstanceNorm", name) {
       addInput(x, false)
       addInput(x_min, false)
@@ -467,7 +467,7 @@ interface gen_array_ops {
     }
   }
   
-  fun _quantizedReshape(tensor: Output, shape: Output, input_min: Output, input_max: Output, name: String = "QuantizedReshape") = run {
+  fun quantizedReshape(tensor: Output, shape: Output, input_min: Output, input_max: Output, name: String = "QuantizedReshape") = run {
     buildOpTensors("QuantizedReshape", name) {
       addInput(tensor, false)
       addInput(shape, false)
@@ -476,20 +476,20 @@ interface gen_array_ops {
     }
   }
   
-  fun _rank(input: Output, name: String = "Rank") = run {
+  fun rank(input: Output, name: String = "Rank") = run {
     buildOpTensor("Rank", name) {
       addInput(input, false)
     }
   }
   
-  fun _reshape(tensor: Output, shape: Output, name: String = "Reshape") = run {
+  fun reshape(tensor: Output, shape: Output, name: String = "Reshape") = run {
     buildOpTensor("Reshape", name) {
       addInput(tensor, false)
       addInput(shape, false)
     }
   }
   
-  fun _resourceStridedSliceAssign(_ref: Output, begin: Output, end: Output, strides: Output, value: Output, begin_mask: Long = 0L, end_mask: Long = 0L, ellipsis_mask: Long = 0L, new_axis_mask: Long = 0L, shrink_axis_mask: Long = 0L, name: String = "ResourceStridedSliceAssign") = run {
+  fun resourceStridedSliceAssign(_ref: Output, begin: Output, end: Output, strides: Output, value: Output, begin_mask: Long = 0L, end_mask: Long = 0L, ellipsis_mask: Long = 0L, new_axis_mask: Long = 0L, shrink_axis_mask: Long = 0L, name: String = "ResourceStridedSliceAssign") = run {
     buildOp("ResourceStridedSliceAssign", name) {
       addInput(_ref, false)
       addInput(begin, false)
@@ -504,7 +504,7 @@ interface gen_array_ops {
     }
   }
   
-  fun _reverseSequence(input: Output, seq_lengths: Output, seq_dim: Long, batch_dim: Long = 0L, name: String = "ReverseSequence") = run {
+  fun reverseSequence(input: Output, seq_lengths: Output, seq_dim: Long, batch_dim: Long = 0L, name: String = "ReverseSequence") = run {
     buildOpTensor("ReverseSequence", name) {
       addInput(input, false)
       addInput(seq_lengths, false)
@@ -513,14 +513,14 @@ interface gen_array_ops {
     }
   }
   
-  fun _reverseV2(tensor: Output, axis: Output, name: String = "ReverseV2") = run {
+  fun reverseV2(tensor: Output, axis: Output, name: String = "ReverseV2") = run {
     buildOpTensor("ReverseV2", name) {
       addInput(tensor, false)
       addInput(axis, false)
     }
   }
   
-  fun _scatterNd(indices: Output, updates: Output, shape: Output, name: String = "ScatterNd") = run {
+  fun scatterNd(indices: Output, updates: Output, shape: Output, name: String = "ScatterNd") = run {
     buildOpTensor("ScatterNd", name) {
       addInput(indices, false)
       addInput(updates, false)
@@ -528,7 +528,7 @@ interface gen_array_ops {
     }
   }
   
-  fun _scatterNdNonAliasingAdd(input: Output, indices: Output, updates: Output, name: String = "ScatterNdNonAliasingAdd") = run {
+  fun scatterNdNonAliasingAdd(input: Output, indices: Output, updates: Output, name: String = "ScatterNdNonAliasingAdd") = run {
     buildOpTensor("ScatterNdNonAliasingAdd", name) {
       addInput(input, false)
       addInput(indices, false)
@@ -536,28 +536,28 @@ interface gen_array_ops {
     }
   }
   
-  fun _shape(input: Output, out_type: DataType<*> = INT32, name: String = "Shape") = run {
+  fun shape(input: Output, out_type: DataType<*> = INT32, name: String = "Shape") = run {
     buildOpTensor("Shape", name) {
       addInput(input, false)
       attr("out_type", out_type)
     }
   }
   
-  fun _shapeN(input: List<Output>, out_type: DataType<*> = INT32, name: String = "ShapeN") = run {
+  fun shapeN(input: List<Output>, out_type: DataType<*> = INT32, name: String = "ShapeN") = run {
     buildOpTensors("ShapeN", name) {
       addInput(input, false)
       attr("out_type", out_type)
     }
   }
   
-  fun _size(input: Output, out_type: DataType<*> = INT32, name: String = "Size") = run {
+  fun size(input: Output, out_type: DataType<*> = INT32, name: String = "Size") = run {
     buildOpTensor("Size", name) {
       addInput(input, false)
       attr("out_type", out_type)
     }
   }
   
-  fun _slice(input: Output, begin: Output, size: Output, name: String = "Slice") = run {
+  fun slice(input: Output, begin: Output, size: Output, name: String = "Slice") = run {
     buildOpTensor("Slice", name) {
       addInput(input, false)
       addInput(begin, false)
@@ -565,13 +565,13 @@ interface gen_array_ops {
     }
   }
   
-  fun _snapshot(input: Output, name: String = "Snapshot") = run {
+  fun snapshot(input: Output, name: String = "Snapshot") = run {
     buildOpTensor("Snapshot", name) {
       addInput(input, false)
     }
   }
   
-  fun _spaceToBatch(input: Output, paddings: Output, block_size: Long, name: String = "SpaceToBatch") = run {
+  fun spaceToBatch(input: Output, paddings: Output, block_size: Long, name: String = "SpaceToBatch") = run {
     buildOpTensor("SpaceToBatch", name) {
       addInput(input, false)
       addInput(paddings, false)
@@ -579,7 +579,7 @@ interface gen_array_ops {
     }
   }
   
-  fun _spaceToBatchND(input: Output, block_shape: Output, paddings: Output, name: String = "SpaceToBatchND") = run {
+  fun spaceToBatchND(input: Output, block_shape: Output, paddings: Output, name: String = "SpaceToBatchND") = run {
     buildOpTensor("SpaceToBatchND", name) {
       addInput(input, false)
       addInput(block_shape, false)
@@ -587,7 +587,7 @@ interface gen_array_ops {
     }
   }
   
-  fun _spaceToDepth(input: Output, block_size: Long, data_format: String = "NHWC", name: String = "SpaceToDepth") = run {
+  fun spaceToDepth(input: Output, block_size: Long, data_format: String = "NHWC", name: String = "SpaceToDepth") = run {
     buildOpTensor("SpaceToDepth", name) {
       addInput(input, false)
       attr("block_size", block_size)
@@ -595,7 +595,7 @@ interface gen_array_ops {
     }
   }
   
-  fun _split(split_dim: Output, value: Output, num_split: Long, name: String = "Split") = run {
+  fun split(split_dim: Output, value: Output, num_split: Long, name: String = "Split") = run {
     buildOpTensors("Split", name) {
       addInput(split_dim, false)
       addInput(value, false)
@@ -603,7 +603,7 @@ interface gen_array_ops {
     }
   }
   
-  fun _splitV(value: Output, size_splits: Output, split_dim: Output, num_split: Long, name: String = "SplitV") = run {
+  fun splitV(value: Output, size_splits: Output, split_dim: Output, num_split: Long, name: String = "SplitV") = run {
     buildOpTensors("SplitV", name) {
       addInput(value, false)
       addInput(size_splits, false)
@@ -612,20 +612,20 @@ interface gen_array_ops {
     }
   }
   
-  fun _squeeze(input: Output, squeeze_dims: Array<Long> = arrayOf(), name: String = "Squeeze") = run {
+  fun squeeze(input: Output, squeeze_dims: Array<Long> = arrayOf(), name: String = "Squeeze") = run {
     buildOpTensor("Squeeze", name) {
       addInput(input, false)
       attr("squeeze_dims", squeeze_dims)
     }
   }
   
-  fun _stopGradient(input: Output, name: String = "StopGradient") = run {
+  fun stopGradient(input: Output, name: String = "StopGradient") = run {
     buildOpTensor("StopGradient", name) {
       addInput(input, false)
     }
   }
   
-  fun _stridedSlice(input: Output, begin: Output, end: Output, strides: Output, begin_mask: Long = 0L, end_mask: Long = 0L, ellipsis_mask: Long = 0L, new_axis_mask: Long = 0L, shrink_axis_mask: Long = 0L, name: String = "StridedSlice") = run {
+  fun stridedSlice(input: Output, begin: Output, end: Output, strides: Output, begin_mask: Long = 0L, end_mask: Long = 0L, ellipsis_mask: Long = 0L, new_axis_mask: Long = 0L, shrink_axis_mask: Long = 0L, name: String = "StridedSlice") = run {
     buildOpTensor("StridedSlice", name) {
       addInput(input, false)
       addInput(begin, false)
@@ -639,7 +639,7 @@ interface gen_array_ops {
     }
   }
   
-  fun _stridedSliceAssign(_ref: Output, begin: Output, end: Output, strides: Output, value: Output, begin_mask: Long = 0L, end_mask: Long = 0L, ellipsis_mask: Long = 0L, new_axis_mask: Long = 0L, shrink_axis_mask: Long = 0L, name: String = "StridedSliceAssign") = run {
+  fun stridedSliceAssign(_ref: Output, begin: Output, end: Output, strides: Output, value: Output, begin_mask: Long = 0L, end_mask: Long = 0L, ellipsis_mask: Long = 0L, new_axis_mask: Long = 0L, shrink_axis_mask: Long = 0L, name: String = "StridedSliceAssign") = run {
     buildOpTensor("StridedSliceAssign", name) {
       addInput(_ref, true)
       addInput(begin, false)
@@ -654,7 +654,7 @@ interface gen_array_ops {
     }
   }
   
-  fun _stridedSliceGrad(shape: Output, begin: Output, end: Output, strides: Output, dy: Output, begin_mask: Long = 0L, end_mask: Long = 0L, ellipsis_mask: Long = 0L, new_axis_mask: Long = 0L, shrink_axis_mask: Long = 0L, name: String = "StridedSliceGrad") = run {
+  fun stridedSliceGrad(shape: Output, begin: Output, end: Output, strides: Output, dy: Output, begin_mask: Long = 0L, end_mask: Long = 0L, ellipsis_mask: Long = 0L, new_axis_mask: Long = 0L, shrink_axis_mask: Long = 0L, name: String = "StridedSliceGrad") = run {
     buildOpTensor("StridedSliceGrad", name) {
       addInput(shape, false)
       addInput(begin, false)
@@ -669,28 +669,28 @@ interface gen_array_ops {
     }
   }
   
-  fun _tile(input: Output, multiples: Output, name: String = "Tile") = run {
+  fun tile(input: Output, multiples: Output, name: String = "Tile") = run {
     buildOpTensor("Tile", name) {
       addInput(input, false)
       addInput(multiples, false)
     }
   }
   
-  fun _transpose(x: Output, perm: Output, name: String = "Transpose") = run {
+  fun transpose(x: Output, perm: Output, name: String = "Transpose") = run {
     buildOpTensor("Transpose", name) {
       addInput(x, false)
       addInput(perm, false)
     }
   }
   
-  fun _unique(x: Output, out_idx: DataType<*> = INT32, name: String = "Unique") = run {
+  fun unique(x: Output, out_idx: DataType<*> = INT32, name: String = "Unique") = run {
     buildOpTensors("Unique", name) {
       addInput(x, false)
       attr("out_idx", out_idx)
     }
   }
   
-  fun _uniqueV2(x: Output, axis: Output, out_idx: DataType<*> = INT32, name: String = "UniqueV2") = run {
+  fun uniqueV2(x: Output, axis: Output, out_idx: DataType<*> = INT32, name: String = "UniqueV2") = run {
     buildOpTensors("UniqueV2", name) {
       addInput(x, false)
       addInput(axis, false)
@@ -698,14 +698,14 @@ interface gen_array_ops {
     }
   }
   
-  fun _uniqueWithCounts(x: Output, out_idx: DataType<*> = INT32, name: String = "UniqueWithCounts") = run {
+  fun uniqueWithCounts(x: Output, out_idx: DataType<*> = INT32, name: String = "UniqueWithCounts") = run {
     buildOpTensors("UniqueWithCounts", name) {
       addInput(x, false)
       attr("out_idx", out_idx)
     }
   }
   
-  fun _uniqueWithCountsV2(x: Output, axis: Output, out_idx: DataType<*> = INT32, name: String = "UniqueWithCountsV2") = run {
+  fun uniqueWithCountsV2(x: Output, axis: Output, out_idx: DataType<*> = INT32, name: String = "UniqueWithCountsV2") = run {
     buildOpTensors("UniqueWithCountsV2", name) {
       addInput(x, false)
       addInput(axis, false)
@@ -713,7 +713,7 @@ interface gen_array_ops {
     }
   }
   
-  fun _unpack(value: Output, num: Long, axis: Long = 0L, name: String = "Unpack") = run {
+  fun unpack(value: Output, num: Long, axis: Long = 0L, name: String = "Unpack") = run {
     buildOpTensors("Unpack", name) {
       addInput(value, false)
       attr("num", num)
@@ -721,33 +721,33 @@ interface gen_array_ops {
     }
   }
   
-  fun _unravelIndex(indices: Output, dims: Output, name: String = "UnravelIndex") = run {
+  fun unravelIndex(indices: Output, dims: Output, name: String = "UnravelIndex") = run {
     buildOpTensor("UnravelIndex", name) {
       addInput(indices, false)
       addInput(dims, false)
     }
   }
   
-  fun _where(input: Output, name: String = "Where") = run {
+  fun where(input: Output, name: String = "Where") = run {
     buildOpTensor("Where", name) {
       addInput(input, false)
     }
   }
   
-  fun _zerosLike(x: Output, name: String = "ZerosLike") = run {
+  fun zerosLike(x: Output, name: String = "ZerosLike") = run {
     buildOpTensor("ZerosLike", name) {
       addInput(x, false)
     }
   }
   
-  fun _broadcastGradientArgs(s0: Output, s1: Output, name: String = "BroadcastGradientArgs") = run {
+  fun broadcastGradientArgs(s0: Output, s1: Output, name: String = "BroadcastGradientArgs") = run {
     buildOpTensors("BroadcastGradientArgs", name) {
       addInput(s0, false)
       addInput(s1, false)
     }
   }
   
-  fun _mirrorPadGrad(input: Output, paddings: Output, mode: String, name: String = "MirrorPadGrad") = run {
+  fun mirrorPadGrad(input: Output, paddings: Output, mode: String, name: String = "MirrorPadGrad") = run {
     buildOpTensor("MirrorPadGrad", name) {
       addInput(input, false)
       addInput(paddings, false)
@@ -755,7 +755,7 @@ interface gen_array_ops {
     }
   }
   
-  fun _refIdentity(input: Output, name: String = "RefIdentity") = run {
+  fun refIdentity(input: Output, name: String = "RefIdentity") = run {
     buildOpTensor("RefIdentity", name) {
       addInput(input, true)
     }

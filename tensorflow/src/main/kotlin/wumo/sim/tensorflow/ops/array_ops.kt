@@ -1,5 +1,6 @@
 package wumo.sim.tensorflow.ops
 
+import wumo.sim.tensorflow.ops.gen.gen_array_ops
 import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.types.*
 import wumo.sim.util.Shape
@@ -65,25 +66,25 @@ operator fun Output.get(vararg slice_spec: Int): Output {
     val packed_begin = tf.stack(begin)
     val packed_end = tf.stack(end)
     val packed_strides = tf.stack(strides)
-    tf._stridedSlice(this@get, packed_begin, packed_end, packed_strides,
-                     begin_mask,
-                     end_mask,
-                     shrink_axis_mask,
-                     new_axis_mask,
-                     ellipsis_mask,
-                     tf.currentNameScope)
+    tf.stridedSlice(this@get, packed_begin, packed_end, packed_strides,
+                    begin_mask,
+                    end_mask,
+                    shrink_axis_mask,
+                    new_axis_mask,
+                    ellipsis_mask,
+                    tf.currentNameScope)
   }
 }
 
 object array_ops {
-  interface API {
+  interface API : gen_array_ops {
     fun <T : OutputLike> identity(data: T, name: String): Output {
       return when (data) {
         is Output -> {
           if (data.dataType.isRefType)
-            tf._refIdentity(data, name)
+            super.refIdentity(data, name)
           else
-            tf._identity(data, name)
+            super.identity(data, name)
         }
         is IndexedSlices -> TODO()
         is SparseOutput -> TODO()
@@ -93,11 +94,11 @@ object array_ops {
     
     fun oneHot(indices: Output, depth: Output, on_value: Output = tf.const(1f, "on_value"),
                off_value: Output = tf.const(0f, "off_value"), axis: Long = -1L, name: String = "OneHot") =
-        tf._oneHot(indices, depth, on_value, off_value, axis, name)
+        super._oneHot(indices, depth, on_value, off_value, axis, name)
     
     fun placeholder(shape: Shape = Shape(),
                     dtype: DataType<*> = FLOAT, name: String = "Placeholder"): Output =
-        tf._placeholder(dtype, shape, name)
+        super.placeholder(dtype, shape, name)
     
     fun zerosLike(x: Output, dtype: DataType<*>? = null, optimize: Boolean = true, name: String = "zeros_like") =
         when {
@@ -105,7 +106,7 @@ object array_ops {
             zeros(x.shape, dtype = dtype ?: x.dataType, name = name)
           dtype != null && dtype != x.dataType && dtype != VARIANT ->
             zeros(shape(x, optimize = optimize), dtype = dtype, name = name)
-          else -> tf._zerosLike(x, name)
+          else -> super.zerosLike(x, name)
         }
     
     fun onesLike(x: Output, dtype: DataType<*>? = null, optimize: Boolean = true, name: String = "ones_like"): Output {
@@ -120,7 +121,7 @@ object array_ops {
             STRING -> ""
             else -> 0
           }
-          tf._fill(shape, tf.const(dtype, zero), tf.currentNameScope)
+          super.fill(shape, tf.const(dtype, zero), tf.currentNameScope)
         }
     
     fun zeros(shape: Shape, dtype: DataType<*> = FLOAT, name: String = "Ones"): Output =
@@ -132,8 +133,8 @@ object array_ops {
           if (shape.numElements() < 1000)
             tf.const(shape, dtype, zero, tf.currentNameScope)
           else {
-            val shape = tf._reshape(tf.const(shape.asLongArray()), tf.const(-1))
-            tf._fill(shape, tf.const(dtype, zero), tf.currentNameScope)
+            val shape = super.reshape(tf.const(shape.asLongArray()), tf.const(-1), name)
+            super.fill(shape, tf.const(dtype, zero), tf.currentNameScope)
           }
         }
     
@@ -142,14 +143,14 @@ object array_ops {
           if (shape.numElements() < 1000)
             tf.const(shape, dtype, 1, tf.currentNameScope)
           else {
-            tf._fill(tf.const(shape.asLongArray()),
-                     tf.const(dtype, 1), tf.currentNameScope)
+            super.fill(tf.const(shape.asLongArray()),
+                       tf.const(dtype, 1), tf.currentNameScope)
           }
         }
     
     fun ones(shape: Output, dtype: DataType<*> = FLOAT, name: String = "ones"): Output =
         tf.nameScope(name) {
-          tf._fill(shape, tf.const(dtype.baseDataType, 1), tf.currentNameScope)
+          super.fill(shape, tf.const(dtype.baseDataType, 1), tf.currentNameScope)
         }
     
     /**
@@ -159,13 +160,13 @@ object array_ops {
      */
     fun shape(input: OutputLike, out_type: DataType<*> = INT32, name: String = "Shape", optimize: Boolean = true): Output {
       return when (input) {
-        is SparseOutput -> tf._cast(input.denseShape!!, out_type)
+        is SparseOutput -> tf.cast(input.denseShape!!, out_type)
         is Output -> {
           val input_shape = input.shape
           if (optimize && input_shape.isFullyDefined)
             tf.const(input_shape.asIntArray()!!, name)
           else
-            tf._shape(input, out_type, name)
+            super.shape(input, out_type, name)
         }
         else -> TODO()
       }
@@ -181,7 +182,7 @@ object array_ops {
       if (axis == 0) {
       }
       //TODO detect resource variables
-      return tf._gatherV2(params, indices, tf.const(axis), name)
+      return super.gatherV2(params, indices, tf.const(axis), name)
     }
     
     fun rank(input: Output, name: String = "Rank", optimize: Boolean = true): Output {
@@ -189,7 +190,7 @@ object array_ops {
       val input_shape = input.shape
       if (optimize && input_shape.isFullyDefined)
         return tf.const(input_shape.rank, name)
-      return tf._rank(input, name)
+      return super.rank(input, name)
     }
     
     /**
@@ -226,7 +227,7 @@ object array_ops {
      */
     fun stack(values: List<Output>, axis: Long = 0L, name: String = "stack"): Output {
       if (axis == 0L) {
-        return tf._pack(values, axis, name)
+        return super.pack(values, axis, name)
       }
       TODO()
     }
@@ -265,9 +266,8 @@ object array_ops {
      * `x` and `y`.
      */
     fun where(condition: Output, x: Output, y: Output, name: String = "Where") =
-        tf._select(condition, x, y, name)
+        tf.select(condition, x, y, name)
     
-    fun where(condition: Output, name: String = "Where") = tf._where(condition, name)
     /**Output conversion function that automatically packs arguments.*/
     fun autopack(v: Array<Output>, name: String = "packed"): Output {
       TODO()

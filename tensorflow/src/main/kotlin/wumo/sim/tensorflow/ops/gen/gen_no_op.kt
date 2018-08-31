@@ -6,7 +6,7 @@ package wumo.sim.tensorflow.ops.gen
 import wumo.sim.tensorflow.buildOp
 
 interface gen_no_op {
-  fun _noOp(name: String = "NoOp") = run {
+  fun noOp(name: String = "NoOp") = run {
     buildOp("NoOp", name) {
     }
   }

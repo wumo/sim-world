@@ -6,7 +6,7 @@ package wumo.sim.tensorflow.ops.gen
 import wumo.sim.tensorflow.buildOpTensor
 
 interface gen_user_ops {
-  fun _fact(name: String = "Fact") = run {
+  fun fact(name: String = "Fact") = run {
     buildOpTensor("Fact", name) {
     }
   }

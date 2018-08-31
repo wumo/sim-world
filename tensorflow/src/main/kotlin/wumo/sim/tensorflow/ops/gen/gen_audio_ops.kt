@@ -8,7 +8,7 @@ import wumo.sim.tensorflow.buildOpTensors
 import wumo.sim.tensorflow.ops.Output
 
 interface gen_audio_ops {
-  fun _audioSpectrogram(input: Output, window_size: Long, stride: Long, magnitude_squared: Boolean = false, name: String = "AudioSpectrogram") = run {
+  fun audioSpectrogram(input: Output, window_size: Long, stride: Long, magnitude_squared: Boolean = false, name: String = "AudioSpectrogram") = run {
     buildOpTensor("AudioSpectrogram", name) {
       addInput(input, false)
       attr("window_size", window_size)
@@ -17,7 +17,7 @@ interface gen_audio_ops {
     }
   }
   
-  fun _decodeWav(contents: Output, desired_channels: Long = -1L, desired_samples: Long = -1L, name: String = "DecodeWav") = run {
+  fun decodeWav(contents: Output, desired_channels: Long = -1L, desired_samples: Long = -1L, name: String = "DecodeWav") = run {
     buildOpTensors("DecodeWav", name) {
       addInput(contents, false)
       attr("desired_channels", desired_channels)
@@ -25,14 +25,14 @@ interface gen_audio_ops {
     }
   }
   
-  fun _encodeWav(audio: Output, sample_rate: Output, name: String = "EncodeWav") = run {
+  fun encodeWav(audio: Output, sample_rate: Output, name: String = "EncodeWav") = run {
     buildOpTensor("EncodeWav", name) {
       addInput(audio, false)
       addInput(sample_rate, false)
     }
   }
   
-  fun _mfcc(spectrogram: Output, sample_rate: Output, upper_frequency_limit: Float = 4000.0f, lower_frequency_limit: Float = 20.0f, filterbank_channel_count: Long = 40L, dct_coefficient_count: Long = 13L, name: String = "Mfcc") = run {
+  fun mfcc(spectrogram: Output, sample_rate: Output, upper_frequency_limit: Float = 4000.0f, lower_frequency_limit: Float = 20.0f, filterbank_channel_count: Long = 40L, dct_coefficient_count: Long = 13L, name: String = "Mfcc") = run {
     buildOpTensor("Mfcc", name) {
       addInput(spectrogram, false)
       addInput(sample_rate, false)

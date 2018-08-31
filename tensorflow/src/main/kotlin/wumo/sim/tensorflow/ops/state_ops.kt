@@ -2,6 +2,7 @@
 
 package wumo.sim.tensorflow.ops
 
+import wumo.sim.tensorflow.ops.gen.gen_state_ops
 import wumo.sim.tensorflow.ops.variables.DynamicInitializer
 import wumo.sim.tensorflow.ops.variables.Variable
 import wumo.sim.tensorflow.tf
@@ -21,7 +22,7 @@ import wumo.sim.util.scalarDimension
 //
 object state_ops {
   
-  interface API {
+  interface API : gen_state_ops {
 
 //    fun assign(ref: Output, value: Output, name: String = "Assign") =
 //    //TODO NOTE(mrry): We add an explicit colocation constraint between

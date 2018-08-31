@@ -24,7 +24,7 @@ class GradientDescentOptimizer(
   }
   
   override fun applyDense(gradient: Output, variable: Variable, iteration: Variable?): Op =
-      tf._applyGradientDescent(variable.variable,
+      tf.applyGradientDescent(variable.variable,
                                getLearningRate(variable, iteration),
                                gradient, useLocking).op!!
   

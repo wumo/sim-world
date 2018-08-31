@@ -9,7 +9,7 @@ import wumo.sim.tensorflow.ops.Output
 import wumo.sim.util.ndarray.NDArray
 
 interface gen_logging_ops {
-  fun _assert(condition: Output, data: Output, summarize: Long = 3L, name: String = "Assert") = run {
+  fun assert(condition: Output, data: Output, summarize: Long = 3L, name: String = "Assert") = run {
     buildOp("Assert", name) {
       addInput(condition, false)
       addInput(data, false)
@@ -17,7 +17,7 @@ interface gen_logging_ops {
     }
   }
   
-  fun _audioSummaryV2(tag: Output, tensor: Output, sample_rate: Output, max_outputs: Long = 3L, name: String = "AudioSummaryV2") = run {
+  fun audioSummaryV2(tag: Output, tensor: Output, sample_rate: Output, max_outputs: Long = 3L, name: String = "AudioSummaryV2") = run {
     buildOpTensor("AudioSummaryV2", name) {
       addInput(tag, false)
       addInput(tensor, false)
@@ -26,14 +26,14 @@ interface gen_logging_ops {
     }
   }
   
-  fun _histogramSummary(tag: Output, values: Output, name: String = "HistogramSummary") = run {
+  fun histogramSummary(tag: Output, values: Output, name: String = "HistogramSummary") = run {
     buildOpTensor("HistogramSummary", name) {
       addInput(tag, false)
       addInput(values, false)
     }
   }
   
-  fun _imageSummary(tag: Output, tensor: Output, max_images: Long = 3L, bad_color: NDArray<*>, name: String = "ImageSummary") = run {
+  fun imageSummary(tag: Output, tensor: Output, max_images: Long = 3L, bad_color: NDArray<*>, name: String = "ImageSummary") = run {
     buildOpTensor("ImageSummary", name) {
       addInput(tag, false)
       addInput(tensor, false)
@@ -42,13 +42,13 @@ interface gen_logging_ops {
     }
   }
   
-  fun _mergeSummary(inputs: List<Output>, name: String = "MergeSummary") = run {
+  fun mergeSummary(inputs: List<Output>, name: String = "MergeSummary") = run {
     buildOpTensor("MergeSummary", name) {
       addInput(inputs, false)
     }
   }
   
-  fun _print(input: Output, data: Output, message: String = "", first_n: Long = -1L, summarize: Long = 3L, name: String = "Print") = run {
+  fun print(input: Output, data: Output, message: String = "", first_n: Long = -1L, summarize: Long = 3L, name: String = "Print") = run {
     buildOpTensor("Print", name) {
       addInput(input, false)
       addInput(data, false)
@@ -58,14 +58,14 @@ interface gen_logging_ops {
     }
   }
   
-  fun _scalarSummary(tags: Output, values: Output, name: String = "ScalarSummary") = run {
+  fun scalarSummary(tags: Output, values: Output, name: String = "ScalarSummary") = run {
     buildOpTensor("ScalarSummary", name) {
       addInput(tags, false)
       addInput(values, false)
     }
   }
   
-  fun _tensorSummary(tensor: Output, description: String = "", labels: Array<String> = arrayOf(), display_name: String = "", name: String = "TensorSummary") = run {
+  fun tensorSummary(tensor: Output, description: String = "", labels: Array<String> = arrayOf(), display_name: String = "", name: String = "TensorSummary") = run {
     buildOpTensor("TensorSummary", name) {
       addInput(tensor, false)
       attr("description", description)
@@ -74,7 +74,7 @@ interface gen_logging_ops {
     }
   }
   
-  fun _tensorSummaryV2(tag: Output, tensor: Output, serialized_summary_metadata: Output, name: String = "TensorSummaryV2") = run {
+  fun tensorSummaryV2(tag: Output, tensor: Output, serialized_summary_metadata: Output, name: String = "TensorSummaryV2") = run {
     buildOpTensor("TensorSummaryV2", name) {
       addInput(tag, false)
       addInput(tensor, false)
@@ -82,7 +82,7 @@ interface gen_logging_ops {
     }
   }
   
-  fun _timestamp(name: String = "Timestamp") = run {
+  fun timestamp(name: String = "Timestamp") = run {
     buildOpTensor("Timestamp", name) {
     }
   }

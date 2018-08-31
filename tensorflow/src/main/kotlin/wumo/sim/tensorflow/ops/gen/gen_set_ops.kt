@@ -8,7 +8,7 @@ import wumo.sim.tensorflow.buildOpTensors
 import wumo.sim.tensorflow.ops.Output
 
 interface gen_set_ops {
-  fun _denseToDenseSetOperation(set1: Output, set2: Output, set_operation: String, validate_indices: Boolean = true, name: String = "DenseToDenseSetOperation") = run {
+  fun denseToDenseSetOperation(set1: Output, set2: Output, set_operation: String, validate_indices: Boolean = true, name: String = "DenseToDenseSetOperation") = run {
     buildOpTensors("DenseToDenseSetOperation", name) {
       addInput(set1, false)
       addInput(set2, false)
@@ -17,7 +17,7 @@ interface gen_set_ops {
     }
   }
   
-  fun _denseToSparseSetOperation(set1: Output, set2_indices: Output, set2_values: Output, set2_shape: Output, set_operation: String, validate_indices: Boolean = true, name: String = "DenseToSparseSetOperation") = run {
+  fun denseToSparseSetOperation(set1: Output, set2_indices: Output, set2_values: Output, set2_shape: Output, set_operation: String, validate_indices: Boolean = true, name: String = "DenseToSparseSetOperation") = run {
     buildOpTensors("DenseToSparseSetOperation", name) {
       addInput(set1, false)
       addInput(set2_indices, false)
@@ -28,7 +28,7 @@ interface gen_set_ops {
     }
   }
   
-  fun _setSize(set_indices: Output, set_values: Output, set_shape: Output, validate_indices: Boolean = true, name: String = "SetSize") = run {
+  fun setSize(set_indices: Output, set_values: Output, set_shape: Output, validate_indices: Boolean = true, name: String = "SetSize") = run {
     buildOpTensor("SetSize", name) {
       addInput(set_indices, false)
       addInput(set_values, false)
@@ -37,7 +37,7 @@ interface gen_set_ops {
     }
   }
   
-  fun _sparseToSparseSetOperation(set1_indices: Output, set1_values: Output, set1_shape: Output, set2_indices: Output, set2_values: Output, set2_shape: Output, set_operation: String, validate_indices: Boolean = true, name: String = "SparseToSparseSetOperation") = run {
+  fun sparseToSparseSetOperation(set1_indices: Output, set1_values: Output, set1_shape: Output, set2_indices: Output, set2_values: Output, set2_shape: Output, set_operation: String, validate_indices: Boolean = true, name: String = "SparseToSparseSetOperation") = run {
     buildOpTensors("SparseToSparseSetOperation", name) {
       addInput(set1_indices, false)
       addInput(set1_values, false)

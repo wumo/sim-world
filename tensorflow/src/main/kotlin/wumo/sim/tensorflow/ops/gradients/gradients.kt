@@ -132,7 +132,7 @@ object gradient_ops {
         // Initialize the pending count for ops in the connected subgraph from ys
         val toOps = if (ys.size > 1)
           ys.mapTo(mutableSetOf()) { y ->
-            if (y.consumers.isNotEmpty()) tf._identity(y).op!! else y.op!!
+            if (y.consumers.isNotEmpty()) tf.identity(y).op!! else y.op!!
           }
         else
           to_ops
@@ -364,7 +364,7 @@ object gradient_ops {
         if (y.dataType.isComplex)
           throw InvalidDataTypeException(
               "Gradients of complex tensors must set 'gradients' (variable.dataType = '${y.dataType}').")
-        tf._fill(tf.shape(y),
+        tf.fill(tf.shape(y),
                  tf.const(y.dataType, 1, name = "grad_ys_$index"))
       } else {
         when {
@@ -386,20 +386,20 @@ object gradient_ops {
         // Create a gradients tensor in the name scope of the gradients. This is required in order for tensor arrays
         // to identify which gradient call a gradient value is coming from.
         when (grad_y) {
-          is Output -> tf._identity(grad_y, name = "grad_ys_$index")
+          is Output -> tf.identity(grad_y, name = "grad_ys_$index")
           is IndexedSlices ->
-            IndexedSlices(tf._identity(grad_y.indices, name = "grad_ys_${index}_indices"),
-                          tf._identity(grad_y.values, name = "grad_ys_${index}_values"),
+            IndexedSlices(tf.identity(grad_y.indices, name = "grad_ys_${index}_indices"),
+                          tf.identity(grad_y.values, name = "grad_ys_${index}_values"),
                           grad_y.denseShape.let {
                             if (it == null) it
-                            else tf._identity(it, name = "grad_ys${index}_shape")
+                            else tf.identity(it, name = "grad_ys${index}_shape")
                           })
           is SparseOutput ->
-            SparseOutput(tf._identity(grad_y.indices, name = "grad_ys_${index}_indices"),
-                         tf._identity(grad_y.values, name = "grad_ys_${index}_values"),
+            SparseOutput(tf.identity(grad_y.indices, name = "grad_ys_${index}_indices"),
+                         tf.identity(grad_y.values, name = "grad_ys_${index}_values"),
                          grad_y.denseShape.let {
                            if (it == null) it
-                           else tf._identity(it, name = "grad_ys${index}_shape")
+                           else tf.identity(it, name = "grad_ys${index}_shape")
                          })
         }
       }
@@ -581,10 +581,10 @@ object gradient_ops {
                 .sortedBy { it.first }
                 .map { (_, outputs) ->
                   tf.colocateWithForGradient(mutableSetOf(gradients[0].op), gradientUID, ignoreExisting = true) {
-                    tf._addN(outputs.map { it as Output })
+                    tf.addN(outputs.map { it as Output })
                   }
                 }
-            tf._addN(deviceContributions)
+            tf.addN(deviceContributions)
           }
           gradients.all { it is IndexedSlices } -> {
             TODO()
@@ -606,7 +606,7 @@ object gradient_ops {
       
       override fun aggreate(gradients: MutableList<OutputLike>, gradientUID: String?): OutputLike {
         return when {
-          gradients.all { it is Output } -> tf.accumulateNV2(gradients.map { it as Output })
+          gradients.all { it is Output } -> tf.accumulateN(gradients.map { it as Output })
           gradients.all { it is IndexedSlices } -> {
             TODO()
           }

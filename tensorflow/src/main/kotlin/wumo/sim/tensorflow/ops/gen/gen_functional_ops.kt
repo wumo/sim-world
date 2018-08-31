@@ -28,7 +28,7 @@ interface gen_functional_ops {
     }
   }
   
-  fun _partitionedCall(args: Output, tout: Array<Long>, f: NameAttrList, name: String = "PartitionedCall") = run {
+  fun partitionedCall(args: Output, tout: Array<Long>, f: NameAttrList, name: String = "PartitionedCall") = run {
     buildOpTensors("PartitionedCall", name) {
       addInput(args, false)
       attr("Tout", tout)
@@ -36,7 +36,7 @@ interface gen_functional_ops {
     }
   }
   
-  fun _remoteCall(target: Output, args: Output, tout: Array<Long>, f: NameAttrList, name: String = "RemoteCall") = run {
+  fun remoteCall(target: Output, args: Output, tout: Array<Long>, f: NameAttrList, name: String = "RemoteCall") = run {
     buildOpTensors("RemoteCall", name) {
       addInput(target, false)
       addInput(args, false)
@@ -45,7 +45,7 @@ interface gen_functional_ops {
     }
   }
   
-  fun _statefulPartitionedCall(args: Output, tout: Array<Long>, f: NameAttrList, name: String = "StatefulPartitionedCall") = run {
+  fun statefulPartitionedCall(args: Output, tout: Array<Long>, f: NameAttrList, name: String = "StatefulPartitionedCall") = run {
     buildOpTensors("StatefulPartitionedCall", name) {
       addInput(args, false)
       attr("Tout", tout)
@@ -53,7 +53,7 @@ interface gen_functional_ops {
     }
   }
   
-  fun _symbolicGradient(input: Output, tout: Array<Long>, f: NameAttrList, name: String = "SymbolicGradient") = run {
+  fun symbolicGradient(input: Output, tout: Array<Long>, f: NameAttrList, name: String = "SymbolicGradient") = run {
     buildOpTensors("SymbolicGradient", name) {
       addInput(input, false)
       attr("Tout", tout)

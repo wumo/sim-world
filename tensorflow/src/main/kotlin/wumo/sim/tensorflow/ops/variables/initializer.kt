@@ -145,7 +145,7 @@ fun variance_scaling_initializer(factor: Float = 2.0f,
             tf.random_uniform(shape, -limit, limit)
           } else {
             val trunc_stddev = sqrt(1.3 * factor / n).toFloat()
-            tf._truncatedNormal(tf.const(shape.asIntArray()!!), dtype, 0L, trunc_stddev.toLong())
+            tf.truncatedNormal(tf.const(shape.asIntArray()!!), dtype, 0L, trunc_stddev.toLong())
           }
         }
     }

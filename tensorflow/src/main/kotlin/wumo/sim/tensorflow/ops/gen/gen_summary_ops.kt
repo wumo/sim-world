@@ -8,13 +8,13 @@ import wumo.sim.tensorflow.buildOpTensor
 import wumo.sim.tensorflow.ops.Output
 
 interface gen_summary_ops {
-  fun _closeSummaryWriter(writer: Output, name: String = "CloseSummaryWriter") = run {
+  fun closeSummaryWriter(writer: Output, name: String = "CloseSummaryWriter") = run {
     buildOp("CloseSummaryWriter", name) {
       addInput(writer, false)
     }
   }
   
-  fun _createSummaryDbWriter(writer: Output, db_uri: Output, experiment_name: Output, run_name: Output, user_name: Output, name: String = "CreateSummaryDbWriter") = run {
+  fun createSummaryDbWriter(writer: Output, db_uri: Output, experiment_name: Output, run_name: Output, user_name: Output, name: String = "CreateSummaryDbWriter") = run {
     buildOp("CreateSummaryDbWriter", name) {
       addInput(writer, false)
       addInput(db_uri, false)
@@ -24,7 +24,7 @@ interface gen_summary_ops {
     }
   }
   
-  fun _createSummaryFileWriter(writer: Output, logdir: Output, max_queue: Output, flush_millis: Output, filename_suffix: Output, name: String = "CreateSummaryFileWriter") = run {
+  fun createSummaryFileWriter(writer: Output, logdir: Output, max_queue: Output, flush_millis: Output, filename_suffix: Output, name: String = "CreateSummaryFileWriter") = run {
     buildOp("CreateSummaryFileWriter", name) {
       addInput(writer, false)
       addInput(logdir, false)
@@ -34,27 +34,27 @@ interface gen_summary_ops {
     }
   }
   
-  fun _flushSummaryWriter(writer: Output, name: String = "FlushSummaryWriter") = run {
+  fun flushSummaryWriter(writer: Output, name: String = "FlushSummaryWriter") = run {
     buildOp("FlushSummaryWriter", name) {
       addInput(writer, false)
     }
   }
   
-  fun _importEvent(writer: Output, event: Output, name: String = "ImportEvent") = run {
+  fun importEvent(writer: Output, event: Output, name: String = "ImportEvent") = run {
     buildOp("ImportEvent", name) {
       addInput(writer, false)
       addInput(event, false)
     }
   }
   
-  fun _summaryWriter(shared_name: String = "", container: String = "", name: String = "SummaryWriter") = run {
+  fun summaryWriter(shared_name: String = "", container: String = "", name: String = "SummaryWriter") = run {
     buildOpTensor("SummaryWriter", name) {
       attr("shared_name", shared_name)
       attr("container", container)
     }
   }
   
-  fun _writeAudioSummary(writer: Output, step: Output, tag: Output, tensor: Output, sample_rate: Output, max_outputs: Long = 3L, name: String = "WriteAudioSummary") = run {
+  fun writeAudioSummary(writer: Output, step: Output, tag: Output, tensor: Output, sample_rate: Output, max_outputs: Long = 3L, name: String = "WriteAudioSummary") = run {
     buildOp("WriteAudioSummary", name) {
       addInput(writer, false)
       addInput(step, false)
@@ -65,7 +65,7 @@ interface gen_summary_ops {
     }
   }
   
-  fun _writeGraphSummary(writer: Output, step: Output, tensor: Output, name: String = "WriteGraphSummary") = run {
+  fun writeGraphSummary(writer: Output, step: Output, tensor: Output, name: String = "WriteGraphSummary") = run {
     buildOp("WriteGraphSummary", name) {
       addInput(writer, false)
       addInput(step, false)
@@ -73,7 +73,7 @@ interface gen_summary_ops {
     }
   }
   
-  fun _writeHistogramSummary(writer: Output, step: Output, tag: Output, values: Output, name: String = "WriteHistogramSummary") = run {
+  fun writeHistogramSummary(writer: Output, step: Output, tag: Output, values: Output, name: String = "WriteHistogramSummary") = run {
     buildOp("WriteHistogramSummary", name) {
       addInput(writer, false)
       addInput(step, false)
@@ -82,7 +82,7 @@ interface gen_summary_ops {
     }
   }
   
-  fun _writeImageSummary(writer: Output, step: Output, tag: Output, tensor: Output, bad_color: Output, max_images: Long = 3L, name: String = "WriteImageSummary") = run {
+  fun writeImageSummary(writer: Output, step: Output, tag: Output, tensor: Output, bad_color: Output, max_images: Long = 3L, name: String = "WriteImageSummary") = run {
     buildOp("WriteImageSummary", name) {
       addInput(writer, false)
       addInput(step, false)
@@ -93,7 +93,7 @@ interface gen_summary_ops {
     }
   }
   
-  fun _writeScalarSummary(writer: Output, step: Output, tag: Output, value: Output, name: String = "WriteScalarSummary") = run {
+  fun writeScalarSummary(writer: Output, step: Output, tag: Output, value: Output, name: String = "WriteScalarSummary") = run {
     buildOp("WriteScalarSummary", name) {
       addInput(writer, false)
       addInput(step, false)
@@ -102,7 +102,7 @@ interface gen_summary_ops {
     }
   }
   
-  fun _writeSummary(writer: Output, step: Output, tensor: Output, tag: Output, summary_metadata: Output, name: String = "WriteSummary") = run {
+  fun writeSummary(writer: Output, step: Output, tensor: Output, tag: Output, summary_metadata: Output, name: String = "WriteSummary") = run {
     buildOp("WriteSummary", name) {
       addInput(writer, false)
       addInput(step, false)

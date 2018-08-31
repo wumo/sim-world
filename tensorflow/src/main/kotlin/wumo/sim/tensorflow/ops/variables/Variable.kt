@@ -27,11 +27,11 @@ class Variable(
   override val shape = variable.shape
   val op = variable.op!!
   override val value = snapshot
-  fun readValue() = tf._identity(variable, name = "read")
+  fun readValue() = tf.identity(variable, name = "read")
   override val initializer = initializeOp
   override val isInitialized: Output
     get() = tf.with(graph) {
-      tf._isVariableInitialized(variable)
+      tf.isVariableInitialized(variable)
     }
   
   override val initializedValue: Output
@@ -44,25 +44,25 @@ class Variable(
   internal var partitionInformation: PartitionInformation? = null
   
   override fun read(name: String): Output =
-      tf._identity(variable, name = "read")
+      tf.identity(variable, name = "read")
   
   override fun gather(indices: Output, name: String): Output {
     TODO("not implemented")
   }
   
   override fun assign(value: Output, name: String): Output =
-      tf._assign(variable, value)
+      tf.assign(variable, value)
   
   override fun assignAdd(value: Output, name: String): Output =
-      tf._assignAdd(variable, value, name = name)
+      tf.assignAdd(variable, value, name = name)
   
   override fun assignSub(value: Output, name: String): Output =
-      tf._assignSub(variable, value, name = name)
+      tf.assignSub(variable, value, name = name)
   
   override fun assignScatterSub(indices: Output, values: Output, use_locking: Boolean, name: String): Output {
     if (values.dataType != dataType)
       throw InvalidDataTypeException("Expected '$dataType', but got '${values.dataType}'.")
-    return tf._scatterSub(variable, indices, values, use_locking, name)
+    return tf.scatterSub(variable, indices, values, use_locking, name)
   }
   
   override fun toString() = op.toString()
@@ -159,7 +159,7 @@ class Variable(
      * Calling [initializer] is equivalent to passing the list of initializers to [tf.group].
      *
      * If [variables] is empty, the method still returns an op that can be run. That op has no effect (i.e., it is a
-     * [tf._noOp]).
+     * [tf.noOp]).
      *
      * @param  variables Set of variables to initialize.
      * @param  name      Name for the created op.
@@ -169,7 +169,7 @@ class Variable(
         if (variables.isNotEmpty())
           tf.group(variables.mapTo(mutableSetOf()) { it.initializer }, name)
         else
-          tf._noOp(name)
+          tf.noOp(name)
     
     /**
      * @see "tensorflow.python.ops.variables.Variable#__init__"
@@ -197,22 +197,22 @@ class Variable(
 //          attr.mutable_list().apply {
 //            add_s("loc:@$trueName")
 //          }
-            val variableHandle = tf._variableV2(inferredShape, inferredDataType.baseDataType,
+            val variableHandle = tf.variableV2(inferredShape, inferredDataType.baseDataType,
                                                 shared_name = trueName, name = scopeName)
             val initialValue = tf.nameScope("Initializer") {
               tf.colocateWith(variableHandle.op!!) {
                 initializer(inferredShape, inferredDataType)
               }
             }
-            val initializeOp = tf._assign(variableHandle,
+            val initializeOp = tf.assign(variableHandle,
                                           tryGuardAgainstUninitializedDependencies(variableHandle.name, initialValue))
             val snapshot = if (cachingDevice != null)
               tf.device(cachingDevice) {
-                tf._identity(variableHandle, name = "read")
+                tf.identity(variableHandle, name = "read")
               }
             else
               tf.colocateWith(variableHandle.op!!) {
-                tf._identity(variableHandle, name = "read")
+                tf.identity(variableHandle, name = "read")
               }
             val createdVariable = Variable(inferredDataType, variableHandle, initializeOp.op!!, initialValue, snapshot)
             val _collections = collections ?: mutableSetOf()

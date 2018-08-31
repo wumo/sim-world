@@ -8,7 +8,7 @@ import wumo.sim.tensorflow.buildOpTensors
 import wumo.sim.tensorflow.ops.Output
 
 interface gen_checkpoint_ops {
-  fun _generateVocabRemapping(new_vocab_file: Output, old_vocab_file: Output, new_vocab_offset: Long, num_new_vocab: Long, old_vocab_size: Long = -1L, name: String = "GenerateVocabRemapping") = run {
+  fun generateVocabRemapping(new_vocab_file: Output, old_vocab_file: Output, new_vocab_offset: Long, num_new_vocab: Long, old_vocab_size: Long = -1L, name: String = "GenerateVocabRemapping") = run {
     buildOpTensors("GenerateVocabRemapping", name) {
       addInput(new_vocab_file, false)
       addInput(old_vocab_file, false)
@@ -18,7 +18,7 @@ interface gen_checkpoint_ops {
     }
   }
   
-  fun _loadAndRemapMatrix(ckpt_path: Output, old_tensor_name: Output, row_remapping: Output, col_remapping: Output, initializing_values: Output, num_rows: Long, num_cols: Long, max_rows_in_memory: Long = -1L, name: String = "LoadAndRemapMatrix") = run {
+  fun loadAndRemapMatrix(ckpt_path: Output, old_tensor_name: Output, row_remapping: Output, col_remapping: Output, initializing_values: Output, num_rows: Long, num_cols: Long, max_rows_in_memory: Long = -1L, name: String = "LoadAndRemapMatrix") = run {
     buildOpTensor("LoadAndRemapMatrix", name) {
       addInput(ckpt_path, false)
       addInput(old_tensor_name, false)

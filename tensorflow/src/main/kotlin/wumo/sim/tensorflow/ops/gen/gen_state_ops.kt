@@ -10,7 +10,7 @@ import wumo.sim.tensorflow.types.DataType
 import wumo.sim.util.Shape
 
 interface gen_state_ops {
-  fun _assign(_ref: Output, value: Output, validate_shape: Boolean = true, use_locking: Boolean = true, name: String = "Assign") = run {
+  fun assign(_ref: Output, value: Output, validate_shape: Boolean = true, use_locking: Boolean = true, name: String = "Assign") = run {
     buildOpTensor("Assign", name) {
       addInput(_ref, true)
       addInput(value, false)
@@ -19,7 +19,7 @@ interface gen_state_ops {
     }
   }
   
-  fun _assignAdd(_ref: Output, value: Output, use_locking: Boolean = false, name: String = "AssignAdd") = run {
+  fun assignAdd(_ref: Output, value: Output, use_locking: Boolean = false, name: String = "AssignAdd") = run {
     buildOpTensor("AssignAdd", name) {
       addInput(_ref, true)
       addInput(value, false)
@@ -27,7 +27,7 @@ interface gen_state_ops {
     }
   }
   
-  fun _assignSub(_ref: Output, value: Output, use_locking: Boolean = false, name: String = "AssignSub") = run {
+  fun assignSub(_ref: Output, value: Output, use_locking: Boolean = false, name: String = "AssignSub") = run {
     buildOpTensor("AssignSub", name) {
       addInput(_ref, true)
       addInput(value, false)
@@ -35,27 +35,27 @@ interface gen_state_ops {
     }
   }
   
-  fun _countUpTo(_ref: Output, limit: Long, name: String = "CountUpTo") = run {
+  fun countUpTo(_ref: Output, limit: Long, name: String = "CountUpTo") = run {
     buildOpTensor("CountUpTo", name) {
       addInput(_ref, true)
       attr("limit", limit)
     }
   }
   
-  fun _destroyTemporaryVariable(_ref: Output, var_name: String, name: String = "DestroyTemporaryVariable") = run {
+  fun destroyTemporaryVariable(_ref: Output, var_name: String, name: String = "DestroyTemporaryVariable") = run {
     buildOpTensor("DestroyTemporaryVariable", name) {
       addInput(_ref, true)
       attr("var_name", var_name)
     }
   }
   
-  fun _isVariableInitialized(_ref: Output, name: String = "IsVariableInitialized") = run {
+  fun isVariableInitialized(_ref: Output, name: String = "IsVariableInitialized") = run {
     buildOpTensor("IsVariableInitialized", name) {
       addInput(_ref, true)
     }
   }
   
-  fun _resourceCountUpTo(resource: Output, limit: Long, t: DataType<*>, name: String = "ResourceCountUpTo") = run {
+  fun resourceCountUpTo(resource: Output, limit: Long, t: DataType<*>, name: String = "ResourceCountUpTo") = run {
     buildOpTensor("ResourceCountUpTo", name) {
       addInput(resource, false)
       attr("limit", limit)
@@ -63,7 +63,7 @@ interface gen_state_ops {
     }
   }
   
-  fun _resourceScatterNdAdd(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = true, name: String = "ResourceScatterNdAdd") = run {
+  fun resourceScatterNdAdd(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = true, name: String = "ResourceScatterNdAdd") = run {
     buildOp("ResourceScatterNdAdd", name) {
       addInput(_ref, false)
       addInput(indices, false)
@@ -72,7 +72,7 @@ interface gen_state_ops {
     }
   }
   
-  fun _resourceScatterNdUpdate(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = true, name: String = "ResourceScatterNdUpdate") = run {
+  fun resourceScatterNdUpdate(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = true, name: String = "ResourceScatterNdUpdate") = run {
     buildOp("ResourceScatterNdUpdate", name) {
       addInput(_ref, false)
       addInput(indices, false)
@@ -81,7 +81,7 @@ interface gen_state_ops {
     }
   }
   
-  fun _scatterAdd(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = false, name: String = "ScatterAdd") = run {
+  fun scatterAdd(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = false, name: String = "ScatterAdd") = run {
     buildOpTensor("ScatterAdd", name) {
       addInput(_ref, true)
       addInput(indices, false)
@@ -90,7 +90,7 @@ interface gen_state_ops {
     }
   }
   
-  fun _scatterDiv(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = false, name: String = "ScatterDiv") = run {
+  fun scatterDiv(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = false, name: String = "ScatterDiv") = run {
     buildOpTensor("ScatterDiv", name) {
       addInput(_ref, true)
       addInput(indices, false)
@@ -99,7 +99,7 @@ interface gen_state_ops {
     }
   }
   
-  fun _scatterMax(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = false, name: String = "ScatterMax") = run {
+  fun scatterMax(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = false, name: String = "ScatterMax") = run {
     buildOpTensor("ScatterMax", name) {
       addInput(_ref, true)
       addInput(indices, false)
@@ -108,7 +108,7 @@ interface gen_state_ops {
     }
   }
   
-  fun _scatterMin(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = false, name: String = "ScatterMin") = run {
+  fun scatterMin(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = false, name: String = "ScatterMin") = run {
     buildOpTensor("ScatterMin", name) {
       addInput(_ref, true)
       addInput(indices, false)
@@ -117,7 +117,7 @@ interface gen_state_ops {
     }
   }
   
-  fun _scatterMul(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = false, name: String = "ScatterMul") = run {
+  fun scatterMul(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = false, name: String = "ScatterMul") = run {
     buildOpTensor("ScatterMul", name) {
       addInput(_ref, true)
       addInput(indices, false)
@@ -126,7 +126,7 @@ interface gen_state_ops {
     }
   }
   
-  fun _scatterNdAdd(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = false, name: String = "ScatterNdAdd") = run {
+  fun scatterNdAdd(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = false, name: String = "ScatterNdAdd") = run {
     buildOpTensor("ScatterNdAdd", name) {
       addInput(_ref, true)
       addInput(indices, false)
@@ -135,7 +135,7 @@ interface gen_state_ops {
     }
   }
   
-  fun _scatterNdSub(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = false, name: String = "ScatterNdSub") = run {
+  fun scatterNdSub(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = false, name: String = "ScatterNdSub") = run {
     buildOpTensor("ScatterNdSub", name) {
       addInput(_ref, true)
       addInput(indices, false)
@@ -144,7 +144,7 @@ interface gen_state_ops {
     }
   }
   
-  fun _scatterNdUpdate(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = true, name: String = "ScatterNdUpdate") = run {
+  fun scatterNdUpdate(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = true, name: String = "ScatterNdUpdate") = run {
     buildOpTensor("ScatterNdUpdate", name) {
       addInput(_ref, true)
       addInput(indices, false)
@@ -153,7 +153,7 @@ interface gen_state_ops {
     }
   }
   
-  fun _scatterSub(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = false, name: String = "ScatterSub") = run {
+  fun scatterSub(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = false, name: String = "ScatterSub") = run {
     buildOpTensor("ScatterSub", name) {
       addInput(_ref, true)
       addInput(indices, false)
@@ -162,7 +162,7 @@ interface gen_state_ops {
     }
   }
   
-  fun _scatterUpdate(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = true, name: String = "ScatterUpdate") = run {
+  fun scatterUpdate(_ref: Output, indices: Output, updates: Output, use_locking: Boolean = true, name: String = "ScatterUpdate") = run {
     buildOpTensor("ScatterUpdate", name) {
       addInput(_ref, true)
       addInput(indices, false)
@@ -171,7 +171,7 @@ interface gen_state_ops {
     }
   }
   
-  fun _temporaryVariable(shape: Shape, dtype: DataType<*>, var_name: String = "", name: String = "TemporaryVariable") = run {
+  fun temporaryVariable(shape: Shape, dtype: DataType<*>, var_name: String = "", name: String = "TemporaryVariable") = run {
     buildOpTensor("TemporaryVariable", name) {
       attr("shape", shape)
       attr("dtype", dtype)
@@ -179,7 +179,7 @@ interface gen_state_ops {
     }
   }
   
-  fun _variableV2(shape: Shape, dtype: DataType<*>, container: String = "", shared_name: String = "", name: String = "VariableV2") = run {
+  fun variableV2(shape: Shape, dtype: DataType<*>, container: String = "", shared_name: String = "", name: String = "VariableV2") = run {
     buildOpTensor("VariableV2", name) {
       attr("shape", shape)
       attr("dtype", dtype)

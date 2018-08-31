@@ -8,7 +8,7 @@ import wumo.sim.tensorflow.buildOpTensor
 import wumo.sim.tensorflow.ops.Output
 
 interface gen_training_ops {
-  fun _applyAdadelta(_var: Output, accum: Output, accum_update: Output, lr: Output, rho: Output, epsilon: Output, grad: Output, use_locking: Boolean = false, name: String = "ApplyAdadelta") = run {
+  fun applyAdadelta(_var: Output, accum: Output, accum_update: Output, lr: Output, rho: Output, epsilon: Output, grad: Output, use_locking: Boolean = false, name: String = "ApplyAdadelta") = run {
     buildOpTensor("ApplyAdadelta", name) {
       addInput(_var, true)
       addInput(accum, true)
@@ -21,7 +21,7 @@ interface gen_training_ops {
     }
   }
   
-  fun _applyAdagrad(_var: Output, accum: Output, lr: Output, grad: Output, use_locking: Boolean = false, update_slots: Boolean = true, name: String = "ApplyAdagrad") = run {
+  fun applyAdagrad(_var: Output, accum: Output, lr: Output, grad: Output, use_locking: Boolean = false, update_slots: Boolean = true, name: String = "ApplyAdagrad") = run {
     buildOpTensor("ApplyAdagrad", name) {
       addInput(_var, true)
       addInput(accum, true)
@@ -32,7 +32,7 @@ interface gen_training_ops {
     }
   }
   
-  fun _applyAdagradDA(_var: Output, gradient_accumulator: Output, gradient_squared_accumulator: Output, grad: Output, lr: Output, l1: Output, l2: Output, global_step: Output, use_locking: Boolean = false, name: String = "ApplyAdagradDA") = run {
+  fun applyAdagradDA(_var: Output, gradient_accumulator: Output, gradient_squared_accumulator: Output, grad: Output, lr: Output, l1: Output, l2: Output, global_step: Output, use_locking: Boolean = false, name: String = "ApplyAdagradDA") = run {
     buildOpTensor("ApplyAdagradDA", name) {
       addInput(_var, true)
       addInput(gradient_accumulator, true)
@@ -46,7 +46,7 @@ interface gen_training_ops {
     }
   }
   
-  fun _applyAdam(_var: Output, m: Output, v: Output, beta1_power: Output, beta2_power: Output, lr: Output, beta1: Output, beta2: Output, epsilon: Output, grad: Output, use_locking: Boolean = false, use_nesterov: Boolean = false, name: String = "ApplyAdam") = run {
+  fun applyAdam(_var: Output, m: Output, v: Output, beta1_power: Output, beta2_power: Output, lr: Output, beta1: Output, beta2: Output, epsilon: Output, grad: Output, use_locking: Boolean = false, use_nesterov: Boolean = false, name: String = "ApplyAdam") = run {
     buildOpTensor("ApplyAdam", name) {
       addInput(_var, true)
       addInput(m, true)
@@ -63,7 +63,7 @@ interface gen_training_ops {
     }
   }
   
-  fun _applyAddSign(_var: Output, m: Output, lr: Output, alpha: Output, sign_decay: Output, beta: Output, grad: Output, use_locking: Boolean = false, name: String = "ApplyAddSign") = run {
+  fun applyAddSign(_var: Output, m: Output, lr: Output, alpha: Output, sign_decay: Output, beta: Output, grad: Output, use_locking: Boolean = false, name: String = "ApplyAddSign") = run {
     buildOpTensor("ApplyAddSign", name) {
       addInput(_var, true)
       addInput(m, true)
@@ -76,7 +76,7 @@ interface gen_training_ops {
     }
   }
   
-  fun _applyCenteredRMSProp(_var: Output, mg: Output, ms: Output, mom: Output, lr: Output, rho: Output, momentum: Output, epsilon: Output, grad: Output, use_locking: Boolean = false, name: String = "ApplyCenteredRMSProp") = run {
+  fun applyCenteredRMSProp(_var: Output, mg: Output, ms: Output, mom: Output, lr: Output, rho: Output, momentum: Output, epsilon: Output, grad: Output, use_locking: Boolean = false, name: String = "ApplyCenteredRMSProp") = run {
     buildOpTensor("ApplyCenteredRMSProp", name) {
       addInput(_var, true)
       addInput(mg, true)
@@ -91,7 +91,7 @@ interface gen_training_ops {
     }
   }
   
-  fun _applyFtrl(_var: Output, accum: Output, linear: Output, grad: Output, lr: Output, l1: Output, l2: Output, lr_power: Output, use_locking: Boolean = false, name: String = "ApplyFtrl") = run {
+  fun applyFtrl(_var: Output, accum: Output, linear: Output, grad: Output, lr: Output, l1: Output, l2: Output, lr_power: Output, use_locking: Boolean = false, name: String = "ApplyFtrl") = run {
     buildOpTensor("ApplyFtrl", name) {
       addInput(_var, true)
       addInput(accum, true)
@@ -105,7 +105,7 @@ interface gen_training_ops {
     }
   }
   
-  fun _applyFtrlV2(_var: Output, accum: Output, linear: Output, grad: Output, lr: Output, l1: Output, l2: Output, l2_shrinkage: Output, lr_power: Output, use_locking: Boolean = false, name: String = "ApplyFtrlV2") = run {
+  fun applyFtrlV2(_var: Output, accum: Output, linear: Output, grad: Output, lr: Output, l1: Output, l2: Output, l2_shrinkage: Output, lr_power: Output, use_locking: Boolean = false, name: String = "ApplyFtrlV2") = run {
     buildOpTensor("ApplyFtrlV2", name) {
       addInput(_var, true)
       addInput(accum, true)
@@ -120,7 +120,7 @@ interface gen_training_ops {
     }
   }
   
-  fun _applyGradientDescent(_var: Output, alpha: Output, delta: Output, use_locking: Boolean = false, name: String = "ApplyGradientDescent") = run {
+  fun applyGradientDescent(_var: Output, alpha: Output, delta: Output, use_locking: Boolean = false, name: String = "ApplyGradientDescent") = run {
     buildOpTensor("ApplyGradientDescent", name) {
       addInput(_var, true)
       addInput(alpha, false)
@@ -129,7 +129,7 @@ interface gen_training_ops {
     }
   }
   
-  fun _applyMomentum(_var: Output, accum: Output, lr: Output, grad: Output, momentum: Output, use_locking: Boolean = false, use_nesterov: Boolean = false, name: String = "ApplyMomentum") = run {
+  fun applyMomentum(_var: Output, accum: Output, lr: Output, grad: Output, momentum: Output, use_locking: Boolean = false, use_nesterov: Boolean = false, name: String = "ApplyMomentum") = run {
     buildOpTensor("ApplyMomentum", name) {
       addInput(_var, true)
       addInput(accum, true)
@@ -141,7 +141,7 @@ interface gen_training_ops {
     }
   }
   
-  fun _applyPowerSign(_var: Output, m: Output, lr: Output, logbase: Output, sign_decay: Output, beta: Output, grad: Output, use_locking: Boolean = false, name: String = "ApplyPowerSign") = run {
+  fun applyPowerSign(_var: Output, m: Output, lr: Output, logbase: Output, sign_decay: Output, beta: Output, grad: Output, use_locking: Boolean = false, name: String = "ApplyPowerSign") = run {
     buildOpTensor("ApplyPowerSign", name) {
       addInput(_var, true)
       addInput(m, true)
@@ -154,7 +154,7 @@ interface gen_training_ops {
     }
   }
   
-  fun _applyProximalAdagrad(_var: Output, accum: Output, lr: Output, l1: Output, l2: Output, grad: Output, use_locking: Boolean = false, name: String = "ApplyProximalAdagrad") = run {
+  fun applyProximalAdagrad(_var: Output, accum: Output, lr: Output, l1: Output, l2: Output, grad: Output, use_locking: Boolean = false, name: String = "ApplyProximalAdagrad") = run {
     buildOpTensor("ApplyProximalAdagrad", name) {
       addInput(_var, true)
       addInput(accum, true)
@@ -166,7 +166,7 @@ interface gen_training_ops {
     }
   }
   
-  fun _applyProximalGradientDescent(_var: Output, alpha: Output, l1: Output, l2: Output, delta: Output, use_locking: Boolean = false, name: String = "ApplyProximalGradientDescent") = run {
+  fun applyProximalGradientDescent(_var: Output, alpha: Output, l1: Output, l2: Output, delta: Output, use_locking: Boolean = false, name: String = "ApplyProximalGradientDescent") = run {
     buildOpTensor("ApplyProximalGradientDescent", name) {
       addInput(_var, true)
       addInput(alpha, false)
@@ -177,7 +177,7 @@ interface gen_training_ops {
     }
   }
   
-  fun _applyRMSProp(_var: Output, ms: Output, mom: Output, lr: Output, rho: Output, momentum: Output, epsilon: Output, grad: Output, use_locking: Boolean = false, name: String = "ApplyRMSProp") = run {
+  fun applyRMSProp(_var: Output, ms: Output, mom: Output, lr: Output, rho: Output, momentum: Output, epsilon: Output, grad: Output, use_locking: Boolean = false, name: String = "ApplyRMSProp") = run {
     buildOpTensor("ApplyRMSProp", name) {
       addInput(_var, true)
       addInput(ms, true)
@@ -191,7 +191,7 @@ interface gen_training_ops {
     }
   }
   
-  fun _resourceApplyAdadelta(_var: Output, accum: Output, accum_update: Output, lr: Output, rho: Output, epsilon: Output, grad: Output, use_locking: Boolean = false, name: String = "ResourceApplyAdadelta") = run {
+  fun resourceApplyAdadelta(_var: Output, accum: Output, accum_update: Output, lr: Output, rho: Output, epsilon: Output, grad: Output, use_locking: Boolean = false, name: String = "ResourceApplyAdadelta") = run {
     buildOp("ResourceApplyAdadelta", name) {
       addInput(_var, false)
       addInput(accum, false)
@@ -204,7 +204,7 @@ interface gen_training_ops {
     }
   }
   
-  fun _resourceApplyAdagrad(_var: Output, accum: Output, lr: Output, grad: Output, use_locking: Boolean = false, update_slots: Boolean = true, name: String = "ResourceApplyAdagrad") = run {
+  fun resourceApplyAdagrad(_var: Output, accum: Output, lr: Output, grad: Output, use_locking: Boolean = false, update_slots: Boolean = true, name: String = "ResourceApplyAdagrad") = run {
     buildOp("ResourceApplyAdagrad", name) {
       addInput(_var, false)
       addInput(accum, false)
@@ -215,7 +215,7 @@ interface gen_training_ops {
     }
   }
   
-  fun _resourceApplyAdagradDA(_var: Output, gradient_accumulator: Output, gradient_squared_accumulator: Output, grad: Output, lr: Output, l1: Output, l2: Output, global_step: Output, use_locking: Boolean = false, name: String = "ResourceApplyAdagradDA") = run {
+  fun resourceApplyAdagradDA(_var: Output, gradient_accumulator: Output, gradient_squared_accumulator: Output, grad: Output, lr: Output, l1: Output, l2: Output, global_step: Output, use_locking: Boolean = false, name: String = "ResourceApplyAdagradDA") = run {
     buildOp("ResourceApplyAdagradDA", name) {
       addInput(_var, false)
       addInput(gradient_accumulator, false)
@@ -229,7 +229,7 @@ interface gen_training_ops {
     }
   }
   
-  fun _resourceApplyAdam(_var: Output, m: Output, v: Output, beta1_power: Output, beta2_power: Output, lr: Output, beta1: Output, beta2: Output, epsilon: Output, grad: Output, use_locking: Boolean = false, use_nesterov: Boolean = false, name: String = "ResourceApplyAdam") = run {
+  fun resourceApplyAdam(_var: Output, m: Output, v: Output, beta1_power: Output, beta2_power: Output, lr: Output, beta1: Output, beta2: Output, epsilon: Output, grad: Output, use_locking: Boolean = false, use_nesterov: Boolean = false, name: String = "ResourceApplyAdam") = run {
     buildOp("ResourceApplyAdam", name) {
       addInput(_var, false)
       addInput(m, false)
@@ -246,7 +246,7 @@ interface gen_training_ops {
     }
   }
   
-  fun _resourceApplyAddSign(_var: Output, m: Output, lr: Output, alpha: Output, sign_decay: Output, beta: Output, grad: Output, use_locking: Boolean = false, name: String = "ResourceApplyAddSign") = run {
+  fun resourceApplyAddSign(_var: Output, m: Output, lr: Output, alpha: Output, sign_decay: Output, beta: Output, grad: Output, use_locking: Boolean = false, name: String = "ResourceApplyAddSign") = run {
     buildOp("ResourceApplyAddSign", name) {
       addInput(_var, false)
       addInput(m, false)
@@ -259,7 +259,7 @@ interface gen_training_ops {
     }
   }
   
-  fun _resourceApplyCenteredRMSProp(_var: Output, mg: Output, ms: Output, mom: Output, lr: Output, rho: Output, momentum: Output, epsilon: Output, grad: Output, use_locking: Boolean = false, name: String = "ResourceApplyCenteredRMSProp") = run {
+  fun resourceApplyCenteredRMSProp(_var: Output, mg: Output, ms: Output, mom: Output, lr: Output, rho: Output, momentum: Output, epsilon: Output, grad: Output, use_locking: Boolean = false, name: String = "ResourceApplyCenteredRMSProp") = run {
     buildOp("ResourceApplyCenteredRMSProp", name) {
       addInput(_var, false)
       addInput(mg, false)
@@ -274,7 +274,7 @@ interface gen_training_ops {
     }
   }
   
-  fun _resourceApplyFtrl(_var: Output, accum: Output, linear: Output, grad: Output, lr: Output, l1: Output, l2: Output, lr_power: Output, use_locking: Boolean = false, name: String = "ResourceApplyFtrl") = run {
+  fun resourceApplyFtrl(_var: Output, accum: Output, linear: Output, grad: Output, lr: Output, l1: Output, l2: Output, lr_power: Output, use_locking: Boolean = false, name: String = "ResourceApplyFtrl") = run {
     buildOp("ResourceApplyFtrl", name) {
       addInput(_var, false)
       addInput(accum, false)
@@ -288,7 +288,7 @@ interface gen_training_ops {
     }
   }
   
-  fun _resourceApplyFtrlV2(_var: Output, accum: Output, linear: Output, grad: Output, lr: Output, l1: Output, l2: Output, l2_shrinkage: Output, lr_power: Output, use_locking: Boolean = false, name: String = "ResourceApplyFtrlV2") = run {
+  fun resourceApplyFtrlV2(_var: Output, accum: Output, linear: Output, grad: Output, lr: Output, l1: Output, l2: Output, l2_shrinkage: Output, lr_power: Output, use_locking: Boolean = false, name: String = "ResourceApplyFtrlV2") = run {
     buildOp("ResourceApplyFtrlV2", name) {
       addInput(_var, false)
       addInput(accum, false)
@@ -303,7 +303,7 @@ interface gen_training_ops {
     }
   }
   
-  fun _resourceApplyGradientDescent(_var: Output, alpha: Output, delta: Output, use_locking: Boolean = false, name: String = "ResourceApplyGradientDescent") = run {
+  fun resourceApplyGradientDescent(_var: Output, alpha: Output, delta: Output, use_locking: Boolean = false, name: String = "ResourceApplyGradientDescent") = run {
     buildOp("ResourceApplyGradientDescent", name) {
       addInput(_var, false)
       addInput(alpha, false)
@@ -312,7 +312,7 @@ interface gen_training_ops {
     }
   }
   
-  fun _resourceApplyMomentum(_var: Output, accum: Output, lr: Output, grad: Output, momentum: Output, use_locking: Boolean = false, use_nesterov: Boolean = false, name: String = "ResourceApplyMomentum") = run {
+  fun resourceApplyMomentum(_var: Output, accum: Output, lr: Output, grad: Output, momentum: Output, use_locking: Boolean = false, use_nesterov: Boolean = false, name: String = "ResourceApplyMomentum") = run {
     buildOp("ResourceApplyMomentum", name) {
       addInput(_var, false)
       addInput(accum, false)
@@ -324,7 +324,7 @@ interface gen_training_ops {
     }
   }
   
-  fun _resourceApplyPowerSign(_var: Output, m: Output, lr: Output, logbase: Output, sign_decay: Output, beta: Output, grad: Output, use_locking: Boolean = false, name: String = "ResourceApplyPowerSign") = run {
+  fun resourceApplyPowerSign(_var: Output, m: Output, lr: Output, logbase: Output, sign_decay: Output, beta: Output, grad: Output, use_locking: Boolean = false, name: String = "ResourceApplyPowerSign") = run {
     buildOp("ResourceApplyPowerSign", name) {
       addInput(_var, false)
       addInput(m, false)
@@ -337,7 +337,7 @@ interface gen_training_ops {
     }
   }
   
-  fun _resourceApplyProximalAdagrad(_var: Output, accum: Output, lr: Output, l1: Output, l2: Output, grad: Output, use_locking: Boolean = false, name: String = "ResourceApplyProximalAdagrad") = run {
+  fun resourceApplyProximalAdagrad(_var: Output, accum: Output, lr: Output, l1: Output, l2: Output, grad: Output, use_locking: Boolean = false, name: String = "ResourceApplyProximalAdagrad") = run {
     buildOp("ResourceApplyProximalAdagrad", name) {
       addInput(_var, false)
       addInput(accum, false)
@@ -349,7 +349,7 @@ interface gen_training_ops {
     }
   }
   
-  fun _resourceApplyProximalGradientDescent(_var: Output, alpha: Output, l1: Output, l2: Output, delta: Output, use_locking: Boolean = false, name: String = "ResourceApplyProximalGradientDescent") = run {
+  fun resourceApplyProximalGradientDescent(_var: Output, alpha: Output, l1: Output, l2: Output, delta: Output, use_locking: Boolean = false, name: String = "ResourceApplyProximalGradientDescent") = run {
     buildOp("ResourceApplyProximalGradientDescent", name) {
       addInput(_var, false)
       addInput(alpha, false)
@@ -360,7 +360,7 @@ interface gen_training_ops {
     }
   }
   
-  fun _resourceApplyRMSProp(_var: Output, ms: Output, mom: Output, lr: Output, rho: Output, momentum: Output, epsilon: Output, grad: Output, use_locking: Boolean = false, name: String = "ResourceApplyRMSProp") = run {
+  fun resourceApplyRMSProp(_var: Output, ms: Output, mom: Output, lr: Output, rho: Output, momentum: Output, epsilon: Output, grad: Output, use_locking: Boolean = false, name: String = "ResourceApplyRMSProp") = run {
     buildOp("ResourceApplyRMSProp", name) {
       addInput(_var, false)
       addInput(ms, false)
@@ -374,7 +374,7 @@ interface gen_training_ops {
     }
   }
   
-  fun _resourceSparseApplyAdadelta(_var: Output, accum: Output, accum_update: Output, lr: Output, rho: Output, epsilon: Output, grad: Output, indices: Output, use_locking: Boolean = false, name: String = "ResourceSparseApplyAdadelta") = run {
+  fun resourceSparseApplyAdadelta(_var: Output, accum: Output, accum_update: Output, lr: Output, rho: Output, epsilon: Output, grad: Output, indices: Output, use_locking: Boolean = false, name: String = "ResourceSparseApplyAdadelta") = run {
     buildOp("ResourceSparseApplyAdadelta", name) {
       addInput(_var, false)
       addInput(accum, false)
@@ -388,7 +388,7 @@ interface gen_training_ops {
     }
   }
   
-  fun _resourceSparseApplyAdagrad(_var: Output, accum: Output, lr: Output, grad: Output, indices: Output, use_locking: Boolean = false, update_slots: Boolean = true, name: String = "ResourceSparseApplyAdagrad") = run {
+  fun resourceSparseApplyAdagrad(_var: Output, accum: Output, lr: Output, grad: Output, indices: Output, use_locking: Boolean = false, update_slots: Boolean = true, name: String = "ResourceSparseApplyAdagrad") = run {
     buildOp("ResourceSparseApplyAdagrad", name) {
       addInput(_var, false)
       addInput(accum, false)
@@ -400,7 +400,7 @@ interface gen_training_ops {
     }
   }
   
-  fun _resourceSparseApplyAdagradDA(_var: Output, gradient_accumulator: Output, gradient_squared_accumulator: Output, grad: Output, indices: Output, lr: Output, l1: Output, l2: Output, global_step: Output, use_locking: Boolean = false, name: String = "ResourceSparseApplyAdagradDA") = run {
+  fun resourceSparseApplyAdagradDA(_var: Output, gradient_accumulator: Output, gradient_squared_accumulator: Output, grad: Output, indices: Output, lr: Output, l1: Output, l2: Output, global_step: Output, use_locking: Boolean = false, name: String = "ResourceSparseApplyAdagradDA") = run {
     buildOp("ResourceSparseApplyAdagradDA", name) {
       addInput(_var, false)
       addInput(gradient_accumulator, false)
@@ -415,7 +415,7 @@ interface gen_training_ops {
     }
   }
   
-  fun _resourceSparseApplyCenteredRMSProp(_var: Output, mg: Output, ms: Output, mom: Output, lr: Output, rho: Output, momentum: Output, epsilon: Output, grad: Output, indices: Output, use_locking: Boolean = false, name: String = "ResourceSparseApplyCenteredRMSProp") = run {
+  fun resourceSparseApplyCenteredRMSProp(_var: Output, mg: Output, ms: Output, mom: Output, lr: Output, rho: Output, momentum: Output, epsilon: Output, grad: Output, indices: Output, use_locking: Boolean = false, name: String = "ResourceSparseApplyCenteredRMSProp") = run {
     buildOp("ResourceSparseApplyCenteredRMSProp", name) {
       addInput(_var, false)
       addInput(mg, false)
@@ -431,7 +431,7 @@ interface gen_training_ops {
     }
   }
   
-  fun _resourceSparseApplyFtrl(_var: Output, accum: Output, linear: Output, grad: Output, indices: Output, lr: Output, l1: Output, l2: Output, lr_power: Output, use_locking: Boolean = false, name: String = "ResourceSparseApplyFtrl") = run {
+  fun resourceSparseApplyFtrl(_var: Output, accum: Output, linear: Output, grad: Output, indices: Output, lr: Output, l1: Output, l2: Output, lr_power: Output, use_locking: Boolean = false, name: String = "ResourceSparseApplyFtrl") = run {
     buildOp("ResourceSparseApplyFtrl", name) {
       addInput(_var, false)
       addInput(accum, false)
@@ -446,7 +446,7 @@ interface gen_training_ops {
     }
   }
   
-  fun _resourceSparseApplyFtrlV2(_var: Output, accum: Output, linear: Output, grad: Output, indices: Output, lr: Output, l1: Output, l2: Output, l2_shrinkage: Output, lr_power: Output, use_locking: Boolean = false, name: String = "ResourceSparseApplyFtrlV2") = run {
+  fun resourceSparseApplyFtrlV2(_var: Output, accum: Output, linear: Output, grad: Output, indices: Output, lr: Output, l1: Output, l2: Output, l2_shrinkage: Output, lr_power: Output, use_locking: Boolean = false, name: String = "ResourceSparseApplyFtrlV2") = run {
     buildOp("ResourceSparseApplyFtrlV2", name) {
       addInput(_var, false)
       addInput(accum, false)
@@ -462,7 +462,7 @@ interface gen_training_ops {
     }
   }
   
-  fun _resourceSparseApplyMomentum(_var: Output, accum: Output, lr: Output, grad: Output, indices: Output, momentum: Output, use_locking: Boolean = false, use_nesterov: Boolean = false, name: String = "ResourceSparseApplyMomentum") = run {
+  fun resourceSparseApplyMomentum(_var: Output, accum: Output, lr: Output, grad: Output, indices: Output, momentum: Output, use_locking: Boolean = false, use_nesterov: Boolean = false, name: String = "ResourceSparseApplyMomentum") = run {
     buildOp("ResourceSparseApplyMomentum", name) {
       addInput(_var, false)
       addInput(accum, false)
@@ -475,7 +475,7 @@ interface gen_training_ops {
     }
   }
   
-  fun _resourceSparseApplyProximalAdagrad(_var: Output, accum: Output, lr: Output, l1: Output, l2: Output, grad: Output, indices: Output, use_locking: Boolean = false, name: String = "ResourceSparseApplyProximalAdagrad") = run {
+  fun resourceSparseApplyProximalAdagrad(_var: Output, accum: Output, lr: Output, l1: Output, l2: Output, grad: Output, indices: Output, use_locking: Boolean = false, name: String = "ResourceSparseApplyProximalAdagrad") = run {
     buildOp("ResourceSparseApplyProximalAdagrad", name) {
       addInput(_var, false)
       addInput(accum, false)
@@ -488,7 +488,7 @@ interface gen_training_ops {
     }
   }
   
-  fun _resourceSparseApplyProximalGradientDescent(_var: Output, alpha: Output, l1: Output, l2: Output, grad: Output, indices: Output, use_locking: Boolean = false, name: String = "ResourceSparseApplyProximalGradientDescent") = run {
+  fun resourceSparseApplyProximalGradientDescent(_var: Output, alpha: Output, l1: Output, l2: Output, grad: Output, indices: Output, use_locking: Boolean = false, name: String = "ResourceSparseApplyProximalGradientDescent") = run {
     buildOp("ResourceSparseApplyProximalGradientDescent", name) {
       addInput(_var, false)
       addInput(alpha, false)
@@ -500,7 +500,7 @@ interface gen_training_ops {
     }
   }
   
-  fun _resourceSparseApplyRMSProp(_var: Output, ms: Output, mom: Output, lr: Output, rho: Output, momentum: Output, epsilon: Output, grad: Output, indices: Output, use_locking: Boolean = false, name: String = "ResourceSparseApplyRMSProp") = run {
+  fun resourceSparseApplyRMSProp(_var: Output, ms: Output, mom: Output, lr: Output, rho: Output, momentum: Output, epsilon: Output, grad: Output, indices: Output, use_locking: Boolean = false, name: String = "ResourceSparseApplyRMSProp") = run {
     buildOp("ResourceSparseApplyRMSProp", name) {
       addInput(_var, false)
       addInput(ms, false)
@@ -515,7 +515,7 @@ interface gen_training_ops {
     }
   }
   
-  fun _sparseApplyAdadelta(_var: Output, accum: Output, accum_update: Output, lr: Output, rho: Output, epsilon: Output, grad: Output, indices: Output, use_locking: Boolean = false, name: String = "SparseApplyAdadelta") = run {
+  fun sparseApplyAdadelta(_var: Output, accum: Output, accum_update: Output, lr: Output, rho: Output, epsilon: Output, grad: Output, indices: Output, use_locking: Boolean = false, name: String = "SparseApplyAdadelta") = run {
     buildOpTensor("SparseApplyAdadelta", name) {
       addInput(_var, true)
       addInput(accum, true)
@@ -529,7 +529,7 @@ interface gen_training_ops {
     }
   }
   
-  fun _sparseApplyAdagrad(_var: Output, accum: Output, lr: Output, grad: Output, indices: Output, use_locking: Boolean = false, update_slots: Boolean = true, name: String = "SparseApplyAdagrad") = run {
+  fun sparseApplyAdagrad(_var: Output, accum: Output, lr: Output, grad: Output, indices: Output, use_locking: Boolean = false, update_slots: Boolean = true, name: String = "SparseApplyAdagrad") = run {
     buildOpTensor("SparseApplyAdagrad", name) {
       addInput(_var, true)
       addInput(accum, true)
@@ -541,7 +541,7 @@ interface gen_training_ops {
     }
   }
   
-  fun _sparseApplyAdagradDA(_var: Output, gradient_accumulator: Output, gradient_squared_accumulator: Output, grad: Output, indices: Output, lr: Output, l1: Output, l2: Output, global_step: Output, use_locking: Boolean = false, name: String = "SparseApplyAdagradDA") = run {
+  fun sparseApplyAdagradDA(_var: Output, gradient_accumulator: Output, gradient_squared_accumulator: Output, grad: Output, indices: Output, lr: Output, l1: Output, l2: Output, global_step: Output, use_locking: Boolean = false, name: String = "SparseApplyAdagradDA") = run {
     buildOpTensor("SparseApplyAdagradDA", name) {
       addInput(_var, true)
       addInput(gradient_accumulator, true)
@@ -556,7 +556,7 @@ interface gen_training_ops {
     }
   }
   
-  fun _sparseApplyCenteredRMSProp(_var: Output, mg: Output, ms: Output, mom: Output, lr: Output, rho: Output, momentum: Output, epsilon: Output, grad: Output, indices: Output, use_locking: Boolean = false, name: String = "SparseApplyCenteredRMSProp") = run {
+  fun sparseApplyCenteredRMSProp(_var: Output, mg: Output, ms: Output, mom: Output, lr: Output, rho: Output, momentum: Output, epsilon: Output, grad: Output, indices: Output, use_locking: Boolean = false, name: String = "SparseApplyCenteredRMSProp") = run {
     buildOpTensor("SparseApplyCenteredRMSProp", name) {
       addInput(_var, true)
       addInput(mg, true)
@@ -572,7 +572,7 @@ interface gen_training_ops {
     }
   }
   
-  fun _sparseApplyFtrl(_var: Output, accum: Output, linear: Output, grad: Output, indices: Output, lr: Output, l1: Output, l2: Output, lr_power: Output, use_locking: Boolean = false, name: String = "SparseApplyFtrl") = run {
+  fun sparseApplyFtrl(_var: Output, accum: Output, linear: Output, grad: Output, indices: Output, lr: Output, l1: Output, l2: Output, lr_power: Output, use_locking: Boolean = false, name: String = "SparseApplyFtrl") = run {
     buildOpTensor("SparseApplyFtrl", name) {
       addInput(_var, true)
       addInput(accum, true)
@@ -587,7 +587,7 @@ interface gen_training_ops {
     }
   }
   
-  fun _sparseApplyFtrlV2(_var: Output, accum: Output, linear: Output, grad: Output, indices: Output, lr: Output, l1: Output, l2: Output, l2_shrinkage: Output, lr_power: Output, use_locking: Boolean = false, name: String = "SparseApplyFtrlV2") = run {
+  fun sparseApplyFtrlV2(_var: Output, accum: Output, linear: Output, grad: Output, indices: Output, lr: Output, l1: Output, l2: Output, l2_shrinkage: Output, lr_power: Output, use_locking: Boolean = false, name: String = "SparseApplyFtrlV2") = run {
     buildOpTensor("SparseApplyFtrlV2", name) {
       addInput(_var, true)
       addInput(accum, true)
@@ -603,7 +603,7 @@ interface gen_training_ops {
     }
   }
   
-  fun _sparseApplyMomentum(_var: Output, accum: Output, lr: Output, grad: Output, indices: Output, momentum: Output, use_locking: Boolean = false, use_nesterov: Boolean = false, name: String = "SparseApplyMomentum") = run {
+  fun sparseApplyMomentum(_var: Output, accum: Output, lr: Output, grad: Output, indices: Output, momentum: Output, use_locking: Boolean = false, use_nesterov: Boolean = false, name: String = "SparseApplyMomentum") = run {
     buildOpTensor("SparseApplyMomentum", name) {
       addInput(_var, true)
       addInput(accum, true)
@@ -616,7 +616,7 @@ interface gen_training_ops {
     }
   }
   
-  fun _sparseApplyProximalAdagrad(_var: Output, accum: Output, lr: Output, l1: Output, l2: Output, grad: Output, indices: Output, use_locking: Boolean = false, name: String = "SparseApplyProximalAdagrad") = run {
+  fun sparseApplyProximalAdagrad(_var: Output, accum: Output, lr: Output, l1: Output, l2: Output, grad: Output, indices: Output, use_locking: Boolean = false, name: String = "SparseApplyProximalAdagrad") = run {
     buildOpTensor("SparseApplyProximalAdagrad", name) {
       addInput(_var, true)
       addInput(accum, true)
@@ -629,7 +629,7 @@ interface gen_training_ops {
     }
   }
   
-  fun _sparseApplyProximalGradientDescent(_var: Output, alpha: Output, l1: Output, l2: Output, grad: Output, indices: Output, use_locking: Boolean = false, name: String = "SparseApplyProximalGradientDescent") = run {
+  fun sparseApplyProximalGradientDescent(_var: Output, alpha: Output, l1: Output, l2: Output, grad: Output, indices: Output, use_locking: Boolean = false, name: String = "SparseApplyProximalGradientDescent") = run {
     buildOpTensor("SparseApplyProximalGradientDescent", name) {
       addInput(_var, true)
       addInput(alpha, false)
@@ -641,7 +641,7 @@ interface gen_training_ops {
     }
   }
   
-  fun _sparseApplyRMSProp(_var: Output, ms: Output, mom: Output, lr: Output, rho: Output, momentum: Output, epsilon: Output, grad: Output, indices: Output, use_locking: Boolean = false, name: String = "SparseApplyRMSProp") = run {
+  fun sparseApplyRMSProp(_var: Output, ms: Output, mom: Output, lr: Output, rho: Output, momentum: Output, epsilon: Output, grad: Output, indices: Output, use_locking: Boolean = false, name: String = "SparseApplyRMSProp") = run {
     buildOpTensor("SparseApplyRMSProp", name) {
       addInput(_var, true)
       addInput(ms, true)
@@ -656,7 +656,7 @@ interface gen_training_ops {
     }
   }
   
-  fun _applyAdaMax(_var: Output, m: Output, v: Output, beta1_power: Output, lr: Output, beta1: Output, beta2: Output, epsilon: Output, grad: Output, use_locking: Boolean = false, name: String = "ApplyAdaMax") = run {
+  fun applyAdaMax(_var: Output, m: Output, v: Output, beta1_power: Output, lr: Output, beta1: Output, beta2: Output, epsilon: Output, grad: Output, use_locking: Boolean = false, name: String = "ApplyAdaMax") = run {
     buildOpTensor("ApplyAdaMax", name) {
       addInput(_var, true)
       addInput(m, true)
@@ -671,7 +671,7 @@ interface gen_training_ops {
     }
   }
   
-  fun _resourceApplyAdaMax(_var: Output, m: Output, v: Output, beta1_power: Output, lr: Output, beta1: Output, beta2: Output, epsilon: Output, grad: Output, use_locking: Boolean = false, name: String = "ResourceApplyAdaMax") = run {
+  fun resourceApplyAdaMax(_var: Output, m: Output, v: Output, beta1_power: Output, lr: Output, beta1: Output, beta2: Output, epsilon: Output, grad: Output, use_locking: Boolean = false, name: String = "ResourceApplyAdaMax") = run {
     buildOp("ResourceApplyAdaMax", name) {
       addInput(_var, false)
       addInput(m, false)

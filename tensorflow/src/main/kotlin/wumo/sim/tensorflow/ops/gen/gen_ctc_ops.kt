@@ -7,7 +7,7 @@ import wumo.sim.tensorflow.buildOpTensors
 import wumo.sim.tensorflow.ops.Output
 
 interface gen_ctc_ops {
-  fun _cTCBeamSearchDecoder(inputs: Output, sequence_length: Output, beam_width: Long, top_paths: Long, merge_repeated: Boolean = true, name: String = "CTCBeamSearchDecoder") = run {
+  fun cTCBeamSearchDecoder(inputs: Output, sequence_length: Output, beam_width: Long, top_paths: Long, merge_repeated: Boolean = true, name: String = "CTCBeamSearchDecoder") = run {
     buildOpTensors("CTCBeamSearchDecoder", name) {
       addInput(inputs, false)
       addInput(sequence_length, false)
@@ -17,7 +17,7 @@ interface gen_ctc_ops {
     }
   }
   
-  fun _cTCGreedyDecoder(inputs: Output, sequence_length: Output, merge_repeated: Boolean = false, name: String = "CTCGreedyDecoder") = run {
+  fun cTCGreedyDecoder(inputs: Output, sequence_length: Output, merge_repeated: Boolean = false, name: String = "CTCGreedyDecoder") = run {
     buildOpTensors("CTCGreedyDecoder", name) {
       addInput(inputs, false)
       addInput(sequence_length, false)
@@ -25,7 +25,7 @@ interface gen_ctc_ops {
     }
   }
   
-  fun _cTCLoss(inputs: Output, labels_indices: Output, labels_values: Output, sequence_length: Output, preprocess_collapse_repeated: Boolean = false, ctc_merge_repeated: Boolean = true, ignore_longer_outputs_than_inputs: Boolean = false, name: String = "CTCLoss") = run {
+  fun cTCLoss(inputs: Output, labels_indices: Output, labels_values: Output, sequence_length: Output, preprocess_collapse_repeated: Boolean = false, ctc_merge_repeated: Boolean = true, ignore_longer_outputs_than_inputs: Boolean = false, name: String = "CTCLoss") = run {
     buildOpTensors("CTCLoss", name) {
       addInput(inputs, false)
       addInput(labels_indices, false)

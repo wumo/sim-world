@@ -8,7 +8,7 @@ import wumo.sim.tensorflow.core.*
 import wumo.sim.tensorflow.ops.control_flow_ops.CondContext
 import wumo.sim.tensorflow.ops.control_flow_ops.ControlFlowContext
 import wumo.sim.tensorflow.ops.control_flow_ops.control_flow_ops
-import wumo.sim.tensorflow.ops.gen.gen_ops
+import wumo.sim.tensorflow.ops.gen.*
 import wumo.sim.tensorflow.ops.gradients.gradient_ops
 import wumo.sim.tensorflow.ops.variables.variables
 import wumo.sim.tensorflow.tf
@@ -303,20 +303,47 @@ object ops {
   }
   
   interface API :
-      gen_ops,
       array_ops.API,
       clip_ops.API,
       control_flow_ops.API,
       const_ops.API,
-      data_flow_ops.API,
       gradient_ops.API,
-      init_ops.API,
       math_ops.API,
       nn_ops.API,
-      no_op.API,
       random_ops.API,
       state_ops.API,
-      variables.API {
+      variables.API,
+      gen_audio_ops,
+      gen_batch_ops,
+      gen_bitwise_ops,
+      gen_boosted_trees_ops,
+      gen_candidate_sampling_ops,
+      gen_checkpoint_ops,
+      gen_ctc_ops,
+      gen_cudnn_rnn_ops,
+      gen_dataset_ops,
+      gen_data_flow_ops,
+      gen_functional_ops,
+      gen_image_ops,
+      gen_io_ops,
+      gen_linalg_ops,
+      gen_list_ops,
+      gen_logging_ops,
+      gen_lookup_ops,
+      gen_manip_ops,
+      gen_no_op,
+      gen_parsing_ops,
+      gen_resource_variable_ops,
+      gen_script_ops,
+      gen_sdca_ops,
+      gen_set_ops,
+      gen_sparse_ops,
+      gen_spectral_ops,
+      gen_stateless_random_ops,
+      gen_string_ops,
+      gen_summary_ops,
+      gen_training_ops,
+      gen_user_ops {
     
     /** Returns the graph of the current op creation context. */
     val currentGraph get() = graphConstructionScope.value.graph

@@ -138,7 +138,7 @@ class WhileContext(
     tf.controlDependencies(emptyMutableSet()) {
       enter()
       val externalInputs = externalInputs.map { op ->
-        tf._identity(op.outputs[0]).op!!
+        tf.identity(op.outputs[0]).op!!
       }
       exit()
       externalInputs
@@ -249,7 +249,7 @@ class WhileContext(
     val mergeCount = control_flow_ops.merge(listOf(enterC, enterC))[0]
     
     pivotForPredicate = mergeCount.op
-    pivot = tf._loopCond(tf.greaterEqual(mergeCount, one), name = "b_count")
+    pivot = tf.loopCond(tf.greaterEqual(mergeCount, one), name = "b_count")
     val switchC = control_flow_ops.switch(mergeCount, pivot!!)
     
     val indexC = switchC[1] - one
