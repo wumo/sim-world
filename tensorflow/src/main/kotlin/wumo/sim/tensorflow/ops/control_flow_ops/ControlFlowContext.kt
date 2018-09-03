@@ -181,7 +181,7 @@ abstract class ControlFlowContext {
       return if (isSwitch(op)) {
         op.controlFlowContext?.let {
           it as CondContext
-          val switch = control_flow_ops.switch(op.inputs[0], it.predicate)[1 - it.branch]
+          val switch = tf.switch(op.inputs[0], it.predicate)[1 - it.branch]
           // We are in a conditional context and so we use a switch to create zeros only when needed.
           if (value.dataType == RESOURCE)
             tf.controlDependencies(mutableSetOf(switch.op)) {

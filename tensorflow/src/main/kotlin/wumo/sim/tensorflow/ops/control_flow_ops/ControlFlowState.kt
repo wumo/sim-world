@@ -149,7 +149,7 @@ class ControlFlowState {
         // `op` is a conditional switch and so we guard the zero tensor with a switch.
         opContext?.let {
           it.outerContext?.enter()
-          val value = control_flow_ops.switch(op.inputs[0], opContext.predicate)[1 - opContext.branch]
+          val value = tf.switch(op.inputs[0], opContext.predicate)[1 - opContext.branch]
           zerosShape = tf.shape(value, optimize = false)
           it.outerContext?.exit()
           value.op.controlFlowContext = opContext

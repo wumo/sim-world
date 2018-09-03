@@ -42,3 +42,15 @@ inline fun <E> Iterable<E>.firstAndRest(blockFirst: (E) -> Unit, blockRest: (E) 
   while (iterator.hasNext())
     blockRest(iterator.next())
 }
+
+inline fun <R1, R2, R3> zip(s1: Iterable<R1>,
+                            s2: Iterable<R2>,
+                            s3: Iterable<R3>,
+                            block: (t3<R1, R2, R3>) -> Unit): Unit {
+  val i1 = s1.iterator()
+  val i2 = s2.iterator()
+  val i3 = s3.iterator()
+  while (i1.hasNext() && i2.hasNext() && i3.hasNext()) {
+    block(t3(i1.next(), i2.next(), i3.next()))
+  }
+}

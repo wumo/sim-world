@@ -1,11 +1,10 @@
 package wumo.sim.tensorflow.ops.control_flow_ops
 
+import wumo.sim.tensorflow.core.ShapeMismatchException
 import wumo.sim.tensorflow.ops.*
 import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.types.RESOURCE
-import wumo.sim.util.NONE
-import wumo.sim.util.emptyMutableSet
-import wumo.sim.util.t2
+import wumo.sim.util.*
 
 /** Control flow context for the while-loop construct.
  *
@@ -210,8 +209,8 @@ class WhileContext(
     val enterN = tf.enter(n, name, false, parallelIterations, name = "f_count")
     loopEnters += enterN
     
-    val mergeN = control_flow_ops.merge(listOf(enterN, enterN))[0]
-    val switchN = control_flow_ops.switch(mergeN, pivot!!)
+    val mergeN = tf.merge(listOf(enterN, enterN))[0]
+    val switchN = tf.switch(mergeN, pivot!!)
     
     val index = switchN[1] + 1
     val nextN = tf.nextIteration(index)
@@ -246,11 +245,11 @@ class WhileContext(
     values += count.name
     val enterC = tf.enter(count, name, false, parallelIterations, name = "b_count")
     loopEnters += enterC
-    val mergeCount = control_flow_ops.merge(listOf(enterC, enterC))[0]
+    val mergeCount = tf.merge(listOf(enterC, enterC))[0]
     
     pivotForPredicate = mergeCount.op
     pivot = tf.loopCond(tf.greaterEqual(mergeCount, one), name = "b_count")
-    val switchC = control_flow_ops.switch(mergeCount, pivot!!)
+    val switchC = tf.switch(mergeCount, pivot!!)
     
     val indexC = switchC[1] - one
     pivotForBody = indexC.op
@@ -328,8 +327,8 @@ class WhileContext(
           values += acc.name
           val enterAcc = tf.enter(acc, name, false, parallelIterations, name = "b_acc")
           loopEnters += enterAcc
-          val mergeAcc = control_flow_ops.merge(listOf(enterAcc, enterAcc))[0]
-          val switchAcc = control_flow_ops.switch(mergeAcc, pivot!!)
+          val mergeAcc = tf.merge(listOf(enterAcc, enterAcc))[0]
+          val switchAcc = tf.switch(mergeAcc, pivot!!)
           
           val addAcc = switchAcc[1] + gradient
           val nextAcc = tf.nextIteration(addAcc)
@@ -368,5 +367,158 @@ class WhileContext(
   
   companion object {
     fun getWhileContext(op: Op) = op.controlFlowContext?.whileContext()
+    
+    /** Returns `true` if `shape2` is a less strict shape than `shape1`, while being compatible with `shape1`. */
+    internal fun shapeLessThenOrEqual(shape1: Shape, shape2: Shape): Boolean =
+        shape2.rank == -1 ||
+            shape1.rank == shape2.rank ||
+            shape1.asIntArray()!!.zip(shape2.asIntArray()!!).all {
+              it._2 == -1 || it._1 == it._2
+            }
+    
+    /** Sets the shapes of the tensors in `enterTensors` to `shapes` and makes sure that the shape invariants apply.
+     *
+     * @param  inputTensors Tensors that are inputs to `enterTensors`.
+     * @param  enterTensors Tensors whose shapes will be set.
+     * @param  shapes       Shapes to use for `enterTensors`.
+     * @throws ShapeMismatchException   If any tensor in `inputTensors` has a less specific shape than its corresponding
+     *                                  shape in `shapes`.
+     * @throws IllegalArgumentException If the types of the input tensors do not match the types of the enter tensors or
+     *                                  if the type of either is not supported.
+     */
+    internal fun setShapeInvariants(inputTensors: List<OutputLike>,
+                                    enterTensors: List<OutputLike>,
+                                    shapes: List<Shape>) {
+      // Check that the shapes of the inputs are less than the shape invariants, and set the shapes of the enter tensors
+      // to the shape invariants.
+      zip(inputTensors, enterTensors, shapes) { (input, enter, shape) ->
+        when {
+          input is Output && enter is Output -> {
+            if (!shapeLessThenOrEqual(input.shape, shape))
+              throw ShapeMismatchException(
+                  "The shape invariant specified for '${input.name}' is not compatible with the initial shape of the " +
+                      "loop variable. It enters the loop with shape '${input.shape}', but the specified shape invariant " +
+                      "is '$shape'.")
+            enter.setShape(shape)
+          }
+          input is IndexedSlices && enter is IndexedSlices -> {
+            if (!shapeLessThenOrEqual(input.values.shape, shape))
+              throw ShapeMismatchException(
+                  "The shape invariant specified for '${input.values.name}' is not compatible the initial shape of the " +
+                      "values tensor of these indexed slices. It enters the loop with shape '${input.values.shape}', but " +
+                      "the specified shape invariant is '$shape'.")
+            enter.values.setShape(shape)
+            enter.indices.setShape(Shape(shape[0]))
+            if (enter.denseShape != null)
+              enter.denseShape.setShape(Shape(shape.rank))
+          }
+          input is SparseOutput && enter is SparseOutput -> {
+            if (!shapeLessThenOrEqual(input.denseShape!!.shape, shape))
+              throw ShapeMismatchException(
+                  "The shape invariant specified for '${input.denseShape.name}' is not compatible the initial shape of the " +
+                      "dense shape tensor of this sparse tensor. It enters the loop with shape '${input.denseShape.shape}', " +
+                      " but the specified shape invariant is '$shape'.")
+            enter.values.setShape(Shape(-1))
+            enter.indices.setShape(Shape(-1, shape.rank))
+            enter.denseShape!!.setShape(shape)
+          }
+          else -> throw IllegalArgumentException(
+              "Only 'Output', 'OutputIndexedSlices', and 'SparseOutput' are supported. Also, the input tensor " +
+                  "and the enter tensor types must match.")
+        }
+      }
+    }
+    
+    /** Checks if the shapes of a loop variable satisfy the shape invariants.
+     *
+     * @param  mergeTensor Tensor representing the initial value of the loop variable.
+     * @param  nextTensor  Tensor representing the value of the loop variable after one loop iteration.
+     * @throws ShapeMismatchException   If `mergeTensor` has a less specific shape than its corresponding shape in
+     *                                  `nextTensor`.
+     * @throws IllegalArgumentException If the type of the merge tensor does not match the type of the next tensor or if
+     *                                  the type of either is not supported.
+     */
+    internal fun enforceShapeInvariant(mergeTensor: OutputLike,
+                                       nextTensor: OutputLike) {
+      when {
+        mergeTensor is Output && nextTensor is Output ->
+          if (!shapeLessThenOrEqual(nextTensor.shape, mergeTensor.shape))
+            throw ShapeMismatchException(
+                "The shape for '${mergeTensor.name}' is not an invariant for the loop. The tensor enters the loop with shape " +
+                    "'${mergeTensor.shape}', but has shape '${nextTensor.shape}' after one iteration. Please provide shape " +
+                    "invariants using either the 'shapeInvariants' argument of 'whileLoop' or the 'setShape' method of " +
+                    "the loop variables.")
+        mergeTensor is IndexedSlices && nextTensor is IndexedSlices -> {
+          val mergeValuesShape = mergeTensor.values.shape
+          val mergeIndicesShape = mergeTensor.indices.shape
+          val mergeDenseShapeShape = mergeTensor.denseShape?.shape ?: Shape()
+          val nextValuesShape = nextTensor.values.shape
+          val nextIndicesShape = nextTensor.indices.shape
+          val nextDenseShapeShape = nextTensor.denseShape?.shape ?: Shape()
+          if (!shapeLessThenOrEqual(nextValuesShape, mergeValuesShape) ||
+              !shapeLessThenOrEqual(nextIndicesShape, mergeIndicesShape) ||
+              !shapeLessThenOrEqual(nextDenseShapeShape, mergeDenseShapeShape))
+            throw ShapeMismatchException(
+                "The shape for '${mergeTensor.name}' is not an invariant for the loop. The tensor enters the loop with shape " +
+                    "'($mergeValuesShape, $mergeIndicesShape, $mergeDenseShapeShape)', but has shape " +
+                    "'($nextValuesShape, $nextIndicesShape, $nextDenseShapeShape)' after one iteration. Please provide " +
+                    "shape invariants using either the 'shapeInvariants' argument of 'whileLoop' or the 'setShape' " +
+                    "method of the loop variables.")
+        }
+        mergeTensor is SparseOutput && nextTensor is SparseOutput -> {
+          val mergeValuesShape = mergeTensor.values.shape
+          val mergeIndicesShape = mergeTensor.indices.shape
+          val mergeDenseShapeShape = mergeTensor.denseShape!!.shape
+          val nextValuesShape = nextTensor.values.shape
+          val nextIndicesShape = nextTensor.indices.shape
+          val nextDenseShapeShape = nextTensor.denseShape!!.shape
+          if (!shapeLessThenOrEqual(nextValuesShape, mergeValuesShape) ||
+              !shapeLessThenOrEqual(nextIndicesShape, mergeIndicesShape) ||
+              !shapeLessThenOrEqual(nextDenseShapeShape, mergeDenseShapeShape))
+            throw ShapeMismatchException(
+                "The shape for '${mergeTensor.name}' is not an invariant for the loop. The tensor enters the loop with shape " +
+                    "'($mergeValuesShape, $mergeIndicesShape, $mergeDenseShapeShape)', but has shape " +
+                    "'($nextValuesShape, $nextIndicesShape, $nextDenseShapeShape)' after one iteration. Please provide " +
+                    "shape invariants using either the 'shapeInvariants' argument of 'whileLoop' or the 'setShape' " +
+                    "method of the loop variables.")
+        }
+        else -> throw IllegalArgumentException(
+            "Only 'Output', 'OutputIndexedSlices', and 'SparseOutput' are supported. Also, the merge tensor " +
+                "and the next tensor types must match>")
+      }
+    }
+    
+    /** Creates a next iteration op for `v` and adds a back edge from `v` to `m`. */
+    internal fun <T : OutputLike> addNextIterationAndBackEdge(
+        m: T, v: T, enforceShapeInvariant: Boolean = true): T =
+        when {
+          m is Output && v is Output -> {
+            val nextV = tf.nextIteration(v)
+            if (enforceShapeInvariant)
+              enforceShapeInvariant(m, v)
+            m.op.updateInput(1, v)
+            nextV
+          }
+          m is IndexedSlices && v is IndexedSlices -> {
+            val nextV = tf.nextIteration(v as IndexedSlices)
+            m.values.op.updateInput(1, nextV.values)
+            m.indices.op.updateInput(1, nextV.indices)
+            if (m.denseShape != null) {
+              if (nextV.denseShape == null)
+                throw  IllegalArgumentException("Output indexed slices '$nextV' must have dense shape information.")
+              m.denseShape.op.updateInput(1, nextV.denseShape)
+            }
+            nextV
+          }
+          m is SparseOutput && v is SparseOutput -> {
+            val nextV = tf.nextIteration(v as SparseOutput)
+            m.values.op.updateInput(1, nextV.values)
+            m.indices.op.updateInput(1, nextV.indices)
+            m.denseShape!!.op.updateInput(1, v.denseShape!!)
+            nextV
+          }
+          else -> throw IllegalArgumentException(
+              "Only 'Output', 'IndexedSlices', and 'SparseOutput' are supported. Also, the tensor types must match.")
+        } as T
   }
 }

@@ -42,13 +42,13 @@ interface gen_control_flow_ops {
     }
   }
   
-  fun merge(inputs: List<Output>, name: String = "Merge") = run {
+  fun _merge(inputs: List<Output>, name: String = "Merge") = run {
     buildOpTensors("Merge", name) {
       addInput(inputs, false)
     }
   }
   
-  fun nextIteration(data: Output, name: String = "NextIteration") = run {
+  fun _nextIteration(data: Output, name: String = "NextIteration") = run {
     buildOpTensor("NextIteration", name) {
       addInput(data, false)
     }
@@ -100,7 +100,7 @@ interface gen_control_flow_ops {
     }
   }
   
-  fun switch(data: Output, pred: Output, name: String = "Switch") = run {
+  fun _switch(data: Output, pred: Output, name: String = "Switch") = run {
     buildOpTensors("Switch", name) {
       addInput(data, false)
       addInput(pred, false)
