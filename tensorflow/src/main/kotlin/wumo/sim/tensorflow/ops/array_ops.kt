@@ -1,10 +1,17 @@
 package wumo.sim.tensorflow.ops
 
 import wumo.sim.tensorflow.core.InvalidArgumentException
+import wumo.sim.tensorflow.core.InvalidIndexerException
 import wumo.sim.tensorflow.ops.gen.gen_array_ops
 import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.types.*
 import wumo.sim.util.Shape
+
+sealed class Indexer
+object Ellipsis : Indexer()
+object NewAxis : Indexer()
+class Index(val index: Any) : Indexer()
+data class Slice(val start: Any, val end: Any? = null, val step: Any = 1) : Indexer()
 
 /**
  *
@@ -47,21 +54,45 @@ Notes:
 - NumPy advanced indexing is currently not supported.
  *@return The appropriate slice of "tensor", based on "slice_spec".
  */
-operator fun Output.get(vararg slice_spec: Int): Output {
-  val begin = mutableListOf<Int>()
-  val end = mutableListOf<Int>()
-  val strides = mutableListOf<Int>()
+operator fun Output.get(vararg indexers: Indexer): Output {
+  if (indexers.count { it == Ellipsis } > 1)
+    throw InvalidIndexerException("Only one 'Ellipsis' ('---') is allowed per indexing sequence.")
+  val begin = MutableList<Any>(indexers.size) { 0 }
+  val end = MutableList<Any>(indexers.size) { 0 }
+  val strides = MutableList<Any>(indexers.size) { 1 }
+  
   var shrink_axis_mask = 0L
   var new_axis_mask = 0L
   var begin_mask = 0L
   var end_mask = 0L
   var ellipsis_mask = 0L
-  for ((index, s) in slice_spec.withIndex()) {
-    //TODO other class
-    begin += s
-    end += s + 1
-    strides += 1
-    shrink_axis_mask = shrink_axis_mask or (1L shl index)
+  for ((index, s) in indexers.withIndex()) {
+    when (s) {
+      is Index -> {
+        val i = s.index
+        begin[index] = i
+        end[index] = when (i) {
+          is Int -> i + 1
+          is Output -> i + 1
+          else -> error("not supported $i")
+        }
+        strides[index] = 1
+        shrink_axis_mask = shrink_axis_mask or (1L shl index)
+      }
+      is Ellipsis -> ellipsis_mask = ellipsis_mask or (1L shl index)
+      is NewAxis -> new_axis_mask = new_axis_mask or (1L shl index)
+      is Slice -> {
+        val (sliceBegin, sliceEnd, sliceStep) = s
+        begin[index] = sliceBegin
+        if (sliceEnd != null)
+          end[index] = sliceEnd
+        else {
+          end[index] = 0
+          end_mask = end_mask or (1L shl index)
+        }
+        strides[index] = sliceStep
+      }
+    }
   }
   return tf.nameScope("strided_slice") {
     val packed_begin = tf.stack(begin)
@@ -77,8 +108,20 @@ operator fun Output.get(vararg slice_spec: Int): Output {
   }
 }
 
+fun Output.slice(start: Any, end: Any? = null, step: Any = 1): Output =
+    get(Slice(start, end, step))
+
+operator fun Output.get(slice_spec: Any): Output =
+    get(Index(slice_spec))
+
 object array_ops {
   interface API : gen_array_ops {
+    fun concat(values: List<Output>, axis: Output, name: String = "ConcatV2"): Output =
+        if (values.size == 1)
+          tf.identity(values[0], name = name)
+        else
+          tf.concatV2(values, axis, name)
+    
     fun gather(params: Output, indices: Output, axis: Int = 0, name: String = "GatherV2"): Output {
       if (axis == 0) {
       }
@@ -197,16 +240,18 @@ object array_ops {
      * @param name
      * @return A stacked `Output` with the same type as `values`.
      */
-    fun stack(values: List<Output>, axis: Long = 0L, name: String = "stack"): Output {
+    fun stack(values: List<Any>, axis: Long = 0, name: String = "stack"): Output {
       if (axis == 0L) {
-        return super.pack(values, axis, name)
-      }
-      TODO()
-    }
-    
-    fun stack(values: List<Int>, axis: Int = 0, name: String = "stack"): Output {
-      if (axis == 0) {
-        return tf.const(values.toIntArray(), name)
+        return if (values.all { it is Int })
+          tf.const(IntArray(values.size) { values[it] as Int }, name)
+        else
+          super.pack(values.map {
+            when (it) {
+              is Output -> it
+              is Int -> tf.const(it)
+              else -> error("not supported$it")
+            }
+          }, axis.toLong(), name)
       }
       TODO()
     }

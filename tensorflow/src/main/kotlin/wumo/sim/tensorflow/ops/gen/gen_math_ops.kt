@@ -501,7 +501,7 @@ interface gen_math_ops {
     }
   }
   
-  fun min(input: Output, reductionIndices: Output, keepDims: Boolean = false, name: String = "Min") = run {
+  fun _min(input: Output, reductionIndices: Output, keepDims: Boolean = false, name: String = "Min") = run {
     buildOpTensor("Min", name) {
       addInput(input, false)
       addInput(reductionIndices, false)

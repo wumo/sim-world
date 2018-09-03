@@ -110,4 +110,22 @@ class Shape(private val dims: IntArray? = null) : Iterable<Int> {
   
   inline fun compatible(d1: Int, d2: Int) =
       d1 == -1 || d2 == -1 || d1 == d2
+  
+  fun mergeWith(other: Shape): Shape {
+    return when {
+      rank == -1 -> other
+      other.rank == -1 -> this
+      else -> {
+        assert(rank == other.rank) { "Shape '$this' must have the same rank as shape '$other'" }
+        assert(isCompatibleWith(other)) { "Shape '$this' must be compatible with shape '$other'." }
+        Shape(this.dims!!.zip(other.dims!!).map { (_1, _2) ->
+          when {
+            _1 == -1 -> _2
+            _2 == -1 -> _1
+            else -> _1
+          }
+        }.toIntArray())
+      }
+    }
+  }
 }

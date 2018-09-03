@@ -1,6 +1,7 @@
 package wumo.sim.tensorflow.tensor
 
 import wumo.sim.tensorflow.ops.Output
+import wumo.sim.util.ndarray.NDArray
 
 /**
  * Returns the constant value of the given tensor, if efficiently calculable.
@@ -28,14 +29,18 @@ or None if it cannot be calculated.
  
  * @see "tensorflow.python.framework.tensor_util.constant_value"
  */
-fun constantValue(tensor: Output): Tensor<*>? {
-  when (tensor.op.opType) {
-    "Const" -> tensor.op.attr
+fun constantValue(tensor: Output): NDArray<*>? {
+  val result: Tensor<*>? = when (tensor.op.opType) {
+    "Const" -> tensor.op.attrTensor("value")
     "Shape" -> {
       val inputShape = tensor.op.inputs[0].shape
       if (inputShape.isFullyDefined)
         inputShape
+      TODO()
     }
+    else -> TODO()
   }
+  if (result != null)
+    tensor.graph.preventFeeding(tensor)
   TODO()
 }

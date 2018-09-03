@@ -91,7 +91,7 @@ interface gen_array_ops {
     }
   }
   
-  fun concat(concatDim: Output, values: List<Output>, name: String = "Concat") = run {
+  fun _concat(concatDim: Output, values: List<Output>, name: String = "Concat") = run {
     buildOpTensor("Concat", name) {
       addInput(concatDim, false)
       addInput(values, false)

@@ -213,6 +213,9 @@ object math_ops {
       return Pair(cA, cB)
     }
     
+    fun min(input: Output, axis: Output? = null, keep_dims: Boolean = false, name: String = "sum") =
+        super._min(input, reductionDims(input, axis), keep_dims, name)
+    
     /**
     Creates a sequence of numbers.
     
@@ -270,15 +273,6 @@ object math_ops {
     fun scalarMul(scalar: Output, x: Output, name: String = "scalarMul"): Output {
       return tf.mul(scalar, x)
     }
-    
-    fun sum(input: Output, axis: Int? = null, keep_dims: Boolean = false, name: String = "sum") =
-        tf.nameScope(name) {
-          val reduction_indices =
-              reductionDims(input,
-                            if (axis != null) tf.const(axis, "reduction_indices")
-                            else null)
-          super._sum(input, reduction_indices, keep_dims, tf.currentNameScope)
-        }
     
     fun sum(input: Output, axis: Output? = null, keep_dims: Boolean = false, name: String = "sum") =
         super._sum(input, reductionDims(input, axis), keep_dims, name)
