@@ -65,7 +65,7 @@ object control_flow_ops {
       // inputs to determine if they are "cond" merges or not. A merge is a "cond" merge if and only if all its inputs
       // are in "cond" contexts.
         op.inputs.all { i ->
-          val context = getOutputContext(i.op!!)
+          val context = getOutputContext(i.op)
           context is CondContext
         }
   
@@ -95,9 +95,9 @@ object control_flow_ops {
   private val identityOpTypes = setOf("Identity", "RefIdentity", "Switch", "RefSwitch")
   /** Returns the enter op if we can infer `value` to be a loop invariant. Otherwise, returns [[None]]. */
   internal fun getLoopConstantEnter(value: Output): Op? {
-    var op = value.op!!
+    var op = value.op
     while (op.opType in identityOpTypes)
-      op = op.inputs[0].op!!
+      op = op.inputs[0].op
     return op.takeIf { isLoopConstantEnter(it) }
   }
   
@@ -173,18 +173,18 @@ object control_flow_ops {
           isContainingContext(whileContext, inputWhileContext) -> null
           // `inputOp` is in a while loop which contains `op`'s while loop (or not in a while loop at all).
           whileContext.gradLoopState != null &&
-              isContainingContext(whileContext.gradLoopState?.forwardContext,
+              isContainingContext(whileContext.gradLoopState.forwardContext,
                                   inputWhileContext) -> null
           // `op` is in a gradient context and `inputOp` is in the associated forward pass context or an ancestor
           // thereof. This case is needed to build while loop gradients. Note that we theoretically also need this
           // case for custom gradient functions that close over tensors from ancestor contexts, but this has not been
           // verified yet.
           whileContext.gradLoopState != null &&
-              whileContext.gradLoopState?.forwardContext === inputWhileContext?.outerContext -> null
+              whileContext.gradLoopState.forwardContext === inputWhileContext?.outerContext -> null
           // `op` is in a gradient context and `inputOp` is in a child of the associated forward pass context. This
           // case is needed for the gradients of while loops with conditionals.
           inputWhileContext?.gradLoopState != null &&
-              inputWhileContext.gradLoopState?.forwardContext === whileContext -> null
+              inputWhileContext.gradLoopState.forwardContext === whileContext -> null
           // `inputOp` is in the gradient context of `op`'s context. This case is needed when the gradient of a while
           // loop gradient is requested (this will eventually fail unless there is a `stopGradient` op or similar).
           inputWhileContext?.gradLoopState != null &&
@@ -233,7 +233,7 @@ object control_flow_ops {
                 "'maximumIterations' was not passed to the `tf.whileLoop()` call " +
                 "('${currentWhileContext.name}').")
       else {
-        val maxIterContext = maxIter.op!!.controlFlowContext
+        val maxIterContext = maxIter.op.controlFlowContext
         // If `maxIterContext` (non-strictly) contains `currentContext`, then it is ok to use.
         if (isContainingContext(currentContext, maxIterContext))
           maxSize *= maxIter
@@ -317,8 +317,8 @@ object control_flow_ops {
     fun withDependencies(dependencies: Set<Op>,
                          input: OutputLike,
                          name: String = "control_dependency"): Output =
-        tf.nameScope(name, dependencies + input.op!!) {
-          tf.colocateWith(input.op!!) {
+        tf.nameScope(name, dependencies + input.op) {
+          tf.colocateWith(input.op) {
             tf.controlDependencies(dependencies.toMutableSet()) {
               tf.identity(input, name = tf.currentNameScope)
             }
@@ -372,6 +372,7 @@ object control_flow_ops {
      * @param name A name for this operation (optional).
      * @return A tuple containing the chosen input tensor and its index in `inputs`.
      */
+    @Suppress("UNCHECKED_CAST")
     fun <T : OutputLike> merge(inputs: List<T>, name: String = "Merge"): List<Output> {
       return when {
         inputs.all { it is Output } -> {
@@ -423,7 +424,7 @@ object control_flow_ops {
      * @return Created op outputs, which in this case are the values of `inputs`.
      */
     fun tuple(inputs: List<OutputLike?>, controlInputs: Set<Op> = emptySet(), name: String = "tuple"): List<OutputLike?> {
-      val gatingOps = inputs.asSequence().filterNotNull().mapTo(mutableSetOf()) { it.op!! }
+      val gatingOps = inputs.asSequence().filterNotNull().mapTo(mutableSetOf()) { it.op }
       return if (gatingOps.isEmpty())
         inputs
       else
@@ -514,6 +515,7 @@ object control_flow_ops {
      * @param  name               Name for the created op.
      * @return Created op output, which is the same as `input`.
      */
+    @Suppress("UNCHECKED_CAST")
     fun <T : OutputLike> enter(input: T, frameName: String, isContant: Boolean = false, parallelIterations: Int = 10,
                                useRef: Boolean = true, useInputShape: Boolean = true, name: String = "Enter"): T =
         when (input) {
@@ -551,6 +553,7 @@ object control_flow_ops {
      * @param  name  Name for the created op.
      * @return Created op output, which is the same as `input`.
      */
+    @Suppress("UNCHECKED_CAST")
     fun <T : OutputLike> exit(input: T, name: String = "Exit"): T =
         when (input) {
           is Output -> if (input.dataType.isRefType)
@@ -580,6 +583,7 @@ object control_flow_ops {
      * @param  name  Name for the created op.
      * @return Created op output, which is the same as `input`.
      */
+    @Suppress("UNCHECKED_CAST")
     fun <T : OutputLike> nextIteration(input: T, name: String = "NextIteration"): T =
         when (input) {
           is Output ->

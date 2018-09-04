@@ -17,7 +17,7 @@ class CondContext(val predicate: Output,
     values += predicate.name
     externalValues[predicate.name] = predicate
     values += pivot.name
-    pivot.op!!.controlFlowContext = this
+    pivot.op.controlFlowContext = this
   }
   
   override val name = tf.currentGraph.uniqueName(name)
@@ -30,7 +30,7 @@ class CondContext(val predicate: Output,
     if (op.numInputs == 0) {
       // Remove any external control dependencies on this op.
       removeExternalControlEdges(op)
-      controlPivot?.let { op.addControlInput(it) }
+      controlPivot.let { op.addControlInput(it) }
     } else {
       op.inputs.withIndex().forEach { (index, input) ->
         val realInput = addValue(input)
@@ -40,7 +40,7 @@ class CondContext(val predicate: Output,
       // Remove any external control dependencies on this op.
       removeExternalControlEdges(op)
       if (op.graph.isFunction(op.opType) || op.opType == "SymbolicGradient")
-        controlPivot?.let { op.addControlInput(it) }
+        controlPivot.let { op.addControlInput(it) }
     }
     //Mark op's outputs as seen by this context and any outer contexts.
     val output_names = op.outputs.map { it.name }
@@ -75,7 +75,7 @@ class CondContext(val predicate: Output,
       val result = tf.controlDependencies(emptyMutableSet()) {
         control_flow_ops._switchRefOrTensor(switchInput, predicate)[branch]
       }
-      result.op!!.graph.preventFetching(result.op)
+      result.op.graph.preventFetching(result.op)
       result.op.controlFlowContext = this
       values += result.name
       externalValues[output.name] = result
@@ -148,6 +148,7 @@ class CondContext(val predicate: Output,
           else -> TODO()
         }
     
+    @Suppress("UNCHECKED_CAST")
     fun <T> unflatten(output: T, values: List<OutputLike>): T =
         when (output) {
           is Op -> values.first().op as T

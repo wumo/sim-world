@@ -298,4 +298,11 @@ open class NDArray<T : Any>(val shape: Shape, val raw: Buf<T>, val dtype: Class<
   operator fun component4() = raw[3]
   operator fun component5() = raw[4]
   operator fun component6() = raw[5]
+  fun max(): T {
+    TODO("not implemented")
+  }
+  
+  fun min(): T? {
+    TODO("not implemented")
+  }
 }

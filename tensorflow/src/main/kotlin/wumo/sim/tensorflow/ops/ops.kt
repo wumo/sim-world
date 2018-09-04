@@ -270,8 +270,8 @@ object ops {
    */
   internal fun controlDependencies(inputs: Set<Output>): Set<Op> {
     val controlDependencies = HashSet(tf.currentControlDependencies)
-    inputs.flatMapTo(controlDependencies) { it.op!!.controlInputs }
-    inputs.forEach { pruneControlDependencies(controlDependencies, it.op!!) }
+    inputs.flatMapTo(controlDependencies) { it.op.controlInputs }
+    inputs.forEach { pruneControlDependencies(controlDependencies, it.op) }
     return controlDependencies
   }
   
@@ -297,7 +297,7 @@ object ops {
       controlDependencies -= op
       processedOps += op
       // Prune transitive control dependencies
-      op.inputs.forEach { pruneControlDependencies(controlDependencies, it.op!!, processedOps, maxDepth - 1) }
+      op.inputs.forEach { pruneControlDependencies(controlDependencies, it.op, processedOps, maxDepth - 1) }
       op.controlInputs.forEach { pruneControlDependencies(controlDependencies, it, processedOps, maxDepth - 1) }
     }
   }
@@ -866,7 +866,7 @@ object ops {
         with(deviceFunction = dev, block = block)
     
     fun <R> controlDependencies(control_input: Output, block: () -> R) =
-        controlDependencies(mutableSetOf(control_input.op!!)) { block() }
+        controlDependencies(mutableSetOf(control_input.op)) { block() }
     
     fun <R> controlDependencies(control_input: Op, block: () -> R) =
         controlDependencies(mutableSetOf(control_input)) { block() }
@@ -924,13 +924,13 @@ object ops {
     }
     
     fun <R> colocateWith(op: OutputLike, ignoreExisting: Boolean = false, block: () -> R) =
-        colocateWith(op.op!!, ignoreExisting, block)
+        colocateWith(op.op, ignoreExisting, block)
     
     fun <R> colocateWith(op: Op, ignore_existing: Boolean = false, block: () -> R) =
         colocateWith(mutableSetOf(op), ignore_existing, block)
     
     fun <R> colocateWith(op: List<Output>, ignore_existing: Boolean = false, block: () -> R): R {
-      return colocateWith(op.mapTo(mutableSetOf<Op>()) { it.op!! }, ignore_existing, block)
+      return colocateWith(op.mapTo(mutableSetOf<Op>()) { it.op }, ignore_existing, block)
     }
     
     fun <R> controlDependencies(control_inputs: MutableSet<Op>, block: () -> R): R =

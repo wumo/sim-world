@@ -86,6 +86,18 @@ class Shape(private val dims: IntArray? = null) : Iterable<Int> {
     }
   }
   
+  @Suppress("NAME_SHADOWING")
+  fun slice(start: Int, end: Int? = null, step: Int = 1): Shape =
+      if (dims == null) Shape()
+      else {
+        val end = end ?: if (start >= 0) dims.size else 0
+        val size = (end - start) / step
+        val iter = (start until end step step).iterator()
+        Shape(IntArray(size) {
+          this[iter.nextInt()]
+        })
+      }
+  
   override fun iterator() = dims!!.iterator()
   
   override fun toString(): String {
@@ -93,7 +105,7 @@ class Shape(private val dims: IntArray? = null) : Iterable<Int> {
     sb.append("(")
     for ((i, value) in dims!!.withIndex()) {
       sb.append(if (value == -1) "?" else value)
-      if (i < dims!!.lastIndex)
+      if (i < dims.lastIndex)
         sb.append(", ")
     }
     sb.append(")")

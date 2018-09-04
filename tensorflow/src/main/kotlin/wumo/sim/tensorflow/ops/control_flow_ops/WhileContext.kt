@@ -55,7 +55,7 @@ class WhileContext(
         // use GetRealValue(), which adds the logic to save the history of
         // val in forward.
         tf.currentControlFlowContext?.whileContext()?.gradLoopState?.let { gradientLoopState ->
-          getWhileContext(output.op!!)?.let { forwardContext ->
+          getWhileContext(output.op)?.let { forwardContext ->
             if (control_flow_ops.isLoopExit(output.op))
               forwardContext.outerContext?.whileContext()
             else
@@ -91,9 +91,9 @@ class WhileContext(
     if (op.opType in setOf("Shape", "Size", "Rank")) {
       val gradientContext = tf.currentControlFlowContext
       gradientContext?.whileContext()?.gradLoopState?.let { gradLoopState ->
-        getWhileContext(op.inputs[0].op!!)?.let { opInputForwardContext ->
+        getWhileContext(op.inputs[0].op)?.let { opInputForwardContext ->
           if (opInputForwardContext == gradLoopState.forwardContext) {
-            val opInputContext = op.inputs[0].op!!.controlFlowContext
+            val opInputContext = op.inputs[0].op.controlFlowContext
             op.controlFlowContext = opInputContext
             opInputContext?.addInternal(op)
             return
@@ -109,6 +109,7 @@ class WhileContext(
    * ensure they get executed.
    * @see "tensorflow.python.ops.control_flow_ops.WhileContext#_AddOpInternal"
    */
+  @Suppress("NAME_SHADOWING")
   override fun addInternal(op: Op) {
     val externalInputs = if (op.numInputs == 0) {
       // Remove any external control dependencies on this op.
@@ -137,7 +138,7 @@ class WhileContext(
     tf.controlDependencies(emptyMutableSet()) {
       enter()
       val externalInputs = externalInputs.map { op ->
-        tf.identity(op.outputs[0]).op!!
+        tf.identity(op.outputs[0]).op
       }
       exit()
       externalInputs
@@ -156,7 +157,7 @@ class WhileContext(
     //Determines if `op` needs a control dependency.
     if (op.controlInputs.isEmpty() &&
         ((op.graph.isFunction(op.opType) || op.opType == "SymbolicGradient")
-            || op.inputs.all { control_flow_ops.isLoopConstantEnter(it.op!!) }))
+            || op.inputs.all { control_flow_ops.isLoopConstantEnter(it.op) }))
       controlPivot?.let { op.addControlInput(it) }
   }
   
@@ -176,7 +177,7 @@ class WhileContext(
             setOf(it.indices, it.values)
       }
       outputs.forEach {
-        val input = it.op!!.inputs[0]
+        val input = it.op.inputs[0]
         val outerControlInputs = ops.controlDependencies(setOf(input)).filter { isInOuterContext(it) }
         it.op.controlFlowContext = this
         it.op.addControlInputs(outerControlInputs)
@@ -279,6 +280,7 @@ class WhileContext(
    * @param  gradient Partial gradient of an iteration for a loop invariant.
    * @return Gradient for a loop invariant.
    */
+  @Suppress("UNCHECKED_CAST")
   internal fun <T : OutputLike> addBackwardAccumulator(op: Op, gradient: T): T =
       when (gradient) {
         is Output -> {
@@ -489,6 +491,7 @@ class WhileContext(
     }
     
     /** Creates a next iteration op for `v` and adds a back edge from `v` to `m`. */
+    @Suppress("UNCHECKED_CAST")
     internal fun <T : OutputLike> addNextIterationAndBackEdge(
         m: T, v: T, enforceShapeInvariant: Boolean = true): T =
         when {

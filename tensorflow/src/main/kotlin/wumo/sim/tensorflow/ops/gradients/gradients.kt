@@ -121,9 +121,9 @@ object gradient_ops {
                   aggregationMethod: AggregationMethod = AddAggregationMethod,
                   colocateGradientsWithOps: Boolean = false,
                   name: String = "gradients"): List<OutputLike?> {
-      val to_ops = ys.mapTo(mutableSetOf()) { it.op!! }
-      val from_ops = xs.mapTo(mutableSetOf()) { it.op!! }
-      val grad_ops = grad_ys?.mapTo(mutableSetOf()) { it.op!! } ?: emptyMutableSet<Op>()
+      val to_ops = ys.mapTo(mutableSetOf()) { it.op }
+      val from_ops = xs.mapTo(mutableSetOf()) { it.op }
+      val grad_ops = grad_ys?.mapTo(mutableSetOf()) { it.op } ?: emptyMutableSet<Op>()
       
       ys.mapTo(mutableSetOf()) { it.op }
       
@@ -142,7 +142,7 @@ object gradient_ops {
         // Initialize the pending count for ops in the connected subgraph from ys
         val toOps = if (ys.size > 1)
           ys.mapTo(mutableSetOf()) { y ->
-            if (y.consumers.isNotEmpty()) tf.identity(y).op!! else y.op!!
+            if (y.consumers.isNotEmpty()) tf.identity(y).op else y.op
           }
         else
           to_ops
@@ -427,7 +427,7 @@ object gradient_ops {
       output: Output,
       gradient: OutputLike
   ) {
-    val opGradients = gradients.getOrPut(output.op!!) { output.op.outputs.mapTo(mutableListOf()) { mutableListOf<OutputLike?>() } }
+    val opGradients = gradients.getOrPut(output.op) { output.op.outputs.mapTo(mutableListOf()) { mutableListOf<OutputLike?>() } }
     if (control_flow_ops.isLoopSwitch(output.op))
       opGradients[output.valueIndex] = mutableListOf(gradient)
     else
@@ -478,7 +478,7 @@ object gradient_ops {
         betweenOps += op
         betweenOpList += op
         reachedOps -= op //Clear the boolean so we won't add the inputs again.
-        op.inputs.forEach { betweenQueue.addLast(it.op!!) }
+        op.inputs.forEach { betweenQueue.addLast(it.op) }
       }
     }
     // X in between_ops iff X is on a path of zero or more backpropagatable tensors
@@ -489,7 +489,7 @@ object gradient_ops {
     val pendingCount = mutableMapOf<Op, Int>()
     betweenOpList.asSequence()
         .flatMap { it.inputs.asSequence() }
-        .map { it.op!! }
+        .map { it.op }
         .filter { it in betweenOps }
         .forEach {
           pendingCount.compute(it) { _, count ->

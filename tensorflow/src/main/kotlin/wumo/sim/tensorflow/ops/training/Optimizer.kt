@@ -1,9 +1,11 @@
 package wumo.sim.tensorflow.ops.training
 
-import wumo.sim.tensorflow.tensor.Tensor
 import wumo.sim.tensorflow.core.Graph
 import wumo.sim.tensorflow.core.InvalidDataTypeException
-import wumo.sim.tensorflow.ops.*
+import wumo.sim.tensorflow.ops.IndexedSlices
+import wumo.sim.tensorflow.ops.Op
+import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.ops.OutputLike
 import wumo.sim.tensorflow.ops.gradients.gradient_ops
 import wumo.sim.tensorflow.ops.gradients.gradient_ops.AggregationMethod.AddAggregationMethod
 import wumo.sim.tensorflow.ops.gradients.gradient_ops.GatingMethod.GraphGating
@@ -12,6 +14,7 @@ import wumo.sim.tensorflow.ops.training.Optimizer.Companion.VariableProcessor.Re
 import wumo.sim.tensorflow.ops.variables.DynamicInitializer
 import wumo.sim.tensorflow.ops.variables.Initializer
 import wumo.sim.tensorflow.ops.variables.Variable
+import wumo.sim.tensorflow.tensor.Tensor
 import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.types.*
 import wumo.sim.util.*
@@ -164,7 +167,7 @@ abstract class Optimizer {
         tf.controlDependencies(mutableSetOf(finish(updateOps, "update"))) {
           tf.colocateWith(mutableSetOf(global_step.op)) {
             // The implicit read in the default assign add operation in `Variable` is slow and so we avoid that here.
-            global_step.assignAdd(tf.const(global_step.dataType, 1), tf.currentNameScope).op!!
+            global_step.assignAdd(tf.const(global_step.dataType, 1), tf.currentNameScope).op
           }
         }
       updateOps.first().graph.addToCollection(apply_updates, Graph.Graph.Keys.TRAIN_OP)
