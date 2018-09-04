@@ -22,10 +22,10 @@ class Variable(
     snapshot: Output) : VariableLike {
   
   override val graph = variable.graph
-  override val name = variable.op!!.name
+  override val name = variable.op.name
   val device = variable.device
   override val shape = variable.shape
-  val op = variable.op!!
+  val op = variable.op
   override val value = snapshot
   fun readValue() = tf.identity(variable, name = "read")
   override val initializer = initializeOp
@@ -200,7 +200,7 @@ class Variable(
             val variableHandle = tf.variableV2(inferredShape, inferredDataType.baseDataType,
                                                 sharedName = trueName, name = scopeName)
             val initialValue = tf.nameScope("Initializer") {
-              tf.colocateWith(variableHandle.op!!) {
+              tf.colocateWith(variableHandle.op) {
                 initializer(inferredShape, inferredDataType)
               }
             }
@@ -211,10 +211,10 @@ class Variable(
                 tf.identity(variableHandle, name = "read")
               }
             else
-              tf.colocateWith(variableHandle.op!!) {
+              tf.colocateWith(variableHandle.op) {
                 tf.identity(variableHandle, name = "read")
               }
-            val createdVariable = Variable(inferredDataType, variableHandle, initializeOp.op!!, initialValue, snapshot)
+            val createdVariable = Variable(inferredDataType, variableHandle, initializeOp.op, initialValue, snapshot)
             val _collections = collections ?: mutableSetOf()
             if (_collections.isEmpty())
               _collections.add(Graph.Keys.GLOBAL_VARIABLES)
@@ -253,7 +253,7 @@ class Variable(
         if (op.name in path) return true
         path += op.name
         for (op_input in op.inputs)
-          if (has_cycle(op_input.op!!, path))
+          if (has_cycle(op_input.op, path))
             return true
         for (op_control_input in op.controlInputs)
           if (has_cycle(op_control_input, path))
@@ -263,7 +263,7 @@ class Variable(
       }
       
       //Don't modify initial_value if it contains any cyclic dependencies.
-      return if (has_cycle(initial_value.op!!, path = mutableSetOf()))
+      return if (has_cycle(initial_value.op, path = mutableSetOf()))
         initial_value
       else safeInitialValueFromTensor(variableName, initial_value, mutableMapOf())
     }
@@ -280,7 +280,7 @@ class Variable(
      */
     private fun safeInitialValueFromTensor(variableName: String, initialValue: Output, op_cache: MutableMap<String, Op>): Output {
       val op = initialValue.op
-      val new_op = op_cache.compute(op!!.name) { _, new_op ->
+      val new_op = op_cache.compute(op.name) { _, new_op ->
         new_op ?: safeInitialValueFromOp(variableName, op, op_cache)
       }!!
       return new_op.outputs[initialValue.valueIndex]

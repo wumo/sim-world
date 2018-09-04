@@ -48,8 +48,8 @@ sealed class OutputLike : OutputConvertible {
  */
 class IndexedSlices(val indices: Output, val values: Output, val denseShape: Output? = null) : OutputLike() {
   
-  override val graph: Graph = ops.getGraphFromInputs(setOf(values.op!!, indices.op!!) +
-                                                         if (denseShape == null) emptySet() else setOf(denseShape.op!!))
+  override val graph: Graph = ops.getGraphFromInputs(setOf(values.op, indices.op) +
+                                                         if (denseShape == null) emptySet() else setOf(denseShape.op))
   override val name: String = "${values.name}[${indices.name}]" +
       if (denseShape != null) "(shape = ${denseShape.name})" else ""
   override val dataType: DataType<*> = values.dataType
@@ -124,8 +124,8 @@ class SparseOutput(val indices: Output, val values: Output, val denseShape: Outp
  */
 class Output(override val op: Op, val valueIndex: Int) : OutputLike() {
   
-  override val graph = op!!.graph
-  override val device = op!!.device
+  override val graph = op.graph
+  override val device = op.device
   override val consumers: List<Op>
     get() {
       val tf_output = asTF_Output()
@@ -140,13 +140,11 @@ class Output(override val op: Op, val valueIndex: Int) : OutputLike() {
   override fun toOutput() = this
   
   override val dataType: DataType<*>
-    get() = if (op != null) {
-      op.output_types[valueIndex]
-    } else throw NullPointerException("op is null")
+    get() = op.output_types[valueIndex]
   
   val shape: Shape
     get() {
-      val c_graph = op!!.graph.c_graph
+      val c_graph = op.graph.c_graph
       val output = asTF_Output()
       val status = newStatus()
       val numDims = TF_GraphGetTensorNumDims(c_graph, output, status)
@@ -197,19 +195,20 @@ class Output(override val op: Op, val valueIndex: Int) : OutputLike() {
    */
   fun setShape(shape: Shape) {
     assert(this.shape.isCompatibleWith(shape))
-    op!!
+    op
     val dims = shape.asLongArray()
     val status = newStatus()
     TF_GraphSetTensorShape(op.graph.c_graph, asTF_Output(), dims, dims.size, status)
     status.check()
   }
-
-//  val tf: TF by lazy { TODO("op!!.graph.tf") }
-  fun asTF_Output() = TF_Output().oper(op!!.c_op).index(valueIndex)
-  override val name: String by lazy { "${op!!.name}:$valueIndex" }
+  
+  //  val tf: TF by lazy { TODO("op!!.graph.tf") }
+  fun asTF_Output() = TF_Output().oper(op.c_op).index(valueIndex)
+  
+  override val name: String by lazy { "${op.name}:$valueIndex" }
 //  val name: String by lazy { op!!.name }
   
-  inline fun node() = op!!.c_op.node()
+  inline fun node() = op.c_op.node()
   
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
@@ -223,7 +222,6 @@ class Output(override val op: Op, val valueIndex: Int) : OutputLike() {
   }
   
   override fun hashCode(): Int {
-    if (op == null) return 0
     var result = op.hashCode()
     result = 31 * result + valueIndex
     return result

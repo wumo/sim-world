@@ -175,7 +175,7 @@ class OperationBuilder(val opType: String, val name: String) {
   }
   
   private fun control_flow_post_processing(op: Op) {
-    op.inputs.forEach { checkInputFromValidContext(op, it.op!!) }
+    op.inputs.forEach { checkInputFromValidContext(op, it.op) }
     op.controlFlowContext?.addOp(op)
   }
   
@@ -198,7 +198,7 @@ class OperationBuilder(val opType: String, val name: String) {
       addInput(input.asTF_Output())
     }
     inputs += input
-    if (ref) maybeColocateInputs += input.op!!
+    if (ref) maybeColocateInputs += input.op
   }
   
   fun addInput(input: List<Output>, ref: Boolean = false) {
@@ -206,7 +206,7 @@ class OperationBuilder(val opType: String, val name: String) {
       val inputs = TF_Output(input.size.toLong())
       for ((i, _input) in input.withIndex()) {
         val t = _input
-        inputs.position(i.toLong()).oper(t.op!!.c_op).index(t.valueIndex)
+        inputs.position(i.toLong()).oper(t.op.c_op).index(t.valueIndex)
             .apply {
               input_ops += t.op
               inputLists += input
@@ -214,7 +214,7 @@ class OperationBuilder(val opType: String, val name: String) {
       }
       TF_AddInputList(c_op_desc, inputs.position(0L), input.size)
     }
-    if (ref) input.forEach { maybeColocateInputs += it.op!! }
+    if (ref) input.forEach { maybeColocateInputs += it.op }
     input.forEach { inputs += it }
   }
   

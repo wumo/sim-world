@@ -52,7 +52,7 @@ class c_api_test {
     val c = tf.const(3f, name = "c")
     tf.printGraph()
     
-    AddControlInput(tf.currentGraph.c_graph, c.op!!.c_op, a.op!!.c_op)
+    AddControlInput(tf.currentGraph.c_graph, c.op.c_op, a.op.c_op)
     tf.printGraph()
   }
 }

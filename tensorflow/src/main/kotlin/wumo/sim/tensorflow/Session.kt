@@ -88,7 +88,7 @@ class Session(val c_graph: TF_Graph) {
     val outputs = TF_Output(noutputs.toLong())
     val output_values = PointerPointer<TF_Tensor>(noutputs.toLong())
     for ((i, f) in fetch.withIndex())
-      outputs.position(i.toLong()).oper(f.op!!.c_op).index(f.valueIndex)
+      outputs.position(i.toLong()).oper(f.op.c_op).index(f.valueIndex)
     outputs.position(0L)
     TF_SessionRun(c_session, null, inputs, input_values, ninputs,
                   outputs, output_values, noutputs,
@@ -109,7 +109,7 @@ class Session(val c_graph: TF_Graph) {
     val outputs = TF_Output(noutputs.toLong())
     val output_values = PointerPointer<TF_Tensor>(noutputs.toLong())
     for ((i, f) in fetch.withIndex())
-      outputs.position(i.toLong()).oper(f.op!!.c_op).index(f.valueIndex)
+      outputs.position(i.toLong()).oper(f.op.c_op).index(f.valueIndex)
     outputs.position(0L)
     TF_SessionRun(c_session, null, inputs, input_values, ninputs,
                   outputs, output_values, noutputs,
@@ -128,7 +128,7 @@ class Session(val c_graph: TF_Graph) {
     val input_values = PointerPointer<TF_Tensor>(ninputs)
     for ((i, pair) in feed_dict.withIndex()) {
       val (input, input_value) = pair
-      inputs.position(i.toLong()).oper(input.op!!.c_op).index(input.valueIndex)
+      inputs.position(i.toLong()).oper(input.op.c_op).index(input.valueIndex)
       input_values.position(i.toLong()).put(Tensor.fromNDArray(input_value).c_tensor)
     }
     inputs.position(0L)
@@ -155,7 +155,7 @@ class Session(val c_graph: TF_Graph) {
   }
   
   private fun Output.print(v: NDArray<*>) {
-    val prefix = "${op!!.name}:${dataType.name}$shape\n  ="
+    val prefix = "${op.name}:${dataType.name}$shape\n  ="
     println("$prefix${v.toString(3)}\n")
   }
   
@@ -176,7 +176,7 @@ class Session(val c_graph: TF_Graph) {
     for ((i, pair) in feed_dict.entries.withIndex()) {
       val (_input, input_value) = pair
       val input = tf.currentGraph.getTensor(_input)
-      inputs.position(i.toLong()).oper(input.op!!.c_op).index(input.valueIndex)
+      inputs.position(i.toLong()).oper(input.op.c_op).index(input.valueIndex)
       input_values.position(i.toLong()).put(Tensor.fromNDArray(input_value).c_tensor)
     }
     inputs.position(0L)
@@ -185,7 +185,7 @@ class Session(val c_graph: TF_Graph) {
     val ntargets = updates.size
     val target_opers = PointerPointer<TF_Operation>(ntargets.toLong())
     for ((i, op) in updates.withIndex()) {
-      val op = tf.currentGraph.getTensor(op).op!!
+      val op = tf.currentGraph.getTensor(op).op
       target_opers.position(i.toLong()).put(op.c_op)
     }
     target_opers.position(0L)
@@ -196,7 +196,7 @@ class Session(val c_graph: TF_Graph) {
     val output_values = PointerPointer<TF_Tensor>(noutputs.toLong())
     for ((i, _f) in fetch.withIndex()) {
       val f = tf.currentGraph.getTensor(_f)
-      outputs.position(i.toLong()).oper(f.op!!.c_op).index(f.valueIndex)
+      outputs.position(i.toLong()).oper(f.op.c_op).index(f.valueIndex)
     }
     outputs.position(0L)
     TF_SessionRun(c_session, null, inputs, input_values, ninputs,
@@ -218,7 +218,7 @@ class Session(val c_graph: TF_Graph) {
     val input_values = PointerPointer<TF_Tensor>(ninputs.toLong())
     for ((i, pair) in feed_dict.entries.withIndex()) {
       val (input, input_value) = pair
-      inputs.position(i.toLong()).oper(input.op!!.c_op).index(input.valueIndex)
+      inputs.position(i.toLong()).oper(input.op.c_op).index(input.valueIndex)
       input_values.position(i.toLong()).put(Tensor.fromNDArray(input_value).c_tensor)
     }
     inputs.position(0L)
@@ -241,7 +241,7 @@ class Session(val c_graph: TF_Graph) {
     val outputs = TF_Output(noutputs.toLong())
     val output_values = PointerPointer<TF_Tensor>(noutputs.toLong())
     for ((i, f) in fetch.withIndex())
-      outputs.position(i.toLong()).oper(f.op!!.c_op).index(f.valueIndex)
+      outputs.position(i.toLong()).oper(f.op.c_op).index(f.valueIndex)
     outputs.position(0L)
     TF_SessionRun(c_session, null, inputs, input_values, ninputs,
                   outputs, output_values, noutputs,
