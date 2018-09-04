@@ -187,10 +187,10 @@ class Op(val graph: Graph, val c_op: TF_Operation) {
     return value.i()
   }
   
-  fun attrLongList(name: String): LongArray {
+  fun attrLongList(name: String): Array<Long> {
     val value = attrs.Find(name)
     val list_value = value.list()
-    return LongArray(list_value.i_size()) {
+    return Array(list_value.i_size()) {
       list_value.i(it)
     }
   }

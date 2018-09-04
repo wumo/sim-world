@@ -166,13 +166,13 @@ object math_ops {
       return range(tf.const(0), tf.rank(x))
     }
     
-    fun mean(input: Output, axis: LongArray? = null, keep_dims: Boolean = false, name: String = "mean") =
+    fun mean(input: Output, axis: LongArray? = null, keepDims: Boolean = false, name: String = "mean") =
         tf.nameScope(name) {
           val reduction_indices =
               reductionDims(input,
                             if (axis != null) tf.const(axis, "reduction_indices")
                             else null)
-          super.mean(input, reduction_indices, keep_dims, name)
+          super._mean(input, reduction_indices, keepDims, name)
         }
     
     fun matMul(a: Output, b: Output, transposeA: Boolean = false, transposeB: Boolean = false,
@@ -213,8 +213,11 @@ object math_ops {
       return Pair(cA, cB)
     }
     
-    fun min(input: Output, axis: Output? = null, keep_dims: Boolean = false, name: String = "sum") =
-        super._min(input, reductionDims(input, axis), keep_dims, name)
+    fun mean(input: Output, axis: Output? = null, keepDims: Boolean = false, name: String = "sum") =
+        super._mean(input, reductionDims(input, axis), keepDims, name)
+    
+    fun min(input: Output, axis: Output? = null, keepDims: Boolean = false, name: String = "sum") =
+        super._min(input, reductionDims(input, axis), keepDims, name)
     
     /**
     Creates a sequence of numbers.
@@ -274,11 +277,11 @@ object math_ops {
       return tf.mul(scalar, x)
     }
     
-    fun sum(input: Output, axis: Output? = null, keep_dims: Boolean = false, name: String = "sum") =
-        super._sum(input, reductionDims(input, axis), keep_dims, name)
+    fun sum(input: Output, axis: Output? = null, keepDims: Boolean = false, name: String = "sum") =
+        super._sum(input, reductionDims(input, axis), keepDims, name)
     
-    fun prod(input: Output, axis: Output? = null, keep_dims: Boolean = false, name: String = "Prod") =
-        super._prod(input, reductionDims(input, axis), keep_dims, name)
+    fun prod(input: Output, axis: Output? = null, keepDims: Boolean = false, name: String = "Prod") =
+        super._prod(input, reductionDims(input, axis), keepDims, name)
     
     fun transpose(input: Output, perm: Output? = null, conjugate: Boolean = false,
                   name: String = "Transpose"): Output {

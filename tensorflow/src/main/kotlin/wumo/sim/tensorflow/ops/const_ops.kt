@@ -13,6 +13,8 @@ import wumo.sim.util.ndarray.NDArray
 import wumo.sim.util.scalarDimension
 import wumo.sim.util.toByte
 
+fun Shape.toOutput(): Output = tf.const(asIntArray()!!)
+
 object const_ops {
   val const_switch = SwitchValue3<DataType<*>, Shape, Any, String, Output>().apply {
     case(INT8, UINT8) { tf.const(_1, (_2 as Number).toByte(), _3) }

@@ -493,7 +493,7 @@ interface gen_math_ops {
     }
   }
   
-  fun mean(input: Output, reductionIndices: Output, keepDims: Boolean = false, name: String = "Mean") = run {
+  fun _mean(input: Output, reductionIndices: Output, keepDims: Boolean = false, name: String = "Mean") = run {
     buildOpTensor("Mean", name) {
       addInput(input, false)
       addInput(reductionIndices, false)

@@ -43,10 +43,10 @@ object nn_ops {
           //on 32-bit floats before converting the mean and variance back to fp16
           val y = if (x.dataType == HALF) tf.cast(x, FLOAT) else x
           //Compute true mean while keeping the dims for proper broadcasting.
-          var mean = tf.mean(y, axes, keep_dims = true, name = "mean")
+          var mean = tf.mean(y, axes, keepDims = true, name = "mean")
           //sample variance, not unbiased variance
           var variance = tf.mean(tf.squaredDifference(y, tf.stopGradient(mean)),
-                                 axes, keep_dims = true, name = "variance")
+                                 axes, keepDims = true, name = "variance")
           if (!keep_dims) {
             mean = tf.squeeze(mean, axes.toTypedArray())
             variance = tf.squeeze(variance, axes.toTypedArray())
