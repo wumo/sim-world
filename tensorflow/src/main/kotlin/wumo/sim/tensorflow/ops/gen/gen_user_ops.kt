@@ -4,10 +4,10 @@
 package wumo.sim.tensorflow.ops.gen
 
 import wumo.sim.tensorflow.buildOpTensor
+import wumo.sim.tensorflow.ops.Output
 
-interface gen_user_ops {
-  fun fact(name: String = "Fact") = run {
-    buildOpTensor("Fact", name) {
-    }
-  }
+object gen_user_ops {
+  fun fact(name: String = "Fact"): Output =
+      buildOpTensor("Fact", name) {
+      }
 }

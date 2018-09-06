@@ -6,28 +6,25 @@ package wumo.sim.tensorflow.ops.gen
 import wumo.sim.tensorflow.buildOpTensors
 import wumo.sim.tensorflow.ops.Output
 
-interface gen_script_ops {
-  fun eagerPyFunc(input: Output, token: String, tout: Array<Long>, name: String = "EagerPyFunc") = run {
-    buildOpTensors("EagerPyFunc", name) {
-      addInput(input, false)
-      attr("token", token)
-      attr("Tout", tout)
-    }
-  }
+object gen_script_ops {
+  fun eagerPyFunc(input: Output, token: String, tout: Array<Long>, name: String = "EagerPyFunc"): List<Output> =
+      buildOpTensors("EagerPyFunc", name) {
+        addInput(input, false)
+        attr("token", token)
+        attr("Tout", tout)
+      }
   
-  fun pyFunc(input: Output, token: String, tout: Array<Long>, name: String = "PyFunc") = run {
-    buildOpTensors("PyFunc", name) {
-      addInput(input, false)
-      attr("token", token)
-      attr("Tout", tout)
-    }
-  }
+  fun pyFunc(input: Output, token: String, tout: Array<Long>, name: String = "PyFunc"): List<Output> =
+      buildOpTensors("PyFunc", name) {
+        addInput(input, false)
+        attr("token", token)
+        attr("Tout", tout)
+      }
   
-  fun pyFuncStateless(input: Output, token: String, tout: Array<Long>, name: String = "PyFuncStateless") = run {
-    buildOpTensors("PyFuncStateless", name) {
-      addInput(input, false)
-      attr("token", token)
-      attr("Tout", tout)
-    }
-  }
+  fun pyFuncStateless(input: Output, token: String, tout: Array<Long>, name: String = "PyFuncStateless"): List<Output> =
+      buildOpTensors("PyFuncStateless", name) {
+        addInput(input, false)
+        attr("token", token)
+        attr("Tout", tout)
+      }
 }

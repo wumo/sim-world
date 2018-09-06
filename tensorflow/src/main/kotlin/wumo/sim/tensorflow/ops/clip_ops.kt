@@ -1,5 +1,7 @@
 package wumo.sim.tensorflow.ops
 
+import wumo.sim.tensorflow.ops.basic.div
+import wumo.sim.tensorflow.ops.basic.times
 import wumo.sim.tensorflow.tf
 
 object clip_ops {

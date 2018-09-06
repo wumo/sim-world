@@ -6,285 +6,249 @@ package wumo.sim.tensorflow.ops.gen
 import wumo.sim.tensorflow.buildOp
 import wumo.sim.tensorflow.buildOpTensor
 import wumo.sim.tensorflow.buildOpTensors
+import wumo.sim.tensorflow.ops.Op
 import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.types.DataType
 
-interface gen_io_ops {
-  fun fixedLengthRecordReader(recordBytes: Long, headerBytes: Long = 0L, footerBytes: Long = 0L, hopBytes: Long = 0L, container: String = "", sharedName: String = "", name: String = "FixedLengthRecordReader") = run {
-    buildOpTensor("FixedLengthRecordReader", name) {
-      attr("record_bytes", recordBytes)
-      attr("header_bytes", headerBytes)
-      attr("footer_bytes", footerBytes)
-      attr("hop_bytes", hopBytes)
-      attr("container", container)
-      attr("shared_name", sharedName)
-    }
-  }
+object gen_io_ops {
+  fun fixedLengthRecordReader(recordBytes: Long, headerBytes: Long = 0L, footerBytes: Long = 0L, hopBytes: Long = 0L, container: String = "", sharedName: String = "", name: String = "FixedLengthRecordReader"): Output =
+      buildOpTensor("FixedLengthRecordReader", name) {
+        attr("record_bytes", recordBytes)
+        attr("header_bytes", headerBytes)
+        attr("footer_bytes", footerBytes)
+        attr("hop_bytes", hopBytes)
+        attr("container", container)
+        attr("shared_name", sharedName)
+      }
   
-  fun fixedLengthRecordReaderV2(recordBytes: Long, headerBytes: Long = 0L, footerBytes: Long = 0L, hopBytes: Long = 0L, container: String = "", sharedName: String = "", encoding: String = "", name: String = "FixedLengthRecordReaderV2") = run {
-    buildOpTensor("FixedLengthRecordReaderV2", name) {
-      attr("record_bytes", recordBytes)
-      attr("header_bytes", headerBytes)
-      attr("footer_bytes", footerBytes)
-      attr("hop_bytes", hopBytes)
-      attr("container", container)
-      attr("shared_name", sharedName)
-      attr("encoding", encoding)
-    }
-  }
+  fun fixedLengthRecordReaderV2(recordBytes: Long, headerBytes: Long = 0L, footerBytes: Long = 0L, hopBytes: Long = 0L, container: String = "", sharedName: String = "", encoding: String = "", name: String = "FixedLengthRecordReaderV2"): Output =
+      buildOpTensor("FixedLengthRecordReaderV2", name) {
+        attr("record_bytes", recordBytes)
+        attr("header_bytes", headerBytes)
+        attr("footer_bytes", footerBytes)
+        attr("hop_bytes", hopBytes)
+        attr("container", container)
+        attr("shared_name", sharedName)
+        attr("encoding", encoding)
+      }
   
-  fun identityReader(container: String = "", sharedName: String = "", name: String = "IdentityReader") = run {
-    buildOpTensor("IdentityReader", name) {
-      attr("container", container)
-      attr("shared_name", sharedName)
-    }
-  }
+  fun identityReader(container: String = "", sharedName: String = "", name: String = "IdentityReader"): Output =
+      buildOpTensor("IdentityReader", name) {
+        attr("container", container)
+        attr("shared_name", sharedName)
+      }
   
-  fun identityReaderV2(container: String = "", sharedName: String = "", name: String = "IdentityReaderV2") = run {
-    buildOpTensor("IdentityReaderV2", name) {
-      attr("container", container)
-      attr("shared_name", sharedName)
-    }
-  }
+  fun identityReaderV2(container: String = "", sharedName: String = "", name: String = "IdentityReaderV2"): Output =
+      buildOpTensor("IdentityReaderV2", name) {
+        attr("container", container)
+        attr("shared_name", sharedName)
+      }
   
-  fun lMDBReader(container: String = "", sharedName: String = "", name: String = "LMDBReader") = run {
-    buildOpTensor("LMDBReader", name) {
-      attr("container", container)
-      attr("shared_name", sharedName)
-    }
-  }
+  fun lMDBReader(container: String = "", sharedName: String = "", name: String = "LMDBReader"): Output =
+      buildOpTensor("LMDBReader", name) {
+        attr("container", container)
+        attr("shared_name", sharedName)
+      }
   
-  fun matchingFiles(pattern: Output, name: String = "MatchingFiles") = run {
-    buildOpTensor("MatchingFiles", name) {
-      addInput(pattern, false)
-    }
-  }
+  fun matchingFiles(pattern: Output, name: String = "MatchingFiles"): Output =
+      buildOpTensor("MatchingFiles", name) {
+        addInput(pattern, false)
+      }
   
-  fun mergeV2Checkpoints(checkpointPrefixes: Output, destinationPrefix: Output, deleteOldDirs: Boolean = true, name: String = "MergeV2Checkpoints") = run {
-    buildOp("MergeV2Checkpoints", name) {
-      addInput(checkpointPrefixes, false)
-      addInput(destinationPrefix, false)
-      attr("delete_old_dirs", deleteOldDirs)
-    }
-  }
+  fun mergeV2Checkpoints(checkpointPrefixes: Output, destinationPrefix: Output, deleteOldDirs: Boolean = true, name: String = "MergeV2Checkpoints"): Op =
+      buildOp("MergeV2Checkpoints", name) {
+        addInput(checkpointPrefixes, false)
+        addInput(destinationPrefix, false)
+        attr("delete_old_dirs", deleteOldDirs)
+      }
   
-  fun readFile(filename: Output, name: String = "ReadFile") = run {
-    buildOpTensor("ReadFile", name) {
-      addInput(filename, false)
-    }
-  }
+  fun readFile(filename: Output, name: String = "ReadFile"): Output =
+      buildOpTensor("ReadFile", name) {
+        addInput(filename, false)
+      }
   
-  fun readerNumRecordsProduced(readerHandle: Output, name: String = "ReaderNumRecordsProduced") = run {
-    buildOpTensor("ReaderNumRecordsProduced", name) {
-      addInput(readerHandle, true)
-    }
-  }
+  fun readerNumRecordsProduced(readerHandle: Output, name: String = "ReaderNumRecordsProduced"): Output =
+      buildOpTensor("ReaderNumRecordsProduced", name) {
+        addInput(readerHandle, true)
+      }
   
-  fun readerNumRecordsProducedV2(readerHandle: Output, name: String = "ReaderNumRecordsProducedV2") = run {
-    buildOpTensor("ReaderNumRecordsProducedV2", name) {
-      addInput(readerHandle, false)
-    }
-  }
+  fun readerNumRecordsProducedV2(readerHandle: Output, name: String = "ReaderNumRecordsProducedV2"): Output =
+      buildOpTensor("ReaderNumRecordsProducedV2", name) {
+        addInput(readerHandle, false)
+      }
   
-  fun readerNumWorkUnitsCompleted(readerHandle: Output, name: String = "ReaderNumWorkUnitsCompleted") = run {
-    buildOpTensor("ReaderNumWorkUnitsCompleted", name) {
-      addInput(readerHandle, true)
-    }
-  }
+  fun readerNumWorkUnitsCompleted(readerHandle: Output, name: String = "ReaderNumWorkUnitsCompleted"): Output =
+      buildOpTensor("ReaderNumWorkUnitsCompleted", name) {
+        addInput(readerHandle, true)
+      }
   
-  fun readerNumWorkUnitsCompletedV2(readerHandle: Output, name: String = "ReaderNumWorkUnitsCompletedV2") = run {
-    buildOpTensor("ReaderNumWorkUnitsCompletedV2", name) {
-      addInput(readerHandle, false)
-    }
-  }
+  fun readerNumWorkUnitsCompletedV2(readerHandle: Output, name: String = "ReaderNumWorkUnitsCompletedV2"): Output =
+      buildOpTensor("ReaderNumWorkUnitsCompletedV2", name) {
+        addInput(readerHandle, false)
+      }
   
-  fun readerRead(readerHandle: Output, queueHandle: Output, name: String = "ReaderRead") = run {
-    buildOpTensors("ReaderRead", name) {
-      addInput(readerHandle, true)
-      addInput(queueHandle, true)
-    }
-  }
+  fun readerRead(readerHandle: Output, queueHandle: Output, name: String = "ReaderRead"): List<Output> =
+      buildOpTensors("ReaderRead", name) {
+        addInput(readerHandle, true)
+        addInput(queueHandle, true)
+      }
   
-  fun readerReadUpTo(readerHandle: Output, queueHandle: Output, numRecords: Output, name: String = "ReaderReadUpTo") = run {
-    buildOpTensors("ReaderReadUpTo", name) {
-      addInput(readerHandle, true)
-      addInput(queueHandle, true)
-      addInput(numRecords, false)
-    }
-  }
+  fun readerReadUpTo(readerHandle: Output, queueHandle: Output, numRecords: Output, name: String = "ReaderReadUpTo"): List<Output> =
+      buildOpTensors("ReaderReadUpTo", name) {
+        addInput(readerHandle, true)
+        addInput(queueHandle, true)
+        addInput(numRecords, false)
+      }
   
-  fun readerReadUpToV2(readerHandle: Output, queueHandle: Output, numRecords: Output, name: String = "ReaderReadUpToV2") = run {
-    buildOpTensors("ReaderReadUpToV2", name) {
-      addInput(readerHandle, false)
-      addInput(queueHandle, false)
-      addInput(numRecords, false)
-    }
-  }
+  fun readerReadUpToV2(readerHandle: Output, queueHandle: Output, numRecords: Output, name: String = "ReaderReadUpToV2"): List<Output> =
+      buildOpTensors("ReaderReadUpToV2", name) {
+        addInput(readerHandle, false)
+        addInput(queueHandle, false)
+        addInput(numRecords, false)
+      }
   
-  fun readerReadV2(readerHandle: Output, queueHandle: Output, name: String = "ReaderReadV2") = run {
-    buildOpTensors("ReaderReadV2", name) {
-      addInput(readerHandle, false)
-      addInput(queueHandle, false)
-    }
-  }
+  fun readerReadV2(readerHandle: Output, queueHandle: Output, name: String = "ReaderReadV2"): List<Output> =
+      buildOpTensors("ReaderReadV2", name) {
+        addInput(readerHandle, false)
+        addInput(queueHandle, false)
+      }
   
-  fun readerReset(readerHandle: Output, name: String = "ReaderReset") = run {
-    buildOp("ReaderReset", name) {
-      addInput(readerHandle, true)
-    }
-  }
+  fun readerReset(readerHandle: Output, name: String = "ReaderReset"): Op =
+      buildOp("ReaderReset", name) {
+        addInput(readerHandle, true)
+      }
   
-  fun readerResetV2(readerHandle: Output, name: String = "ReaderResetV2") = run {
-    buildOp("ReaderResetV2", name) {
-      addInput(readerHandle, false)
-    }
-  }
+  fun readerResetV2(readerHandle: Output, name: String = "ReaderResetV2"): Op =
+      buildOp("ReaderResetV2", name) {
+        addInput(readerHandle, false)
+      }
   
-  fun readerRestoreState(readerHandle: Output, state: Output, name: String = "ReaderRestoreState") = run {
-    buildOp("ReaderRestoreState", name) {
-      addInput(readerHandle, true)
-      addInput(state, false)
-    }
-  }
+  fun readerRestoreState(readerHandle: Output, state: Output, name: String = "ReaderRestoreState"): Op =
+      buildOp("ReaderRestoreState", name) {
+        addInput(readerHandle, true)
+        addInput(state, false)
+      }
   
-  fun readerRestoreStateV2(readerHandle: Output, state: Output, name: String = "ReaderRestoreStateV2") = run {
-    buildOp("ReaderRestoreStateV2", name) {
-      addInput(readerHandle, false)
-      addInput(state, false)
-    }
-  }
+  fun readerRestoreStateV2(readerHandle: Output, state: Output, name: String = "ReaderRestoreStateV2"): Op =
+      buildOp("ReaderRestoreStateV2", name) {
+        addInput(readerHandle, false)
+        addInput(state, false)
+      }
   
-  fun readerSerializeState(readerHandle: Output, name: String = "ReaderSerializeState") = run {
-    buildOpTensor("ReaderSerializeState", name) {
-      addInput(readerHandle, true)
-    }
-  }
+  fun readerSerializeState(readerHandle: Output, name: String = "ReaderSerializeState"): Output =
+      buildOpTensor("ReaderSerializeState", name) {
+        addInput(readerHandle, true)
+      }
   
-  fun readerSerializeStateV2(readerHandle: Output, name: String = "ReaderSerializeStateV2") = run {
-    buildOpTensor("ReaderSerializeStateV2", name) {
-      addInput(readerHandle, false)
-    }
-  }
+  fun readerSerializeStateV2(readerHandle: Output, name: String = "ReaderSerializeStateV2"): Output =
+      buildOpTensor("ReaderSerializeStateV2", name) {
+        addInput(readerHandle, false)
+      }
   
-  fun restore(filePattern: Output, tensorName: Output, dt: DataType<*>, preferredShard: Long = -1L, name: String = "Restore") = run {
-    buildOpTensor("Restore", name) {
-      addInput(filePattern, false)
-      addInput(tensorName, false)
-      attr("dt", dt)
-      attr("preferred_shard", preferredShard)
-    }
-  }
+  fun restore(filePattern: Output, tensorName: Output, dt: DataType<*>, preferredShard: Long = -1L, name: String = "Restore"): Output =
+      buildOpTensor("Restore", name) {
+        addInput(filePattern, false)
+        addInput(tensorName, false)
+        attr("dt", dt)
+        attr("preferred_shard", preferredShard)
+      }
   
-  fun restoreSlice(filePattern: Output, tensorName: Output, shapeAndSlice: Output, dt: DataType<*>, preferredShard: Long = -1L, name: String = "RestoreSlice") = run {
-    buildOpTensor("RestoreSlice", name) {
-      addInput(filePattern, false)
-      addInput(tensorName, false)
-      addInput(shapeAndSlice, false)
-      attr("dt", dt)
-      attr("preferred_shard", preferredShard)
-    }
-  }
+  fun restoreSlice(filePattern: Output, tensorName: Output, shapeAndSlice: Output, dt: DataType<*>, preferredShard: Long = -1L, name: String = "RestoreSlice"): Output =
+      buildOpTensor("RestoreSlice", name) {
+        addInput(filePattern, false)
+        addInput(tensorName, false)
+        addInput(shapeAndSlice, false)
+        attr("dt", dt)
+        attr("preferred_shard", preferredShard)
+      }
   
-  fun restoreV2(prefix: Output, tensorNames: Output, shapeAndSlices: Output, dtypes: Array<Long>, name: String = "RestoreV2") = run {
-    buildOpTensors("RestoreV2", name) {
-      addInput(prefix, false)
-      addInput(tensorNames, false)
-      addInput(shapeAndSlices, false)
-      attr("dtypes", dtypes)
-    }
-  }
+  fun restoreV2(prefix: Output, tensorNames: Output, shapeAndSlices: Output, dtypes: Array<Long>, name: String = "RestoreV2"): List<Output> =
+      buildOpTensors("RestoreV2", name) {
+        addInput(prefix, false)
+        addInput(tensorNames, false)
+        addInput(shapeAndSlices, false)
+        attr("dtypes", dtypes)
+      }
   
-  fun save(filename: Output, tensorNames: Output, data: Output, name: String = "Save") = run {
-    buildOp("Save", name) {
-      addInput(filename, false)
-      addInput(tensorNames, false)
-      addInput(data, false)
-    }
-  }
+  fun save(filename: Output, tensorNames: Output, data: Output, name: String = "Save"): Op =
+      buildOp("Save", name) {
+        addInput(filename, false)
+        addInput(tensorNames, false)
+        addInput(data, false)
+      }
   
-  fun saveSlices(filename: Output, tensorNames: Output, shapesAndSlices: Output, data: Output, name: String = "SaveSlices") = run {
-    buildOp("SaveSlices", name) {
-      addInput(filename, false)
-      addInput(tensorNames, false)
-      addInput(shapesAndSlices, false)
-      addInput(data, false)
-    }
-  }
+  fun saveSlices(filename: Output, tensorNames: Output, shapesAndSlices: Output, data: Output, name: String = "SaveSlices"): Op =
+      buildOp("SaveSlices", name) {
+        addInput(filename, false)
+        addInput(tensorNames, false)
+        addInput(shapesAndSlices, false)
+        addInput(data, false)
+      }
   
-  fun saveV2(prefix: Output, tensorNames: Output, shapeAndSlices: Output, tensors: Output, name: String = "SaveV2") = run {
-    buildOp("SaveV2", name) {
-      addInput(prefix, false)
-      addInput(tensorNames, false)
-      addInput(shapeAndSlices, false)
-      addInput(tensors, false)
-    }
-  }
+  fun saveV2(prefix: Output, tensorNames: Output, shapeAndSlices: Output, tensors: Output, name: String = "SaveV2"): Op =
+      buildOp("SaveV2", name) {
+        addInput(prefix, false)
+        addInput(tensorNames, false)
+        addInput(shapeAndSlices, false)
+        addInput(tensors, false)
+      }
   
-  fun shardedFilename(basename: Output, shard: Output, numShards: Output, name: String = "ShardedFilename") = run {
-    buildOpTensor("ShardedFilename", name) {
-      addInput(basename, false)
-      addInput(shard, false)
-      addInput(numShards, false)
-    }
-  }
+  fun shardedFilename(basename: Output, shard: Output, numShards: Output, name: String = "ShardedFilename"): Output =
+      buildOpTensor("ShardedFilename", name) {
+        addInput(basename, false)
+        addInput(shard, false)
+        addInput(numShards, false)
+      }
   
-  fun shardedFilespec(basename: Output, numShards: Output, name: String = "ShardedFilespec") = run {
-    buildOpTensor("ShardedFilespec", name) {
-      addInput(basename, false)
-      addInput(numShards, false)
-    }
-  }
+  fun shardedFilespec(basename: Output, numShards: Output, name: String = "ShardedFilespec"): Output =
+      buildOpTensor("ShardedFilespec", name) {
+        addInput(basename, false)
+        addInput(numShards, false)
+      }
   
-  fun tFRecordReader(container: String = "", sharedName: String = "", compressionType: String = "", name: String = "TFRecordReader") = run {
-    buildOpTensor("TFRecordReader", name) {
-      attr("container", container)
-      attr("shared_name", sharedName)
-      attr("compression_type", compressionType)
-    }
-  }
+  fun tFRecordReader(container: String = "", sharedName: String = "", compressionType: String = "", name: String = "TFRecordReader"): Output =
+      buildOpTensor("TFRecordReader", name) {
+        attr("container", container)
+        attr("shared_name", sharedName)
+        attr("compression_type", compressionType)
+      }
   
-  fun tFRecordReaderV2(container: String = "", sharedName: String = "", compressionType: String = "", name: String = "TFRecordReaderV2") = run {
-    buildOpTensor("TFRecordReaderV2", name) {
-      attr("container", container)
-      attr("shared_name", sharedName)
-      attr("compression_type", compressionType)
-    }
-  }
+  fun tFRecordReaderV2(container: String = "", sharedName: String = "", compressionType: String = "", name: String = "TFRecordReaderV2"): Output =
+      buildOpTensor("TFRecordReaderV2", name) {
+        attr("container", container)
+        attr("shared_name", sharedName)
+        attr("compression_type", compressionType)
+      }
   
-  fun textLineReader(skipHeaderLines: Long = 0L, container: String = "", sharedName: String = "", name: String = "TextLineReader") = run {
-    buildOpTensor("TextLineReader", name) {
-      attr("skip_header_lines", skipHeaderLines)
-      attr("container", container)
-      attr("shared_name", sharedName)
-    }
-  }
+  fun textLineReader(skipHeaderLines: Long = 0L, container: String = "", sharedName: String = "", name: String = "TextLineReader"): Output =
+      buildOpTensor("TextLineReader", name) {
+        attr("skip_header_lines", skipHeaderLines)
+        attr("container", container)
+        attr("shared_name", sharedName)
+      }
   
-  fun textLineReaderV2(skipHeaderLines: Long = 0L, container: String = "", sharedName: String = "", name: String = "TextLineReaderV2") = run {
-    buildOpTensor("TextLineReaderV2", name) {
-      attr("skip_header_lines", skipHeaderLines)
-      attr("container", container)
-      attr("shared_name", sharedName)
-    }
-  }
+  fun textLineReaderV2(skipHeaderLines: Long = 0L, container: String = "", sharedName: String = "", name: String = "TextLineReaderV2"): Output =
+      buildOpTensor("TextLineReaderV2", name) {
+        attr("skip_header_lines", skipHeaderLines)
+        attr("container", container)
+        attr("shared_name", sharedName)
+      }
   
-  fun wholeFileReader(container: String = "", sharedName: String = "", name: String = "WholeFileReader") = run {
-    buildOpTensor("WholeFileReader", name) {
-      attr("container", container)
-      attr("shared_name", sharedName)
-    }
-  }
+  fun wholeFileReader(container: String = "", sharedName: String = "", name: String = "WholeFileReader"): Output =
+      buildOpTensor("WholeFileReader", name) {
+        attr("container", container)
+        attr("shared_name", sharedName)
+      }
   
-  fun wholeFileReaderV2(container: String = "", sharedName: String = "", name: String = "WholeFileReaderV2") = run {
-    buildOpTensor("WholeFileReaderV2", name) {
-      attr("container", container)
-      attr("shared_name", sharedName)
-    }
-  }
+  fun wholeFileReaderV2(container: String = "", sharedName: String = "", name: String = "WholeFileReaderV2"): Output =
+      buildOpTensor("WholeFileReaderV2", name) {
+        attr("container", container)
+        attr("shared_name", sharedName)
+      }
   
-  fun writeFile(filename: Output, contents: Output, name: String = "WriteFile") = run {
-    buildOp("WriteFile", name) {
-      addInput(filename, false)
-      addInput(contents, false)
-    }
-  }
+  fun writeFile(filename: Output, contents: Output, name: String = "WriteFile"): Op =
+      buildOp("WriteFile", name) {
+        addInput(filename, false)
+        addInput(contents, false)
+      }
 }

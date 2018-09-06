@@ -8,36 +8,33 @@ import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.types.DataType
 import wumo.sim.util.Shape
 
-interface gen_collective_ops {
-  fun collectiveBcastRecv(t: DataType<*>, groupSize: Long, groupKey: Long, instanceKey: Long, shape: Shape, name: String = "CollectiveBcastRecv") = run {
-    buildOpTensor("CollectiveBcastRecv", name) {
-      attr("T", t)
-      attr("group_size", groupSize)
-      attr("group_key", groupKey)
-      attr("instance_key", instanceKey)
-      attr("shape", shape)
-    }
-  }
+object gen_collective_ops {
+  fun collectiveBcastRecv(t: DataType<*>, groupSize: Long, groupKey: Long, instanceKey: Long, shape: Shape, name: String = "CollectiveBcastRecv"): Output =
+      buildOpTensor("CollectiveBcastRecv", name) {
+        attr("T", t)
+        attr("group_size", groupSize)
+        attr("group_key", groupKey)
+        attr("instance_key", instanceKey)
+        attr("shape", shape)
+      }
   
-  fun collectiveBcastSend(input: Output, groupSize: Long, groupKey: Long, instanceKey: Long, shape: Shape, name: String = "CollectiveBcastSend") = run {
-    buildOpTensor("CollectiveBcastSend", name) {
-      addInput(input, false)
-      attr("group_size", groupSize)
-      attr("group_key", groupKey)
-      attr("instance_key", instanceKey)
-      attr("shape", shape)
-    }
-  }
+  fun collectiveBcastSend(input: Output, groupSize: Long, groupKey: Long, instanceKey: Long, shape: Shape, name: String = "CollectiveBcastSend"): Output =
+      buildOpTensor("CollectiveBcastSend", name) {
+        addInput(input, false)
+        attr("group_size", groupSize)
+        attr("group_key", groupKey)
+        attr("instance_key", instanceKey)
+        attr("shape", shape)
+      }
   
-  fun collectiveReduce(input: Output, groupSize: Long, groupKey: Long, instanceKey: Long, mergeOp: String, finalOp: String, subdivOffsets: Array<Long>, name: String = "CollectiveReduce") = run {
-    buildOpTensor("CollectiveReduce", name) {
-      addInput(input, false)
-      attr("group_size", groupSize)
-      attr("group_key", groupKey)
-      attr("instance_key", instanceKey)
-      attr("merge_op", mergeOp)
-      attr("final_op", finalOp)
-      attr("subdiv_offsets", subdivOffsets)
-    }
-  }
+  fun collectiveReduce(input: Output, groupSize: Long, groupKey: Long, instanceKey: Long, mergeOp: String, finalOp: String, subdivOffsets: Array<Long>, name: String = "CollectiveReduce"): Output =
+      buildOpTensor("CollectiveReduce", name) {
+        addInput(input, false)
+        attr("group_size", groupSize)
+        attr("group_key", groupKey)
+        attr("instance_key", instanceKey)
+        attr("merge_op", mergeOp)
+        attr("final_op", finalOp)
+        attr("subdiv_offsets", subdivOffsets)
+      }
 }

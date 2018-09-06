@@ -1,4 +1,7 @@
-import wumo.sim.tensorflow.ops.*
+import wumo.sim.tensorflow.ops.Op
+import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.ops.OutputLike
+import wumo.sim.tensorflow.ops.basic.*
 import wumo.sim.tensorflow.ops.gradients.gradient_ops.Registry.register
 import wumo.sim.tensorflow.tensor.constantValue
 import wumo.sim.tensorflow.tf

@@ -8,58 +8,54 @@ import wumo.sim.tensorflow.buildOpTensor
 import wumo.sim.tensorflow.buildOpTensors
 import wumo.sim.tensorflow.ops.Output
 
-interface gen_batch_ops {
-  fun batch(inTensors: Output, numBatchThreads: Long, maxBatchSize: Long, batchTimeoutMicros: Long, gradTimeoutMicros: Long, maxEnqueuedBatches: Long = 10L, allowedBatchSizes: Array<Long> = arrayOf(), container: String = "", sharedName: String = "", batchingQueue: String = "", name: String = "Batch") = run {
-    buildOpTensors("Batch", name) {
-      addInput(inTensors, false)
-      attr("num_batch_threads", numBatchThreads)
-      attr("max_batch_size", maxBatchSize)
-      attr("batch_timeout_micros", batchTimeoutMicros)
-      attr("grad_timeout_micros", gradTimeoutMicros)
-      attr("max_enqueued_batches", maxEnqueuedBatches)
-      attr("allowed_batch_sizes", allowedBatchSizes)
-      attr("container", container)
-      attr("shared_name", sharedName)
-      attr("batching_queue", batchingQueue)
-    }
-  }
+object gen_batch_ops {
+  fun batch(inTensors: Output, numBatchThreads: Long, maxBatchSize: Long, batchTimeoutMicros: Long, gradTimeoutMicros: Long, maxEnqueuedBatches: Long = 10L, allowedBatchSizes: Array<Long> = arrayOf(), container: String = "", sharedName: String = "", batchingQueue: String = "", name: String = "Batch"): List<Output> =
+      buildOpTensors("Batch", name) {
+        addInput(inTensors, false)
+        attr("num_batch_threads", numBatchThreads)
+        attr("max_batch_size", maxBatchSize)
+        attr("batch_timeout_micros", batchTimeoutMicros)
+        attr("grad_timeout_micros", gradTimeoutMicros)
+        attr("max_enqueued_batches", maxEnqueuedBatches)
+        attr("allowed_batch_sizes", allowedBatchSizes)
+        attr("container", container)
+        attr("shared_name", sharedName)
+        attr("batching_queue", batchingQueue)
+      }
   
-  fun batchFunction(inTensors: Output, capturedTensors: Output, f: NameAttrList, numBatchThreads: Long, maxBatchSize: Long, batchTimeoutMicros: Long, tout: Array<Long>, maxEnqueuedBatches: Long = 10L, allowedBatchSizes: Array<Long> = arrayOf(), container: String = "", sharedName: String = "", batchingQueue: String = "", name: String = "BatchFunction") = run {
-    buildOpTensors("BatchFunction", name) {
-      addInput(inTensors, false)
-      addInput(capturedTensors, false)
-      attr("f", f)
-      attr("num_batch_threads", numBatchThreads)
-      attr("max_batch_size", maxBatchSize)
-      attr("batch_timeout_micros", batchTimeoutMicros)
-      attr("Tout", tout)
-      attr("max_enqueued_batches", maxEnqueuedBatches)
-      attr("allowed_batch_sizes", allowedBatchSizes)
-      attr("container", container)
-      attr("shared_name", sharedName)
-      attr("batching_queue", batchingQueue)
-    }
-  }
+  fun batchFunction(inTensors: Output, capturedTensors: Output, f: NameAttrList, numBatchThreads: Long, maxBatchSize: Long, batchTimeoutMicros: Long, tout: Array<Long>, maxEnqueuedBatches: Long = 10L, allowedBatchSizes: Array<Long> = arrayOf(), container: String = "", sharedName: String = "", batchingQueue: String = "", name: String = "BatchFunction"): List<Output> =
+      buildOpTensors("BatchFunction", name) {
+        addInput(inTensors, false)
+        addInput(capturedTensors, false)
+        attr("f", f)
+        attr("num_batch_threads", numBatchThreads)
+        attr("max_batch_size", maxBatchSize)
+        attr("batch_timeout_micros", batchTimeoutMicros)
+        attr("Tout", tout)
+        attr("max_enqueued_batches", maxEnqueuedBatches)
+        attr("allowed_batch_sizes", allowedBatchSizes)
+        attr("container", container)
+        attr("shared_name", sharedName)
+        attr("batching_queue", batchingQueue)
+      }
   
-  fun unbatch(batchedTensor: Output, batchIndex: Output, id: Output, timeoutMicros: Long, container: String = "", sharedName: String = "", name: String = "Unbatch") = run {
-    buildOpTensor("Unbatch", name) {
-      addInput(batchedTensor, false)
-      addInput(batchIndex, false)
-      addInput(id, false)
-      attr("timeout_micros", timeoutMicros)
-      attr("container", container)
-      attr("shared_name", sharedName)
-    }
-  }
+  fun unbatch(batchedTensor: Output, batchIndex: Output, id: Output, timeoutMicros: Long, container: String = "", sharedName: String = "", name: String = "Unbatch"): Output =
+      buildOpTensor("Unbatch", name) {
+        addInput(batchedTensor, false)
+        addInput(batchIndex, false)
+        addInput(id, false)
+        attr("timeout_micros", timeoutMicros)
+        attr("container", container)
+        attr("shared_name", sharedName)
+      }
   
-  fun unbatchGrad(originalInput: Output, batchIndex: Output, grad: Output, id: Output, container: String = "", sharedName: String = "", name: String = "UnbatchGrad") = run {
-    buildOpTensor("UnbatchGrad", name) {
-      addInput(originalInput, false)
-      addInput(batchIndex, false)
-      addInput(grad, false)
-      addInput(id, false)
-      attr("container", container)
-      attr("shared_name", sharedName)
-    }
-  }
+  fun unbatchGrad(originalInput: Output, batchIndex: Output, grad: Output, id: Output, container: String = "", sharedName: String = "", name: String = "UnbatchGrad"): Output =
+      buildOpTensor("UnbatchGrad", name) {
+        addInput(originalInput, false)
+        addInput(batchIndex, false)
+        addInput(grad, false)
+        addInput(id, false)
+        attr("container", container)
+        attr("shared_name", sharedName)
+      }
 }

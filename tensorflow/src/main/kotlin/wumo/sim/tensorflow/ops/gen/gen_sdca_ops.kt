@@ -6,41 +6,39 @@ package wumo.sim.tensorflow.ops.gen
 import wumo.sim.tensorflow.buildOp
 import wumo.sim.tensorflow.buildOpTensor
 import wumo.sim.tensorflow.buildOpTensors
+import wumo.sim.tensorflow.ops.Op
 import wumo.sim.tensorflow.ops.Output
 
-interface gen_sdca_ops {
-  fun sdcaFprint(input: Output, name: String = "SdcaFprint") = run {
-    buildOpTensor("SdcaFprint", name) {
-      addInput(input, false)
-    }
-  }
+object gen_sdca_ops {
+  fun sdcaFprint(input: Output, name: String = "SdcaFprint"): Output =
+      buildOpTensor("SdcaFprint", name) {
+        addInput(input, false)
+      }
   
-  fun sdcaOptimizer(sparseExampleIndices: List<Output>, sparseFeatureIndices: List<Output>, sparseFeatureValues: List<Output>, denseFeatures: List<Output>, exampleWeights: Output, exampleLabels: Output, sparseIndices: List<Output>, sparseWeights: List<Output>, denseWeights: List<Output>, exampleStateData: Output, lossType: String, l1: Float, l2: Float, numLossPartitions: Long, numInnerIterations: Long, adaptative: Boolean = false, name: String = "SdcaOptimizer") = run {
-    buildOpTensors("SdcaOptimizer", name) {
-      addInput(sparseExampleIndices, false)
-      addInput(sparseFeatureIndices, false)
-      addInput(sparseFeatureValues, false)
-      addInput(denseFeatures, false)
-      addInput(exampleWeights, false)
-      addInput(exampleLabels, false)
-      addInput(sparseIndices, false)
-      addInput(sparseWeights, false)
-      addInput(denseWeights, false)
-      addInput(exampleStateData, false)
-      attr("loss_type", lossType)
-      attr("l1", l1)
-      attr("l2", l2)
-      attr("num_loss_partitions", numLossPartitions)
-      attr("num_inner_iterations", numInnerIterations)
-      attr("adaptative", adaptative)
-    }
-  }
+  fun sdcaOptimizer(sparseExampleIndices: List<Output>, sparseFeatureIndices: List<Output>, sparseFeatureValues: List<Output>, denseFeatures: List<Output>, exampleWeights: Output, exampleLabels: Output, sparseIndices: List<Output>, sparseWeights: List<Output>, denseWeights: List<Output>, exampleStateData: Output, lossType: String, l1: Float, l2: Float, numLossPartitions: Long, numInnerIterations: Long, adaptative: Boolean = false, name: String = "SdcaOptimizer"): List<Output> =
+      buildOpTensors("SdcaOptimizer", name) {
+        addInput(sparseExampleIndices, false)
+        addInput(sparseFeatureIndices, false)
+        addInput(sparseFeatureValues, false)
+        addInput(denseFeatures, false)
+        addInput(exampleWeights, false)
+        addInput(exampleLabels, false)
+        addInput(sparseIndices, false)
+        addInput(sparseWeights, false)
+        addInput(denseWeights, false)
+        addInput(exampleStateData, false)
+        attr("loss_type", lossType)
+        attr("l1", l1)
+        attr("l2", l2)
+        attr("num_loss_partitions", numLossPartitions)
+        attr("num_inner_iterations", numInnerIterations)
+        attr("adaptative", adaptative)
+      }
   
-  fun sdcaShrinkL1(weights: List<Output>, l1: Float, l2: Float, name: String = "SdcaShrinkL1") = run {
-    buildOp("SdcaShrinkL1", name) {
-      addInput(weights, true)
-      attr("l1", l1)
-      attr("l2", l2)
-    }
-  }
+  fun sdcaShrinkL1(weights: List<Output>, l1: Float, l2: Float, name: String = "SdcaShrinkL1"): Op =
+      buildOp("SdcaShrinkL1", name) {
+        addInput(weights, true)
+        attr("l1", l1)
+        attr("l2", l2)
+      }
 }

@@ -1,6 +1,7 @@
 package wumo.sim.tensorflow.ops
 
 import org.junit.Test
+import wumo.sim.tensorflow.ops.basic.times
 import wumo.sim.tensorflow.ops.training.AdamOptimizer
 import wumo.sim.tensorflow.ops.training.GradientDescentOptimizer
 import wumo.sim.tensorflow.tf

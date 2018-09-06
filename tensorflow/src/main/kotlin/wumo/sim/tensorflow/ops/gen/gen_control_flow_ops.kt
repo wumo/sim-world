@@ -6,104 +6,90 @@ package wumo.sim.tensorflow.ops.gen
 import wumo.sim.tensorflow.buildOp
 import wumo.sim.tensorflow.buildOpTensor
 import wumo.sim.tensorflow.buildOpTensors
+import wumo.sim.tensorflow.ops.Op
 import wumo.sim.tensorflow.ops.Output
 
-interface gen_control_flow_ops {
-  fun abort(errorMsg: String = "", exitWithoutError: Boolean = false, name: String = "Abort") = run {
-    buildOp("Abort", name) {
-      attr("error_msg", errorMsg)
-      attr("exit_without_error", exitWithoutError)
-    }
-  }
+object gen_control_flow_ops {
+  fun abort(errorMsg: String = "", exitWithoutError: Boolean = false, name: String = "Abort"): Op =
+      buildOp("Abort", name) {
+        attr("error_msg", errorMsg)
+        attr("exit_without_error", exitWithoutError)
+      }
   
-  fun controlTrigger(name: String = "ControlTrigger") = run {
-    buildOp("ControlTrigger", name) {
-    }
-  }
+  fun controlTrigger(name: String = "ControlTrigger"): Op =
+      buildOp("ControlTrigger", name) {
+      }
   
-  fun enter(data: Output, frameName: String, isConstant: Boolean = false, parallelIterations: Long = 10L, name: String = "Enter") = run {
-    buildOpTensor("Enter", name) {
-      addInput(data, false)
-      attr("frame_name", frameName)
-      attr("is_constant", isConstant)
-      attr("parallel_iterations", parallelIterations)
-    }
-  }
+  fun enter(data: Output, frameName: String, isConstant: Boolean = false, parallelIterations: Long = 10L, name: String = "Enter"): Output =
+      buildOpTensor("Enter", name) {
+        addInput(data, false)
+        attr("frame_name", frameName)
+        attr("is_constant", isConstant)
+        attr("parallel_iterations", parallelIterations)
+      }
   
-  fun exit(data: Output, name: String = "Exit") = run {
-    buildOpTensor("Exit", name) {
-      addInput(data, false)
-    }
-  }
+  fun exit(data: Output, name: String = "Exit"): Output =
+      buildOpTensor("Exit", name) {
+        addInput(data, false)
+      }
   
-  fun loopCond(input: Output, name: String = "LoopCond") = run {
-    buildOpTensor("LoopCond", name) {
-      addInput(input, false)
-    }
-  }
+  fun loopCond(input: Output, name: String = "LoopCond"): Output =
+      buildOpTensor("LoopCond", name) {
+        addInput(input, false)
+      }
   
-  fun _merge(inputs: List<Output>, name: String = "Merge") = run {
-    buildOpTensors("Merge", name) {
-      addInput(inputs, false)
-    }
-  }
+  fun merge(inputs: List<Output>, name: String = "Merge"): List<Output> =
+      buildOpTensors("Merge", name) {
+        addInput(inputs, false)
+      }
   
-  fun _nextIteration(data: Output, name: String = "NextIteration") = run {
-    buildOpTensor("NextIteration", name) {
-      addInput(data, false)
-    }
-  }
+  fun nextIteration(data: Output, name: String = "NextIteration"): Output =
+      buildOpTensor("NextIteration", name) {
+        addInput(data, false)
+      }
   
-  fun noOp(name: String = "NoOp") = run {
-    buildOp("NoOp", name) {
-    }
-  }
+  fun noOp(name: String = "NoOp"): Op =
+      buildOp("NoOp", name) {
+      }
   
-  fun refEnter(data: Output, frameName: String, isConstant: Boolean = false, parallelIterations: Long = 10L, name: String = "RefEnter") = run {
-    buildOpTensor("RefEnter", name) {
-      addInput(data, true)
-      attr("frame_name", frameName)
-      attr("is_constant", isConstant)
-      attr("parallel_iterations", parallelIterations)
-    }
-  }
+  fun refEnter(data: Output, frameName: String, isConstant: Boolean = false, parallelIterations: Long = 10L, name: String = "RefEnter"): Output =
+      buildOpTensor("RefEnter", name) {
+        addInput(data, true)
+        attr("frame_name", frameName)
+        attr("is_constant", isConstant)
+        attr("parallel_iterations", parallelIterations)
+      }
   
-  fun refExit(data: Output, name: String = "RefExit") = run {
-    buildOpTensor("RefExit", name) {
-      addInput(data, true)
-    }
-  }
+  fun refExit(data: Output, name: String = "RefExit"): Output =
+      buildOpTensor("RefExit", name) {
+        addInput(data, true)
+      }
   
-  fun refMerge(inputs: List<Output>, name: String = "RefMerge") = run {
-    buildOpTensors("RefMerge", name) {
-      addInput(inputs, true)
-    }
-  }
+  fun refMerge(inputs: List<Output>, name: String = "RefMerge"): List<Output> =
+      buildOpTensors("RefMerge", name) {
+        addInput(inputs, true)
+      }
   
-  fun refNextIteration(data: Output, name: String = "RefNextIteration") = run {
-    buildOpTensor("RefNextIteration", name) {
-      addInput(data, true)
-    }
-  }
+  fun refNextIteration(data: Output, name: String = "RefNextIteration"): Output =
+      buildOpTensor("RefNextIteration", name) {
+        addInput(data, true)
+      }
   
-  fun refSelect(index: Output, inputs: List<Output>, name: String = "RefSelect") = run {
-    buildOpTensor("RefSelect", name) {
-      addInput(index, false)
-      addInput(inputs, true)
-    }
-  }
+  fun refSelect(index: Output, inputs: List<Output>, name: String = "RefSelect"): Output =
+      buildOpTensor("RefSelect", name) {
+        addInput(index, false)
+        addInput(inputs, true)
+      }
   
-  fun refSwitch(data: Output, pred: Output, name: String = "RefSwitch") = run {
-    buildOpTensors("RefSwitch", name) {
-      addInput(data, true)
-      addInput(pred, false)
-    }
-  }
+  fun refSwitch(data: Output, pred: Output, name: String = "RefSwitch"): List<Output> =
+      buildOpTensors("RefSwitch", name) {
+        addInput(data, true)
+        addInput(pred, false)
+      }
   
-  fun _switch(data: Output, pred: Output, name: String = "Switch") = run {
-    buildOpTensors("Switch", name) {
-      addInput(data, false)
-      addInput(pred, false)
-    }
-  }
+  fun switch(data: Output, pred: Output, name: String = "Switch"): List<Output> =
+      buildOpTensors("Switch", name) {
+        addInput(data, false)
+        addInput(pred, false)
+      }
 }

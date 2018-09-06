@@ -1,6 +1,10 @@
 package wumo.sim.tensorflow.layers
 
+import wumo.sim.tensorflow.core.TensorFunction
 import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.ops.variables.Initializer
+import wumo.sim.tensorflow.tf
+import wumo.sim.tensorflow.types.DataType
 
 object layers {
   fun flatten(inputs: Output): Output {
@@ -15,20 +19,20 @@ object layers {
 //import wumo.sim.util.i
 //import wumo.sim.util.x
 
-//class Dense(val units: Int,
-//            val activation: TensorFunction? = null,
-//            val use_bias: Boolean = true,
-//            val kernel_initializer: Initializer,
-//            val bias_initializer: Initializer? = tf.zerosInitializer(),
-//            val kernel_regularizer: TensorFunction? = null,
-//            val bias_regularizer: TensorFunction? = null,
-//            activity_regularizer: Any? = null,
-//            val kernel_constraint: Any? = null,
-//            val bias_constraint: Any? = null,
-//            trainable: Boolean = true,
-//            dataType: Int = 0) : Layer(trainable = trainable,
-//                                    activity_reqularizer = activity_regularizer,
-//                                    dataType = dataType) {
+class Dense(val units: Int,
+            val activation: TensorFunction? = null,
+            val use_bias: Boolean = true,
+            val kernel_initializer: Initializer,
+            val bias_initializer: Initializer? = tf.zerosInitializer(),
+            val kernel_regularizer: TensorFunction? = null,
+            val bias_regularizer: TensorFunction? = null,
+            activity_regularizer: Any? = null,
+            val kernel_constraint: Any? = null,
+            val bias_constraint: Any? = null,
+            trainable: Boolean = true,
+            dataType: DataType<*>) : Layer(trainable = trainable,
+                                           activity_reqularizer = activity_regularizer,
+                                           dataType = dataType) {
 //  lateinit var input_spec: Any
 //  lateinit var kernel: Output
 //  var bias: Output? = null
@@ -63,4 +67,4 @@ object layers {
 //      output = activation!!(output)
 //    return output
 //  }
-//}
+}

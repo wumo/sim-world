@@ -1,4 +1,7 @@
-import wumo.sim.tensorflow.ops.*
+import wumo.sim.tensorflow.ops.Op
+import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.ops.OutputLike
+import wumo.sim.tensorflow.ops.basic.*
 import wumo.sim.tensorflow.ops.gradients.gradient_ops.Registry.register
 import wumo.sim.tensorflow.ops.gradients.gradient_ops.Registry.registerNonDifferentiable
 import wumo.sim.tensorflow.tf
@@ -14,19 +17,6 @@ import kotlin.math.sqrt
 //
 fun register_math_grad() {
   //  /**Gradients for operators defined in math_ops.py.*/
-//  /* from__future__importabsolute_import */
-///* from__future__importdivision */
-///* from__future__importprint_function */
-///* importnumpyasnp */
-///* fromtensorflow.python.eagerimportcontext */
-///* fromtensorflow.python.frameworkimportconstant_op */
-///* fromtensorflow.python.frameworkimportdtypes */
-///* fromtensorflow.python.frameworkimportops */
-///* fromtensorflow.python.frameworkimporttensor_util */
-///* fromtensorflow.python.opsimportarray_ops */
-///* fromtensorflow.python.opsimportgen_array_ops */
-///* fromtensorflow.python.opsimportgen_math_ops */
-///* fromtensorflow.python.opsimportmath_ops */
   fun safeShapeDiv(x: Output, y: Output): Output {
     /**Divides `x / y` assuming `x, y >= 0`, treating `0 / 0 = 0`.*/
     return tf.floorDiv(x, tf.maximum(y, tf.const(y.dataType, 1)))
@@ -141,7 +131,7 @@ fun register_math_grad() {
       val reduced = tf.cast(reductionIndices, INT32)
       val idx = tf.range(zero, rank)
       val (other, _) = tf.listDiff(idx, reduced)
-      perm = tf.concatV2(listOf(reduced, other), zero)
+      perm = tf.concat(listOf(reduced, other), zero)
       reducedNum = tf.prod(tf.gather(inputShape, reduced))
       otherNum = tf.prod(tf.gather(inputShape, other))
     }
@@ -165,10 +155,10 @@ fun register_math_grad() {
     val zero = tf.const(0)
     
     val inputRank = tf.rank(op.inputs[0])
-    val onesShape = tf.concatV2(listOf(tf.shape(op.inputs[1]),
-                                       tf.fill(tf.expandDims(inputRank - 1, zero),
-                                               tf.const(inputRank.dataType, 1))),
-                                zero)
+    val onesShape = tf.concat(listOf(tf.shape(op.inputs[1]),
+                                     tf.fill(tf.expandDims(inputRank - 1, zero),
+                                             tf.const(inputRank.dataType, 1))),
+                              zero)
     val ones = tf.fill(onesShape, tf.const(grad.dataType, 1))
     val scaledGrad = tf.div(grad, tf.segmentSum(ones, op.inputs[1]))
     return@register listOf(tf.gather(scaledGrad, op.inputs[1]), null)

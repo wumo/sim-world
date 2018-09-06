@@ -1,7 +1,8 @@
+
 import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.ops.basic.slice
+import wumo.sim.tensorflow.ops.basic.toOutput
 import wumo.sim.tensorflow.ops.gradients.gradient_ops.Registry.register
-import wumo.sim.tensorflow.ops.slice
-import wumo.sim.tensorflow.ops.toOutput
 import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.types.DOUBLE
 import wumo.sim.tensorflow.types.FLOAT
@@ -9,13 +10,6 @@ import wumo.sim.tensorflow.types.FLOAT16
 
 fun register_image_grad() {
   /**Contains Gradient functions for image ops.*/
-/* from__future__importabsolute_import */
-/* from__future__importdivision */
-/* from__future__importprint_function */
-/* fromtensorflow.python.frameworkimportdtypes */
-/* fromtensorflow.python.frameworkimportops */
-/* fromtensorflow.python.opsimportarray_ops */
-/* fromtensorflow.python.opsimportgen_image_ops */
   register("ResizeNearestNeighbor") { op, grad ->
     val grad = grad[0]!!.toOutput()
     /**The derivatives for nearest neighbor resizing.

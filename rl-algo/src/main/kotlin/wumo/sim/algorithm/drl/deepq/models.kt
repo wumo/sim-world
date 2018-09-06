@@ -3,8 +3,6 @@ package wumo.sim.algorithm.drl.deepq
 import wumo.sim.algorithm.drl.common.Q_func
 import wumo.sim.algorithm.drl.common.get_nerwork_builder
 import wumo.sim.tensorflow.contrib.layers
-import wumo.sim.tensorflow.ops.minus
-import wumo.sim.tensorflow.ops.plus
 import wumo.sim.tensorflow.tf
 
 fun build_q_func(network: String,

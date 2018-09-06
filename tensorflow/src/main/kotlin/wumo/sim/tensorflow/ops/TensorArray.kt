@@ -1,6 +1,7 @@
 package wumo.sim.tensorflow.ops
 
 import wumo.sim.tensorflow.core.InvalidShapeException
+import wumo.sim.tensorflow.ops.basic.get
 import wumo.sim.tensorflow.tensor.constantValue
 import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.types.DataType

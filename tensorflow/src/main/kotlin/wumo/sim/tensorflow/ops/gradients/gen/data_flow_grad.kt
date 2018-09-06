@@ -1,7 +1,7 @@
 import wumo.sim.tensorflow.ops.IndexedSlices
 import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.ops.OutputLike
-import wumo.sim.tensorflow.ops.get
+import wumo.sim.tensorflow.ops.basic.get
 import wumo.sim.tensorflow.ops.gradients.gradient_ops.Registry.register
 import wumo.sim.tensorflow.ops.gradients.gradient_ops.Registry.registerNonDifferentiable
 import wumo.sim.tensorflow.tf
@@ -9,15 +9,6 @@ import wumo.sim.tensorflow.types.INT32
 
 fun register_data_flow_grad() {
   /**Gradients for operators defined in data_flow_ops.py.*/
-/* from__future__importabsolute_import */
-/* from__future__importdivision */
-/* from__future__importprint_function */
-/* fromsix.movesimportxrange */
-/* fromtensorflow.python.frameworkimportdtypes */
-/* fromtensorflow.python.frameworkimportops */
-/* fromtensorflow.python.opsimportarray_ops */
-/* fromtensorflow.python.opsimportdata_flow_ops */
-/* fromtensorflow.python.opsimportmath_ops */
   register("DynamicPartition") { op, grads ->
     val grads = grads.map { it!!.toOutput() }
     /**Gradients for DynamicPartition.*/

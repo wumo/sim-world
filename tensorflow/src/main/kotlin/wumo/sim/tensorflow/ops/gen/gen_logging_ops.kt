@@ -5,94 +5,84 @@ package wumo.sim.tensorflow.ops.gen
 
 import wumo.sim.tensorflow.buildOp
 import wumo.sim.tensorflow.buildOpTensor
+import wumo.sim.tensorflow.ops.Op
 import wumo.sim.tensorflow.ops.Output
 import wumo.sim.util.ndarray.NDArray
 
-interface gen_logging_ops {
-  fun assert(condition: Output, data: Output, summarize: Long = 3L, name: String = "Assert") = run {
-    buildOp("Assert", name) {
-      addInput(condition, false)
-      addInput(data, false)
-      attr("summarize", summarize)
-    }
-  }
+object gen_logging_ops {
+  fun assert(condition: Output, data: Output, summarize: Long = 3L, name: String = "Assert"): Op =
+      buildOp("Assert", name) {
+        addInput(condition, false)
+        addInput(data, false)
+        attr("summarize", summarize)
+      }
   
-  fun audioSummary(tag: Output, tensor: Output, sampleRate: Float, maxOutputs: Long = 3L, name: String = "AudioSummary") = run {
-    buildOpTensor("AudioSummary", name) {
-      addInput(tag, false)
-      addInput(tensor, false)
-      attr("sample_rate", sampleRate)
-      attr("max_outputs", maxOutputs)
-    }
-  }
+  fun audioSummary(tag: Output, tensor: Output, sampleRate: Float, maxOutputs: Long = 3L, name: String = "AudioSummary"): Output =
+      buildOpTensor("AudioSummary", name) {
+        addInput(tag, false)
+        addInput(tensor, false)
+        attr("sample_rate", sampleRate)
+        attr("max_outputs", maxOutputs)
+      }
   
-  fun audioSummaryV2(tag: Output, tensor: Output, sampleRate: Output, maxOutputs: Long = 3L, name: String = "AudioSummaryV2") = run {
-    buildOpTensor("AudioSummaryV2", name) {
-      addInput(tag, false)
-      addInput(tensor, false)
-      addInput(sampleRate, false)
-      attr("max_outputs", maxOutputs)
-    }
-  }
+  fun audioSummaryV2(tag: Output, tensor: Output, sampleRate: Output, maxOutputs: Long = 3L, name: String = "AudioSummaryV2"): Output =
+      buildOpTensor("AudioSummaryV2", name) {
+        addInput(tag, false)
+        addInput(tensor, false)
+        addInput(sampleRate, false)
+        attr("max_outputs", maxOutputs)
+      }
   
-  fun histogramSummary(tag: Output, values: Output, name: String = "HistogramSummary") = run {
-    buildOpTensor("HistogramSummary", name) {
-      addInput(tag, false)
-      addInput(values, false)
-    }
-  }
+  fun histogramSummary(tag: Output, values: Output, name: String = "HistogramSummary"): Output =
+      buildOpTensor("HistogramSummary", name) {
+        addInput(tag, false)
+        addInput(values, false)
+      }
   
-  fun imageSummary(tag: Output, tensor: Output, maxImages: Long = 3L, badColor: NDArray<*>, name: String = "ImageSummary") = run {
-    buildOpTensor("ImageSummary", name) {
-      addInput(tag, false)
-      addInput(tensor, false)
-      attr("max_images", maxImages)
-      attr("bad_color", badColor)
-    }
-  }
+  fun imageSummary(tag: Output, tensor: Output, maxImages: Long = 3L, badColor: NDArray<*>, name: String = "ImageSummary"): Output =
+      buildOpTensor("ImageSummary", name) {
+        addInput(tag, false)
+        addInput(tensor, false)
+        attr("max_images", maxImages)
+        attr("bad_color", badColor)
+      }
   
-  fun mergeSummary(inputs: List<Output>, name: String = "MergeSummary") = run {
-    buildOpTensor("MergeSummary", name) {
-      addInput(inputs, false)
-    }
-  }
+  fun mergeSummary(inputs: List<Output>, name: String = "MergeSummary"): Output =
+      buildOpTensor("MergeSummary", name) {
+        addInput(inputs, false)
+      }
   
-  fun print(input: Output, data: Output, message: String = "", firstN: Long = -1L, summarize: Long = 3L, name: String = "Print") = run {
-    buildOpTensor("Print", name) {
-      addInput(input, false)
-      addInput(data, false)
-      attr("message", message)
-      attr("first_n", firstN)
-      attr("summarize", summarize)
-    }
-  }
+  fun print(input: Output, data: Output, message: String = "", firstN: Long = -1L, summarize: Long = 3L, name: String = "Print"): Output =
+      buildOpTensor("Print", name) {
+        addInput(input, false)
+        addInput(data, false)
+        attr("message", message)
+        attr("first_n", firstN)
+        attr("summarize", summarize)
+      }
   
-  fun scalarSummary(tags: Output, values: Output, name: String = "ScalarSummary") = run {
-    buildOpTensor("ScalarSummary", name) {
-      addInput(tags, false)
-      addInput(values, false)
-    }
-  }
+  fun scalarSummary(tags: Output, values: Output, name: String = "ScalarSummary"): Output =
+      buildOpTensor("ScalarSummary", name) {
+        addInput(tags, false)
+        addInput(values, false)
+      }
   
-  fun tensorSummary(tensor: Output, description: String = "", labels: Array<String> = arrayOf(), displayName: String = "", name: String = "TensorSummary") = run {
-    buildOpTensor("TensorSummary", name) {
-      addInput(tensor, false)
-      attr("description", description)
-      attr("labels", labels)
-      attr("display_name", displayName)
-    }
-  }
+  fun tensorSummary(tensor: Output, description: String = "", labels: Array<String> = arrayOf(), displayName: String = "", name: String = "TensorSummary"): Output =
+      buildOpTensor("TensorSummary", name) {
+        addInput(tensor, false)
+        attr("description", description)
+        attr("labels", labels)
+        attr("display_name", displayName)
+      }
   
-  fun tensorSummaryV2(tag: Output, tensor: Output, serializedSummaryMetadata: Output, name: String = "TensorSummaryV2") = run {
-    buildOpTensor("TensorSummaryV2", name) {
-      addInput(tag, false)
-      addInput(tensor, false)
-      addInput(serializedSummaryMetadata, false)
-    }
-  }
+  fun tensorSummaryV2(tag: Output, tensor: Output, serializedSummaryMetadata: Output, name: String = "TensorSummaryV2"): Output =
+      buildOpTensor("TensorSummaryV2", name) {
+        addInput(tag, false)
+        addInput(tensor, false)
+        addInput(serializedSummaryMetadata, false)
+      }
   
-  fun timestamp(name: String = "Timestamp") = run {
-    buildOpTensor("Timestamp", name) {
-    }
-  }
+  fun timestamp(name: String = "Timestamp"): Output =
+      buildOpTensor("Timestamp", name) {
+      }
 }

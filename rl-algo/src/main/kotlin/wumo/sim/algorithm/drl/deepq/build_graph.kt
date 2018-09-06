@@ -6,6 +6,9 @@ import wumo.sim.algorithm.drl.common.function
 import wumo.sim.algorithm.drl.common.huber_loss
 import wumo.sim.tensorflow.core.Graph.Graph.Keys
 import wumo.sim.tensorflow.ops.*
+import wumo.sim.tensorflow.ops.basic.minus
+import wumo.sim.tensorflow.ops.basic.plus
+import wumo.sim.tensorflow.ops.basic.times
 import wumo.sim.tensorflow.ops.training.Optimizer
 import wumo.sim.tensorflow.ops.variables.CreateNewOnly
 import wumo.sim.tensorflow.ops.variables.Reuse

@@ -5,150 +5,132 @@ package wumo.sim.tensorflow.ops.gen
 
 import wumo.sim.tensorflow.buildOp
 import wumo.sim.tensorflow.buildOpTensor
+import wumo.sim.tensorflow.ops.Op
 import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.types.DataType
 import wumo.sim.tensorflow.types.INT32
 import wumo.sim.util.Shape
 
-interface gen_resource_variable_ops {
-  fun assignAddVariableOp(resource: Output, value: Output, name: String = "AssignAddVariableOp") = run {
-    buildOp("AssignAddVariableOp", name) {
-      addInput(resource, false)
-      addInput(value, false)
-    }
-  }
+object gen_resource_variable_ops {
+  fun assignAddVariableOp(resource: Output, value: Output, name: String = "AssignAddVariableOp"): Op =
+      buildOp("AssignAddVariableOp", name) {
+        addInput(resource, false)
+        addInput(value, false)
+      }
   
-  fun assignSubVariableOp(resource: Output, value: Output, name: String = "AssignSubVariableOp") = run {
-    buildOp("AssignSubVariableOp", name) {
-      addInput(resource, false)
-      addInput(value, false)
-    }
-  }
+  fun assignSubVariableOp(resource: Output, value: Output, name: String = "AssignSubVariableOp"): Op =
+      buildOp("AssignSubVariableOp", name) {
+        addInput(resource, false)
+        addInput(value, false)
+      }
   
-  fun assignVariableOp(resource: Output, value: Output, name: String = "AssignVariableOp") = run {
-    buildOp("AssignVariableOp", name) {
-      addInput(resource, false)
-      addInput(value, false)
-    }
-  }
+  fun assignVariableOp(resource: Output, value: Output, name: String = "AssignVariableOp"): Op =
+      buildOp("AssignVariableOp", name) {
+        addInput(resource, false)
+        addInput(value, false)
+      }
   
-  fun consumeMutexLock(mutexLock: Output, name: String = "ConsumeMutexLock") = run {
-    buildOp("ConsumeMutexLock", name) {
-      addInput(mutexLock, false)
-    }
-  }
+  fun consumeMutexLock(mutexLock: Output, name: String = "ConsumeMutexLock"): Op =
+      buildOp("ConsumeMutexLock", name) {
+        addInput(mutexLock, false)
+      }
   
-  fun destroyResourceOp(resource: Output, ignoreLookupError: Boolean = true, name: String = "DestroyResourceOp") = run {
-    buildOp("DestroyResourceOp", name) {
-      addInput(resource, false)
-      attr("ignore_lookup_error", ignoreLookupError)
-    }
-  }
+  fun destroyResourceOp(resource: Output, ignoreLookupError: Boolean = true, name: String = "DestroyResourceOp"): Op =
+      buildOp("DestroyResourceOp", name) {
+        addInput(resource, false)
+        attr("ignore_lookup_error", ignoreLookupError)
+      }
   
-  fun mutexLock(mutex: Output, name: String = "MutexLock") = run {
-    buildOpTensor("MutexLock", name) {
-      addInput(mutex, false)
-    }
-  }
+  fun mutexLock(mutex: Output, name: String = "MutexLock"): Output =
+      buildOpTensor("MutexLock", name) {
+        addInput(mutex, false)
+      }
   
-  fun mutexV2(container: String = "", sharedName: String = "", name: String = "MutexV2") = run {
-    buildOpTensor("MutexV2", name) {
-      attr("container", container)
-      attr("shared_name", sharedName)
-    }
-  }
+  fun mutexV2(container: String = "", sharedName: String = "", name: String = "MutexV2"): Output =
+      buildOpTensor("MutexV2", name) {
+        attr("container", container)
+        attr("shared_name", sharedName)
+      }
   
-  fun readVariableOp(resource: Output, dtype: DataType<*>, name: String = "ReadVariableOp") = run {
-    buildOpTensor("ReadVariableOp", name) {
-      addInput(resource, false)
-      attr("dtype", dtype)
-    }
-  }
+  fun readVariableOp(resource: Output, dtype: DataType<*>, name: String = "ReadVariableOp"): Output =
+      buildOpTensor("ReadVariableOp", name) {
+        addInput(resource, false)
+        attr("dtype", dtype)
+      }
   
-  fun resourceGather(resource: Output, indices: Output, dtype: DataType<*>, validateIndices: Boolean = true, name: String = "ResourceGather") = run {
-    buildOpTensor("ResourceGather", name) {
-      addInput(resource, false)
-      addInput(indices, false)
-      attr("dtype", dtype)
-      attr("validate_indices", validateIndices)
-    }
-  }
+  fun resourceGather(resource: Output, indices: Output, dtype: DataType<*>, validateIndices: Boolean = true, name: String = "ResourceGather"): Output =
+      buildOpTensor("ResourceGather", name) {
+        addInput(resource, false)
+        addInput(indices, false)
+        attr("dtype", dtype)
+        attr("validate_indices", validateIndices)
+      }
   
-  fun resourceScatterAdd(resource: Output, indices: Output, updates: Output, name: String = "ResourceScatterAdd") = run {
-    buildOp("ResourceScatterAdd", name) {
-      addInput(resource, false)
-      addInput(indices, false)
-      addInput(updates, false)
-    }
-  }
+  fun resourceScatterAdd(resource: Output, indices: Output, updates: Output, name: String = "ResourceScatterAdd"): Op =
+      buildOp("ResourceScatterAdd", name) {
+        addInput(resource, false)
+        addInput(indices, false)
+        addInput(updates, false)
+      }
   
-  fun resourceScatterDiv(resource: Output, indices: Output, updates: Output, name: String = "ResourceScatterDiv") = run {
-    buildOp("ResourceScatterDiv", name) {
-      addInput(resource, false)
-      addInput(indices, false)
-      addInput(updates, false)
-    }
-  }
+  fun resourceScatterDiv(resource: Output, indices: Output, updates: Output, name: String = "ResourceScatterDiv"): Op =
+      buildOp("ResourceScatterDiv", name) {
+        addInput(resource, false)
+        addInput(indices, false)
+        addInput(updates, false)
+      }
   
-  fun resourceScatterMax(resource: Output, indices: Output, updates: Output, name: String = "ResourceScatterMax") = run {
-    buildOp("ResourceScatterMax", name) {
-      addInput(resource, false)
-      addInput(indices, false)
-      addInput(updates, false)
-    }
-  }
+  fun resourceScatterMax(resource: Output, indices: Output, updates: Output, name: String = "ResourceScatterMax"): Op =
+      buildOp("ResourceScatterMax", name) {
+        addInput(resource, false)
+        addInput(indices, false)
+        addInput(updates, false)
+      }
   
-  fun resourceScatterMin(resource: Output, indices: Output, updates: Output, name: String = "ResourceScatterMin") = run {
-    buildOp("ResourceScatterMin", name) {
-      addInput(resource, false)
-      addInput(indices, false)
-      addInput(updates, false)
-    }
-  }
+  fun resourceScatterMin(resource: Output, indices: Output, updates: Output, name: String = "ResourceScatterMin"): Op =
+      buildOp("ResourceScatterMin", name) {
+        addInput(resource, false)
+        addInput(indices, false)
+        addInput(updates, false)
+      }
   
-  fun resourceScatterMul(resource: Output, indices: Output, updates: Output, name: String = "ResourceScatterMul") = run {
-    buildOp("ResourceScatterMul", name) {
-      addInput(resource, false)
-      addInput(indices, false)
-      addInput(updates, false)
-    }
-  }
+  fun resourceScatterMul(resource: Output, indices: Output, updates: Output, name: String = "ResourceScatterMul"): Op =
+      buildOp("ResourceScatterMul", name) {
+        addInput(resource, false)
+        addInput(indices, false)
+        addInput(updates, false)
+      }
   
-  fun resourceScatterSub(resource: Output, indices: Output, updates: Output, name: String = "ResourceScatterSub") = run {
-    buildOp("ResourceScatterSub", name) {
-      addInput(resource, false)
-      addInput(indices, false)
-      addInput(updates, false)
-    }
-  }
+  fun resourceScatterSub(resource: Output, indices: Output, updates: Output, name: String = "ResourceScatterSub"): Op =
+      buildOp("ResourceScatterSub", name) {
+        addInput(resource, false)
+        addInput(indices, false)
+        addInput(updates, false)
+      }
   
-  fun resourceScatterUpdate(resource: Output, indices: Output, updates: Output, name: String = "ResourceScatterUpdate") = run {
-    buildOp("ResourceScatterUpdate", name) {
-      addInput(resource, false)
-      addInput(indices, false)
-      addInput(updates, false)
-    }
-  }
+  fun resourceScatterUpdate(resource: Output, indices: Output, updates: Output, name: String = "ResourceScatterUpdate"): Op =
+      buildOp("ResourceScatterUpdate", name) {
+        addInput(resource, false)
+        addInput(indices, false)
+        addInput(updates, false)
+      }
   
-  fun varHandleOp(dtype: DataType<*>, shape: Shape, container: String = "", sharedName: String = "", name: String = "VarHandleOp") = run {
-    buildOpTensor("VarHandleOp", name) {
-      attr("dtype", dtype)
-      attr("shape", shape)
-      attr("container", container)
-      attr("shared_name", sharedName)
-    }
-  }
+  fun varHandleOp(dtype: DataType<*>, shape: Shape, container: String = "", sharedName: String = "", name: String = "VarHandleOp"): Output =
+      buildOpTensor("VarHandleOp", name) {
+        attr("dtype", dtype)
+        attr("shape", shape)
+        attr("container", container)
+        attr("shared_name", sharedName)
+      }
   
-  fun varIsInitializedOp(resource: Output, name: String = "VarIsInitializedOp") = run {
-    buildOpTensor("VarIsInitializedOp", name) {
-      addInput(resource, false)
-    }
-  }
+  fun varIsInitializedOp(resource: Output, name: String = "VarIsInitializedOp"): Output =
+      buildOpTensor("VarIsInitializedOp", name) {
+        addInput(resource, false)
+      }
   
-  fun variableShape(input: Output, outType: DataType<*> = INT32, name: String = "VariableShape") = run {
-    buildOpTensor("VariableShape", name) {
-      addInput(input, false)
-      attr("out_type", outType)
-    }
-  }
+  fun variableShape(input: Output, outType: DataType<*> = INT32, name: String = "VariableShape"): Output =
+      buildOpTensor("VariableShape", name) {
+        addInput(input, false)
+        attr("out_type", outType)
+      }
 }

@@ -6,34 +6,31 @@ package wumo.sim.tensorflow.ops.gen
 import wumo.sim.tensorflow.buildOpTensors
 import wumo.sim.tensorflow.ops.Output
 
-interface gen_ctc_ops {
-  fun cTCBeamSearchDecoder(inputs: Output, sequenceLength: Output, beamWidth: Long, topPaths: Long, mergeRepeated: Boolean = true, name: String = "CTCBeamSearchDecoder") = run {
-    buildOpTensors("CTCBeamSearchDecoder", name) {
-      addInput(inputs, false)
-      addInput(sequenceLength, false)
-      attr("beam_width", beamWidth)
-      attr("top_paths", topPaths)
-      attr("merge_repeated", mergeRepeated)
-    }
-  }
+object gen_ctc_ops {
+  fun cTCBeamSearchDecoder(inputs: Output, sequenceLength: Output, beamWidth: Long, topPaths: Long, mergeRepeated: Boolean = true, name: String = "CTCBeamSearchDecoder"): List<Output> =
+      buildOpTensors("CTCBeamSearchDecoder", name) {
+        addInput(inputs, false)
+        addInput(sequenceLength, false)
+        attr("beam_width", beamWidth)
+        attr("top_paths", topPaths)
+        attr("merge_repeated", mergeRepeated)
+      }
   
-  fun cTCGreedyDecoder(inputs: Output, sequenceLength: Output, mergeRepeated: Boolean = false, name: String = "CTCGreedyDecoder") = run {
-    buildOpTensors("CTCGreedyDecoder", name) {
-      addInput(inputs, false)
-      addInput(sequenceLength, false)
-      attr("merge_repeated", mergeRepeated)
-    }
-  }
+  fun cTCGreedyDecoder(inputs: Output, sequenceLength: Output, mergeRepeated: Boolean = false, name: String = "CTCGreedyDecoder"): List<Output> =
+      buildOpTensors("CTCGreedyDecoder", name) {
+        addInput(inputs, false)
+        addInput(sequenceLength, false)
+        attr("merge_repeated", mergeRepeated)
+      }
   
-  fun cTCLoss(inputs: Output, labelsIndices: Output, labelsValues: Output, sequenceLength: Output, preprocessCollapseRepeated: Boolean = false, ctcMergeRepeated: Boolean = true, ignoreLongerOutputsThanInputs: Boolean = false, name: String = "CTCLoss") = run {
-    buildOpTensors("CTCLoss", name) {
-      addInput(inputs, false)
-      addInput(labelsIndices, false)
-      addInput(labelsValues, false)
-      addInput(sequenceLength, false)
-      attr("preprocess_collapse_repeated", preprocessCollapseRepeated)
-      attr("ctc_merge_repeated", ctcMergeRepeated)
-      attr("ignore_longer_outputs_than_inputs", ignoreLongerOutputsThanInputs)
-    }
-  }
+  fun cTCLoss(inputs: Output, labelsIndices: Output, labelsValues: Output, sequenceLength: Output, preprocessCollapseRepeated: Boolean = false, ctcMergeRepeated: Boolean = true, ignoreLongerOutputsThanInputs: Boolean = false, name: String = "CTCLoss"): List<Output> =
+      buildOpTensors("CTCLoss", name) {
+        addInput(inputs, false)
+        addInput(labelsIndices, false)
+        addInput(labelsValues, false)
+        addInput(sequenceLength, false)
+        attr("preprocess_collapse_repeated", preprocessCollapseRepeated)
+        attr("ctc_merge_repeated", ctcMergeRepeated)
+        attr("ignore_longer_outputs_than_inputs", ignoreLongerOutputsThanInputs)
+      }
 }

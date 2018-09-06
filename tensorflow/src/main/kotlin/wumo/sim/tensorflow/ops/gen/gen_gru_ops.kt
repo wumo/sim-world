@@ -6,30 +6,28 @@ package wumo.sim.tensorflow.ops.gen
 import wumo.sim.tensorflow.buildOpTensors
 import wumo.sim.tensorflow.ops.Output
 
-interface gen_gru_ops {
-  fun gRUBlockCell(x: Output, hPrev: Output, wRu: Output, wC: Output, bRu: Output, bC: Output, name: String = "GRUBlockCell") = run {
-    buildOpTensors("GRUBlockCell", name) {
-      addInput(x, false)
-      addInput(hPrev, false)
-      addInput(wRu, false)
-      addInput(wC, false)
-      addInput(bRu, false)
-      addInput(bC, false)
-    }
-  }
+object gen_gru_ops {
+  fun gRUBlockCell(x: Output, hPrev: Output, wRu: Output, wC: Output, bRu: Output, bC: Output, name: String = "GRUBlockCell"): List<Output> =
+      buildOpTensors("GRUBlockCell", name) {
+        addInput(x, false)
+        addInput(hPrev, false)
+        addInput(wRu, false)
+        addInput(wC, false)
+        addInput(bRu, false)
+        addInput(bC, false)
+      }
   
-  fun gRUBlockCellGrad(x: Output, hPrev: Output, wRu: Output, wC: Output, bRu: Output, bC: Output, r: Output, u: Output, c: Output, dH: Output, name: String = "GRUBlockCellGrad") = run {
-    buildOpTensors("GRUBlockCellGrad", name) {
-      addInput(x, false)
-      addInput(hPrev, false)
-      addInput(wRu, false)
-      addInput(wC, false)
-      addInput(bRu, false)
-      addInput(bC, false)
-      addInput(r, false)
-      addInput(u, false)
-      addInput(c, false)
-      addInput(dH, false)
-    }
-  }
+  fun gRUBlockCellGrad(x: Output, hPrev: Output, wRu: Output, wC: Output, bRu: Output, bC: Output, r: Output, u: Output, c: Output, dH: Output, name: String = "GRUBlockCellGrad"): List<Output> =
+      buildOpTensors("GRUBlockCellGrad", name) {
+        addInput(x, false)
+        addInput(hPrev, false)
+        addInput(wRu, false)
+        addInput(wC, false)
+        addInput(bRu, false)
+        addInput(bC, false)
+        addInput(r, false)
+        addInput(u, false)
+        addInput(c, false)
+        addInput(dH, false)
+      }
 }

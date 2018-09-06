@@ -5,110 +5,99 @@ package wumo.sim.tensorflow.ops.gen
 
 import wumo.sim.tensorflow.buildOp
 import wumo.sim.tensorflow.buildOpTensor
+import wumo.sim.tensorflow.ops.Op
 import wumo.sim.tensorflow.ops.Output
 
-interface gen_summary_ops {
-  fun closeSummaryWriter(writer: Output, name: String = "CloseSummaryWriter") = run {
-    buildOp("CloseSummaryWriter", name) {
-      addInput(writer, false)
-    }
-  }
+object gen_summary_ops {
+  fun closeSummaryWriter(writer: Output, name: String = "CloseSummaryWriter"): Op =
+      buildOp("CloseSummaryWriter", name) {
+        addInput(writer, false)
+      }
   
-  fun createSummaryDbWriter(writer: Output, dbUri: Output, experimentName: Output, runName: Output, userName: Output, name: String = "CreateSummaryDbWriter") = run {
-    buildOp("CreateSummaryDbWriter", name) {
-      addInput(writer, false)
-      addInput(dbUri, false)
-      addInput(experimentName, false)
-      addInput(runName, false)
-      addInput(userName, false)
-    }
-  }
+  fun createSummaryDbWriter(writer: Output, dbUri: Output, experimentName: Output, runName: Output, userName: Output, name: String = "CreateSummaryDbWriter"): Op =
+      buildOp("CreateSummaryDbWriter", name) {
+        addInput(writer, false)
+        addInput(dbUri, false)
+        addInput(experimentName, false)
+        addInput(runName, false)
+        addInput(userName, false)
+      }
   
-  fun createSummaryFileWriter(writer: Output, logdir: Output, maxQueue: Output, flushMillis: Output, filenameSuffix: Output, name: String = "CreateSummaryFileWriter") = run {
-    buildOp("CreateSummaryFileWriter", name) {
-      addInput(writer, false)
-      addInput(logdir, false)
-      addInput(maxQueue, false)
-      addInput(flushMillis, false)
-      addInput(filenameSuffix, false)
-    }
-  }
+  fun createSummaryFileWriter(writer: Output, logdir: Output, maxQueue: Output, flushMillis: Output, filenameSuffix: Output, name: String = "CreateSummaryFileWriter"): Op =
+      buildOp("CreateSummaryFileWriter", name) {
+        addInput(writer, false)
+        addInput(logdir, false)
+        addInput(maxQueue, false)
+        addInput(flushMillis, false)
+        addInput(filenameSuffix, false)
+      }
   
-  fun flushSummaryWriter(writer: Output, name: String = "FlushSummaryWriter") = run {
-    buildOp("FlushSummaryWriter", name) {
-      addInput(writer, false)
-    }
-  }
+  fun flushSummaryWriter(writer: Output, name: String = "FlushSummaryWriter"): Op =
+      buildOp("FlushSummaryWriter", name) {
+        addInput(writer, false)
+      }
   
-  fun importEvent(writer: Output, event: Output, name: String = "ImportEvent") = run {
-    buildOp("ImportEvent", name) {
-      addInput(writer, false)
-      addInput(event, false)
-    }
-  }
+  fun importEvent(writer: Output, event: Output, name: String = "ImportEvent"): Op =
+      buildOp("ImportEvent", name) {
+        addInput(writer, false)
+        addInput(event, false)
+      }
   
-  fun summaryWriter(sharedName: String = "", container: String = "", name: String = "SummaryWriter") = run {
-    buildOpTensor("SummaryWriter", name) {
-      attr("shared_name", sharedName)
-      attr("container", container)
-    }
-  }
+  fun summaryWriter(sharedName: String = "", container: String = "", name: String = "SummaryWriter"): Output =
+      buildOpTensor("SummaryWriter", name) {
+        attr("shared_name", sharedName)
+        attr("container", container)
+      }
   
-  fun writeAudioSummary(writer: Output, step: Output, tag: Output, tensor: Output, sampleRate: Output, maxOutputs: Long = 3L, name: String = "WriteAudioSummary") = run {
-    buildOp("WriteAudioSummary", name) {
-      addInput(writer, false)
-      addInput(step, false)
-      addInput(tag, false)
-      addInput(tensor, false)
-      addInput(sampleRate, false)
-      attr("max_outputs", maxOutputs)
-    }
-  }
+  fun writeAudioSummary(writer: Output, step: Output, tag: Output, tensor: Output, sampleRate: Output, maxOutputs: Long = 3L, name: String = "WriteAudioSummary"): Op =
+      buildOp("WriteAudioSummary", name) {
+        addInput(writer, false)
+        addInput(step, false)
+        addInput(tag, false)
+        addInput(tensor, false)
+        addInput(sampleRate, false)
+        attr("max_outputs", maxOutputs)
+      }
   
-  fun writeGraphSummary(writer: Output, step: Output, tensor: Output, name: String = "WriteGraphSummary") = run {
-    buildOp("WriteGraphSummary", name) {
-      addInput(writer, false)
-      addInput(step, false)
-      addInput(tensor, false)
-    }
-  }
+  fun writeGraphSummary(writer: Output, step: Output, tensor: Output, name: String = "WriteGraphSummary"): Op =
+      buildOp("WriteGraphSummary", name) {
+        addInput(writer, false)
+        addInput(step, false)
+        addInput(tensor, false)
+      }
   
-  fun writeHistogramSummary(writer: Output, step: Output, tag: Output, values: Output, name: String = "WriteHistogramSummary") = run {
-    buildOp("WriteHistogramSummary", name) {
-      addInput(writer, false)
-      addInput(step, false)
-      addInput(tag, false)
-      addInput(values, false)
-    }
-  }
+  fun writeHistogramSummary(writer: Output, step: Output, tag: Output, values: Output, name: String = "WriteHistogramSummary"): Op =
+      buildOp("WriteHistogramSummary", name) {
+        addInput(writer, false)
+        addInput(step, false)
+        addInput(tag, false)
+        addInput(values, false)
+      }
   
-  fun writeImageSummary(writer: Output, step: Output, tag: Output, tensor: Output, badColor: Output, maxImages: Long = 3L, name: String = "WriteImageSummary") = run {
-    buildOp("WriteImageSummary", name) {
-      addInput(writer, false)
-      addInput(step, false)
-      addInput(tag, false)
-      addInput(tensor, false)
-      addInput(badColor, false)
-      attr("max_images", maxImages)
-    }
-  }
+  fun writeImageSummary(writer: Output, step: Output, tag: Output, tensor: Output, badColor: Output, maxImages: Long = 3L, name: String = "WriteImageSummary"): Op =
+      buildOp("WriteImageSummary", name) {
+        addInput(writer, false)
+        addInput(step, false)
+        addInput(tag, false)
+        addInput(tensor, false)
+        addInput(badColor, false)
+        attr("max_images", maxImages)
+      }
   
-  fun writeScalarSummary(writer: Output, step: Output, tag: Output, value: Output, name: String = "WriteScalarSummary") = run {
-    buildOp("WriteScalarSummary", name) {
-      addInput(writer, false)
-      addInput(step, false)
-      addInput(tag, false)
-      addInput(value, false)
-    }
-  }
+  fun writeScalarSummary(writer: Output, step: Output, tag: Output, value: Output, name: String = "WriteScalarSummary"): Op =
+      buildOp("WriteScalarSummary", name) {
+        addInput(writer, false)
+        addInput(step, false)
+        addInput(tag, false)
+        addInput(value, false)
+      }
   
-  fun writeSummary(writer: Output, step: Output, tensor: Output, tag: Output, summaryMetadata: Output, name: String = "WriteSummary") = run {
-    buildOp("WriteSummary", name) {
-      addInput(writer, false)
-      addInput(step, false)
-      addInput(tensor, false)
-      addInput(tag, false)
-      addInput(summaryMetadata, false)
-    }
-  }
+  fun writeSummary(writer: Output, step: Output, tensor: Output, tag: Output, summaryMetadata: Output, name: String = "WriteSummary"): Op =
+      buildOp("WriteSummary", name) {
+        addInput(writer, false)
+        addInput(step, false)
+        addInput(tensor, false)
+        addInput(tag, false)
+        addInput(summaryMetadata, false)
+      }
 }

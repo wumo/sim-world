@@ -2,6 +2,8 @@ package wumo.sim.tensorflow.ops.control_flow_ops
 
 import wumo.sim.tensorflow.core.ShapeMismatchException
 import wumo.sim.tensorflow.ops.*
+import wumo.sim.tensorflow.ops.basic.minus
+import wumo.sim.tensorflow.ops.basic.plus
 import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.types.RESOURCE
 import wumo.sim.util.*

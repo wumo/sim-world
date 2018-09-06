@@ -6,83 +6,79 @@ package wumo.sim.tensorflow.ops.gen
 import wumo.sim.tensorflow.buildOpTensors
 import wumo.sim.tensorflow.ops.Output
 
-interface gen_lstm_ops {
-  fun blockLSTM(seqLenMax: Output, x: Output, csPrev: Output, hPrev: Output, w: Output, wci: Output, wcf: Output, wco: Output, b: Output, forgetBias: Float = 1.0f, cellClip: Float = 3.0f, usePeephole: Boolean = false, name: String = "BlockLSTM") = run {
-    buildOpTensors("BlockLSTM", name) {
-      addInput(seqLenMax, false)
-      addInput(x, false)
-      addInput(csPrev, false)
-      addInput(hPrev, false)
-      addInput(w, false)
-      addInput(wci, false)
-      addInput(wcf, false)
-      addInput(wco, false)
-      addInput(b, false)
-      attr("forget_bias", forgetBias)
-      attr("cell_clip", cellClip)
-      attr("use_peephole", usePeephole)
-    }
-  }
+object gen_lstm_ops {
+  fun blockLSTM(seqLenMax: Output, x: Output, csPrev: Output, hPrev: Output, w: Output, wci: Output, wcf: Output, wco: Output, b: Output, forgetBias: Float = 1.0f, cellClip: Float = 3.0f, usePeephole: Boolean = false, name: String = "BlockLSTM"): List<Output> =
+      buildOpTensors("BlockLSTM", name) {
+        addInput(seqLenMax, false)
+        addInput(x, false)
+        addInput(csPrev, false)
+        addInput(hPrev, false)
+        addInput(w, false)
+        addInput(wci, false)
+        addInput(wcf, false)
+        addInput(wco, false)
+        addInput(b, false)
+        attr("forget_bias", forgetBias)
+        attr("cell_clip", cellClip)
+        attr("use_peephole", usePeephole)
+      }
   
-  fun blockLSTMGrad(seqLenMax: Output, x: Output, csPrev: Output, hPrev: Output, w: Output, wci: Output, wcf: Output, wco: Output, b: Output, i: Output, cs: Output, f: Output, o: Output, ci: Output, co: Output, h: Output, csGrad: Output, hGrad: Output, usePeephole: Boolean, name: String = "BlockLSTMGrad") = run {
-    buildOpTensors("BlockLSTMGrad", name) {
-      addInput(seqLenMax, false)
-      addInput(x, false)
-      addInput(csPrev, false)
-      addInput(hPrev, false)
-      addInput(w, false)
-      addInput(wci, false)
-      addInput(wcf, false)
-      addInput(wco, false)
-      addInput(b, false)
-      addInput(i, false)
-      addInput(cs, false)
-      addInput(f, false)
-      addInput(o, false)
-      addInput(ci, false)
-      addInput(co, false)
-      addInput(h, false)
-      addInput(csGrad, false)
-      addInput(hGrad, false)
-      attr("use_peephole", usePeephole)
-    }
-  }
+  fun blockLSTMGrad(seqLenMax: Output, x: Output, csPrev: Output, hPrev: Output, w: Output, wci: Output, wcf: Output, wco: Output, b: Output, i: Output, cs: Output, f: Output, o: Output, ci: Output, co: Output, h: Output, csGrad: Output, hGrad: Output, usePeephole: Boolean, name: String = "BlockLSTMGrad"): List<Output> =
+      buildOpTensors("BlockLSTMGrad", name) {
+        addInput(seqLenMax, false)
+        addInput(x, false)
+        addInput(csPrev, false)
+        addInput(hPrev, false)
+        addInput(w, false)
+        addInput(wci, false)
+        addInput(wcf, false)
+        addInput(wco, false)
+        addInput(b, false)
+        addInput(i, false)
+        addInput(cs, false)
+        addInput(f, false)
+        addInput(o, false)
+        addInput(ci, false)
+        addInput(co, false)
+        addInput(h, false)
+        addInput(csGrad, false)
+        addInput(hGrad, false)
+        attr("use_peephole", usePeephole)
+      }
   
-  fun lSTMBlockCell(x: Output, csPrev: Output, hPrev: Output, w: Output, wci: Output, wcf: Output, wco: Output, b: Output, forgetBias: Float = 1.0f, cellClip: Float = 3.0f, usePeephole: Boolean = false, name: String = "LSTMBlockCell") = run {
-    buildOpTensors("LSTMBlockCell", name) {
-      addInput(x, false)
-      addInput(csPrev, false)
-      addInput(hPrev, false)
-      addInput(w, false)
-      addInput(wci, false)
-      addInput(wcf, false)
-      addInput(wco, false)
-      addInput(b, false)
-      attr("forget_bias", forgetBias)
-      attr("cell_clip", cellClip)
-      attr("use_peephole", usePeephole)
-    }
-  }
+  fun lSTMBlockCell(x: Output, csPrev: Output, hPrev: Output, w: Output, wci: Output, wcf: Output, wco: Output, b: Output, forgetBias: Float = 1.0f, cellClip: Float = 3.0f, usePeephole: Boolean = false, name: String = "LSTMBlockCell"): List<Output> =
+      buildOpTensors("LSTMBlockCell", name) {
+        addInput(x, false)
+        addInput(csPrev, false)
+        addInput(hPrev, false)
+        addInput(w, false)
+        addInput(wci, false)
+        addInput(wcf, false)
+        addInput(wco, false)
+        addInput(b, false)
+        attr("forget_bias", forgetBias)
+        attr("cell_clip", cellClip)
+        attr("use_peephole", usePeephole)
+      }
   
-  fun lSTMBlockCellGrad(x: Output, csPrev: Output, hPrev: Output, w: Output, wci: Output, wcf: Output, wco: Output, b: Output, i: Output, cs: Output, f: Output, o: Output, ci: Output, co: Output, csGrad: Output, hGrad: Output, usePeephole: Boolean, name: String = "LSTMBlockCellGrad") = run {
-    buildOpTensors("LSTMBlockCellGrad", name) {
-      addInput(x, false)
-      addInput(csPrev, false)
-      addInput(hPrev, false)
-      addInput(w, false)
-      addInput(wci, false)
-      addInput(wcf, false)
-      addInput(wco, false)
-      addInput(b, false)
-      addInput(i, false)
-      addInput(cs, false)
-      addInput(f, false)
-      addInput(o, false)
-      addInput(ci, false)
-      addInput(co, false)
-      addInput(csGrad, false)
-      addInput(hGrad, false)
-      attr("use_peephole", usePeephole)
-    }
-  }
+  fun lSTMBlockCellGrad(x: Output, csPrev: Output, hPrev: Output, w: Output, wci: Output, wcf: Output, wco: Output, b: Output, i: Output, cs: Output, f: Output, o: Output, ci: Output, co: Output, csGrad: Output, hGrad: Output, usePeephole: Boolean, name: String = "LSTMBlockCellGrad"): List<Output> =
+      buildOpTensors("LSTMBlockCellGrad", name) {
+        addInput(x, false)
+        addInput(csPrev, false)
+        addInput(hPrev, false)
+        addInput(w, false)
+        addInput(wci, false)
+        addInput(wcf, false)
+        addInput(wco, false)
+        addInput(b, false)
+        addInput(i, false)
+        addInput(cs, false)
+        addInput(f, false)
+        addInput(o, false)
+        addInput(ci, false)
+        addInput(co, false)
+        addInput(csGrad, false)
+        addInput(hGrad, false)
+        attr("use_peephole", usePeephole)
+      }
 }

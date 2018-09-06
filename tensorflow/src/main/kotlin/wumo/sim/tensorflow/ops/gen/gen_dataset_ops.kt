@@ -7,591 +7,529 @@ import org.bytedeco.javacpp.tensorflow.NameAttrList
 import wumo.sim.tensorflow.buildOp
 import wumo.sim.tensorflow.buildOpTensor
 import wumo.sim.tensorflow.buildOpTensors
+import wumo.sim.tensorflow.ops.Op
 import wumo.sim.tensorflow.ops.Output
 import wumo.sim.util.Shape
 
-interface gen_dataset_ops {
-  fun anonymousIterator(outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "AnonymousIterator") = run {
-    buildOpTensor("AnonymousIterator", name) {
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-    }
-  }
+object gen_dataset_ops {
+  fun anonymousIterator(outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "AnonymousIterator"): Output =
+      buildOpTensor("AnonymousIterator", name) {
+        attr("output_types", outputTypes)
+        attr("output_shapes", outputShapes)
+      }
   
-  fun batchDataset(inputDataset: Output, batchSize: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "BatchDataset") = run {
-    buildOpTensor("BatchDataset", name) {
-      addInput(inputDataset, false)
-      addInput(batchSize, false)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-    }
-  }
+  fun batchDataset(inputDataset: Output, batchSize: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "BatchDataset"): Output =
+      buildOpTensor("BatchDataset", name) {
+        addInput(inputDataset, false)
+        addInput(batchSize, false)
+        attr("output_types", outputTypes)
+        attr("output_shapes", outputShapes)
+      }
   
-  fun batchDatasetV2(inputDataset: Output, batchSize: Output, dropRemainder: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "BatchDatasetV2") = run {
-    buildOpTensor("BatchDatasetV2", name) {
-      addInput(inputDataset, false)
-      addInput(batchSize, false)
-      addInput(dropRemainder, false)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-    }
-  }
+  fun batchDatasetV2(inputDataset: Output, batchSize: Output, dropRemainder: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "BatchDatasetV2"): Output =
+      buildOpTensor("BatchDatasetV2", name) {
+        addInput(inputDataset, false)
+        addInput(batchSize, false)
+        addInput(dropRemainder, false)
+        attr("output_types", outputTypes)
+        attr("output_shapes", outputShapes)
+      }
   
-  fun bytesProducedStatsDataset(inputDataset: Output, tag: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "BytesProducedStatsDataset") = run {
-    buildOpTensor("BytesProducedStatsDataset", name) {
-      addInput(inputDataset, false)
-      addInput(tag, false)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-    }
-  }
+  fun bytesProducedStatsDataset(inputDataset: Output, tag: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "BytesProducedStatsDataset"): Output =
+      buildOpTensor("BytesProducedStatsDataset", name) {
+        addInput(inputDataset, false)
+        addInput(tag, false)
+        attr("output_types", outputTypes)
+        attr("output_shapes", outputShapes)
+      }
   
-  fun cacheDataset(inputDataset: Output, filename: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "CacheDataset") = run {
-    buildOpTensor("CacheDataset", name) {
-      addInput(inputDataset, false)
-      addInput(filename, false)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-    }
-  }
+  fun cacheDataset(inputDataset: Output, filename: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "CacheDataset"): Output =
+      buildOpTensor("CacheDataset", name) {
+        addInput(inputDataset, false)
+        addInput(filename, false)
+        attr("output_types", outputTypes)
+        attr("output_shapes", outputShapes)
+      }
   
-  fun concatenateDataset(inputDataset: Output, anotherDataset: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "ConcatenateDataset") = run {
-    buildOpTensor("ConcatenateDataset", name) {
-      addInput(inputDataset, false)
-      addInput(anotherDataset, false)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-    }
-  }
+  fun concatenateDataset(inputDataset: Output, anotherDataset: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "ConcatenateDataset"): Output =
+      buildOpTensor("ConcatenateDataset", name) {
+        addInput(inputDataset, false)
+        addInput(anotherDataset, false)
+        attr("output_types", outputTypes)
+        attr("output_shapes", outputShapes)
+      }
   
-  fun datasetToGraph(inputDataset: Output, name: String = "DatasetToGraph") = run {
-    buildOpTensor("DatasetToGraph", name) {
-      addInput(inputDataset, false)
-    }
-  }
+  fun datasetToGraph(inputDataset: Output, name: String = "DatasetToGraph"): Output =
+      buildOpTensor("DatasetToGraph", name) {
+        addInput(inputDataset, false)
+      }
   
-  fun datasetToSingleElement(dataset: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "DatasetToSingleElement") = run {
-    buildOpTensors("DatasetToSingleElement", name) {
-      addInput(dataset, false)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-    }
-  }
+  fun datasetToSingleElement(dataset: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "DatasetToSingleElement"): List<Output> =
+      buildOpTensors("DatasetToSingleElement", name) {
+        addInput(dataset, false)
+        attr("output_types", outputTypes)
+        attr("output_shapes", outputShapes)
+      }
   
-  fun datasetToTFRecord(inputDataset: Output, filename: Output, compressionType: Output, name: String = "DatasetToTFRecord") = run {
-    buildOp("DatasetToTFRecord", name) {
-      addInput(inputDataset, false)
-      addInput(filename, false)
-      addInput(compressionType, false)
-    }
-  }
+  fun datasetToTFRecord(inputDataset: Output, filename: Output, compressionType: Output, name: String = "DatasetToTFRecord"): Op =
+      buildOp("DatasetToTFRecord", name) {
+        addInput(inputDataset, false)
+        addInput(filename, false)
+        addInput(compressionType, false)
+      }
   
-  fun denseToSparseBatchDataset(inputDataset: Output, batchSize: Output, rowShape: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "DenseToSparseBatchDataset") = run {
-    buildOpTensor("DenseToSparseBatchDataset", name) {
-      addInput(inputDataset, false)
-      addInput(batchSize, false)
-      addInput(rowShape, false)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-    }
-  }
+  fun denseToSparseBatchDataset(inputDataset: Output, batchSize: Output, rowShape: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "DenseToSparseBatchDataset"): Output =
+      buildOpTensor("DenseToSparseBatchDataset", name) {
+        addInput(inputDataset, false)
+        addInput(batchSize, false)
+        addInput(rowShape, false)
+        attr("output_types", outputTypes)
+        attr("output_shapes", outputShapes)
+      }
   
-  fun deserializeIterator(resourceHandle: Output, serialized: Output, name: String = "DeserializeIterator") = run {
-    buildOp("DeserializeIterator", name) {
-      addInput(resourceHandle, false)
-      addInput(serialized, false)
-    }
-  }
+  fun deserializeIterator(resourceHandle: Output, serialized: Output, name: String = "DeserializeIterator"): Op =
+      buildOp("DeserializeIterator", name) {
+        addInput(resourceHandle, false)
+        addInput(serialized, false)
+      }
   
-  fun enqueueInQueueDataset(queue: Output, components: Output, name: String = "EnqueueInQueueDataset") = run {
-    buildOp("EnqueueInQueueDataset", name) {
-      addInput(queue, false)
-      addInput(components, false)
-    }
-  }
+  fun enqueueInQueueDataset(queue: Output, components: Output, name: String = "EnqueueInQueueDataset"): Op =
+      buildOp("EnqueueInQueueDataset", name) {
+        addInput(queue, false)
+        addInput(components, false)
+      }
   
-  fun featureStatsDataset(inputDataset: Output, tag: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "FeatureStatsDataset") = run {
-    buildOpTensor("FeatureStatsDataset", name) {
-      addInput(inputDataset, false)
-      addInput(tag, false)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-    }
-  }
+  fun featureStatsDataset(inputDataset: Output, tag: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "FeatureStatsDataset"): Output =
+      buildOpTensor("FeatureStatsDataset", name) {
+        addInput(inputDataset, false)
+        addInput(tag, false)
+        attr("output_types", outputTypes)
+        attr("output_shapes", outputShapes)
+      }
   
-  fun filterDataset(inputDataset: Output, otherArguments: Output, predicate: NameAttrList, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "FilterDataset") = run {
-    buildOpTensor("FilterDataset", name) {
-      addInput(inputDataset, false)
-      addInput(otherArguments, false)
-      attr("predicate", predicate)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-    }
-  }
+  fun filterDataset(inputDataset: Output, otherArguments: Output, predicate: NameAttrList, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "FilterDataset"): Output =
+      buildOpTensor("FilterDataset", name) {
+        addInput(inputDataset, false)
+        addInput(otherArguments, false)
+        attr("predicate", predicate)
+        attr("output_types", outputTypes)
+        attr("output_shapes", outputShapes)
+      }
   
-  fun fixedLengthRecordDataset(filenames: Output, headerBytes: Output, recordBytes: Output, footerBytes: Output, bufferSize: Output, name: String = "FixedLengthRecordDataset") = run {
-    buildOpTensor("FixedLengthRecordDataset", name) {
-      addInput(filenames, false)
-      addInput(headerBytes, false)
-      addInput(recordBytes, false)
-      addInput(footerBytes, false)
-      addInput(bufferSize, false)
-    }
-  }
+  fun fixedLengthRecordDataset(filenames: Output, headerBytes: Output, recordBytes: Output, footerBytes: Output, bufferSize: Output, name: String = "FixedLengthRecordDataset"): Output =
+      buildOpTensor("FixedLengthRecordDataset", name) {
+        addInput(filenames, false)
+        addInput(headerBytes, false)
+        addInput(recordBytes, false)
+        addInput(footerBytes, false)
+        addInput(bufferSize, false)
+      }
   
-  fun flatMapDataset(inputDataset: Output, otherArguments: Output, f: NameAttrList, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "FlatMapDataset") = run {
-    buildOpTensor("FlatMapDataset", name) {
-      addInput(inputDataset, false)
-      addInput(otherArguments, false)
-      attr("f", f)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-    }
-  }
+  fun flatMapDataset(inputDataset: Output, otherArguments: Output, f: NameAttrList, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "FlatMapDataset"): Output =
+      buildOpTensor("FlatMapDataset", name) {
+        addInput(inputDataset, false)
+        addInput(otherArguments, false)
+        attr("f", f)
+        attr("output_types", outputTypes)
+        attr("output_shapes", outputShapes)
+      }
   
-  fun generatorDataset(initFuncOtherArgs: Output, nextFuncOtherArgs: Output, finalizeFuncOtherArgs: Output, initFunc: NameAttrList, nextFunc: NameAttrList, finalizeFunc: NameAttrList, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "GeneratorDataset") = run {
-    buildOpTensor("GeneratorDataset", name) {
-      addInput(initFuncOtherArgs, false)
-      addInput(nextFuncOtherArgs, false)
-      addInput(finalizeFuncOtherArgs, false)
-      attr("init_func", initFunc)
-      attr("next_func", nextFunc)
-      attr("finalize_func", finalizeFunc)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-    }
-  }
+  fun generatorDataset(initFuncOtherArgs: Output, nextFuncOtherArgs: Output, finalizeFuncOtherArgs: Output, initFunc: NameAttrList, nextFunc: NameAttrList, finalizeFunc: NameAttrList, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "GeneratorDataset"): Output =
+      buildOpTensor("GeneratorDataset", name) {
+        addInput(initFuncOtherArgs, false)
+        addInput(nextFuncOtherArgs, false)
+        addInput(finalizeFuncOtherArgs, false)
+        attr("init_func", initFunc)
+        attr("next_func", nextFunc)
+        attr("finalize_func", finalizeFunc)
+        attr("output_types", outputTypes)
+        attr("output_shapes", outputShapes)
+      }
   
-  fun groupByReducerDataset(inputDataset: Output, keyFuncOtherArguments: Output, initFuncOtherArguments: Output, reduceFuncOtherArguments: Output, finalizeFuncOtherArguments: Output, keyFunc: NameAttrList, initFunc: NameAttrList, reduceFunc: NameAttrList, finalizeFunc: NameAttrList, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "GroupByReducerDataset") = run {
-    buildOpTensor("GroupByReducerDataset", name) {
-      addInput(inputDataset, false)
-      addInput(keyFuncOtherArguments, false)
-      addInput(initFuncOtherArguments, false)
-      addInput(reduceFuncOtherArguments, false)
-      addInput(finalizeFuncOtherArguments, false)
-      attr("key_func", keyFunc)
-      attr("init_func", initFunc)
-      attr("reduce_func", reduceFunc)
-      attr("finalize_func", finalizeFunc)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-    }
-  }
+  fun groupByReducerDataset(inputDataset: Output, keyFuncOtherArguments: Output, initFuncOtherArguments: Output, reduceFuncOtherArguments: Output, finalizeFuncOtherArguments: Output, keyFunc: NameAttrList, initFunc: NameAttrList, reduceFunc: NameAttrList, finalizeFunc: NameAttrList, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "GroupByReducerDataset"): Output =
+      buildOpTensor("GroupByReducerDataset", name) {
+        addInput(inputDataset, false)
+        addInput(keyFuncOtherArguments, false)
+        addInput(initFuncOtherArguments, false)
+        addInput(reduceFuncOtherArguments, false)
+        addInput(finalizeFuncOtherArguments, false)
+        attr("key_func", keyFunc)
+        attr("init_func", initFunc)
+        attr("reduce_func", reduceFunc)
+        attr("finalize_func", finalizeFunc)
+        attr("output_types", outputTypes)
+        attr("output_shapes", outputShapes)
+      }
   
-  fun groupByWindowDataset(inputDataset: Output, keyFuncOtherArguments: Output, reduceFuncOtherArguments: Output, windowSizeFuncOtherArguments: Output, keyFunc: NameAttrList, reduceFunc: NameAttrList, windowSizeFunc: NameAttrList, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "GroupByWindowDataset") = run {
-    buildOpTensor("GroupByWindowDataset", name) {
-      addInput(inputDataset, false)
-      addInput(keyFuncOtherArguments, false)
-      addInput(reduceFuncOtherArguments, false)
-      addInput(windowSizeFuncOtherArguments, false)
-      attr("key_func", keyFunc)
-      attr("reduce_func", reduceFunc)
-      attr("window_size_func", windowSizeFunc)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-    }
-  }
+  fun groupByWindowDataset(inputDataset: Output, keyFuncOtherArguments: Output, reduceFuncOtherArguments: Output, windowSizeFuncOtherArguments: Output, keyFunc: NameAttrList, reduceFunc: NameAttrList, windowSizeFunc: NameAttrList, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "GroupByWindowDataset"): Output =
+      buildOpTensor("GroupByWindowDataset", name) {
+        addInput(inputDataset, false)
+        addInput(keyFuncOtherArguments, false)
+        addInput(reduceFuncOtherArguments, false)
+        addInput(windowSizeFuncOtherArguments, false)
+        attr("key_func", keyFunc)
+        attr("reduce_func", reduceFunc)
+        attr("window_size_func", windowSizeFunc)
+        attr("output_types", outputTypes)
+        attr("output_shapes", outputShapes)
+      }
   
-  fun interleaveDataset(inputDataset: Output, otherArguments: Output, cycleLength: Output, blockLength: Output, f: NameAttrList, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "InterleaveDataset") = run {
-    buildOpTensor("InterleaveDataset", name) {
-      addInput(inputDataset, false)
-      addInput(otherArguments, false)
-      addInput(cycleLength, false)
-      addInput(blockLength, false)
-      attr("f", f)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-    }
-  }
+  fun interleaveDataset(inputDataset: Output, otherArguments: Output, cycleLength: Output, blockLength: Output, f: NameAttrList, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "InterleaveDataset"): Output =
+      buildOpTensor("InterleaveDataset", name) {
+        addInput(inputDataset, false)
+        addInput(otherArguments, false)
+        addInput(cycleLength, false)
+        addInput(blockLength, false)
+        attr("f", f)
+        attr("output_types", outputTypes)
+        attr("output_shapes", outputShapes)
+      }
   
-  fun iterator(sharedName: String, container: String, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "Iterator") = run {
-    buildOpTensor("Iterator", name) {
-      attr("shared_name", sharedName)
-      attr("container", container)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-    }
-  }
+  fun iterator(sharedName: String, container: String, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "Iterator"): Output =
+      buildOpTensor("Iterator", name) {
+        attr("shared_name", sharedName)
+        attr("container", container)
+        attr("output_types", outputTypes)
+        attr("output_shapes", outputShapes)
+      }
   
-  fun iteratorFromStringHandle(stringHandle: Output, outputTypes: Array<Long> = arrayOf(), outputShapes: Array<Shape> = arrayOf(), name: String = "IteratorFromStringHandle") = run {
-    buildOpTensor("IteratorFromStringHandle", name) {
-      addInput(stringHandle, false)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-    }
-  }
+  fun iteratorFromStringHandle(stringHandle: Output, outputTypes: Array<Long> = arrayOf(), outputShapes: Array<Shape> = arrayOf(), name: String = "IteratorFromStringHandle"): Output =
+      buildOpTensor("IteratorFromStringHandle", name) {
+        addInput(stringHandle, false)
+        attr("output_types", outputTypes)
+        attr("output_shapes", outputShapes)
+      }
   
-  fun iteratorFromStringHandleV2(stringHandle: Output, outputTypes: Array<Long> = arrayOf(), outputShapes: Array<Shape> = arrayOf(), name: String = "IteratorFromStringHandleV2") = run {
-    buildOpTensor("IteratorFromStringHandleV2", name) {
-      addInput(stringHandle, false)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-    }
-  }
+  fun iteratorFromStringHandleV2(stringHandle: Output, outputTypes: Array<Long> = arrayOf(), outputShapes: Array<Shape> = arrayOf(), name: String = "IteratorFromStringHandleV2"): Output =
+      buildOpTensor("IteratorFromStringHandleV2", name) {
+        addInput(stringHandle, false)
+        attr("output_types", outputTypes)
+        attr("output_shapes", outputShapes)
+      }
   
-  fun iteratorGetNext(iterator: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "IteratorGetNext") = run {
-    buildOpTensors("IteratorGetNext", name) {
-      addInput(iterator, false)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-    }
-  }
+  fun iteratorGetNext(iterator: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "IteratorGetNext"): List<Output> =
+      buildOpTensors("IteratorGetNext", name) {
+        addInput(iterator, false)
+        attr("output_types", outputTypes)
+        attr("output_shapes", outputShapes)
+      }
   
-  fun iteratorGetNextSync(iterator: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "IteratorGetNextSync") = run {
-    buildOpTensors("IteratorGetNextSync", name) {
-      addInput(iterator, false)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-    }
-  }
+  fun iteratorGetNextSync(iterator: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "IteratorGetNextSync"): List<Output> =
+      buildOpTensors("IteratorGetNextSync", name) {
+        addInput(iterator, false)
+        attr("output_types", outputTypes)
+        attr("output_shapes", outputShapes)
+      }
   
-  fun iteratorToStringHandle(resourceHandle: Output, name: String = "IteratorToStringHandle") = run {
-    buildOpTensor("IteratorToStringHandle", name) {
-      addInput(resourceHandle, false)
-    }
-  }
+  fun iteratorToStringHandle(resourceHandle: Output, name: String = "IteratorToStringHandle"): Output =
+      buildOpTensor("IteratorToStringHandle", name) {
+        addInput(resourceHandle, false)
+      }
   
-  fun iteratorV2(sharedName: String, container: String, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "IteratorV2") = run {
-    buildOpTensor("IteratorV2", name) {
-      attr("shared_name", sharedName)
-      attr("container", container)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-    }
-  }
+  fun iteratorV2(sharedName: String, container: String, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "IteratorV2"): Output =
+      buildOpTensor("IteratorV2", name) {
+        attr("shared_name", sharedName)
+        attr("container", container)
+        attr("output_types", outputTypes)
+        attr("output_shapes", outputShapes)
+      }
   
-  fun latencyStatsDataset(inputDataset: Output, tag: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "LatencyStatsDataset") = run {
-    buildOpTensor("LatencyStatsDataset", name) {
-      addInput(inputDataset, false)
-      addInput(tag, false)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-    }
-  }
+  fun latencyStatsDataset(inputDataset: Output, tag: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "LatencyStatsDataset"): Output =
+      buildOpTensor("LatencyStatsDataset", name) {
+        addInput(inputDataset, false)
+        addInput(tag, false)
+        attr("output_types", outputTypes)
+        attr("output_shapes", outputShapes)
+      }
   
-  fun makeIterator(dataset: Output, iterator: Output, name: String = "MakeIterator") = run {
-    buildOp("MakeIterator", name) {
-      addInput(dataset, false)
-      addInput(iterator, false)
-    }
-  }
+  fun makeIterator(dataset: Output, iterator: Output, name: String = "MakeIterator"): Op =
+      buildOp("MakeIterator", name) {
+        addInput(dataset, false)
+        addInput(iterator, false)
+      }
   
-  fun mapAndBatchDataset(inputDataset: Output, otherArguments: Output, batchSize: Output, numParallelBatches: Output, dropRemainder: Output, f: NameAttrList, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "MapAndBatchDataset") = run {
-    buildOpTensor("MapAndBatchDataset", name) {
-      addInput(inputDataset, false)
-      addInput(otherArguments, false)
-      addInput(batchSize, false)
-      addInput(numParallelBatches, false)
-      addInput(dropRemainder, false)
-      attr("f", f)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-    }
-  }
+  fun mapAndBatchDataset(inputDataset: Output, otherArguments: Output, batchSize: Output, numParallelBatches: Output, dropRemainder: Output, f: NameAttrList, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "MapAndBatchDataset"): Output =
+      buildOpTensor("MapAndBatchDataset", name) {
+        addInput(inputDataset, false)
+        addInput(otherArguments, false)
+        addInput(batchSize, false)
+        addInput(numParallelBatches, false)
+        addInput(dropRemainder, false)
+        attr("f", f)
+        attr("output_types", outputTypes)
+        attr("output_shapes", outputShapes)
+      }
   
-  fun mapAndBatchDatasetV2(inputDataset: Output, otherArguments: Output, batchSize: Output, numParallelCalls: Output, dropRemainder: Output, f: NameAttrList, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "MapAndBatchDatasetV2") = run {
-    buildOpTensor("MapAndBatchDatasetV2", name) {
-      addInput(inputDataset, false)
-      addInput(otherArguments, false)
-      addInput(batchSize, false)
-      addInput(numParallelCalls, false)
-      addInput(dropRemainder, false)
-      attr("f", f)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-    }
-  }
+  fun mapAndBatchDatasetV2(inputDataset: Output, otherArguments: Output, batchSize: Output, numParallelCalls: Output, dropRemainder: Output, f: NameAttrList, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "MapAndBatchDatasetV2"): Output =
+      buildOpTensor("MapAndBatchDatasetV2", name) {
+        addInput(inputDataset, false)
+        addInput(otherArguments, false)
+        addInput(batchSize, false)
+        addInput(numParallelCalls, false)
+        addInput(dropRemainder, false)
+        attr("f", f)
+        attr("output_types", outputTypes)
+        attr("output_shapes", outputShapes)
+      }
   
-  fun mapDataset(inputDataset: Output, otherArguments: Output, f: NameAttrList, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "MapDataset") = run {
-    buildOpTensor("MapDataset", name) {
-      addInput(inputDataset, false)
-      addInput(otherArguments, false)
-      attr("f", f)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-    }
-  }
+  fun mapDataset(inputDataset: Output, otherArguments: Output, f: NameAttrList, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "MapDataset"): Output =
+      buildOpTensor("MapDataset", name) {
+        addInput(inputDataset, false)
+        addInput(otherArguments, false)
+        attr("f", f)
+        attr("output_types", outputTypes)
+        attr("output_shapes", outputShapes)
+      }
   
-  fun oneShotIterator(datasetFactory: NameAttrList, outputTypes: Array<Long>, outputShapes: Array<Shape>, container: String = "", sharedName: String = "", name: String = "OneShotIterator") = run {
-    buildOpTensor("OneShotIterator", name) {
-      attr("dataset_factory", datasetFactory)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-      attr("container", container)
-      attr("shared_name", sharedName)
-    }
-  }
+  fun oneShotIterator(datasetFactory: NameAttrList, outputTypes: Array<Long>, outputShapes: Array<Shape>, container: String = "", sharedName: String = "", name: String = "OneShotIterator"): Output =
+      buildOpTensor("OneShotIterator", name) {
+        attr("dataset_factory", datasetFactory)
+        attr("output_types", outputTypes)
+        attr("output_shapes", outputShapes)
+        attr("container", container)
+        attr("shared_name", sharedName)
+      }
   
-  fun optimizeDataset(inputDataset: Output, optimizations: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "OptimizeDataset") = run {
-    buildOpTensor("OptimizeDataset", name) {
-      addInput(inputDataset, false)
-      addInput(optimizations, false)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-    }
-  }
+  fun optimizeDataset(inputDataset: Output, optimizations: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "OptimizeDataset"): Output =
+      buildOpTensor("OptimizeDataset", name) {
+        addInput(inputDataset, false)
+        addInput(optimizations, false)
+        attr("output_types", outputTypes)
+        attr("output_shapes", outputShapes)
+      }
   
-  fun paddedBatchDataset(inputDataset: Output, batchSize: Output, paddedShapes: List<Output>, paddingValues: Output, outputShapes: Array<Shape>, name: String = "PaddedBatchDataset") = run {
-    buildOpTensor("PaddedBatchDataset", name) {
-      addInput(inputDataset, false)
-      addInput(batchSize, false)
-      addInput(paddedShapes, false)
-      addInput(paddingValues, false)
-      attr("output_shapes", outputShapes)
-    }
-  }
+  fun paddedBatchDataset(inputDataset: Output, batchSize: Output, paddedShapes: List<Output>, paddingValues: Output, outputShapes: Array<Shape>, name: String = "PaddedBatchDataset"): Output =
+      buildOpTensor("PaddedBatchDataset", name) {
+        addInput(inputDataset, false)
+        addInput(batchSize, false)
+        addInput(paddedShapes, false)
+        addInput(paddingValues, false)
+        attr("output_shapes", outputShapes)
+      }
   
-  fun paddedBatchDatasetV2(inputDataset: Output, batchSize: Output, paddedShapes: List<Output>, paddingValues: Output, dropRemainder: Output, outputShapes: Array<Shape>, name: String = "PaddedBatchDatasetV2") = run {
-    buildOpTensor("PaddedBatchDatasetV2", name) {
-      addInput(inputDataset, false)
-      addInput(batchSize, false)
-      addInput(paddedShapes, false)
-      addInput(paddingValues, false)
-      addInput(dropRemainder, false)
-      attr("output_shapes", outputShapes)
-    }
-  }
+  fun paddedBatchDatasetV2(inputDataset: Output, batchSize: Output, paddedShapes: List<Output>, paddingValues: Output, dropRemainder: Output, outputShapes: Array<Shape>, name: String = "PaddedBatchDatasetV2"): Output =
+      buildOpTensor("PaddedBatchDatasetV2", name) {
+        addInput(inputDataset, false)
+        addInput(batchSize, false)
+        addInput(paddedShapes, false)
+        addInput(paddingValues, false)
+        addInput(dropRemainder, false)
+        attr("output_shapes", outputShapes)
+      }
   
-  fun parallelInterleaveDataset(inputDataset: Output, otherArguments: Output, cycleLength: Output, blockLength: Output, sloppy: Output, bufferOutputElements: Output, prefetchInputElements: Output, f: NameAttrList, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "ParallelInterleaveDataset") = run {
-    buildOpTensor("ParallelInterleaveDataset", name) {
-      addInput(inputDataset, false)
-      addInput(otherArguments, false)
-      addInput(cycleLength, false)
-      addInput(blockLength, false)
-      addInput(sloppy, false)
-      addInput(bufferOutputElements, false)
-      addInput(prefetchInputElements, false)
-      attr("f", f)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-    }
-  }
+  fun parallelInterleaveDataset(inputDataset: Output, otherArguments: Output, cycleLength: Output, blockLength: Output, sloppy: Output, bufferOutputElements: Output, prefetchInputElements: Output, f: NameAttrList, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "ParallelInterleaveDataset"): Output =
+      buildOpTensor("ParallelInterleaveDataset", name) {
+        addInput(inputDataset, false)
+        addInput(otherArguments, false)
+        addInput(cycleLength, false)
+        addInput(blockLength, false)
+        addInput(sloppy, false)
+        addInput(bufferOutputElements, false)
+        addInput(prefetchInputElements, false)
+        attr("f", f)
+        attr("output_types", outputTypes)
+        attr("output_shapes", outputShapes)
+      }
   
-  fun parallelMapDataset(inputDataset: Output, otherArguments: Output, numParallelCalls: Output, f: NameAttrList, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "ParallelMapDataset") = run {
-    buildOpTensor("ParallelMapDataset", name) {
-      addInput(inputDataset, false)
-      addInput(otherArguments, false)
-      addInput(numParallelCalls, false)
-      attr("f", f)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-    }
-  }
+  fun parallelMapDataset(inputDataset: Output, otherArguments: Output, numParallelCalls: Output, f: NameAttrList, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "ParallelMapDataset"): Output =
+      buildOpTensor("ParallelMapDataset", name) {
+        addInput(inputDataset, false)
+        addInput(otherArguments, false)
+        addInput(numParallelCalls, false)
+        attr("f", f)
+        attr("output_types", outputTypes)
+        attr("output_shapes", outputShapes)
+      }
   
-  fun prefetchDataset(inputDataset: Output, bufferSize: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "PrefetchDataset") = run {
-    buildOpTensor("PrefetchDataset", name) {
-      addInput(inputDataset, false)
-      addInput(bufferSize, false)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-    }
-  }
+  fun prefetchDataset(inputDataset: Output, bufferSize: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "PrefetchDataset"): Output =
+      buildOpTensor("PrefetchDataset", name) {
+        addInput(inputDataset, false)
+        addInput(bufferSize, false)
+        attr("output_types", outputTypes)
+        attr("output_shapes", outputShapes)
+      }
   
-  fun prependFromQueueAndPaddedBatchDataset(inputDataset: Output, batchSize: Output, paddedShapes: List<Output>, paddingValues: Output, outputShapes: Array<Shape>, name: String = "PrependFromQueueAndPaddedBatchDataset") = run {
-    buildOpTensor("PrependFromQueueAndPaddedBatchDataset", name) {
-      addInput(inputDataset, false)
-      addInput(batchSize, false)
-      addInput(paddedShapes, false)
-      addInput(paddingValues, false)
-      attr("output_shapes", outputShapes)
-    }
-  }
+  fun prependFromQueueAndPaddedBatchDataset(inputDataset: Output, batchSize: Output, paddedShapes: List<Output>, paddingValues: Output, outputShapes: Array<Shape>, name: String = "PrependFromQueueAndPaddedBatchDataset"): Output =
+      buildOpTensor("PrependFromQueueAndPaddedBatchDataset", name) {
+        addInput(inputDataset, false)
+        addInput(batchSize, false)
+        addInput(paddedShapes, false)
+        addInput(paddingValues, false)
+        attr("output_shapes", outputShapes)
+      }
   
-  fun randomDataset(seed: Output, seed2: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "RandomDataset") = run {
-    buildOpTensor("RandomDataset", name) {
-      addInput(seed, false)
-      addInput(seed2, false)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-    }
-  }
+  fun randomDataset(seed: Output, seed2: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "RandomDataset"): Output =
+      buildOpTensor("RandomDataset", name) {
+        addInput(seed, false)
+        addInput(seed2, false)
+        attr("output_types", outputTypes)
+        attr("output_shapes", outputShapes)
+      }
   
-  fun rangeDataset(start: Output, stop: Output, step: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "RangeDataset") = run {
-    buildOpTensor("RangeDataset", name) {
-      addInput(start, false)
-      addInput(stop, false)
-      addInput(step, false)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-    }
-  }
+  fun rangeDataset(start: Output, stop: Output, step: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "RangeDataset"): Output =
+      buildOpTensor("RangeDataset", name) {
+        addInput(start, false)
+        addInput(stop, false)
+        addInput(step, false)
+        attr("output_types", outputTypes)
+        attr("output_shapes", outputShapes)
+      }
   
-  fun repeatDataset(inputDataset: Output, count: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "RepeatDataset") = run {
-    buildOpTensor("RepeatDataset", name) {
-      addInput(inputDataset, false)
-      addInput(count, false)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-    }
-  }
+  fun repeatDataset(inputDataset: Output, count: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "RepeatDataset"): Output =
+      buildOpTensor("RepeatDataset", name) {
+        addInput(inputDataset, false)
+        addInput(count, false)
+        attr("output_types", outputTypes)
+        attr("output_shapes", outputShapes)
+      }
   
-  fun scanDataset(inputDataset: Output, initialState: Output, otherArguments: Output, f: NameAttrList, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "ScanDataset") = run {
-    buildOpTensor("ScanDataset", name) {
-      addInput(inputDataset, false)
-      addInput(initialState, false)
-      addInput(otherArguments, false)
-      attr("f", f)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-    }
-  }
+  fun scanDataset(inputDataset: Output, initialState: Output, otherArguments: Output, f: NameAttrList, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "ScanDataset"): Output =
+      buildOpTensor("ScanDataset", name) {
+        addInput(inputDataset, false)
+        addInput(initialState, false)
+        addInput(otherArguments, false)
+        attr("f", f)
+        attr("output_types", outputTypes)
+        attr("output_shapes", outputShapes)
+      }
   
-  fun serializeIterator(resourceHandle: Output, name: String = "SerializeIterator") = run {
-    buildOpTensor("SerializeIterator", name) {
-      addInput(resourceHandle, false)
-    }
-  }
+  fun serializeIterator(resourceHandle: Output, name: String = "SerializeIterator"): Output =
+      buildOpTensor("SerializeIterator", name) {
+        addInput(resourceHandle, false)
+      }
   
-  fun setStatsAggregatorDataset(inputDataset: Output, statsAggregator: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "SetStatsAggregatorDataset") = run {
-    buildOpTensor("SetStatsAggregatorDataset", name) {
-      addInput(inputDataset, false)
-      addInput(statsAggregator, false)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-    }
-  }
+  fun setStatsAggregatorDataset(inputDataset: Output, statsAggregator: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "SetStatsAggregatorDataset"): Output =
+      buildOpTensor("SetStatsAggregatorDataset", name) {
+        addInput(inputDataset, false)
+        addInput(statsAggregator, false)
+        attr("output_types", outputTypes)
+        attr("output_shapes", outputShapes)
+      }
   
-  fun shuffleAndRepeatDataset(inputDataset: Output, bufferSize: Output, seed: Output, seed2: Output, count: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "ShuffleAndRepeatDataset") = run {
-    buildOpTensor("ShuffleAndRepeatDataset", name) {
-      addInput(inputDataset, false)
-      addInput(bufferSize, false)
-      addInput(seed, false)
-      addInput(seed2, false)
-      addInput(count, false)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-    }
-  }
+  fun shuffleAndRepeatDataset(inputDataset: Output, bufferSize: Output, seed: Output, seed2: Output, count: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "ShuffleAndRepeatDataset"): Output =
+      buildOpTensor("ShuffleAndRepeatDataset", name) {
+        addInput(inputDataset, false)
+        addInput(bufferSize, false)
+        addInput(seed, false)
+        addInput(seed2, false)
+        addInput(count, false)
+        attr("output_types", outputTypes)
+        attr("output_shapes", outputShapes)
+      }
   
-  fun shuffleDataset(inputDataset: Output, bufferSize: Output, seed: Output, seed2: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, reshuffleEachIteration: Boolean = true, name: String = "ShuffleDataset") = run {
-    buildOpTensor("ShuffleDataset", name) {
-      addInput(inputDataset, false)
-      addInput(bufferSize, false)
-      addInput(seed, false)
-      addInput(seed2, false)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-      attr("reshuffle_each_iteration", reshuffleEachIteration)
-    }
-  }
+  fun shuffleDataset(inputDataset: Output, bufferSize: Output, seed: Output, seed2: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, reshuffleEachIteration: Boolean = true, name: String = "ShuffleDataset"): Output =
+      buildOpTensor("ShuffleDataset", name) {
+        addInput(inputDataset, false)
+        addInput(bufferSize, false)
+        addInput(seed, false)
+        addInput(seed2, false)
+        attr("output_types", outputTypes)
+        attr("output_shapes", outputShapes)
+        attr("reshuffle_each_iteration", reshuffleEachIteration)
+      }
   
-  fun sinkDataset(inputDataset: Output, name: String = "SinkDataset") = run {
-    buildOpTensor("SinkDataset", name) {
-      addInput(inputDataset, false)
-    }
-  }
+  fun sinkDataset(inputDataset: Output, name: String = "SinkDataset"): Output =
+      buildOpTensor("SinkDataset", name) {
+        addInput(inputDataset, false)
+      }
   
-  fun skipDataset(inputDataset: Output, count: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "SkipDataset") = run {
-    buildOpTensor("SkipDataset", name) {
-      addInput(inputDataset, false)
-      addInput(count, false)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-    }
-  }
+  fun skipDataset(inputDataset: Output, count: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "SkipDataset"): Output =
+      buildOpTensor("SkipDataset", name) {
+        addInput(inputDataset, false)
+        addInput(count, false)
+        attr("output_types", outputTypes)
+        attr("output_shapes", outputShapes)
+      }
   
-  fun slideDataset(inputDataset: Output, windowSize: Output, stride: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "SlideDataset") = run {
-    buildOpTensor("SlideDataset", name) {
-      addInput(inputDataset, false)
-      addInput(windowSize, false)
-      addInput(stride, false)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-    }
-  }
+  fun slideDataset(inputDataset: Output, windowSize: Output, stride: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "SlideDataset"): Output =
+      buildOpTensor("SlideDataset", name) {
+        addInput(inputDataset, false)
+        addInput(windowSize, false)
+        addInput(stride, false)
+        attr("output_types", outputTypes)
+        attr("output_shapes", outputShapes)
+      }
   
-  fun sparseTensorSliceDataset(indices: Output, values: Output, denseShape: Output, name: String = "SparseTensorSliceDataset") = run {
-    buildOpTensor("SparseTensorSliceDataset", name) {
-      addInput(indices, false)
-      addInput(values, false)
-      addInput(denseShape, false)
-    }
-  }
+  fun sparseTensorSliceDataset(indices: Output, values: Output, denseShape: Output, name: String = "SparseTensorSliceDataset"): Output =
+      buildOpTensor("SparseTensorSliceDataset", name) {
+        addInput(indices, false)
+        addInput(values, false)
+        addInput(denseShape, false)
+      }
   
-  fun sqlDataset(driverName: Output, dataSourceName: Output, query: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "SqlDataset") = run {
-    buildOpTensor("SqlDataset", name) {
-      addInput(driverName, false)
-      addInput(dataSourceName, false)
-      addInput(query, false)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-    }
-  }
+  fun sqlDataset(driverName: Output, dataSourceName: Output, query: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "SqlDataset"): Output =
+      buildOpTensor("SqlDataset", name) {
+        addInput(driverName, false)
+        addInput(dataSourceName, false)
+        addInput(query, false)
+        attr("output_types", outputTypes)
+        attr("output_shapes", outputShapes)
+      }
   
-  fun statsAggregatorHandle(container: String = "", sharedName: String = "", name: String = "StatsAggregatorHandle") = run {
-    buildOpTensor("StatsAggregatorHandle", name) {
-      attr("container", container)
-      attr("shared_name", sharedName)
-    }
-  }
+  fun statsAggregatorHandle(container: String = "", sharedName: String = "", name: String = "StatsAggregatorHandle"): Output =
+      buildOpTensor("StatsAggregatorHandle", name) {
+        attr("container", container)
+        attr("shared_name", sharedName)
+      }
   
-  fun statsAggregatorSummary(iterator: Output, name: String = "StatsAggregatorSummary") = run {
-    buildOpTensor("StatsAggregatorSummary", name) {
-      addInput(iterator, false)
-    }
-  }
+  fun statsAggregatorSummary(iterator: Output, name: String = "StatsAggregatorSummary"): Output =
+      buildOpTensor("StatsAggregatorSummary", name) {
+        addInput(iterator, false)
+      }
   
-  fun tFRecordDataset(filenames: Output, compressionType: Output, bufferSize: Output, name: String = "TFRecordDataset") = run {
-    buildOpTensor("TFRecordDataset", name) {
-      addInput(filenames, false)
-      addInput(compressionType, false)
-      addInput(bufferSize, false)
-    }
-  }
+  fun tFRecordDataset(filenames: Output, compressionType: Output, bufferSize: Output, name: String = "TFRecordDataset"): Output =
+      buildOpTensor("TFRecordDataset", name) {
+        addInput(filenames, false)
+        addInput(compressionType, false)
+        addInput(bufferSize, false)
+      }
   
-  fun takeDataset(inputDataset: Output, count: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "TakeDataset") = run {
-    buildOpTensor("TakeDataset", name) {
-      addInput(inputDataset, false)
-      addInput(count, false)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-    }
-  }
+  fun takeDataset(inputDataset: Output, count: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "TakeDataset"): Output =
+      buildOpTensor("TakeDataset", name) {
+        addInput(inputDataset, false)
+        addInput(count, false)
+        attr("output_types", outputTypes)
+        attr("output_shapes", outputShapes)
+      }
   
-  fun tensorDataset(components: Output, outputShapes: Array<Shape>, name: String = "TensorDataset") = run {
-    buildOpTensor("TensorDataset", name) {
-      addInput(components, false)
-      attr("output_shapes", outputShapes)
-    }
-  }
+  fun tensorDataset(components: Output, outputShapes: Array<Shape>, name: String = "TensorDataset"): Output =
+      buildOpTensor("TensorDataset", name) {
+        addInput(components, false)
+        attr("output_shapes", outputShapes)
+      }
   
-  fun tensorSliceDataset(components: Output, outputShapes: Array<Shape>, name: String = "TensorSliceDataset") = run {
-    buildOpTensor("TensorSliceDataset", name) {
-      addInput(components, false)
-      attr("output_shapes", outputShapes)
-    }
-  }
+  fun tensorSliceDataset(components: Output, outputShapes: Array<Shape>, name: String = "TensorSliceDataset"): Output =
+      buildOpTensor("TensorSliceDataset", name) {
+        addInput(components, false)
+        attr("output_shapes", outputShapes)
+      }
   
-  fun textLineDataset(filenames: Output, compressionType: Output, bufferSize: Output, name: String = "TextLineDataset") = run {
-    buildOpTensor("TextLineDataset", name) {
-      addInput(filenames, false)
-      addInput(compressionType, false)
-      addInput(bufferSize, false)
-    }
-  }
+  fun textLineDataset(filenames: Output, compressionType: Output, bufferSize: Output, name: String = "TextLineDataset"): Output =
+      buildOpTensor("TextLineDataset", name) {
+        addInput(filenames, false)
+        addInput(compressionType, false)
+        addInput(bufferSize, false)
+      }
   
-  fun unbatchDataset(inputDataset: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "UnbatchDataset") = run {
-    buildOpTensor("UnbatchDataset", name) {
-      addInput(inputDataset, false)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-    }
-  }
+  fun unbatchDataset(inputDataset: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "UnbatchDataset"): Output =
+      buildOpTensor("UnbatchDataset", name) {
+        addInput(inputDataset, false)
+        attr("output_types", outputTypes)
+        attr("output_shapes", outputShapes)
+      }
   
-  fun windowDataset(inputDataset: Output, windowSize: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "WindowDataset") = run {
-    buildOpTensor("WindowDataset", name) {
-      addInput(inputDataset, false)
-      addInput(windowSize, false)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-    }
-  }
+  fun windowDataset(inputDataset: Output, windowSize: Output, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "WindowDataset"): Output =
+      buildOpTensor("WindowDataset", name) {
+        addInput(inputDataset, false)
+        addInput(windowSize, false)
+        attr("output_types", outputTypes)
+        attr("output_shapes", outputShapes)
+      }
   
-  fun zipDataset(inputDatasets: List<Output>, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "ZipDataset") = run {
-    buildOpTensor("ZipDataset", name) {
-      addInput(inputDatasets, false)
-      attr("output_types", outputTypes)
-      attr("output_shapes", outputShapes)
-    }
-  }
+  fun zipDataset(inputDatasets: List<Output>, outputTypes: Array<Long>, outputShapes: Array<Shape>, name: String = "ZipDataset"): Output =
+      buildOpTensor("ZipDataset", name) {
+        addInput(inputDatasets, false)
+        attr("output_types", outputTypes)
+        attr("output_shapes", outputShapes)
+      }
 }

@@ -1,9 +1,11 @@
-package wumo.sim.tensorflow.ops
+package wumo.sim.tensorflow.ops.basic
 
 import org.bytedeco.javacpp.tensorflow.AttrValue
 import org.bytedeco.javacpp.tensorflow.TensorProto
 import wumo.sim.tensorflow.buildOpTensor
 import wumo.sim.tensorflow.dtypeFromClass
+import wumo.sim.tensorflow.ops.Op
+import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.tensor.Tensor
 import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.types.*

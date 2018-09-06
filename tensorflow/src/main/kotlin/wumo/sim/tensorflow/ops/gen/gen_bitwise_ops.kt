@@ -6,51 +6,44 @@ package wumo.sim.tensorflow.ops.gen
 import wumo.sim.tensorflow.buildOpTensor
 import wumo.sim.tensorflow.ops.Output
 
-interface gen_bitwise_ops {
-  fun bitwiseAnd(x: Output, y: Output, name: String = "BitwiseAnd") = run {
-    buildOpTensor("BitwiseAnd", name) {
-      addInput(x, false)
-      addInput(y, false)
-    }
-  }
+object gen_bitwise_ops {
+  fun bitwiseAnd(x: Output, y: Output, name: String = "BitwiseAnd"): Output =
+      buildOpTensor("BitwiseAnd", name) {
+        addInput(x, false)
+        addInput(y, false)
+      }
   
-  fun bitwiseOr(x: Output, y: Output, name: String = "BitwiseOr") = run {
-    buildOpTensor("BitwiseOr", name) {
-      addInput(x, false)
-      addInput(y, false)
-    }
-  }
+  fun bitwiseOr(x: Output, y: Output, name: String = "BitwiseOr"): Output =
+      buildOpTensor("BitwiseOr", name) {
+        addInput(x, false)
+        addInput(y, false)
+      }
   
-  fun bitwiseXor(x: Output, y: Output, name: String = "BitwiseXor") = run {
-    buildOpTensor("BitwiseXor", name) {
-      addInput(x, false)
-      addInput(y, false)
-    }
-  }
+  fun bitwiseXor(x: Output, y: Output, name: String = "BitwiseXor"): Output =
+      buildOpTensor("BitwiseXor", name) {
+        addInput(x, false)
+        addInput(y, false)
+      }
   
-  fun invert(x: Output, name: String = "Invert") = run {
-    buildOpTensor("Invert", name) {
-      addInput(x, false)
-    }
-  }
+  fun invert(x: Output, name: String = "Invert"): Output =
+      buildOpTensor("Invert", name) {
+        addInput(x, false)
+      }
   
-  fun leftShift(x: Output, y: Output, name: String = "LeftShift") = run {
-    buildOpTensor("LeftShift", name) {
-      addInput(x, false)
-      addInput(y, false)
-    }
-  }
+  fun leftShift(x: Output, y: Output, name: String = "LeftShift"): Output =
+      buildOpTensor("LeftShift", name) {
+        addInput(x, false)
+        addInput(y, false)
+      }
   
-  fun populationCount(x: Output, name: String = "PopulationCount") = run {
-    buildOpTensor("PopulationCount", name) {
-      addInput(x, false)
-    }
-  }
+  fun populationCount(x: Output, name: String = "PopulationCount"): Output =
+      buildOpTensor("PopulationCount", name) {
+        addInput(x, false)
+      }
   
-  fun rightShift(x: Output, y: Output, name: String = "RightShift") = run {
-    buildOpTensor("RightShift", name) {
-      addInput(x, false)
-      addInput(y, false)
-    }
-  }
+  fun rightShift(x: Output, y: Output, name: String = "RightShift"): Output =
+      buildOpTensor("RightShift", name) {
+        addInput(x, false)
+        addInput(y, false)
+      }
 }

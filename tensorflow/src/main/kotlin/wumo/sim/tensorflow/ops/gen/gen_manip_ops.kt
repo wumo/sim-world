@@ -6,12 +6,11 @@ package wumo.sim.tensorflow.ops.gen
 import wumo.sim.tensorflow.buildOpTensor
 import wumo.sim.tensorflow.ops.Output
 
-interface gen_manip_ops {
-  fun roll(input: Output, shift: Output, axis: Output, name: String = "Roll") = run {
-    buildOpTensor("Roll", name) {
-      addInput(input, false)
-      addInput(shift, false)
-      addInput(axis, false)
-    }
-  }
+object gen_manip_ops {
+  fun roll(input: Output, shift: Output, axis: Output, name: String = "Roll"): Output =
+      buildOpTensor("Roll", name) {
+        addInput(input, false)
+        addInput(shift, false)
+        addInput(axis, false)
+      }
 }

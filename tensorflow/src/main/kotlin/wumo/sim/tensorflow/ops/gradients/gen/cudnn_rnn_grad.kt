@@ -3,11 +3,6 @@ import wumo.sim.tensorflow.tf
 
 fun register_cudnn_rnn_grad() {
   /**Gradients for CuudnnRNN operators.*/
-/* from__future__importabsolute_import */
-/* from__future__importdivision */
-/* from__future__importprint_function */
-/* fromtensorflow.python.frameworkimportops */
-/* fromtensorflow.python.opsimportgen_cudnn_rnn_ops */
   register("CudnnRNN") { op, grad ->
     val grads = grad.map { it!!.toOutput() }
     /**Gradients for the CudnnRNN op.*/

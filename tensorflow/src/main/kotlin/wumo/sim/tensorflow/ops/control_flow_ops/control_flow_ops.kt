@@ -3,6 +3,7 @@ package wumo.sim.tensorflow.ops.control_flow_ops
 import wumo.sim.tensorflow.core.InvalidArgumentException
 import wumo.sim.tensorflow.core.InvalidDataTypeException
 import wumo.sim.tensorflow.ops.*
+import wumo.sim.tensorflow.ops.basic.times
 import wumo.sim.tensorflow.ops.gen.gen_control_flow_ops
 import wumo.sim.tensorflow.tensor.constantValue
 import wumo.sim.tensorflow.tf
@@ -299,144 +300,10 @@ object control_flow_ops {
     }
   }
   
-  interface API : gen_control_flow_ops {
+  interface API {
     
-    /** Creates an op that produces the content of `input` only after all ops in `dependencies` have finished executing.
-     *
-     * In some cases, a user may want the output of an op to be consumed externally only after some other dependencies
-     * have run first. This function ensures returns `input`, but only after all ops in `dependencies` have run. Note
-     * that this means that there is no guarantee that `input` will be evaluated after any `dependencies` have run.
-     *
-     * @group ControlFlowOps
-     * @param  dependencies Set of ops to be executed before `input`.
-     * @param  input        Op output to be computed after all ops in `dependencies` have finished executing.
-     * @param  name         Name for the created op (used mainly as a name scope).
-     * @return Created op output.
-     * @see "tensorflow.python.ops.control_flow_ops.with_dependencies"
-     */
-    fun withDependencies(dependencies: Set<Op>,
-                         input: OutputLike,
-                         name: String = "control_dependency"): Output =
-        tf.nameScope(name, dependencies + input.op) {
-          tf.colocateWith(input.op) {
-            tf.controlDependencies(dependencies.toMutableSet()) {
-              tf.identity(input, name = tf.currentNameScope)
-            }
-          }
-        }
-    
-    /**
-     * Create an op that groups multiple operations.
-     *
-     * When this op finishes, all ops in [inputs] have finished. This op has no
-     * output.
-     *
-     * @param inputs Zero or more tensors to group.
-     * @param name A name for this operation (optional).
-     *
-     * @return An Operation that executes all its inputs.
-     */
-    fun group(inputs: Iterable<Op>, name: String = "group_deps"): Op {
-      // Sorts *inputs according to their devices.
-      val ops_on_device = inputs.groupBy { it.device }
-      if (ops_on_device.size == 1) {
-        // 1-level tree. The root node is the returned NoOp node.
-        val (dev, deps) = ops_on_device.entries.first()
-        return groupControlDeps(dev, deps, name)
-      }
-      // 2-level tree. The root node is the returned no-op node. `dependencies` contains 1 NoOp node for each device.
-      val deps = ops_on_device.asSequence()
-          .sortedBy { it.key }
-          .mapTo(mutableSetOf()) { (dev, ops) ->
-            groupControlDeps(dev, ops)
-          }
-      return tf.controlDependencies(deps) {
-        tf.noOp(name)
-      }
-    }
-    
-    /**
-     * Returns the value of an available element of `inputs`.
-     *
-     * This op tests each of the tensors in `inputs` in turn to determine if any of
-     * them is available. If it finds an available tensor, it returns it and its
-     * index in `inputs`.
-     
-     * It is an error if more than one tensor in `inputs` is available. If no tensor
-     * in `inputs` is available, the returned tensor and index are not set.
-     *
-     * This op handles both `Output`s and `IndexedSlices`. If inputs has a mix of
-     * `Output`s and `IndexedSlices`, all inputs are converted to IndexedSlices
-     * before merging.
-     * @param inputs The input tensors, at most one of which is available.
-     * @param name A name for this operation (optional).
-     * @return A tuple containing the chosen input tensor and its index in `inputs`.
-     */
-    @Suppress("UNCHECKED_CAST")
-    fun <T : OutputLike> merge(inputs: List<T>, name: String = "Merge"): List<Output> {
-      return when {
-        inputs.all { it is Output } -> {
-          inputs as List<Output>
-          if (inputs.all { it.dataType.isRefType })
-            tf.refMerge(inputs, name)
-          else
-            tf.merge(inputs, name)
-        }
-        inputs.all { it is SparseOutput } -> TODO()
-        else -> TODO()
-      }
-    }
-    
-    fun <T : OutputLike> switch(input: T, predicate: Output, name: String = "Switch"): List<Output> {
-      val _input = input as OutputLike
-      return when (_input) {
-        is Output -> tf.switch(_input, predicate, name)
-        is IndexedSlices -> {
-          TODO()
-        }
-        is SparseOutput -> {
-          TODO()
-        }
-      }
-    }
-    
-    /** Group tensors together.
-     * This creates a tuple of tensors with the same values as the `tensors`
-     * argument, except that the value of each tensor is only returned after the
-     * values of all tensors have been computed.
-     *
-     * `control_inputs` contains additional ops that have to finish before this op
-     * finishes, but whose outputs are not returned.
-     *
-     * This can be used as a "join" mechanism for parallel computations: all the
-     * argument tensors can be computed in parallel, but the values of any tensor
-     * returned by `tuple` are only available after all the parallel computations
-     * are done.
-     *
-     * See also @{tf.group$group} and
-     * @{tf.control_dependencies$control_dependencies}.
-     *
-     * @group ControlFlowOps
-     * @param  inputs        Op outputs being grouped.
-     * @param  controlInputs Set of additional ops that have to finish before this op finishes, but whose outputs are not
-     *                       returned.
-     * @param  name          Name for the created ops (used mainly as a name scope).
-     * @return Created op outputs, which in this case are the values of `inputs`.
-     */
-    fun tuple(inputs: List<OutputLike?>, controlInputs: Set<Op> = emptySet(), name: String = "tuple"): List<OutputLike?> {
-      val gatingOps = inputs.asSequence().filterNotNull().mapTo(mutableSetOf()) { it.op }
-      return if (gatingOps.isEmpty())
-        inputs
-      else
-        tf.nameScope(name, gatingOps) {
-          val gate = group(gatingOps + controlInputs)
-          inputs.map {
-            if (it == null)
-              it
-            else
-              withDependencies(setOf(gate), it)
-          }
-        }
+    fun abort(errorMsg: String = "", exitWithoutError: Boolean = false, name: String = "Abort"): Op {
+      return gen_control_flow_ops.abort(errorMsg, exitWithoutError, name)
     }
     
     /**
@@ -499,6 +366,10 @@ object control_flow_ops {
           CondContext.unflatten(originalResultTrue, merges)
         }
     
+    fun controlTrigger(name: String = "ControlTrigger"): Op {
+      return gen_control_flow_ops.controlTrigger(name)
+    }
+    
     /** Creates an op that creates or finds a child frame, and makes `input` available to that child frame.
      *
      * The op is used together with `exit` to create loops in the graph. The unique `frameName` is used by the `Executor`
@@ -521,9 +392,9 @@ object control_flow_ops {
         when (input) {
           is Output -> {
             val result = if (input.dataType.isRefType && useRef)
-              super.refEnter(input, frameName, isContant, parallelIterations.toLong(), name)
+              gen_control_flow_ops.refEnter(input, frameName, isContant, parallelIterations.toLong(), name)
             else
-              super.enter(input, frameName, isContant, parallelIterations.toLong(), name)
+              gen_control_flow_ops.enter(input, frameName, isContant, parallelIterations.toLong(), name)
             if (useInputShape)
               result.setShape(input.shape)
             result
@@ -557,9 +428,9 @@ object control_flow_ops {
     fun <T : OutputLike> exit(input: T, name: String = "Exit"): T =
         when (input) {
           is Output -> if (input.dataType.isRefType)
-            super.refExit(input, name)
+            gen_control_flow_ops.refExit(input, name)
           else
-            super.exit(input, name)
+            gen_control_flow_ops.exit(input, name)
           is IndexedSlices -> {
             val values = exit(input.values, name)
             val indices = exit(input.indices, "indices")
@@ -577,6 +448,76 @@ object control_flow_ops {
           else -> NONE()
         } as T
     
+    /**
+     * Create an op that groups multiple operations.
+     *
+     * When this op finishes, all ops in [inputs] have finished. This op has no
+     * output.
+     *
+     * @param inputs Zero or more tensors to group.
+     * @param name A name for this operation (optional).
+     *
+     * @return An Operation that executes all its inputs.
+     */
+    fun group(inputs: Iterable<Op>, name: String = "group_deps"): Op {
+      // Sorts *inputs according to their devices.
+      val ops_on_device = inputs.groupBy { it.device }
+      if (ops_on_device.size == 1) {
+        // 1-level tree. The root node is the returned NoOp node.
+        val (dev, deps) = ops_on_device.entries.first()
+        return groupControlDeps(dev, deps, name)
+      }
+      // 2-level tree. The root node is the returned no-op node. `dependencies` contains 1 NoOp node for each device.
+      val deps = ops_on_device.asSequence()
+          .sortedBy { it.key }
+          .mapTo(mutableSetOf()) { (dev, ops) ->
+            groupControlDeps(dev, ops)
+          }
+      return tf.controlDependencies(deps) {
+        tf.noOp(name)
+      }
+    }
+    
+    fun loopCond(input: Output, name: String = "LoopCond"): Output {
+      return gen_control_flow_ops.loopCond(input, name)
+    }
+    
+    fun nextIteration(data: Output, name: String = "NextIteration"): Output {
+      return gen_control_flow_ops.nextIteration(data, name)
+    }
+    
+    /**
+     * Returns the value of an available element of `inputs`.
+     *
+     * This op tests each of the tensors in `inputs` in turn to determine if any of
+     * them is available. If it finds an available tensor, it returns it and its
+     * index in `inputs`.
+     
+     * It is an error if more than one tensor in `inputs` is available. If no tensor
+     * in `inputs` is available, the returned tensor and index are not set.
+     *
+     * This op handles both `Output`s and `IndexedSlices`. If inputs has a mix of
+     * `Output`s and `IndexedSlices`, all inputs are converted to IndexedSlices
+     * before merging.
+     * @param inputs The input tensors, at most one of which is available.
+     * @param name A name for this operation (optional).
+     * @return A tuple containing the chosen input tensor and its index in `inputs`.
+     */
+    @Suppress("UNCHECKED_CAST")
+    fun <T : OutputLike> merge(inputs: List<T>, name: String = "Merge"): List<Output> {
+      return when {
+        inputs.all { it is Output } -> {
+          inputs as List<Output>
+          if (inputs.all { it.dataType.isRefType })
+            tf.refMerge(inputs, name)
+          else
+            tf.merge(inputs, name)
+        }
+        inputs.all { it is SparseOutput } -> TODO()
+        else -> TODO()
+      }
+    }
+    
     /** Creates an op that makes its input available to the next iteration.
      *
      * @param  input Tensor to make available to the next iteration.
@@ -588,9 +529,9 @@ object control_flow_ops {
         when (input) {
           is Output ->
             if (input.dataType.isRefType)
-              super.refNextIteration(input, name)
+              gen_control_flow_ops.refNextIteration(input, name)
             else
-              super._nextIteration(input, name)
+              gen_control_flow_ops.nextIteration(input, name)
           is IndexedSlices -> {
             val values = nextIteration(input.values, name)
             val indices = nextIteration(input.indices, "indices")
@@ -607,5 +548,109 @@ object control_flow_ops {
           }
           else -> NONE()
         } as T
+    
+    fun noOp(name: String = "NoOp"): Op {
+      return gen_control_flow_ops.noOp(name)
+    }
+    
+    fun refEnter(data: Output, frameName: String, isConstant: Boolean = false, parallelIterations: Long = 10L, name: String = "RefEnter"): Output {
+      return gen_control_flow_ops.refEnter(data, frameName, isConstant, parallelIterations, name)
+    }
+    
+    fun refExit(data: Output, name: String = "RefExit"): Output {
+      return gen_control_flow_ops.refExit(data, name)
+    }
+    
+    fun refMerge(inputs: List<Output>, name: String = "RefMerge"): List<Output> {
+      return gen_control_flow_ops.refMerge(inputs, name)
+    }
+    
+    fun refNextIteration(data: Output, name: String = "RefNextIteration"): Output {
+      return gen_control_flow_ops.refNextIteration(data, name)
+    }
+    
+    fun refSelect(index: Output, inputs: List<Output>, name: String = "RefSelect"): Output {
+      return gen_control_flow_ops.refSelect(index, inputs, name)
+    }
+    
+    fun refSwitch(data: Output, pred: Output, name: String = "RefSwitch"): List<Output> {
+      return gen_control_flow_ops.refSwitch(data, pred, name)
+    }
+    
+    fun <T : OutputLike> switch(input: T, predicate: Output, name: String = "Switch"): List<Output> {
+      val _input = input as OutputLike
+      return when (_input) {
+        is Output -> gen_control_flow_ops.switch(_input, predicate, name)
+        is IndexedSlices -> {
+          TODO()
+        }
+        is SparseOutput -> {
+          TODO()
+        }
+      }
+    }
+    
+    /** Group tensors together.
+     * This creates a tuple of tensors with the same values as the `tensors`
+     * argument, except that the value of each tensor is only returned after the
+     * values of all tensors have been computed.
+     *
+     * `control_inputs` contains additional ops that have to finish before this op
+     * finishes, but whose outputs are not returned.
+     *
+     * This can be used as a "join" mechanism for parallel computations: all the
+     * argument tensors can be computed in parallel, but the values of any tensor
+     * returned by `tuple` are only available after all the parallel computations
+     * are done.
+     *
+     * See also @{tf.group$group} and
+     * @{tf.control_dependencies$control_dependencies}.
+     *
+     * @group ControlFlowOps
+     * @param  inputs        Op outputs being grouped.
+     * @param  controlInputs Set of additional ops that have to finish before this op finishes, but whose outputs are not
+     *                       returned.
+     * @param  name          Name for the created ops (used mainly as a name scope).
+     * @return Created op outputs, which in this case are the values of `inputs`.
+     */
+    fun tuple(inputs: List<OutputLike?>, controlInputs: Set<Op> = emptySet(), name: String = "tuple"): List<OutputLike?> {
+      val gatingOps = inputs.asSequence().filterNotNull().mapTo(mutableSetOf()) { it.op }
+      return if (gatingOps.isEmpty())
+        inputs
+      else
+        tf.nameScope(name, gatingOps) {
+          val gate = group(gatingOps + controlInputs)
+          inputs.map {
+            if (it == null)
+              it
+            else
+              withDependencies(setOf(gate), it)
+          }
+        }
+    }
+    
+    /** Creates an op that produces the content of `input` only after all ops in `dependencies` have finished executing.
+     *
+     * In some cases, a user may want the output of an op to be consumed externally only after some other dependencies
+     * have run first. This function ensures returns `input`, but only after all ops in `dependencies` have run. Note
+     * that this means that there is no guarantee that `input` will be evaluated after any `dependencies` have run.
+     *
+     * @group ControlFlowOps
+     * @param  dependencies Set of ops to be executed before `input`.
+     * @param  input        Op output to be computed after all ops in `dependencies` have finished executing.
+     * @param  name         Name for the created op (used mainly as a name scope).
+     * @return Created op output.
+     * @see "tensorflow.python.ops.control_flow_ops.with_dependencies"
+     */
+    fun withDependencies(dependencies: Set<Op>,
+                         input: OutputLike,
+                         name: String = "control_dependency"): Output =
+        tf.nameScope(name, dependencies + input.op) {
+          tf.colocateWith(input.op) {
+            tf.controlDependencies(dependencies.toMutableSet()) {
+              tf.identity(input, name = tf.currentNameScope)
+            }
+          }
+        }
   }
 }

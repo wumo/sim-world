@@ -9,37 +9,33 @@ import wumo.sim.tensorflow.types.DataType
 import wumo.sim.tensorflow.types.FLOAT
 import wumo.sim.tensorflow.types.INT64
 
-interface gen_stateless_random_ops {
-  fun statelessMultinomial(logits: Output, numSamples: Output, seed: Output, outputDtype: DataType<*> = INT64, name: String = "StatelessMultinomial") = run {
-    buildOpTensor("StatelessMultinomial", name) {
-      addInput(logits, false)
-      addInput(numSamples, false)
-      addInput(seed, false)
-      attr("output_dtype", outputDtype)
-    }
-  }
+object gen_stateless_random_ops {
+  fun statelessMultinomial(logits: Output, numSamples: Output, seed: Output, outputDtype: DataType<*> = INT64, name: String = "StatelessMultinomial"): Output =
+      buildOpTensor("StatelessMultinomial", name) {
+        addInput(logits, false)
+        addInput(numSamples, false)
+        addInput(seed, false)
+        attr("output_dtype", outputDtype)
+      }
   
-  fun statelessRandomNormal(shape: Output, seed: Output, dtype: DataType<*> = FLOAT, name: String = "StatelessRandomNormal") = run {
-    buildOpTensor("StatelessRandomNormal", name) {
-      addInput(shape, false)
-      addInput(seed, false)
-      attr("dtype", dtype)
-    }
-  }
+  fun statelessRandomNormal(shape: Output, seed: Output, dtype: DataType<*> = FLOAT, name: String = "StatelessRandomNormal"): Output =
+      buildOpTensor("StatelessRandomNormal", name) {
+        addInput(shape, false)
+        addInput(seed, false)
+        attr("dtype", dtype)
+      }
   
-  fun statelessRandomUniform(shape: Output, seed: Output, dtype: DataType<*> = FLOAT, name: String = "StatelessRandomUniform") = run {
-    buildOpTensor("StatelessRandomUniform", name) {
-      addInput(shape, false)
-      addInput(seed, false)
-      attr("dtype", dtype)
-    }
-  }
+  fun statelessRandomUniform(shape: Output, seed: Output, dtype: DataType<*> = FLOAT, name: String = "StatelessRandomUniform"): Output =
+      buildOpTensor("StatelessRandomUniform", name) {
+        addInput(shape, false)
+        addInput(seed, false)
+        attr("dtype", dtype)
+      }
   
-  fun statelessTruncatedNormal(shape: Output, seed: Output, dtype: DataType<*> = FLOAT, name: String = "StatelessTruncatedNormal") = run {
-    buildOpTensor("StatelessTruncatedNormal", name) {
-      addInput(shape, false)
-      addInput(seed, false)
-      attr("dtype", dtype)
-    }
-  }
+  fun statelessTruncatedNormal(shape: Output, seed: Output, dtype: DataType<*> = FLOAT, name: String = "StatelessTruncatedNormal"): Output =
+      buildOpTensor("StatelessTruncatedNormal", name) {
+        addInput(shape, false)
+        addInput(seed, false)
+        attr("dtype", dtype)
+      }
 }

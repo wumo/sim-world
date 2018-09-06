@@ -37,6 +37,8 @@ open class Graph {
   
   val c_graph = newGraph()!!
   
+  val nextIdCounter: Int = 0
+  
   /** Indicates whether this graph has been frozen (i.e., no more ops can be added to it). */
   var frozen = false
     private set

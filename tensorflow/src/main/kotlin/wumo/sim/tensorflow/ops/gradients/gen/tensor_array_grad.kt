@@ -5,11 +5,6 @@ import wumo.sim.tensorflow.ops.gradients.gradient_ops.Registry.registerNonDiffer
 
 fun register_tensor_array_grad() {
   /**Gradients for operators defined in tensor_array_ops.py.*/
-/* from__future__importabsolute_import */
-/* from__future__importdivision */
-/* from__future__importprint_function */
-/* fromtensorflow.python.frameworkimportops */
-/* fromtensorflow.python.opsimporttensor_array_ops */
   registerNonDifferentiable("TensorArray")
   registerNonDifferentiable("TensorArrayGrad")
   registerNonDifferentiable("TensorArraySize")

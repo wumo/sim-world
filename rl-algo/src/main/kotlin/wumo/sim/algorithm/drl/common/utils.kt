@@ -1,7 +1,7 @@
 package wumo.sim.algorithm.drl.common
 
 import wumo.sim.tensorflow.ops.Output
-import wumo.sim.tensorflow.ops.plus
+import wumo.sim.tensorflow.ops.basic.plus
 import wumo.sim.tensorflow.ops.variables.Initializer
 import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.types.DataType

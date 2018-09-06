@@ -1,5 +1,10 @@
+
 import wumo.sim.tensorflow.core.InvalidArgumentException
-import wumo.sim.tensorflow.ops.*
+import wumo.sim.tensorflow.ops.IndexedSlices
+import wumo.sim.tensorflow.ops.Op
+import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.ops.OutputLike
+import wumo.sim.tensorflow.ops.basic.*
 import wumo.sim.tensorflow.ops.control_flow_ops.control_flow_ops
 import wumo.sim.tensorflow.ops.gradients.gradient_ops.Registry.register
 import wumo.sim.tensorflow.ops.gradients.gradient_ops.Registry.registerNonDifferentiable
@@ -12,31 +17,8 @@ import wumo.sim.util.a
 import wumo.sim.util.i
 import wumo.sim.util.ndarray.NDArray
 
-//import wumo.sim.tensorflow.ops.*
-//import wumo.sim.tensorflow.ops.control_flow_ops.control_flow_ops
-//import wumo.sim.tensorflow.ops.gradients.gradient_ops.Registry.register
-//import wumo.sim.tensorflow.ops.gradients.gradient_ops.Registry.registerNonDifferentiable
-//import wumo.sim.tensorflow.tensor.constantValue
-//import wumo.sim.tensorflow.tf
-//import wumo.sim.util.append
-//import wumo.sim.util.i
-//
 fun register_array_grad() {
 //  /**Gradients for operators defined in array_ops.py.*/
-///* from__future__importabsolute_import */
-///* from__future__importdivision */
-///* from__future__importprint_function */
-///* fromtensorflow.pythonimportpywrap_tensorflow */
-///* fromtensorflow.python.eagerimportcontext */
-///* fromtensorflow.python.frameworkimportconstant_op */
-///* fromtensorflow.python.frameworkimportops */
-///* fromtensorflow.python.frameworkimportsparse_tensor */
-///* fromtensorflow.python.frameworkimporttensor_util */
-///* fromtensorflow.python.opsimportarray_ops */
-///* fromtensorflow.python.opsimportcontrol_flow_util */
-///* fromtensorflow.python.opsimportgen_array_ops */
-///* fromtensorflow.python.opsimportmath_ops */
-///* fromtensorflow.python.opsimportsparse_ops */
   register("Pack") { op, grad ->
     val grad = grad[0]!!.toOutput()
     /**Gradient for pack op.*/
@@ -132,10 +114,10 @@ fun register_array_grad() {
           /**Create variables for iteratively slicing a dense gradients tensor.*/
           val shapeOfShape = tf.shape(shapes[0])
           val zero = tf.const(0)
-          val mask = tf.concatV2(listOf(
+          val mask = tf.concat(listOf(
               tf.fill(tf.expandDims(concatDim, zero), zero), tf.const(i(1)),
               tf.fill(shapeOfShape - concatDim - 1, zero)),
-                                 zero)
+                               zero)
           var begin = tf.fill(shapeOfShape, zero)
           
           for (size in shapes) {

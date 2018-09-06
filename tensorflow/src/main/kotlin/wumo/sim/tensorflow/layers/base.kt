@@ -1,4 +1,8 @@
 package wumo.sim.tensorflow.layers
+
+import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.types.DataType
+
 //
 //import org.bytedeco.javacpp.tensorflow.DT_INVALID
 //import wumo.sim.tensorflow.ops.Output
@@ -9,13 +13,15 @@ package wumo.sim.tensorflow.layers
 //
 //typealias TensorFunction = (Output) -> Output?
 //
-//open class Layer(val trainable: Boolean = true,
-//                 val activity_reqularizer: Any? = null,
-//                 var dataType: Int = 0) {
-//
-//  var statefule = false
-//  var built = false
-//  val losses = mutableListOf<Output>()
+open class Layer(val trainable: Boolean = true,
+                 val name: String? = null,
+                 val dataType: DataType<*>? = null,
+                 val activity_reqularizer: Any? = null) {
+  
+  //
+  var statefule = false
+  var built = false
+  val losses = mutableListOf<Output>()
 //
 //  open fun build(input_shape: Shape) {
 //    built = true
@@ -47,4 +53,4 @@ package wumo.sim.tensorflow.layers
 //      losses += regularizer(v)
 //    return v
 //  }
-//}
+}

@@ -5,195 +5,174 @@ package wumo.sim.tensorflow.ops.gen
 
 import wumo.sim.tensorflow.buildOp
 import wumo.sim.tensorflow.buildOpTensor
+import wumo.sim.tensorflow.ops.Op
 import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.types.DataType
 import wumo.sim.util.Shape
 
-interface gen_state_ops {
-  fun assign(_ref: Output, value: Output, validateShape: Boolean = true, useLocking: Boolean = true, name: String = "Assign") = run {
-    buildOpTensor("Assign", name) {
-      addInput(_ref, true)
-      addInput(value, false)
-      attr("validate_shape", validateShape)
-      attr("use_locking", useLocking)
-    }
-  }
+object gen_state_ops {
+  fun assign(_ref: Output, value: Output, validateShape: Boolean = true, useLocking: Boolean = true, name: String = "Assign"): Output =
+      buildOpTensor("Assign", name) {
+        addInput(_ref, true)
+        addInput(value, false)
+        attr("validate_shape", validateShape)
+        attr("use_locking", useLocking)
+      }
   
-  fun assignAdd(_ref: Output, value: Output, useLocking: Boolean = false, name: String = "AssignAdd") = run {
-    buildOpTensor("AssignAdd", name) {
-      addInput(_ref, true)
-      addInput(value, false)
-      attr("use_locking", useLocking)
-    }
-  }
+  fun assignAdd(_ref: Output, value: Output, useLocking: Boolean = false, name: String = "AssignAdd"): Output =
+      buildOpTensor("AssignAdd", name) {
+        addInput(_ref, true)
+        addInput(value, false)
+        attr("use_locking", useLocking)
+      }
   
-  fun assignSub(_ref: Output, value: Output, useLocking: Boolean = false, name: String = "AssignSub") = run {
-    buildOpTensor("AssignSub", name) {
-      addInput(_ref, true)
-      addInput(value, false)
-      attr("use_locking", useLocking)
-    }
-  }
+  fun assignSub(_ref: Output, value: Output, useLocking: Boolean = false, name: String = "AssignSub"): Output =
+      buildOpTensor("AssignSub", name) {
+        addInput(_ref, true)
+        addInput(value, false)
+        attr("use_locking", useLocking)
+      }
   
-  fun countUpTo(_ref: Output, limit: Long, name: String = "CountUpTo") = run {
-    buildOpTensor("CountUpTo", name) {
-      addInput(_ref, true)
-      attr("limit", limit)
-    }
-  }
+  fun countUpTo(_ref: Output, limit: Long, name: String = "CountUpTo"): Output =
+      buildOpTensor("CountUpTo", name) {
+        addInput(_ref, true)
+        attr("limit", limit)
+      }
   
-  fun destroyTemporaryVariable(_ref: Output, varName: String, name: String = "DestroyTemporaryVariable") = run {
-    buildOpTensor("DestroyTemporaryVariable", name) {
-      addInput(_ref, true)
-      attr("var_name", varName)
-    }
-  }
+  fun destroyTemporaryVariable(_ref: Output, varName: String, name: String = "DestroyTemporaryVariable"): Output =
+      buildOpTensor("DestroyTemporaryVariable", name) {
+        addInput(_ref, true)
+        attr("var_name", varName)
+      }
   
-  fun isVariableInitialized(_ref: Output, name: String = "IsVariableInitialized") = run {
-    buildOpTensor("IsVariableInitialized", name) {
-      addInput(_ref, true)
-    }
-  }
+  fun isVariableInitialized(_ref: Output, name: String = "IsVariableInitialized"): Output =
+      buildOpTensor("IsVariableInitialized", name) {
+        addInput(_ref, true)
+      }
   
-  fun resourceCountUpTo(resource: Output, limit: Long, t: DataType<*>, name: String = "ResourceCountUpTo") = run {
-    buildOpTensor("ResourceCountUpTo", name) {
-      addInput(resource, false)
-      attr("limit", limit)
-      attr("T", t)
-    }
-  }
+  fun resourceCountUpTo(resource: Output, limit: Long, t: DataType<*>, name: String = "ResourceCountUpTo"): Output =
+      buildOpTensor("ResourceCountUpTo", name) {
+        addInput(resource, false)
+        attr("limit", limit)
+        attr("T", t)
+      }
   
-  fun resourceScatterNdAdd(_ref: Output, indices: Output, updates: Output, useLocking: Boolean = true, name: String = "ResourceScatterNdAdd") = run {
-    buildOp("ResourceScatterNdAdd", name) {
-      addInput(_ref, false)
-      addInput(indices, false)
-      addInput(updates, false)
-      attr("use_locking", useLocking)
-    }
-  }
+  fun resourceScatterNdAdd(_ref: Output, indices: Output, updates: Output, useLocking: Boolean = true, name: String = "ResourceScatterNdAdd"): Op =
+      buildOp("ResourceScatterNdAdd", name) {
+        addInput(_ref, false)
+        addInput(indices, false)
+        addInput(updates, false)
+        attr("use_locking", useLocking)
+      }
   
-  fun resourceScatterNdUpdate(_ref: Output, indices: Output, updates: Output, useLocking: Boolean = true, name: String = "ResourceScatterNdUpdate") = run {
-    buildOp("ResourceScatterNdUpdate", name) {
-      addInput(_ref, false)
-      addInput(indices, false)
-      addInput(updates, false)
-      attr("use_locking", useLocking)
-    }
-  }
+  fun resourceScatterNdUpdate(_ref: Output, indices: Output, updates: Output, useLocking: Boolean = true, name: String = "ResourceScatterNdUpdate"): Op =
+      buildOp("ResourceScatterNdUpdate", name) {
+        addInput(_ref, false)
+        addInput(indices, false)
+        addInput(updates, false)
+        attr("use_locking", useLocking)
+      }
   
-  fun scatterAdd(_ref: Output, indices: Output, updates: Output, useLocking: Boolean = false, name: String = "ScatterAdd") = run {
-    buildOpTensor("ScatterAdd", name) {
-      addInput(_ref, true)
-      addInput(indices, false)
-      addInput(updates, false)
-      attr("use_locking", useLocking)
-    }
-  }
+  fun scatterAdd(_ref: Output, indices: Output, updates: Output, useLocking: Boolean = false, name: String = "ScatterAdd"): Output =
+      buildOpTensor("ScatterAdd", name) {
+        addInput(_ref, true)
+        addInput(indices, false)
+        addInput(updates, false)
+        attr("use_locking", useLocking)
+      }
   
-  fun scatterDiv(_ref: Output, indices: Output, updates: Output, useLocking: Boolean = false, name: String = "ScatterDiv") = run {
-    buildOpTensor("ScatterDiv", name) {
-      addInput(_ref, true)
-      addInput(indices, false)
-      addInput(updates, false)
-      attr("use_locking", useLocking)
-    }
-  }
+  fun scatterDiv(_ref: Output, indices: Output, updates: Output, useLocking: Boolean = false, name: String = "ScatterDiv"): Output =
+      buildOpTensor("ScatterDiv", name) {
+        addInput(_ref, true)
+        addInput(indices, false)
+        addInput(updates, false)
+        attr("use_locking", useLocking)
+      }
   
-  fun scatterMax(_ref: Output, indices: Output, updates: Output, useLocking: Boolean = false, name: String = "ScatterMax") = run {
-    buildOpTensor("ScatterMax", name) {
-      addInput(_ref, true)
-      addInput(indices, false)
-      addInput(updates, false)
-      attr("use_locking", useLocking)
-    }
-  }
+  fun scatterMax(_ref: Output, indices: Output, updates: Output, useLocking: Boolean = false, name: String = "ScatterMax"): Output =
+      buildOpTensor("ScatterMax", name) {
+        addInput(_ref, true)
+        addInput(indices, false)
+        addInput(updates, false)
+        attr("use_locking", useLocking)
+      }
   
-  fun scatterMin(_ref: Output, indices: Output, updates: Output, useLocking: Boolean = false, name: String = "ScatterMin") = run {
-    buildOpTensor("ScatterMin", name) {
-      addInput(_ref, true)
-      addInput(indices, false)
-      addInput(updates, false)
-      attr("use_locking", useLocking)
-    }
-  }
+  fun scatterMin(_ref: Output, indices: Output, updates: Output, useLocking: Boolean = false, name: String = "ScatterMin"): Output =
+      buildOpTensor("ScatterMin", name) {
+        addInput(_ref, true)
+        addInput(indices, false)
+        addInput(updates, false)
+        attr("use_locking", useLocking)
+      }
   
-  fun scatterMul(_ref: Output, indices: Output, updates: Output, useLocking: Boolean = false, name: String = "ScatterMul") = run {
-    buildOpTensor("ScatterMul", name) {
-      addInput(_ref, true)
-      addInput(indices, false)
-      addInput(updates, false)
-      attr("use_locking", useLocking)
-    }
-  }
+  fun scatterMul(_ref: Output, indices: Output, updates: Output, useLocking: Boolean = false, name: String = "ScatterMul"): Output =
+      buildOpTensor("ScatterMul", name) {
+        addInput(_ref, true)
+        addInput(indices, false)
+        addInput(updates, false)
+        attr("use_locking", useLocking)
+      }
   
-  fun scatterNdAdd(_ref: Output, indices: Output, updates: Output, useLocking: Boolean = false, name: String = "ScatterNdAdd") = run {
-    buildOpTensor("ScatterNdAdd", name) {
-      addInput(_ref, true)
-      addInput(indices, false)
-      addInput(updates, false)
-      attr("use_locking", useLocking)
-    }
-  }
+  fun scatterNdAdd(_ref: Output, indices: Output, updates: Output, useLocking: Boolean = false, name: String = "ScatterNdAdd"): Output =
+      buildOpTensor("ScatterNdAdd", name) {
+        addInput(_ref, true)
+        addInput(indices, false)
+        addInput(updates, false)
+        attr("use_locking", useLocking)
+      }
   
-  fun scatterNdSub(_ref: Output, indices: Output, updates: Output, useLocking: Boolean = false, name: String = "ScatterNdSub") = run {
-    buildOpTensor("ScatterNdSub", name) {
-      addInput(_ref, true)
-      addInput(indices, false)
-      addInput(updates, false)
-      attr("use_locking", useLocking)
-    }
-  }
+  fun scatterNdSub(_ref: Output, indices: Output, updates: Output, useLocking: Boolean = false, name: String = "ScatterNdSub"): Output =
+      buildOpTensor("ScatterNdSub", name) {
+        addInput(_ref, true)
+        addInput(indices, false)
+        addInput(updates, false)
+        attr("use_locking", useLocking)
+      }
   
-  fun scatterNdUpdate(_ref: Output, indices: Output, updates: Output, useLocking: Boolean = true, name: String = "ScatterNdUpdate") = run {
-    buildOpTensor("ScatterNdUpdate", name) {
-      addInput(_ref, true)
-      addInput(indices, false)
-      addInput(updates, false)
-      attr("use_locking", useLocking)
-    }
-  }
+  fun scatterNdUpdate(_ref: Output, indices: Output, updates: Output, useLocking: Boolean = true, name: String = "ScatterNdUpdate"): Output =
+      buildOpTensor("ScatterNdUpdate", name) {
+        addInput(_ref, true)
+        addInput(indices, false)
+        addInput(updates, false)
+        attr("use_locking", useLocking)
+      }
   
-  fun scatterSub(_ref: Output, indices: Output, updates: Output, useLocking: Boolean = false, name: String = "ScatterSub") = run {
-    buildOpTensor("ScatterSub", name) {
-      addInput(_ref, true)
-      addInput(indices, false)
-      addInput(updates, false)
-      attr("use_locking", useLocking)
-    }
-  }
+  fun scatterSub(_ref: Output, indices: Output, updates: Output, useLocking: Boolean = false, name: String = "ScatterSub"): Output =
+      buildOpTensor("ScatterSub", name) {
+        addInput(_ref, true)
+        addInput(indices, false)
+        addInput(updates, false)
+        attr("use_locking", useLocking)
+      }
   
-  fun scatterUpdate(_ref: Output, indices: Output, updates: Output, useLocking: Boolean = true, name: String = "ScatterUpdate") = run {
-    buildOpTensor("ScatterUpdate", name) {
-      addInput(_ref, true)
-      addInput(indices, false)
-      addInput(updates, false)
-      attr("use_locking", useLocking)
-    }
-  }
+  fun scatterUpdate(_ref: Output, indices: Output, updates: Output, useLocking: Boolean = true, name: String = "ScatterUpdate"): Output =
+      buildOpTensor("ScatterUpdate", name) {
+        addInput(_ref, true)
+        addInput(indices, false)
+        addInput(updates, false)
+        attr("use_locking", useLocking)
+      }
   
-  fun temporaryVariable(shape: Shape, dtype: DataType<*>, varName: String = "", name: String = "TemporaryVariable") = run {
-    buildOpTensor("TemporaryVariable", name) {
-      attr("shape", shape)
-      attr("dtype", dtype)
-      attr("var_name", varName)
-    }
-  }
+  fun temporaryVariable(shape: Shape, dtype: DataType<*>, varName: String = "", name: String = "TemporaryVariable"): Output =
+      buildOpTensor("TemporaryVariable", name) {
+        attr("shape", shape)
+        attr("dtype", dtype)
+        attr("var_name", varName)
+      }
   
-  fun variable(shape: Shape, dtype: DataType<*>, container: String = "", sharedName: String = "", name: String = "Variable") = run {
-    buildOpTensor("Variable", name) {
-      attr("shape", shape)
-      attr("dtype", dtype)
-      attr("container", container)
-      attr("shared_name", sharedName)
-    }
-  }
+  fun variable(shape: Shape, dtype: DataType<*>, container: String = "", sharedName: String = "", name: String = "Variable"): Output =
+      buildOpTensor("Variable", name) {
+        attr("shape", shape)
+        attr("dtype", dtype)
+        attr("container", container)
+        attr("shared_name", sharedName)
+      }
   
-  fun variableV2(shape: Shape, dtype: DataType<*>, container: String = "", sharedName: String = "", name: String = "VariableV2") = run {
-    buildOpTensor("VariableV2", name) {
-      attr("shape", shape)
-      attr("dtype", dtype)
-      attr("container", container)
-      attr("shared_name", sharedName)
-    }
-  }
+  fun variableV2(shape: Shape, dtype: DataType<*>, container: String = "", sharedName: String = "", name: String = "VariableV2"): Output =
+      buildOpTensor("VariableV2", name) {
+        attr("shape", shape)
+        attr("dtype", dtype)
+        attr("container", container)
+        attr("shared_name", sharedName)
+      }
 }

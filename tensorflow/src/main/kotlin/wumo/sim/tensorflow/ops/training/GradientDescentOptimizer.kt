@@ -3,7 +3,7 @@ package wumo.sim.tensorflow.ops.training
 import wumo.sim.tensorflow.ops.IndexedSlices
 import wumo.sim.tensorflow.ops.Op
 import wumo.sim.tensorflow.ops.Output
-import wumo.sim.tensorflow.ops.times
+import wumo.sim.tensorflow.ops.basic.times
 import wumo.sim.tensorflow.ops.variables.Variable
 import wumo.sim.tensorflow.tf
 
@@ -45,7 +45,7 @@ class GradientDescentOptimizer(
 //
 //import wumo.sim.tensorflow.ops.Output
 //import wumo.sim.tensorflow.ops.variables.Variable
-//import wumo.sim.tensorflow.ops.cast
+//import wumo.sim.tensorflow.ops.basic.cast
 //import wumo.sim.tensorflow.ops.const
 //import wumo.sim.tensorflow.ops.gen.applyGradientDescent
 //import wumo.sim.tensorflow.tf

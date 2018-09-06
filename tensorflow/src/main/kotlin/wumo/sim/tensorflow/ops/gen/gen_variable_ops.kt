@@ -8,18 +8,16 @@ import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.types.DataType
 import wumo.sim.util.Shape
 
-interface gen_variable_ops {
-  fun zeroInitializer(_ref: Output, name: String = "ZeroInitializer") = run {
-    buildOpTensor("ZeroInitializer", name) {
-      addInput(_ref, true)
-    }
-  }
+object gen_variable_ops {
+  fun zeroInitializer(_ref: Output, name: String = "ZeroInitializer"): Output =
+      buildOpTensor("ZeroInitializer", name) {
+        addInput(_ref, true)
+      }
   
-  fun zeroVarInitializer(_var: Output, dtype: DataType<*>, shape: Shape, name: String = "ZeroVarInitializer") = run {
-    buildOpTensor("ZeroVarInitializer", name) {
-      addInput(_var, false)
-      attr("dtype", dtype)
-      attr("shape", shape)
-    }
-  }
+  fun zeroVarInitializer(_var: Output, dtype: DataType<*>, shape: Shape, name: String = "ZeroVarInitializer"): Output =
+      buildOpTensor("ZeroVarInitializer", name) {
+        addInput(_var, false)
+        attr("dtype", dtype)
+        attr("shape", shape)
+      }
 }

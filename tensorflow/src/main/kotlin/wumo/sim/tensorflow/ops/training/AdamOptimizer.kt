@@ -1,6 +1,12 @@
 package wumo.sim.tensorflow.ops.training
 
-import wumo.sim.tensorflow.ops.*
+import wumo.sim.tensorflow.ops.IndexedSlices
+import wumo.sim.tensorflow.ops.Op
+import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.ops.basic.div
+import wumo.sim.tensorflow.ops.basic.minus
+import wumo.sim.tensorflow.ops.basic.plus
+import wumo.sim.tensorflow.ops.basic.times
 import wumo.sim.tensorflow.ops.variables.Variable
 import wumo.sim.tensorflow.tensor.Tensor
 import wumo.sim.tensorflow.tf

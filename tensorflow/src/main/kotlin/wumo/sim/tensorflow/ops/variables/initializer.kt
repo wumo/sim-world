@@ -29,6 +29,19 @@ interface initializers {
       }
   }
   
+  fun randomUniformInitializer(minval: Float = -0.05f,
+                               maxval: Float = 0.05f,
+                               seed: Int? = null,
+                               dataType: DataType<*>? = FLOAT) = object : Initializer {
+    override val name: String = "RandomUniformInitializer"
+    override val dataType: DataType<*>? = dataType
+    override val init: (Shape, DataType<*>, String) -> Output
+      get() = { shape, dataType, s ->
+        tf.randomUniform(shape, minval, maxval, dataType)
+      }
+    
+  }
+  
   /**
    * Returns an initializer performing "Xavier" initialization for weights.
    *
@@ -114,7 +127,7 @@ interface initializers {
               tf.randomUniform(shape, -limit, limit)
             } else {
               val trunc_stddev = sqrt(1.3 * factor / n).toFloat()
-              tf.truncatedNormal(tf.const(shape.asIntArray()!!), dtype, 0L, trunc_stddev.toLong())
+              tf.truncatedNormal(tf.const(shape.asIntArray()!!), 0f, trunc_stddev, dtype = dtype)
             }
           }
       }

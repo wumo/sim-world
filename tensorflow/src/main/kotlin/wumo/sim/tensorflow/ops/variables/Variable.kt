@@ -7,6 +7,7 @@ import wumo.sim.tensorflow.createOp
 import wumo.sim.tensorflow.ops.DeviceFunction
 import wumo.sim.tensorflow.ops.Op
 import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.ops.gen.gen_state_ops
 import wumo.sim.tensorflow.ops.ops
 import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.types.DataType
@@ -197,15 +198,15 @@ class Variable(
 //          attr.mutable_list().apply {
 //            add_s("loc:@$trueName")
 //          }
-            val variableHandle = tf.variableV2(inferredShape, inferredDataType.baseDataType,
-                                                sharedName = trueName, name = scopeName)
+            val variableHandle = gen_state_ops.variableV2(inferredShape, inferredDataType.baseDataType,
+                                                          sharedName = trueName, name = scopeName)
             val initialValue = tf.nameScope("Initializer") {
               tf.colocateWith(variableHandle.op) {
                 initializer(inferredShape, inferredDataType)
               }
             }
             val initializeOp = tf.assign(variableHandle,
-                                          tryGuardAgainstUninitializedDependencies(variableHandle.name, initialValue))
+                                         tryGuardAgainstUninitializedDependencies(variableHandle.name, initialValue))
             val snapshot = if (cachingDevice != null)
               tf.device(cachingDevice) {
                 tf.identity(variableHandle, name = "read")

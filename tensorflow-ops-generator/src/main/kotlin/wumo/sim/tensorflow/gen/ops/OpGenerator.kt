@@ -3,17 +3,13 @@ package wumo.sim.tensorflow.gen.ops
 import com.google.protobuf.TextFormat
 import org.tensorflow.framework.AttrValue
 import org.tensorflow.framework.OpDef
-import renames
 import wumo.sim.tensorflow.gen.toCamelCase
+import wumo.sim.util.sb
+import wumo.sim.util.t6
 import java.util.*
 
-class OpGenerator(val opDef: OpDef, val sb: StringBuilder) {
+open class OpGenerator(val opDef: OpDef) {
   val name = processName(opDef.name).let { n -> if (n.startsWith("_")) n else n }
-      .let { name ->
-        if (renames.any { name.equals(it, true) })
-          "_$name"
-        else name
-      }
   val argumentTypes = hashMapOf<String, String>()
   val inputs = mutableListOf<Pair<String, String>>()
   val inputsRef = hashMapOf<String, Boolean>()
@@ -26,7 +22,7 @@ class OpGenerator(val opDef: OpDef, val sb: StringBuilder) {
     initialize()
   }
   
-  fun generateOpFunction() {
+  fun generateOp(): t6<String, String, String, String, String, List<String>> {
     val arguments = inputs + parameters
     
     var kotlinArguments = arguments.joinToString(", ") { (name, kotlinName) ->
@@ -44,19 +40,28 @@ class OpGenerator(val opDef: OpDef, val sb: StringBuilder) {
     val addAttr = parameters.joinToString("\n") { (name, kotlinName) ->
       "attr(\"$name\", ${kotlinName.toCamelCase(false)})"
     }
-    val buildFunc = when (numOutputs) {
-      0 -> "buildOp"
-      1 -> "buildOpTensor"
-      else -> "buildOpTensors"
+    val (buildFunc, returnType) = when (numOutputs) {
+      0 -> "buildOp" to "Op"
+      1 -> "buildOpTensor" to "Output"
+      else -> "buildOpTensors" to "List<Output>"
     }
-    with(sb) {
-      append("fun $name($kotlinArguments) = run {\n")
-      append("$buildFunc(\"${opDef.name}\", name){\n")
-      if (addInput.isNotBlank()) append(addInput).append('\n')
-      if (addAttr.isNotBlank()) append(addAttr).append('\n')
-      append("}\n}\n")
+    return t6(kotlinArguments, buildFunc, returnType, addInput, addAttr,
+              arguments.map { it.second.toCamelCase(false) } + "name")
+  }
+  
+  fun defFunction(parts: t6<String, String, String, String, String, List<String>>): String {
+    val (kotlinArguments, buildFunc, returnType, addInput, addAttr) = parts
+    return sb {
+      +"fun $name($kotlinArguments):$returnType =\n"
+      +"$buildFunc(\"${opDef.name}\", name){\n"
+      if (addInput.isNotBlank()) +addInput + "\n"
+      if (addAttr.isNotBlank()) +addAttr + "\n"
+      +"}\n"
     }
   }
+  
+  fun generateOpFunction(): String =
+      defFunction(generateOp())
   
   fun initialize() {
     // Process input arguments.

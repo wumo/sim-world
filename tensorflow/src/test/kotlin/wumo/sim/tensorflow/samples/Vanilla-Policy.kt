@@ -3,7 +3,12 @@ package wumo.sim.tensorflow.samples
 import org.junit.Test
 import wumo.sim.envs.classic_control.CartPole
 import wumo.sim.tensorflow.contrib.layers
-import wumo.sim.tensorflow.ops.*
+import wumo.sim.tensorflow.ops.BaseTest
+import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.ops.basic.get
+import wumo.sim.tensorflow.ops.basic.plus
+import wumo.sim.tensorflow.ops.basic.times
+import wumo.sim.tensorflow.ops.basic.unaryMinus
 import wumo.sim.tensorflow.ops.training.AdamOptimizer
 import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.types.FLOAT

@@ -8,106 +8,95 @@ import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.types.DataType
 import wumo.sim.tensorflow.types.INT64
 
-interface gen_random_ops {
-  fun multinomial(logits: Output, numSamples: Output, seed: Long = 0L, seed2: Long = 0L, outputDtype: DataType<*> = INT64, name: String = "Multinomial") = run {
-    buildOpTensor("Multinomial", name) {
-      addInput(logits, false)
-      addInput(numSamples, false)
-      attr("seed", seed)
-      attr("seed2", seed2)
-      attr("output_dtype", outputDtype)
-    }
-  }
+object gen_random_ops {
+  fun multinomial(logits: Output, numSamples: Output, seed: Long = 0L, seed2: Long = 0L, outputDtype: DataType<*> = INT64, name: String = "Multinomial"): Output =
+      buildOpTensor("Multinomial", name) {
+        addInput(logits, false)
+        addInput(numSamples, false)
+        attr("seed", seed)
+        attr("seed2", seed2)
+        attr("output_dtype", outputDtype)
+      }
   
-  fun parameterizedTruncatedNormal(shape: Output, means: Output, stdevs: Output, minvals: Output, maxvals: Output, seed: Long = 0L, seed2: Long = 0L, name: String = "ParameterizedTruncatedNormal") = run {
-    buildOpTensor("ParameterizedTruncatedNormal", name) {
-      addInput(shape, false)
-      addInput(means, false)
-      addInput(stdevs, false)
-      addInput(minvals, false)
-      addInput(maxvals, false)
-      attr("seed", seed)
-      attr("seed2", seed2)
-    }
-  }
+  fun parameterizedTruncatedNormal(shape: Output, means: Output, stdevs: Output, minvals: Output, maxvals: Output, seed: Long = 0L, seed2: Long = 0L, name: String = "ParameterizedTruncatedNormal"): Output =
+      buildOpTensor("ParameterizedTruncatedNormal", name) {
+        addInput(shape, false)
+        addInput(means, false)
+        addInput(stdevs, false)
+        addInput(minvals, false)
+        addInput(maxvals, false)
+        attr("seed", seed)
+        attr("seed2", seed2)
+      }
   
-  fun randomGamma(shape: Output, alpha: Output, seed: Long = 0L, seed2: Long = 0L, name: String = "RandomGamma") = run {
-    buildOpTensor("RandomGamma", name) {
-      addInput(shape, false)
-      addInput(alpha, false)
-      attr("seed", seed)
-      attr("seed2", seed2)
-    }
-  }
+  fun randomGamma(shape: Output, alpha: Output, seed: Long = 0L, seed2: Long = 0L, name: String = "RandomGamma"): Output =
+      buildOpTensor("RandomGamma", name) {
+        addInput(shape, false)
+        addInput(alpha, false)
+        attr("seed", seed)
+        attr("seed2", seed2)
+      }
   
-  fun randomGammaGrad(alpha: Output, sample: Output, name: String = "RandomGammaGrad") = run {
-    buildOpTensor("RandomGammaGrad", name) {
-      addInput(alpha, false)
-      addInput(sample, false)
-    }
-  }
+  fun randomGammaGrad(alpha: Output, sample: Output, name: String = "RandomGammaGrad"): Output =
+      buildOpTensor("RandomGammaGrad", name) {
+        addInput(alpha, false)
+        addInput(sample, false)
+      }
   
-  fun randomPoisson(shape: Output, rate: Output, seed: Long = 0L, seed2: Long = 0L, name: String = "RandomPoisson") = run {
-    buildOpTensor("RandomPoisson", name) {
-      addInput(shape, false)
-      addInput(rate, false)
-      attr("seed", seed)
-      attr("seed2", seed2)
-    }
-  }
+  fun randomPoisson(shape: Output, rate: Output, seed: Long = 0L, seed2: Long = 0L, name: String = "RandomPoisson"): Output =
+      buildOpTensor("RandomPoisson", name) {
+        addInput(shape, false)
+        addInput(rate, false)
+        attr("seed", seed)
+        attr("seed2", seed2)
+      }
   
-  fun randomPoissonV2(shape: Output, rate: Output, seed: Long = 0L, seed2: Long = 0L, dtype: DataType<*> = INT64, name: String = "RandomPoissonV2") = run {
-    buildOpTensor("RandomPoissonV2", name) {
-      addInput(shape, false)
-      addInput(rate, false)
-      attr("seed", seed)
-      attr("seed2", seed2)
-      attr("dtype", dtype)
-    }
-  }
+  fun randomPoissonV2(shape: Output, rate: Output, seed: Long = 0L, seed2: Long = 0L, dtype: DataType<*> = INT64, name: String = "RandomPoissonV2"): Output =
+      buildOpTensor("RandomPoissonV2", name) {
+        addInput(shape, false)
+        addInput(rate, false)
+        attr("seed", seed)
+        attr("seed2", seed2)
+        attr("dtype", dtype)
+      }
   
-  fun randomShuffle(value: Output, seed: Long = 0L, seed2: Long = 0L, name: String = "RandomShuffle") = run {
-    buildOpTensor("RandomShuffle", name) {
-      addInput(value, false)
-      attr("seed", seed)
-      attr("seed2", seed2)
-    }
-  }
+  fun randomShuffle(value: Output, seed: Long = 0L, seed2: Long = 0L, name: String = "RandomShuffle"): Output =
+      buildOpTensor("RandomShuffle", name) {
+        addInput(value, false)
+        attr("seed", seed)
+        attr("seed2", seed2)
+      }
   
-  fun randomStandardNormal(shape: Output, dtype: DataType<*>, seed: Long = 0L, seed2: Long = 0L, name: String = "RandomStandardNormal") = run {
-    buildOpTensor("RandomStandardNormal", name) {
-      addInput(shape, false)
-      attr("dtype", dtype)
-      attr("seed", seed)
-      attr("seed2", seed2)
-    }
-  }
+  fun randomStandardNormal(shape: Output, dtype: DataType<*>, seed: Long = 0L, seed2: Long = 0L, name: String = "RandomStandardNormal"): Output =
+      buildOpTensor("RandomStandardNormal", name) {
+        addInput(shape, false)
+        attr("dtype", dtype)
+        attr("seed", seed)
+        attr("seed2", seed2)
+      }
   
-  fun randomUniform(shape: Output, dtype: DataType<*>, seed: Long = 0L, seed2: Long = 0L, name: String = "RandomUniform") = run {
-    buildOpTensor("RandomUniform", name) {
-      addInput(shape, false)
-      attr("dtype", dtype)
-      attr("seed", seed)
-      attr("seed2", seed2)
-    }
-  }
+  fun randomUniform(shape: Output, dtype: DataType<*>, seed: Long = 0L, seed2: Long = 0L, name: String = "RandomUniform"): Output =
+      buildOpTensor("RandomUniform", name) {
+        addInput(shape, false)
+        attr("dtype", dtype)
+        attr("seed", seed)
+        attr("seed2", seed2)
+      }
   
-  fun randomUniformInt(shape: Output, minval: Output, maxval: Output, seed: Long = 0L, seed2: Long = 0L, name: String = "RandomUniformInt") = run {
-    buildOpTensor("RandomUniformInt", name) {
-      addInput(shape, false)
-      addInput(minval, false)
-      addInput(maxval, false)
-      attr("seed", seed)
-      attr("seed2", seed2)
-    }
-  }
+  fun randomUniformInt(shape: Output, minval: Output, maxval: Output, seed: Long = 0L, seed2: Long = 0L, name: String = "RandomUniformInt"): Output =
+      buildOpTensor("RandomUniformInt", name) {
+        addInput(shape, false)
+        addInput(minval, false)
+        addInput(maxval, false)
+        attr("seed", seed)
+        attr("seed2", seed2)
+      }
   
-  fun truncatedNormal(shape: Output, dtype: DataType<*>, seed: Long = 0L, seed2: Long = 0L, name: String = "TruncatedNormal") = run {
-    buildOpTensor("TruncatedNormal", name) {
-      addInput(shape, false)
-      attr("dtype", dtype)
-      attr("seed", seed)
-      attr("seed2", seed2)
-    }
-  }
+  fun truncatedNormal(shape: Output, dtype: DataType<*>, seed: Long = 0L, seed2: Long = 0L, name: String = "TruncatedNormal"): Output =
+      buildOpTensor("TruncatedNormal", name) {
+        addInput(shape, false)
+        attr("dtype", dtype)
+        attr("seed", seed)
+        attr("seed2", seed2)
+      }
 }

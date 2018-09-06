@@ -4,6 +4,7 @@ import com.google.protobuf.TextFormat
 import org.tensorflow.framework.OpDef
 import org.tensorflow.framework.OpList
 import wumo.sim.util.a
+import wumo.sim.util.plusAssign
 import wumo.sim.util.readString
 import wumo.sim.util.sink
 import java.io.File
@@ -70,7 +71,7 @@ fun generateGroupFiles(path: String, group: String, opDefs: List<OpDef>, kotlinP
         |interface $group {
         |
         """.trimMargin())
-    opDefs.forEach { OpGenerator(it, sb).generateOpFunction() }
+    opDefs.forEach { sb += OpGenerator(it).generateOpFunction() }
     sb.append("}")
     it.writeString(sb.toString(), Charset.defaultCharset())
   }

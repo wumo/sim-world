@@ -6,121 +6,109 @@ package wumo.sim.tensorflow.ops.gen
 import wumo.sim.tensorflow.buildOp
 import wumo.sim.tensorflow.buildOpTensor
 import wumo.sim.tensorflow.buildOpTensors
+import wumo.sim.tensorflow.ops.Op
 import wumo.sim.tensorflow.ops.Output
 
-interface gen_boosted_trees_ops {
-  fun boostedTreesCalculateBestGainsPerFeature(nodeIdRange: Output, statsSummaryList: List<Output>, l1: Output, l2: Output, treeComplexity: Output, minNodeWeight: Output, maxSplits: Long, name: String = "BoostedTreesCalculateBestGainsPerFeature") = run {
-    buildOpTensors("BoostedTreesCalculateBestGainsPerFeature", name) {
-      addInput(nodeIdRange, false)
-      addInput(statsSummaryList, false)
-      addInput(l1, false)
-      addInput(l2, false)
-      addInput(treeComplexity, false)
-      addInput(minNodeWeight, false)
-      attr("max_splits", maxSplits)
-    }
-  }
+object gen_boosted_trees_ops {
+  fun boostedTreesCalculateBestGainsPerFeature(nodeIdRange: Output, statsSummaryList: List<Output>, l1: Output, l2: Output, treeComplexity: Output, minNodeWeight: Output, maxSplits: Long, name: String = "BoostedTreesCalculateBestGainsPerFeature"): List<Output> =
+      buildOpTensors("BoostedTreesCalculateBestGainsPerFeature", name) {
+        addInput(nodeIdRange, false)
+        addInput(statsSummaryList, false)
+        addInput(l1, false)
+        addInput(l2, false)
+        addInput(treeComplexity, false)
+        addInput(minNodeWeight, false)
+        attr("max_splits", maxSplits)
+      }
   
-  fun boostedTreesCenterBias(treeEnsembleHandle: Output, meanGradients: Output, meanHessians: Output, l1: Output, l2: Output, name: String = "BoostedTreesCenterBias") = run {
-    buildOpTensor("BoostedTreesCenterBias", name) {
-      addInput(treeEnsembleHandle, false)
-      addInput(meanGradients, false)
-      addInput(meanHessians, false)
-      addInput(l1, false)
-      addInput(l2, false)
-    }
-  }
+  fun boostedTreesCenterBias(treeEnsembleHandle: Output, meanGradients: Output, meanHessians: Output, l1: Output, l2: Output, name: String = "BoostedTreesCenterBias"): Output =
+      buildOpTensor("BoostedTreesCenterBias", name) {
+        addInput(treeEnsembleHandle, false)
+        addInput(meanGradients, false)
+        addInput(meanHessians, false)
+        addInput(l1, false)
+        addInput(l2, false)
+      }
   
-  fun boostedTreesCreateEnsemble(treeEnsembleHandle: Output, stampToken: Output, treeEnsembleSerialized: Output, name: String = "BoostedTreesCreateEnsemble") = run {
-    buildOp("BoostedTreesCreateEnsemble", name) {
-      addInput(treeEnsembleHandle, false)
-      addInput(stampToken, false)
-      addInput(treeEnsembleSerialized, false)
-    }
-  }
+  fun boostedTreesCreateEnsemble(treeEnsembleHandle: Output, stampToken: Output, treeEnsembleSerialized: Output, name: String = "BoostedTreesCreateEnsemble"): Op =
+      buildOp("BoostedTreesCreateEnsemble", name) {
+        addInput(treeEnsembleHandle, false)
+        addInput(stampToken, false)
+        addInput(treeEnsembleSerialized, false)
+      }
   
-  fun boostedTreesDeserializeEnsemble(treeEnsembleHandle: Output, stampToken: Output, treeEnsembleSerialized: Output, name: String = "BoostedTreesDeserializeEnsemble") = run {
-    buildOp("BoostedTreesDeserializeEnsemble", name) {
-      addInput(treeEnsembleHandle, false)
-      addInput(stampToken, false)
-      addInput(treeEnsembleSerialized, false)
-    }
-  }
+  fun boostedTreesDeserializeEnsemble(treeEnsembleHandle: Output, stampToken: Output, treeEnsembleSerialized: Output, name: String = "BoostedTreesDeserializeEnsemble"): Op =
+      buildOp("BoostedTreesDeserializeEnsemble", name) {
+        addInput(treeEnsembleHandle, false)
+        addInput(stampToken, false)
+        addInput(treeEnsembleSerialized, false)
+      }
   
-  fun boostedTreesEnsembleResourceHandleOp(container: String = "", sharedName: String = "", name: String = "BoostedTreesEnsembleResourceHandleOp") = run {
-    buildOpTensor("BoostedTreesEnsembleResourceHandleOp", name) {
-      attr("container", container)
-      attr("shared_name", sharedName)
-    }
-  }
+  fun boostedTreesEnsembleResourceHandleOp(container: String = "", sharedName: String = "", name: String = "BoostedTreesEnsembleResourceHandleOp"): Output =
+      buildOpTensor("BoostedTreesEnsembleResourceHandleOp", name) {
+        attr("container", container)
+        attr("shared_name", sharedName)
+      }
   
-  fun boostedTreesExampleDebugOutputs(treeEnsembleHandle: Output, bucketizedFeatures: List<Output>, logitsDimension: Long, name: String = "BoostedTreesExampleDebugOutputs") = run {
-    buildOpTensor("BoostedTreesExampleDebugOutputs", name) {
-      addInput(treeEnsembleHandle, false)
-      addInput(bucketizedFeatures, false)
-      attr("logits_dimension", logitsDimension)
-    }
-  }
+  fun boostedTreesExampleDebugOutputs(treeEnsembleHandle: Output, bucketizedFeatures: List<Output>, logitsDimension: Long, name: String = "BoostedTreesExampleDebugOutputs"): Output =
+      buildOpTensor("BoostedTreesExampleDebugOutputs", name) {
+        addInput(treeEnsembleHandle, false)
+        addInput(bucketizedFeatures, false)
+        attr("logits_dimension", logitsDimension)
+      }
   
-  fun boostedTreesGetEnsembleStates(treeEnsembleHandle: Output, name: String = "BoostedTreesGetEnsembleStates") = run {
-    buildOpTensors("BoostedTreesGetEnsembleStates", name) {
-      addInput(treeEnsembleHandle, false)
-    }
-  }
+  fun boostedTreesGetEnsembleStates(treeEnsembleHandle: Output, name: String = "BoostedTreesGetEnsembleStates"): List<Output> =
+      buildOpTensors("BoostedTreesGetEnsembleStates", name) {
+        addInput(treeEnsembleHandle, false)
+      }
   
-  fun boostedTreesMakeStatsSummary(nodeIds: Output, gradients: Output, hessians: Output, bucketizedFeaturesList: List<Output>, maxSplits: Long, numBuckets: Long, name: String = "BoostedTreesMakeStatsSummary") = run {
-    buildOpTensor("BoostedTreesMakeStatsSummary", name) {
-      addInput(nodeIds, false)
-      addInput(gradients, false)
-      addInput(hessians, false)
-      addInput(bucketizedFeaturesList, false)
-      attr("max_splits", maxSplits)
-      attr("num_buckets", numBuckets)
-    }
-  }
+  fun boostedTreesMakeStatsSummary(nodeIds: Output, gradients: Output, hessians: Output, bucketizedFeaturesList: List<Output>, maxSplits: Long, numBuckets: Long, name: String = "BoostedTreesMakeStatsSummary"): Output =
+      buildOpTensor("BoostedTreesMakeStatsSummary", name) {
+        addInput(nodeIds, false)
+        addInput(gradients, false)
+        addInput(hessians, false)
+        addInput(bucketizedFeaturesList, false)
+        attr("max_splits", maxSplits)
+        attr("num_buckets", numBuckets)
+      }
   
-  fun boostedTreesPredict(treeEnsembleHandle: Output, bucketizedFeatures: List<Output>, logitsDimension: Long, name: String = "BoostedTreesPredict") = run {
-    buildOpTensor("BoostedTreesPredict", name) {
-      addInput(treeEnsembleHandle, false)
-      addInput(bucketizedFeatures, false)
-      attr("logits_dimension", logitsDimension)
-    }
-  }
+  fun boostedTreesPredict(treeEnsembleHandle: Output, bucketizedFeatures: List<Output>, logitsDimension: Long, name: String = "BoostedTreesPredict"): Output =
+      buildOpTensor("BoostedTreesPredict", name) {
+        addInput(treeEnsembleHandle, false)
+        addInput(bucketizedFeatures, false)
+        attr("logits_dimension", logitsDimension)
+      }
   
-  fun boostedTreesSerializeEnsemble(treeEnsembleHandle: Output, name: String = "BoostedTreesSerializeEnsemble") = run {
-    buildOpTensors("BoostedTreesSerializeEnsemble", name) {
-      addInput(treeEnsembleHandle, false)
-    }
-  }
+  fun boostedTreesSerializeEnsemble(treeEnsembleHandle: Output, name: String = "BoostedTreesSerializeEnsemble"): List<Output> =
+      buildOpTensors("BoostedTreesSerializeEnsemble", name) {
+        addInput(treeEnsembleHandle, false)
+      }
   
-  fun boostedTreesTrainingPredict(treeEnsembleHandle: Output, cachedTreeIds: Output, cachedNodeIds: Output, bucketizedFeatures: List<Output>, logitsDimension: Long, name: String = "BoostedTreesTrainingPredict") = run {
-    buildOpTensors("BoostedTreesTrainingPredict", name) {
-      addInput(treeEnsembleHandle, false)
-      addInput(cachedTreeIds, false)
-      addInput(cachedNodeIds, false)
-      addInput(bucketizedFeatures, false)
-      attr("logits_dimension", logitsDimension)
-    }
-  }
+  fun boostedTreesTrainingPredict(treeEnsembleHandle: Output, cachedTreeIds: Output, cachedNodeIds: Output, bucketizedFeatures: List<Output>, logitsDimension: Long, name: String = "BoostedTreesTrainingPredict"): List<Output> =
+      buildOpTensors("BoostedTreesTrainingPredict", name) {
+        addInput(treeEnsembleHandle, false)
+        addInput(cachedTreeIds, false)
+        addInput(cachedNodeIds, false)
+        addInput(bucketizedFeatures, false)
+        attr("logits_dimension", logitsDimension)
+      }
   
-  fun boostedTreesUpdateEnsemble(treeEnsembleHandle: Output, featureIds: Output, nodeIds: List<Output>, gains: List<Output>, thresholds: List<Output>, leftNodeContribs: List<Output>, rightNodeContribs: List<Output>, maxDepth: Output, learningRate: Output, pruningMode: Long, name: String = "BoostedTreesUpdateEnsemble") = run {
-    buildOp("BoostedTreesUpdateEnsemble", name) {
-      addInput(treeEnsembleHandle, false)
-      addInput(featureIds, false)
-      addInput(nodeIds, false)
-      addInput(gains, false)
-      addInput(thresholds, false)
-      addInput(leftNodeContribs, false)
-      addInput(rightNodeContribs, false)
-      addInput(maxDepth, false)
-      addInput(learningRate, false)
-      attr("pruning_mode", pruningMode)
-    }
-  }
+  fun boostedTreesUpdateEnsemble(treeEnsembleHandle: Output, featureIds: Output, nodeIds: List<Output>, gains: List<Output>, thresholds: List<Output>, leftNodeContribs: List<Output>, rightNodeContribs: List<Output>, maxDepth: Output, learningRate: Output, pruningMode: Long, name: String = "BoostedTreesUpdateEnsemble"): Op =
+      buildOp("BoostedTreesUpdateEnsemble", name) {
+        addInput(treeEnsembleHandle, false)
+        addInput(featureIds, false)
+        addInput(nodeIds, false)
+        addInput(gains, false)
+        addInput(thresholds, false)
+        addInput(leftNodeContribs, false)
+        addInput(rightNodeContribs, false)
+        addInput(maxDepth, false)
+        addInput(learningRate, false)
+        attr("pruning_mode", pruningMode)
+      }
   
-  fun isBoostedTreesEnsembleInitialized(treeEnsembleHandle: Output, name: String = "IsBoostedTreesEnsembleInitialized") = run {
-    buildOpTensor("IsBoostedTreesEnsembleInitialized", name) {
-      addInput(treeEnsembleHandle, false)
-    }
-  }
+  fun isBoostedTreesEnsembleInitialized(treeEnsembleHandle: Output, name: String = "IsBoostedTreesEnsembleInitialized"): Output =
+      buildOpTensor("IsBoostedTreesEnsembleInitialized", name) {
+        addInput(treeEnsembleHandle, false)
+      }
 }

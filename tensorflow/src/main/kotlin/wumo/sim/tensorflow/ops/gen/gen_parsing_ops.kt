@@ -10,98 +10,88 @@ import wumo.sim.tensorflow.types.DataType
 import wumo.sim.tensorflow.types.FLOAT
 import wumo.sim.util.Shape
 
-interface gen_parsing_ops {
-  fun decodeCSV(records: Output, recordDefaults: Output, fieldDelim: String = ",", useQuoteDelim: Boolean = true, naValue: String = "", selectCols: Array<Long> = arrayOf(), name: String = "DecodeCSV") = run {
-    buildOpTensors("DecodeCSV", name) {
-      addInput(records, false)
-      addInput(recordDefaults, false)
-      attr("field_delim", fieldDelim)
-      attr("use_quote_delim", useQuoteDelim)
-      attr("na_value", naValue)
-      attr("select_cols", selectCols)
-    }
-  }
+object gen_parsing_ops {
+  fun decodeCSV(records: Output, recordDefaults: Output, fieldDelim: String = ",", useQuoteDelim: Boolean = true, naValue: String = "", selectCols: Array<Long> = arrayOf(), name: String = "DecodeCSV"): List<Output> =
+      buildOpTensors("DecodeCSV", name) {
+        addInput(records, false)
+        addInput(recordDefaults, false)
+        attr("field_delim", fieldDelim)
+        attr("use_quote_delim", useQuoteDelim)
+        attr("na_value", naValue)
+        attr("select_cols", selectCols)
+      }
   
-  fun decodeCompressed(bytes: Output, compressionType: String = "", name: String = "DecodeCompressed") = run {
-    buildOpTensor("DecodeCompressed", name) {
-      addInput(bytes, false)
-      attr("compression_type", compressionType)
-    }
-  }
+  fun decodeCompressed(bytes: Output, compressionType: String = "", name: String = "DecodeCompressed"): Output =
+      buildOpTensor("DecodeCompressed", name) {
+        addInput(bytes, false)
+        attr("compression_type", compressionType)
+      }
   
-  fun decodeJSONExample(jsonExamples: Output, name: String = "DecodeJSONExample") = run {
-    buildOpTensor("DecodeJSONExample", name) {
-      addInput(jsonExamples, false)
-    }
-  }
+  fun decodeJSONExample(jsonExamples: Output, name: String = "DecodeJSONExample"): Output =
+      buildOpTensor("DecodeJSONExample", name) {
+        addInput(jsonExamples, false)
+      }
   
-  fun decodeRaw(bytes: Output, outType: DataType<*>, littleEndian: Boolean = true, name: String = "DecodeRaw") = run {
-    buildOpTensor("DecodeRaw", name) {
-      addInput(bytes, false)
-      attr("out_type", outType)
-      attr("little_endian", littleEndian)
-    }
-  }
+  fun decodeRaw(bytes: Output, outType: DataType<*>, littleEndian: Boolean = true, name: String = "DecodeRaw"): Output =
+      buildOpTensor("DecodeRaw", name) {
+        addInput(bytes, false)
+        attr("out_type", outType)
+        attr("little_endian", littleEndian)
+      }
   
-  fun parseExample(serialized: Output, names: Output, sparseKeys: List<Output>, denseKeys: List<Output>, denseDefaults: Output, sparseTypes: Array<Long>, denseShapes: Array<Shape>, name: String = "ParseExample") = run {
-    buildOpTensors("ParseExample", name) {
-      addInput(serialized, false)
-      addInput(names, false)
-      addInput(sparseKeys, false)
-      addInput(denseKeys, false)
-      addInput(denseDefaults, false)
-      attr("sparse_types", sparseTypes)
-      attr("dense_shapes", denseShapes)
-    }
-  }
+  fun parseExample(serialized: Output, names: Output, sparseKeys: List<Output>, denseKeys: List<Output>, denseDefaults: Output, sparseTypes: Array<Long>, denseShapes: Array<Shape>, name: String = "ParseExample"): List<Output> =
+      buildOpTensors("ParseExample", name) {
+        addInput(serialized, false)
+        addInput(names, false)
+        addInput(sparseKeys, false)
+        addInput(denseKeys, false)
+        addInput(denseDefaults, false)
+        attr("sparse_types", sparseTypes)
+        attr("dense_shapes", denseShapes)
+      }
   
-  fun parseSingleExample(serialized: Output, denseDefaults: Output, numSparse: Long, sparseKeys: Array<String>, denseKeys: Array<String>, sparseTypes: Array<Long>, denseShapes: Array<Shape>, name: String = "ParseSingleExample") = run {
-    buildOpTensors("ParseSingleExample", name) {
-      addInput(serialized, false)
-      addInput(denseDefaults, false)
-      attr("num_sparse", numSparse)
-      attr("sparse_keys", sparseKeys)
-      attr("dense_keys", denseKeys)
-      attr("sparse_types", sparseTypes)
-      attr("dense_shapes", denseShapes)
-    }
-  }
+  fun parseSingleExample(serialized: Output, denseDefaults: Output, numSparse: Long, sparseKeys: Array<String>, denseKeys: Array<String>, sparseTypes: Array<Long>, denseShapes: Array<Shape>, name: String = "ParseSingleExample"): List<Output> =
+      buildOpTensors("ParseSingleExample", name) {
+        addInput(serialized, false)
+        addInput(denseDefaults, false)
+        attr("num_sparse", numSparse)
+        attr("sparse_keys", sparseKeys)
+        attr("dense_keys", denseKeys)
+        attr("sparse_types", sparseTypes)
+        attr("dense_shapes", denseShapes)
+      }
   
-  fun parseSingleSequenceExample(serialized: Output, featureListDenseMissingAssumedEmpty: Output, contextSparseKeys: List<Output>, contextDenseKeys: List<Output>, featureListSparseKeys: List<Output>, featureListDenseKeys: List<Output>, contextDenseDefaults: Output, debugName: Output, contextSparseTypes: Array<Long> = arrayOf(), featureListDenseTypes: Array<Long> = arrayOf(), contextDenseShapes: Array<Shape> = arrayOf(), featureListSparseTypes: Array<Long> = arrayOf(), featureListDenseShapes: Array<Shape> = arrayOf(), name: String = "ParseSingleSequenceExample") = run {
-    buildOpTensors("ParseSingleSequenceExample", name) {
-      addInput(serialized, false)
-      addInput(featureListDenseMissingAssumedEmpty, false)
-      addInput(contextSparseKeys, false)
-      addInput(contextDenseKeys, false)
-      addInput(featureListSparseKeys, false)
-      addInput(featureListDenseKeys, false)
-      addInput(contextDenseDefaults, false)
-      addInput(debugName, false)
-      attr("context_sparse_types", contextSparseTypes)
-      attr("feature_list_dense_types", featureListDenseTypes)
-      attr("context_dense_shapes", contextDenseShapes)
-      attr("feature_list_sparse_types", featureListSparseTypes)
-      attr("feature_list_dense_shapes", featureListDenseShapes)
-    }
-  }
+  fun parseSingleSequenceExample(serialized: Output, featureListDenseMissingAssumedEmpty: Output, contextSparseKeys: List<Output>, contextDenseKeys: List<Output>, featureListSparseKeys: List<Output>, featureListDenseKeys: List<Output>, contextDenseDefaults: Output, debugName: Output, contextSparseTypes: Array<Long> = arrayOf(), featureListDenseTypes: Array<Long> = arrayOf(), contextDenseShapes: Array<Shape> = arrayOf(), featureListSparseTypes: Array<Long> = arrayOf(), featureListDenseShapes: Array<Shape> = arrayOf(), name: String = "ParseSingleSequenceExample"): List<Output> =
+      buildOpTensors("ParseSingleSequenceExample", name) {
+        addInput(serialized, false)
+        addInput(featureListDenseMissingAssumedEmpty, false)
+        addInput(contextSparseKeys, false)
+        addInput(contextDenseKeys, false)
+        addInput(featureListSparseKeys, false)
+        addInput(featureListDenseKeys, false)
+        addInput(contextDenseDefaults, false)
+        addInput(debugName, false)
+        attr("context_sparse_types", contextSparseTypes)
+        attr("feature_list_dense_types", featureListDenseTypes)
+        attr("context_dense_shapes", contextDenseShapes)
+        attr("feature_list_sparse_types", featureListSparseTypes)
+        attr("feature_list_dense_shapes", featureListDenseShapes)
+      }
   
-  fun parseTensor(serialized: Output, outType: DataType<*>, name: String = "ParseTensor") = run {
-    buildOpTensor("ParseTensor", name) {
-      addInput(serialized, false)
-      attr("out_type", outType)
-    }
-  }
+  fun parseTensor(serialized: Output, outType: DataType<*>, name: String = "ParseTensor"): Output =
+      buildOpTensor("ParseTensor", name) {
+        addInput(serialized, false)
+        attr("out_type", outType)
+      }
   
-  fun serializeTensor(tensor: Output, name: String = "SerializeTensor") = run {
-    buildOpTensor("SerializeTensor", name) {
-      addInput(tensor, false)
-    }
-  }
+  fun serializeTensor(tensor: Output, name: String = "SerializeTensor"): Output =
+      buildOpTensor("SerializeTensor", name) {
+        addInput(tensor, false)
+      }
   
-  fun stringToNumber(stringTensor: Output, outType: DataType<*> = FLOAT, name: String = "StringToNumber") = run {
-    buildOpTensor("StringToNumber", name) {
-      addInput(stringTensor, false)
-      attr("out_type", outType)
-    }
-  }
+  fun stringToNumber(stringTensor: Output, outType: DataType<*> = FLOAT, name: String = "StringToNumber"): Output =
+      buildOpTensor("StringToNumber", name) {
+        addInput(stringTensor, false)
+        attr("out_type", outType)
+      }
 }

@@ -7,27 +7,25 @@ import wumo.sim.tensorflow.buildOpTensor
 import wumo.sim.tensorflow.buildOpTensors
 import wumo.sim.tensorflow.ops.Output
 
-interface gen_checkpoint_ops {
-  fun generateVocabRemapping(newVocabFile: Output, oldVocabFile: Output, newVocabOffset: Long, numNewVocab: Long, oldVocabSize: Long = -1L, name: String = "GenerateVocabRemapping") = run {
-    buildOpTensors("GenerateVocabRemapping", name) {
-      addInput(newVocabFile, false)
-      addInput(oldVocabFile, false)
-      attr("new_vocab_offset", newVocabOffset)
-      attr("num_new_vocab", numNewVocab)
-      attr("old_vocab_size", oldVocabSize)
-    }
-  }
+object gen_checkpoint_ops {
+  fun generateVocabRemapping(newVocabFile: Output, oldVocabFile: Output, newVocabOffset: Long, numNewVocab: Long, oldVocabSize: Long = -1L, name: String = "GenerateVocabRemapping"): List<Output> =
+      buildOpTensors("GenerateVocabRemapping", name) {
+        addInput(newVocabFile, false)
+        addInput(oldVocabFile, false)
+        attr("new_vocab_offset", newVocabOffset)
+        attr("num_new_vocab", numNewVocab)
+        attr("old_vocab_size", oldVocabSize)
+      }
   
-  fun loadAndRemapMatrix(ckptPath: Output, oldTensorName: Output, rowRemapping: Output, colRemapping: Output, initializingValues: Output, numRows: Long, numCols: Long, maxRowsInMemory: Long = -1L, name: String = "LoadAndRemapMatrix") = run {
-    buildOpTensor("LoadAndRemapMatrix", name) {
-      addInput(ckptPath, false)
-      addInput(oldTensorName, false)
-      addInput(rowRemapping, false)
-      addInput(colRemapping, false)
-      addInput(initializingValues, false)
-      attr("num_rows", numRows)
-      attr("num_cols", numCols)
-      attr("max_rows_in_memory", maxRowsInMemory)
-    }
-  }
+  fun loadAndRemapMatrix(ckptPath: Output, oldTensorName: Output, rowRemapping: Output, colRemapping: Output, initializingValues: Output, numRows: Long, numCols: Long, maxRowsInMemory: Long = -1L, name: String = "LoadAndRemapMatrix"): Output =
+      buildOpTensor("LoadAndRemapMatrix", name) {
+        addInput(ckptPath, false)
+        addInput(oldTensorName, false)
+        addInput(rowRemapping, false)
+        addInput(colRemapping, false)
+        addInput(initializingValues, false)
+        attr("num_rows", numRows)
+        attr("num_cols", numCols)
+        attr("max_rows_in_memory", maxRowsInMemory)
+      }
 }

@@ -2,11 +2,18 @@ package wumo.sim.tensorflow.contrib
 
 import wumo.sim.tensorflow.core.TensorFunction
 import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.ops.variables.CreateNewOnly
 import wumo.sim.tensorflow.ops.variables.Initializer
+import wumo.sim.tensorflow.ops.variables.Reuse
+import wumo.sim.tensorflow.ops.variables.Variable.VariableGetter
 import wumo.sim.tensorflow.tf
 
 object layers {
   fun flatten(inputs: Output): Output {
+    TODO()
+  }
+  
+  private fun buildVariableGetter(rename: Map<String, String>): VariableGetter {
     TODO()
   }
   
@@ -19,10 +26,17 @@ object layers {
                       weights_regularizer: TensorFunction? = null,
                       biases_initializer: Initializer? = tf.zerosInitializer(),
                       biases_regularizer: TensorFunction? = null,
-                      
+                      reuse: Reuse = CreateNewOnly,
                       variables_collections: Any? = null,
                       outputs_collections: Any? = null,
-                      trainable: Boolean = true): Output {
+                      trainable: Boolean = true,
+                      scope: String = "fully_connected"): Output {
+    val layerVariableGetter = buildVariableGetter(mapOf("bias" to "biases",
+                                                        "kernel" to "wieghts"))
+    tf.variableScope(scope, reuse,
+                     underlyingGetter = layerVariableGetter) {
+      
+    }
     TODO()
   }
   
