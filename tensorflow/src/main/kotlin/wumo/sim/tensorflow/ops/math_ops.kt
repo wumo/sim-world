@@ -91,6 +91,9 @@ operator fun <T : OutputConvertible, R : OutputConvertible> T.times(b: R) =
 
 operator fun <T : OutputConvertible> T.unaryMinus() = tf.neg(this.toOutput())
 
+fun Output.cast(dataType: DataType<*>): Output =
+    tf.cast(this, dataType)
+
 object math_ops {
   private val dtype_hierarchy: Map<DataType<*>, Int> = mapOf(INT32 to 0,
                                                              INT64 to 1,
@@ -157,7 +160,7 @@ object math_ops {
                  tf.fill(axesShape, tf.const(1))))
     }
     
-    fun reductionDims(x: Output, axis: Output?): Output {
+    fun reductionDims(x: Output, axis: Output? = null): Output {
       if (axis != null) return axis
       //Fast path: avoid creating Rank and Range ops if ndims is known.
       return tf.const(arange(x.shape.rank), name = "reduction_indices")
@@ -165,15 +168,6 @@ object math_ops {
       // Otherwise, we rely on Range and Rank to do the right thing at run-time.
       return range(tf.const(0), tf.rank(x))
     }
-    
-    fun mean(input: Output, axis: LongArray? = null, keepDims: Boolean = false, name: String = "mean") =
-        tf.nameScope(name) {
-          val reduction_indices =
-              reductionDims(input,
-                            if (axis != null) tf.const(axis, "reduction_indices")
-                            else null)
-          super._mean(input, reduction_indices, keepDims, name)
-        }
     
     fun matMul(a: Output, b: Output, transposeA: Boolean = false, transposeB: Boolean = false,
                conjugateA: Boolean = false,
@@ -304,6 +298,27 @@ object math_ops {
     fun tensordot(input: Output, kernel: Output, const: Output): Output {
       TODO()
     }
+    
+    fun toFloat(x: Output, name: String = "ToFloat"): Output =
+        tf.cast(x, FLOAT, name)
+    
+    fun toDouble(x: Output, name: String = "ToDouble"): Output =
+        tf.cast(x, DOUBLE, name)
+    
+    fun toInt32(x: Output, name: String = "ToInt32"): Output =
+        tf.cast(x, INT32, name)
+    
+    fun toInt64(x: Output, name: String = "ToInt64"): Output =
+        tf.cast(x, INT64, name)
+    
+    fun toBFloat16(x: Output, name: String = "ToBFloat16"): Output =
+        tf.cast(x, BFLOAT16, name)
+    
+    fun toComplex64(x: Output, name: String = "ToComplex64"): Output =
+        tf.cast(x, COMPLEX64, name)
+    
+    fun toComplex128(x: Output, name: String = "ToComplex128"): Output =
+        tf.cast(x, COMPLEX128, name)
   }
   
   private fun transposeConjugateToAdjoint(

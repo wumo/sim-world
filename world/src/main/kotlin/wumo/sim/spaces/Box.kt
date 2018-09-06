@@ -4,10 +4,14 @@ import wumo.sim.core.Space
 import wumo.sim.util.*
 import wumo.sim.util.ndarray.NDArray
 
-class Box(val low: NDArray<Float>, val high: NDArray<Float>) : Space<NDArray<Float>> {
+class Box private constructor(
+    val low: NDArray<Float>,
+    val high: NDArray<Float>,
+    shape: Shape,
+    dataType: Class<*>)
+  : Space<NDArray<Float>>(shape, dataType) {
+  
   override val n = low.size
-  val shape: Shape = low.shape
-  val dtype: Int = 1
   
   init {
     require(low.size == high.size)
@@ -23,5 +27,13 @@ class Box(val low: NDArray<Float>, val high: NDArray<Float>) : Space<NDArray<Flo
       if (x[i] !in low[i]..high[i])
         return false
     return true
+  }
+  
+  companion object {
+    operator fun invoke(low: NDArray<Float>, high: NDArray<Float>): Box {
+      val shape = low.shape
+      val dataType = low.dtype
+      return Box(low, high, shape, dataType)
+    }
   }
 }

@@ -235,7 +235,7 @@ object slot_creator {
 //  val dataType = if (dataType == DT_INVALID) primary.dataType else dataType
 //  val slot_shape = primary.shape
 //  return if (slot_shape.isFullyDefined) {
-//    val initializer = tf.zeros_initializer(dataType)
+//    val initializer = tf.zerosInitializer(dataType)
 //    create_slot_with_initializer(primary,
 //                                 initializer,
 //                                 slot_shape, dataType,

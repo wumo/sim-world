@@ -2,9 +2,9 @@ package wumo.sim.tensorflow.ops
 
 import org.junit.Test
 import wumo.sim.tensorflow.tf
+import wumo.sim.util.Shape
 import wumo.sim.util.f
 import wumo.sim.util.ndarray.NDArray
-import wumo.sim.util.x
 
 class Array_opsKtTest : BaseTest() {
   
@@ -14,12 +14,12 @@ class Array_opsKtTest : BaseTest() {
   
   @Test
   fun placeholder() {
-    val p = tf.placeholder(2 x 2)
+    val p = tf.placeholder(Shape(2, 2))
     val a = tf.variable(p)
     val init = tf.globalVariablesInitializer()
     printGraph()
     tf.session {
-      init.run(p to NDArray(2 x 2, f(1f, 2f, 3f, 4f)))
+      init.run(p to NDArray(Shape(2, 2), f(1f, 2f, 3f, 4f)))
       a.eval()
     }
   }

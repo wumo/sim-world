@@ -94,7 +94,7 @@ abstract class Optimizer {
    */
   fun computeGradients(
       loss: Output,
-      gradLoss: List<OutputLike>? = null,
+      gradLoss: List< OutputLike>? = null,
       variables: Set<Variable>? = null,
       gradientsGatingMethod: gradient_ops.GatingMethod = OpGating,
       gradientsAggregationMethod: gradient_ops.AggregationMethod = AddAggregationMethod,

@@ -6,16 +6,16 @@ import org.bytedeco.javacpp.tensorflow
 import org.bytedeco.javacpp.tensorflow.AddControlInput
 import org.junit.Test
 import wumo.sim.tensorflow.tf
+import wumo.sim.util.Shape
 import wumo.sim.util.f
-import wumo.sim.util.x
 
 class c_api_test {
   @Test
   fun `update edge`() {
 //    val a = tf.variable(1, name = "a")
     
-    val A = tf.const(4 x 1, f(1f, 2f, 3f, 4f))
-    val B = tf.const(4 x 1, f(1f, 2f, 3f, 4f))
+    val A = tf.const(Shape(4, 1), f(1f, 2f, 3f, 4f))
+    val B = tf.const(Shape(4, 1), f(1f, 2f, 3f, 4f))
     val C = tf.matMul(A, B, transposeA = true, transposeB = false)
     val pa = BoolPointer(1L)
     val pb = BoolPointer(1)

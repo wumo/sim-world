@@ -17,6 +17,7 @@
         <module>tensorflow</module>
         <module>tensorflow-ops-generator</module>
         <module>python-interpreter</module>
+        <module>rl-algo</module>
     </modules>
 
     <developers>

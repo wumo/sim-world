@@ -32,7 +32,7 @@ class Contextual_Bandit : BaseTest() {
 //    var output = tf.fully_connected(state_in_OH, num_actions,
 //                                    biases_initializer = null,
 //                                    activation_fn = { tf.sigmoid(it) },
-//                                    weights_initializer = tf.ones_initializer())
+//                                    weights_initializer = tf.onesInitializer())
 //    output = tf.reshape(output, tf.const(i(-1)), name = "output")
 //    val chosen_action = tf.argmax(output, 0, name = "chosen_action")
 //

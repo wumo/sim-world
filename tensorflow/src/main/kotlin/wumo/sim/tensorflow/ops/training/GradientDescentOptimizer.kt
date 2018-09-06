@@ -8,7 +8,7 @@ import wumo.sim.tensorflow.ops.variables.Variable
 import wumo.sim.tensorflow.tf
 
 class GradientDescentOptimizer(
-    val learningRate: () -> Double,
+    val learningRate: () -> Float,
     override val useLocking: Boolean = false,
     override val name: String = "GradientDescent"
 ) : Optimizer() {

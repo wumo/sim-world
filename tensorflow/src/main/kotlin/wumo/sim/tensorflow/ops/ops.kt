@@ -10,6 +10,7 @@ import wumo.sim.tensorflow.ops.control_flow_ops.ControlFlowContext
 import wumo.sim.tensorflow.ops.control_flow_ops.control_flow_ops
 import wumo.sim.tensorflow.ops.gen.*
 import wumo.sim.tensorflow.ops.gradients.gradient_ops
+import wumo.sim.tensorflow.ops.variables.initializers
 import wumo.sim.tensorflow.ops.variables.variables
 import wumo.sim.tensorflow.tf
 import wumo.sim.util.DynamicVariable
@@ -37,6 +38,7 @@ object ops {
       val controlFlowContext: ControlFlowContext? = null,
       val outerContext: GraphConstructionScope? = null)
   
+  val currentSession = DynamicVariable<Session?>(null)
   internal val graphConstructionScope = DynamicVariable(GraphConstructionScope(core.defaultGraph))
   
   /** Checks whether the provided string is a valid op name.
@@ -345,7 +347,10 @@ object ops {
       gen_summary_ops,
       gen_training_ops,
       gen_user_ops,
-      gen_variable_ops {
+      gen_variable_ops,
+      initializers {
+    
+    val currentSession get() = ops.currentSession.value
     
     /** Returns the graph of the current op creation context. */
     val currentGraph get() = graphConstructionScope.value.graph

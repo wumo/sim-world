@@ -1,16 +1,13 @@
 package wumo.sim.algorithm.drl.deepq
 
-import org.bytedeco.javacpp.tensorflow.*
-import wumo.sim.tensorflow.TF
 import wumo.sim.tensorflow.ops.variables.Variable
-import wumo.sim.tensorflow.defaut
 import wumo.sim.tensorflow.ops.*
 import wumo.sim.tensorflow.ops.Output
-import wumo.sim.tensorflow.ops.control_flow_ops.cond
-import wumo.sim.tensorflow.ops.control_flow_ops.group
-import wumo.sim.tensorflow.ops.gen.*
+import wumo.sim.tensorflow.ops.training.Optimizer
 import wumo.sim.tensorflow.tf
-import wumo.sim.tensorflow.training.Optimizer
+import wumo.sim.tensorflow.types.BOOL
+import wumo.sim.tensorflow.types.FLOAT
+import wumo.sim.tensorflow.types.INT32
 import wumo.sim.util.*
 import wumo.sim.util.Shape
 import wumo.sim.util.ndarray.NDArray
@@ -48,7 +45,7 @@ fun build_train(make_obs_ph: (String) -> TfInput,
                 name: String = "deepq",
                 param_noise: Boolean = false,
                 param_noise_filter_func: ((Variable) -> Boolean)? = null)
-    : tuple4<ActFunction, Function, Function, Map<String, Any>> {
+    : t4<ActFunction, Function, Function, Map<String, Any>> {
   val (act_f, act_vars, act_graph_def) = if (param_noise)
     build_act_with_param_noise(make_obs_ph, q_func, num_actions,
                                _param_noise_filter_func = param_noise_filter_func,
@@ -56,14 +53,14 @@ fun build_train(make_obs_ph: (String) -> TfInput,
   else
     build_act(make_obs_ph, q_func, num_actions, name)
   
-  tf.variable_scope(name) {
+  tf.variableScope(name) {
     //set up placeholders
     val obs_t_input = make_obs_ph("obs_t")
-    val act_t_ph = tf.placeholder(Shape(-1), DT_INT32, name = "action")
-    val rew_t_ph = tf.placeholder(Shape(-1), DT_FLOAT, name = "reward")
+    val act_t_ph = tf.placeholder(Shape(-1), INT32, name = "action")
+    val rew_t_ph = tf.placeholder(Shape(-1), FLOAT, name = "reward")
     val obs_tp1_input = make_obs_ph("obs_tp1")
-    val done_mask_ph = tf.placeholder(Shape(-1), DT_FLOAT, name = "done")
-    val importance_weights_ph = tf.placeholder(Shape(-1), DT_FLOAT, name = "weight")
+    val done_mask_ph = tf.placeholder(Shape(-1), FLOAT, name = "done")
+    val importance_weights_ph = tf.placeholder(Shape(-1), FLOAT, name = "weight")
     //q network evaluation
     val q_t = q_func(obs_t_input.get(), num_actions, "q_func", true)
     val q_func_vars = tf.ctxVs.variable_subscopes["q_func"]!!.all_variables()
@@ -88,12 +85,12 @@ fun build_train(make_obs_ph: (String) -> TfInput,
     val weighted_error = tf.mean(importance_weights_ph * errors, name = "weighted_error")
     //compute optimization op (potentially with gradient clipping)
     val optimize_expr = if (grad_norm_clipping != null) {
-      val gradients = optimizer.compute_gradients(weighted_error, q_func_vars)
+      val gradients = optimizer.computeGradients(weighted_error, q_func_vars)
       for ((i, pair) in gradients.withIndex()) {
         val (grad, v) = pair
-        gradients[i]._1 = tf.clip_by_norm(grad, grad_norm_clipping)
+        gradients[i]._1 = tf.clipByNorm(grad, grad_norm_clipping)
       }
-      optimizer.apply_gradients(gradients)
+      optimizer.applyGradients(gradients)
     } else
       optimizer.minimize(weighted_error, q_func_vars)
     //update_target_fn will be called periodically to copy Q network to target Q network
@@ -118,7 +115,7 @@ fun build_train(make_obs_ph: (String) -> TfInput,
         updates = a(optimize_expr))
     val update_target = function(updates = a(update_target_expr))
     val q_values = function(a(obs_t_input), q_t)
-    return tuple4(act_f, train, update_target, mapOf("q_values" to q_values, "act_vars" to act_vars, "act_graph_def" to act_graph_def))
+    return t4(act_f, train, update_target, mapOf("q_values" to q_values, "act_vars" to act_vars, "act_graph_def" to act_graph_def))
   }
 }
 
@@ -144,7 +141,7 @@ fun build_act_with_param_noise(make_obs_ph: (String) -> TfInput,
                                q_func: Q_func,
                                num_actions: Int,
                                _param_noise_filter_func: ((Variable) -> Boolean)?,
-                               name: String): tuple3<ActFunction, List<Variable>, ByteArray> {
+                               name: String): t3<ActFunction, List<Variable>, ByteArray> {
   val param_noise_filter_func = _param_noise_filter_func ?: {
     when {
       //We never perturb non -trainable vars .
@@ -161,18 +158,18 @@ fun build_act_with_param_noise(make_obs_ph: (String) -> TfInput,
     }
   }
   
-  tf.variable_scope(name) {
+  tf.variableScope(name) {
     
     val observations_ph = make_obs_ph("observation")
-    val stochastic_ph = tf.placeholder(scalarDimension, DT_BOOL, name = "stochastic")
-    val update_eps_ph = tf.placeholder(scalarDimension, DT_FLOAT, name = "update_eps")
-    val update_param_noise_threshold_ph = tf.placeholder(scalarDimension, DT_FLOAT, name = "update_param_noise_threshold")
-    val update_param_noise_scale_ph = tf.placeholder(scalarDimension, DT_BOOL, name = "update_param_noise_scale")
-    val reset_ph = tf.placeholder(scalarDimension, DT_BOOL, name = "reset")
+    val stochastic_ph = tf.placeholder(scalarDimension, BOOL, name = "stochastic")
+    val update_eps_ph = tf.placeholder(scalarDimension, FLOAT, name = "update_eps")
+    val update_param_noise_threshold_ph = tf.placeholder(scalarDimension, FLOAT, name = "update_param_noise_threshold")
+    val update_param_noise_scale_ph = tf.placeholder(scalarDimension, BOOL, name = "update_param_noise_scale")
+    val reset_ph = tf.placeholder(scalarDimension, BOOL, name = "reset")
     
-    val eps = tf.get_variable(scalarDimension, tf.constant_initializer(0), name = "eps")
-    val param_noise_scale = tf.get_variable(scalarDimension, initializer = tf.constant_initializer(0.01f), trainable = false, name = "param_noise_scale")
-    val param_noise_threshold = tf.get_variable(scalarDimension, initializer = tf.constant_initializer(0.05f), trainable = false, name = "param_noise_threshold")
+    val eps = tf.get_variable(scalarDimension, tf.constantInitializer(0), name = "eps")
+    val param_noise_scale = tf.get_variable(scalarDimension, initializer = tf.constantInitializer(0.01f), trainable = false, name = "param_noise_scale")
+    val param_noise_threshold = tf.get_variable(scalarDimension, initializer = tf.constantInitializer(0.05f), trainable = false, name = "param_noise_threshold")
     
     //unmodified Q
     val q_values = q_func(observations_ph.get(), num_actions, "q_func", false)
@@ -190,7 +187,7 @@ fun build_act_with_param_noise(make_obs_ph: (String) -> TfInput,
       for ((v, perturbed_var) in all_vars.zip(all_perturbed_vars)) {
         val op = if (param_noise_filter_func(perturbed_var))
         //Perturb this variable.
-          tf.assign(perturbed_var, v + tf.random_normal(tf.shape(v), mean = 0f, stddev = param_noise_scale))
+          tf.assign(perturbed_var, v + tf.randomNormal(tf.shape(v), mean = 0f, stddev = param_noise_scale))
         else
         //Do not perturb, just assign.
           tf.assign(perturbed_var, v)
@@ -222,8 +219,8 @@ fun build_act_with_param_noise(make_obs_ph: (String) -> TfInput,
     //Put everything together.
     val deterministic_actions = tf.argmax(q_values_perturbed, axis = 1, name = "deterministic_actions")
     val batch_size = tf.shape(observations_ph.get())[0]
-    val random_actions = tf.random_uniform(tf.stack(a(batch_size)), min = 0, max = num_actions, dtype = DT_INT32, name = "random_actions")
-    val part_a = tf.random_uniform(tf.stack(a(batch_size)), min = 0, max = 1, dtype = DT_FLOAT)
+    val random_actions = tf.randomUniform(tf.stack(a(batch_size)), min = 0, max = num_actions, dtype = DT_INT32, name = "random_actions")
+    val part_a = tf.randomUniform(tf.stack(a(batch_size)), min = 0, max = 1, dtype = DT_FLOAT)
     val chose_random = tf.less(part_a, eps, name = "chose_random")
     val stochastic_actions = tf.where(chose_random, random_actions, deterministic_actions, name = "stochastic_actions")
     val output_actions = tf.cond(stochastic_ph, { stochastic_actions }, { deterministic_actions }, name = "output_actions")
@@ -269,12 +266,12 @@ fun build_act(make_obs_ph: (String) -> TfInput, q_func: Q_func, num_actions: Int
     val observations_ph = make_obs_ph("observation")
     val stochastic_ph = tf.placeholder(scalarDimension, DT_BOOL, name = "stochastic")
     val update_eps_ph = tf.placeholder(scalarDimension, DT_FLOAT, name = "update_eps")
-    val eps = tf.get_variable(scalarDimension, tf.constant_initializer(0), name = "eps")
+    val eps = tf.get_variable(scalarDimension, tf.constantInitializer(0), name = "eps")
     val q_values = q_func(observations_ph.get(), num_actions, "q_func", false)
     val deterministic_actions = tf.argmax(q_values, 1, name = "deterministic_actions")
     val batch_size = tf.shape(observations_ph.get())[0]
-    val random_actions = tf.random_uniform(tf.stack(a(batch_size)), min = 0, max = num_actions, dtype = DT_INT32, name = "random_actions")
-    val chose_random = tf.less(tf.random_uniform(tf.stack(a(batch_size)), min = 0, max = 1, dtype = DT_FLOAT), eps)
+    val random_actions = tf.randomUniform(tf.stack(a(batch_size)), min = 0, max = num_actions, dtype = DT_INT32, name = "random_actions")
+    val chose_random = tf.less(tf.randomUniform(tf.stack(a(batch_size)), min = 0, max = 1, dtype = DT_FLOAT), eps)
     val stochastic_actions = tf.where(chose_random, random_actions, deterministic_actions, name = "stochastic_action")
     val output_actions = tf.cond(stochastic_ph, { stochastic_actions }, { deterministic_actions }, name = "output_actions")
     val update_eps_expr = eps.assign(tf.cond(tf.greaterEqual(update_eps_ph, tf.const(0f)), { update_eps_ph }, { eps }))

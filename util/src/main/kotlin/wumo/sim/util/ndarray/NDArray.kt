@@ -84,7 +84,7 @@ open class NDArray<T : Any>(val shape: Shape, val raw: Buf<T>, val dtype: Class<
     
     private fun combine(c: Iterable<NDArray<*>>, size: Int): NDArray<*> {
       val first = c.first()
-      val shape = size x first.shape
+      val shape = Shape(size,first.shape)
       val firstElement = first.first()
       val buf = collectionNDArraySwitch(firstElement, shape.numElements()) as Buf<Any>
       
@@ -190,6 +190,10 @@ open class NDArray<T : Any>(val shape: Shape, val raw: Buf<T>, val dtype: Class<
     raw[it] = data
   }
   
+  fun rawSet(idx: Int, data: T) {
+    raw[idx] = data
+  }
+  
   override fun iterator() = object : Iterator<T> {
     var a = 0
     override fun hasNext() = a < size
@@ -291,6 +295,9 @@ open class NDArray<T : Any>(val shape: Shape, val raw: Buf<T>, val dtype: Class<
   fun setFrom(other: NDArray<T>) {
     raw.setFrom(other.raw)
   }
+  
+  fun reshape(newShape: Shape): NDArray<T> =
+      NDArray(newShape, raw.copy(), dtype)
   
   operator fun component1() = raw[0]
   operator fun component2() = raw[1]

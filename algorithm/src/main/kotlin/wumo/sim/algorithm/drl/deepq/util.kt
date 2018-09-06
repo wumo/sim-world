@@ -4,19 +4,17 @@ package wumo.sim.algorithm.drl.deepq
 
 import org.bytedeco.javacpp.tensorflow.DT_FLOAT
 import org.bytedeco.javacpp.tensorflow.DT_INT32
-import wumo.sim.tensorflow.ops.*
-import wumo.sim.tensorflow.ops.gen.abs
-import wumo.sim.tensorflow.ops.gen.less
-import wumo.sim.tensorflow.ops.gen.oneHot
-import wumo.sim.tensorflow.ops.gen.square
-import wumo.sim.tensorflow.tf
 import wumo.sim.core.Space
 import wumo.sim.spaces.Box
 import wumo.sim.spaces.Discrete
+import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.ops.minus
+import wumo.sim.tensorflow.ops.times
+import wumo.sim.tensorflow.tf
 import wumo.sim.util.Shape
 import wumo.sim.util.a
 import wumo.sim.util.ndarray.NDArray
-import wumo.sim.util.tuple2
+import wumo.sim.util.t2
 import wumo.sim.util.x
 
 interface Function {
@@ -42,7 +40,7 @@ class FunctionTensor(val inputs: Array<out Any>,
     }
     for ((input, value) in givens)
       feed_dict.putIfAbsent(input, value)
-    return tf.session.run(outputs, updates, feed_dict = feed_dict)
+    return tf.currentSession!!.run(outputs, updates, feed_dict = feed_dict)
   }
 }
 
@@ -61,7 +59,7 @@ class FunctionString(val inputs: Array<String>,
     }
     for ((input, value) in givens)
       feed_dict.putIfAbsent(input, value)
-    return tf.session.run(outputs, updates, feed_dict = feed_dict)
+    return tf.currentSession!!.run(outputs, updates, feed_dict = feed_dict)
   }
 }
 
@@ -124,13 +122,13 @@ fun observation_input(ob_space: Space<*>, batch_size: Int = -1, name: String = "
       is Discrete -> {
         val input_x = tf.placeholder(shape = Shape(batch_size), dtype = DT_INT32, name = name)
         val processed_x = tf.cast(tf.oneHot(input_x, tf.const(ob_space.n), tf.const(0), tf.const(1)), DT_FLOAT)
-        tuple2(input_x, processed_x)
+        t2(input_x, processed_x)
       }
       is Box -> {
         val input_shape = batch_size x ob_space.shape
         val input_x = tf.placeholder(shape = input_shape, dtype = ob_space.dtype, name = name)
         val processed_x = tf.cast(input_x, DT_FLOAT)
-        tuple2(input_x, processed_x)
+        t2(input_x, processed_x)
       }
       else -> throw NotImplementedError()
     }

@@ -3,6 +3,9 @@ package wumo.sim.tensorflow.types
 import wumo.sim.tensorflow.tf
 import wumo.sim.util.NONE
 
+fun Int.toDataType(): DataType<*> =
+    DataType.fromCValue(this)
+
 interface DataType<KotlinType> {
   //region Data Type Properties
   val name: String get() = protoType.name

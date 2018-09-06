@@ -3,25 +3,25 @@
 package wumo.sim.util
 
 val scalarDimension = Shape(IntArray(0))
-infix fun Int.x(a: Int) = Shape(this, a)
-infix fun Shape.x(a: Int) = run {
-  val dims = asIntArray()
-  if (dims == null) Shape()
-  else Shape(*dims, a)
-}
-
-infix fun Int.x(shape: Shape) = run {
-  val dims = shape.asIntArray()
-  if (dims == null) Shape()
-  else Shape(this, *dims)
-}
-
-infix fun Shape.x(shape: Shape) = run {
-  val dims1 = asIntArray()
-  val dims2 = shape.asIntArray()
-  if (dims1 == null || dims2 == null) Shape()
-  else Shape(*dims1, *dims2)
-}
+//infix fun Int.x(a: Int) = Shape(this, a)
+//infix fun Shape.x(a: Int) = run {
+//  val dims = asIntArray()
+//  if (dims == null) Shape()
+//  else Shape(*dims, a)
+//}
+//
+//infix fun Int.x(shape: Shape) = run {
+//  val dims = shape.asIntArray()
+//  if (dims == null) Shape()
+//  else Shape(this, *dims)
+//}
+//
+//infix fun Shape.x(shape: Shape) = run {
+//  val dims1 = asIntArray()
+//  val dims2 = shape.asIntArray()
+//  if (dims1 == null || dims2 == null) Shape()
+//  else Shape(*dims1, *dims2)
+//}
 
 /** Represents the shape of a tensor computed by an op.
  *
@@ -46,6 +46,11 @@ class Shape(private val dims: IntArray? = null) : Iterable<Int> {
   
   companion object {
     operator fun invoke(vararg d: Int) = Shape(d)
+    operator fun invoke(d: Int, shape: Shape): Shape {
+      val dims = shape.asIntArray()
+      return if (dims == null) Shape(d)
+      else Shape(d, *dims)
+    }
   }
   
   fun asLongArray() =

@@ -8,7 +8,7 @@ class `Q-Learning with Neural Networks test` : BaseTest() {
   fun test() {
     //https://medium.com/emergent-future/simple-reinforcement-learning-with-tensorflow-part-0-q-learning-with-tables-and-neural-networks-d195264329d0
 //    val inputs = tf.placeholder(1 x 16, name = "inputs1")
-//    val W = tf.variable(tf.random_uniform(16 x 4, 0f, 0.01f), name = "W")
+//    val W = tf.variable(tf.randomUniform(16 x 4, 0f, 0.01f), name = "W")
 //    val Qout = tf.matMul(inputs, W, name = "Qout")
 //    val predict = tf.argmax(Qout, 1, name = "predict")
 //    val nextQ = tf.placeholder(1 x 4, name = "nextQ")

@@ -13,10 +13,8 @@ import org.bytedeco.javacpp.tensorflow.*
 import org.tensorflow.framework.GraphDef
 import org.tensorflow.framework.OpDef
 import wumo.sim.tensorflow.OperationBuilder
-import wumo.sim.tensorflow.ops.Op
+import wumo.sim.tensorflow.ops.*
 import wumo.sim.tensorflow.ops.Output
-import wumo.sim.tensorflow.ops.Resource
-import wumo.sim.tensorflow.ops.ops
 import wumo.sim.tensorflow.ops.variables.Saver
 import wumo.sim.tensorflow.ops.variables.Variable
 import wumo.sim.tensorflow.ops.variables.Variable.VariableGetter
@@ -153,7 +151,41 @@ open class Graph {
    * @return Set of values contained in the collection with name `collection`.
    */
   fun <K> getCollection(key: Graph.Key<K>) =
-      collections.getOrDefault(key, mutableSetOf<K>()) as MutableSet<K>
+      collections.getOrElse(key) { mutableSetOf<K>() } as MutableSet<K>
+  
+  /**
+   * Returns a list of values in the collection with the given `name`.
+  
+  This is different from `get_collection_ref()` which always returns the
+  actual collection list if it exists in that it returns a new list each time
+  it is called.
+  
+  Args:
+   * @param key: The key for the collection. For example, the `GraphKeys` class
+  contains many standard names for collections.
+   * @param scope: (Optional.) A string. If supplied, the resulting list is filtered
+  to include only items whose `name` attribute matches `scope` using
+  `re.match`. Items without a `name` attribute are never returned if a
+  scope is supplied. The choice of `re.match` means that a `scope` without
+  special tokens filters by prefix.
+   
+   * @return:
+  The list of values in the collection with the given `name`, or
+  an empty list if no value has been added to that collection. The
+  list contains the values in the order under which they were
+  collected.
+   */
+  fun <K : HasName> getCollection(key: Graph.Key<K>, scope: String? = null): Set<K> {
+    val collection = collections.getOrElse(key) { setOf<K>() } as Set<K>
+    if (collection.isEmpty()) return collection
+    return if (scope == null) collection
+    else {
+      val regex = Regex(scope)
+      collection.filterTo(mutableSetOf()) {
+        regex.matches(it.name)
+      }
+    }
+  }
   
   var randomSeed: Int?
     /** Gets the random seed of this graph. */

@@ -2,15 +2,14 @@ package wumo.sim.algorithm.drl.deepq
 
 import wumo.sim.util.Rand
 import wumo.sim.util.ndarray.NDArray
-import wumo.sim.util.tuple5
-import wumo.sim.util.tuple7
+import wumo.sim.util.t5
 
 open class ReplayBuffer<O, A>(val buffer_size: Int) {
-  private val storage = ArrayList<tuple5<O, A, Float, O, Boolean>>(buffer_size)
+  private val storage = ArrayList<t5<O, A, Float, O, Boolean>>(buffer_size)
   private var next_idx = 0
   
   fun add(obs: O, action: A, rew: Float, new_obs: O, done: Boolean) {
-    val data = tuple5(obs, action, rew, new_obs, done)
+    val data = t5(obs, action, rew, new_obs, done)
     if (next_idx >= storage.size)
       storage += data
     else
@@ -21,7 +20,7 @@ open class ReplayBuffer<O, A>(val buffer_size: Int) {
   /**
    * Sample a batch of experiences.
    */
-  fun sample(batch_size: Int): tuple5<NDArray<*>, NDArray<*>, NDArray<Float>, NDArray<*>, NDArray<Float>> {
+  fun sample(batch_size: Int): t5<NDArray<*>, NDArray<*>, NDArray<Float>, NDArray<*>, NDArray<Float>> {
     val obses_t = ArrayList<O>(batch_size)
     val actions = ArrayList<A>(batch_size)
     val rewards = ArrayList<Float>(batch_size)
@@ -36,7 +35,7 @@ open class ReplayBuffer<O, A>(val buffer_size: Int) {
       obses_tp1 += obs_tp1
       dones += if (done) 1f else 0f
     }
-    return tuple5(NDArray.toNDArray(obses_t),
+    return t5(NDArray.toNDArray(obses_t),
                   NDArray.toNDArray(actions),
                   NDArray.toNDArray(rewards) as NDArray<Float>,
                   NDArray.toNDArray(obses_tp1),

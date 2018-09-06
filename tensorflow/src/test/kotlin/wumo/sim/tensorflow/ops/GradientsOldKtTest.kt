@@ -11,7 +11,7 @@ class GradientsOldKtTest : BaseTest() {
   fun gradients() {
     val x = tf.variable(1f, name = "x")
     val y = x * x
-    val trainer = GradientDescentOptimizer({ 0.1 })
+    val trainer = GradientDescentOptimizer({ 0.1f })
     val update = trainer.minimize(y)
     val init = tf.globalVariablesInitializer()
     printGraph()
@@ -30,7 +30,7 @@ class GradientsOldKtTest : BaseTest() {
     val x = tf.variable(1f, name = "x")
     val y = tf.variable(1f, name = "y")
     val z = tf.mul(x.toOutput(), y.toOutput(), "z")
-    val optimizer = AdamOptimizer(learningRate = { 0.1 })
+    val optimizer = AdamOptimizer(learningRate = { 0.1f })
     val opt = optimizer.minimize(z)
     val init = tf.globalVariablesInitializer()
     println(tf.debugString())

@@ -35,7 +35,7 @@ object clip_ops {
      
      * @return A clipped `Output`.
      */
-    fun clip_by_norm(t: Output, clip_norm: Output, axes: Output? = null, name: String = "clip_by_norm"): Output =
+    fun clipByNorm(t: Output, clip_norm: Output, axes: Output? = null, name: String = "clipByNorm"): Output =
         tf.nameScope(name) {
           val clip_norm = tf.cast(clip_norm, t.dataType)
           // Calculate L2-norm, clip elements by ratio of clip_norm to L2-norm

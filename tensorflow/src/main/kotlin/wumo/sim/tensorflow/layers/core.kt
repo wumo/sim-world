@@ -1,5 +1,13 @@
 package wumo.sim.tensorflow.layers
 
+import wumo.sim.tensorflow.ops.Output
+
+object layers {
+  fun flatten(inputs: Output): Output {
+    TODO()
+  }
+}
+
 //import wumo.sim.tensorflow.ops.Output
 //import wumo.sim.tensorflow.ops.variables.Initializer
 //import wumo.sim.tensorflow.tf
@@ -11,7 +19,7 @@ package wumo.sim.tensorflow.layers
 //            val activation: TensorFunction? = null,
 //            val use_bias: Boolean = true,
 //            val kernel_initializer: Initializer,
-//            val bias_initializer: Initializer? = tf.zeros_initializer(),
+//            val bias_initializer: Initializer? = tf.zerosInitializer(),
 //            val kernel_regularizer: TensorFunction? = null,
 //            val bias_regularizer: TensorFunction? = null,
 //            activity_regularizer: Any? = null,

@@ -11,9 +11,8 @@ interface OutputConvertible {
   fun toOutput(): Output
 }
 
-sealed class OutputLike : OutputConvertible {
+sealed class OutputLike : OutputConvertible,HasName {
   abstract val graph: Graph
-  abstract val name: String
   abstract val dataType: DataType<*>
   abstract val device: String
   abstract val op: Op

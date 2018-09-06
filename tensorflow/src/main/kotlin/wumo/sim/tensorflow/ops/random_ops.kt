@@ -10,9 +10,9 @@ import wumo.sim.util.scalarDimension
 object random_ops {
   interface API : gen_random_ops {
     
-    fun random_normal(shape: Output, dtype: DataType<*> = FLOAT,
-                      mean: Float = 0f, stddev: Output,
-                      name: String = "random_normal"): Output =
+    fun randomNormal(shape: Output, dtype: DataType<*> = FLOAT,
+                     mean: Float = 0f, stddev: Output,
+                     name: String = "randomNormal"): Output =
         tf.nameScope(name) {
           val mean_t = tf.const(mean, name = "mean")
           val rnd = super.randomStandardNormal(shape, dtype, 0L, 0L, "RandomStandardNormal")
@@ -20,9 +20,9 @@ object random_ops {
           tf.add(mul, mean_t, tf.currentNameScope)
         }
     
-    fun random_normal(shape: Output, dtype: DataType<*> = FLOAT,
-                      mean: Float = 0f, stddev: Float = 1f,
-                      name: String = "random_normal"): Output =
+    fun randomNormal(shape: Output, dtype: DataType<*> = FLOAT,
+                     mean: Float = 0f, stddev: Float = 1f,
+                     name: String = "randomNormal"): Output =
         tf.nameScope(name) {
           val mean_t = tf.const(mean, name = "mean")
           val stddev_t = tf.const(stddev)
@@ -31,18 +31,18 @@ object random_ops {
           tf.add(mul, mean_t, tf.currentNameScope)
         }
     
-    fun random_normal(shape: Output, dtype: DataType<*> = FLOAT,
-                      mean: Output, stddev: Output,
-                      name: String = "RandomStandardNormal"): Output =
+    fun randomNormal(shape: Output, dtype: DataType<*> = FLOAT,
+                     mean: Output, stddev: Output,
+                     name: String = "RandomStandardNormal"): Output =
         tf.nameScope(name) {
           val rnd = super.randomStandardNormal(shape, dtype, 0L, 0L, "RandomStandardNormal")
           val mul = rnd * stddev
           tf.add(mul, mean, tf.currentNameScope)
         }
     
-    fun random_uniform(shape: Output, dtype: DataType<*> = FLOAT,
-                       min: Number, max: Number,
-                       name: String = "random_uniform"): Output =
+    fun randomUniform(shape: Output, dtype: DataType<*> = FLOAT,
+                      min: Number, max: Number,
+                      name: String = "randomUniform"): Output =
         tf.nameScope(name) {
           val minval = tf.const(scalarDimension, dtype, min, name = "min")
           val maxval = tf.const(scalarDimension, dtype, max, name = "max")
@@ -54,9 +54,9 @@ object random_ops {
           }
         }
     
-    fun random_uniform(shape: Shape,
-                       min: Float, max: Float,
-                       name: String = "random_uniform"): Output =
+    fun randomUniform(shape: Shape,
+                      min: Float, max: Float,
+                      name: String = "randomUniform"): Output =
         tf.nameScope(name) {
           val shape_t = tf.const(shape.asIntArray()!!, "shape")
           val minval = tf.const(min, "min")

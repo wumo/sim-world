@@ -10,6 +10,7 @@ import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.tensorflow.core.check
 import wumo.sim.tensorflow.ops.Op
 import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.ops.OutputConvertible
 import wumo.sim.tensorflow.ops.variables.Variable
 import wumo.sim.tensorflow.tensor.Tensor
 import wumo.sim.util.ndarray.NDArray
@@ -80,7 +81,8 @@ class Session(val c_graph: TF_Graph) {
               r5 as NDArray<T5>)
   }
   
-  fun eval(fetch: List<Output>): Array<NDArray<Any>> {
+  fun eval(fetch: Collection<OutputConvertible>): Array<NDArray<Any>> {
+    val fetch = fetch.map { it.toOutput() }
     val status = newStatus()
     val (inputs, input_values, ninputs) = accumulateFeedDict()
     val (target_opers, ntargets) = accumulateRuns()

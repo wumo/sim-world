@@ -690,12 +690,13 @@ fun register_nn_grad() {
         val shape = tf.stack(listOf(1, tf.size(scale), 1, 1))
         scale = tf.reshape(scale, shape)
       }
-      val meanGradY = tf.mean(gradY, reduceAxis, keepDims = keepdims)
-      val meanX = tf.mean(x, reduceAxis, keepDims = keepdims)
-      val varX = tf.mean(tf.squaredDifference(x, tf.stopGradient(meanX)), reduceAxis, keepDims = keepdims)
+      val reduceAxisTensor=tf.const(reduceAxis)
+      val meanGradY = tf.mean(gradY, reduceAxisTensor, keepDims = keepdims)
+      val meanX = tf.mean(x, reduceAxisTensor, keepDims = keepdims)
+      val varX = tf.mean(tf.squaredDifference(x, tf.stopGradient(meanX)), reduceAxisTensor, keepDims = keepdims)
       val gradYOffset = gradY - meanGradY
       val xOffset = x - meanX
-      val mean = tf.mean(gradY * xOffset, axis = reduceAxis, keepDims = keepdims)
+      val mean = tf.mean(gradY * xOffset, axis = reduceAxisTensor, keepDims = keepdims)
       val gradX = scale * tf.rsqrt(varX + epsilon) * (gradYOffset - tf.reciprocal(varX + epsilon) * mean * xOffset)
       var gradScale = tf.rsqrt(varX + epsilon) * tf.sum(gradY * xOffset,
                                                         axis = tf.const(reduceAxis),

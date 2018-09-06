@@ -1,18 +1,16 @@
 package wumo.sim.tensorflow.ops.variables
 
 import wumo.sim.tensorflow.core.Graph
+import wumo.sim.tensorflow.ops.HasName
 import wumo.sim.tensorflow.ops.Op
 import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.ops.OutputConvertible
 import wumo.sim.tensorflow.types.DataType
 import wumo.sim.util.Shape
 
-interface VariableLike : OutputConvertible {
+interface VariableLike : OutputConvertible,HasName {
   /** Graph where this variable is val ined. */
   val graph: Graph
-  
-  /** Name of this variable. */
-  val name: String
   
   /** Data type of this variable. */
   val dataType: DataType<*>

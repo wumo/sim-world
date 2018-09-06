@@ -143,9 +143,31 @@ object array_ops {
       }
     }
     
-    fun oneHot(indices: Output, depth: Output, on_value: Output = tf.const(1f, "on_value"),
-               off_value: Output = tf.const(0f, "off_value"), axis: Long = -1L, name: String = "OneHot") =
-        super._oneHot(indices, depth, on_value, off_value, axis, name)
+    fun oneHot(indices: Output,
+               depth: Output,
+               on_value: Output? = null,
+               off_value: Output? = null,
+               axis: Long = -1L,
+               dataType: DataType<*>? = null,
+               name: String = "OneHot"): Output {
+      val inferredDataType = dataType ?: when {
+        on_value != null && off_value != null ->
+          DataType.mostPrecise(on_value.dataType, off_value.dataType)
+        on_value != null -> on_value.dataType
+        off_value != null -> off_value.dataType
+        else -> FLOAT
+      }
+      return tf.nameScope(name) {
+        super._oneHot(
+            indices,
+            depth,
+            on_value?.cast(inferredDataType) ?: tf.const(inferredDataType, 1),
+            off_value?.cast(inferredDataType) ?: tf.const(inferredDataType, 0),
+            axis,
+            tf.currentNameScope
+        )
+      }
+    }
     
     fun ones(shape: Shape, dtype: DataType<*> = FLOAT, name: String = "ones"): Output =
         tf.nameScope(name) {

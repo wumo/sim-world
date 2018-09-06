@@ -1,4 +1,36 @@
 package wumo.sim.tensorflow.contrib
+
+import wumo.sim.tensorflow.core.TensorFunction
+import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.ops.variables.Initializer
+import wumo.sim.tensorflow.tf
+
+object layers {
+  fun flatten(inputs: Output): Output {
+    TODO()
+  }
+  
+  fun fully_connected(inputs: Output,
+                      num_outputs: Int,
+                      activation_fn: TensorFunction? = { tf.relu(it) },
+                      normalizer_fn: ((Output, Any?) -> Output)? = null,
+                      normalizer_params: Any? = null,
+                      weights_initializer: Initializer = tf.xavier_initializer(),
+                      weights_regularizer: TensorFunction? = null,
+                      biases_initializer: Initializer? = tf.zerosInitializer(),
+                      biases_regularizer: TensorFunction? = null,
+                      
+                      variables_collections: Any? = null,
+                      outputs_collections: Any? = null,
+                      trainable: Boolean = true): Output {
+    TODO()
+  }
+  
+  fun layer_norm(action_out: Output, center: Boolean, scale: Boolean): Output {
+    TODO("not implemented")
+  }
+}
+
 //
 //import org.bytedeco.javacpp.tensorflow.DT_INT32
 //import org.bytedeco.javacpp.tensorflow.DT_INT64
@@ -33,7 +65,7 @@ package wumo.sim.tensorflow.contrib
 //                       normalizer_params: Any? = null,
 //                       weights_initializer: Initializer = xavier_initializer(),
 //                       weights_regularizer: TensorFunction? = null,
-//                       biases_initializer: Initializer? = zeros_initializer(),
+//                       biases_initializer: Initializer? = zerosInitializer(),
 //                       biases_regularizer: TensorFunction? = null,
 //                       variables_collections: Any? = null,
 //                       outputs_collections: Any? = null,
@@ -137,10 +169,10 @@ package wumo.sim.tensorflow.contrib
 //                                         " is not fully defined: $inputs_shape")
 //    //Allocate parameters for the beta and gamma of the normalization.
 //    val beta = if (center)
-//      tf.get_variable(params_shape, dataType, zeros_initializer(), "beta", trainable)
+//      tf.get_variable(params_shape, dataType, zerosInitializer(), "beta", trainable)
 //    else null
 //    val gamma = if (scale)
-//      tf.get_variable(params_shape, dataType, ones_initializer(), "gamma", trainable)
+//      tf.get_variable(params_shape, dataType, onesInitializer(), "gamma", trainable)
 //    else null
 //    //Calculate the moments on the last axis (layer activations).
 //    val norm_axes = (begin_norm_axis until inputs_rank).map { it.toLong() }.toLongArray()

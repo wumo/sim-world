@@ -55,10 +55,10 @@ import wumo.sim.tensorflow.tf
  * @author Emmanouil Antonios Platanios
  */
 open class AdamOptimizer(
-    val learningRate: () -> Double = { 0.001 },
-    val beta1: Double = 0.9,
-    val beta2: Double = 0.999,
-    val epsilon: Double = 1e-8,
+    val learningRate: () -> Float = { 0.001f },
+    val beta1: Float = 0.9f,
+    val beta2: Float = 0.999f,
+    val epsilon: Float = 1e-8f,
     override val useLocking: Boolean = false,
     val learningRateSummaryTag: String? = null,
     override val name: String = "Adam"

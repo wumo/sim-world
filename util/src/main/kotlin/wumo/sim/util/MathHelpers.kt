@@ -7,6 +7,8 @@ import java.util.concurrent.ThreadLocalRandom
 
 inline fun Rand() = ThreadLocalRandom.current()!!
 inline fun ThreadLocalRandom.nextFloat(origin: Float, bound: Float) = origin + nextFloat() * (bound - origin)
+fun ThreadLocalRandom.nextGaussian(mean: Float = 0f, deviation: Float = 1f): Float =
+    nextGaussian().toFloat() * deviation + mean
 
 fun Rand(low: Float, high: Float, n: Int) = NDArray(f(n) { Rand().nextFloat(low, high) })
 
