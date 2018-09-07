@@ -191,13 +191,6 @@ class Variable(
                 "No shape was provided for the new variable and it could not be inferred from the provided initializer.")
             val scopeName = tf.currentNameScope
             val trueName = ops.convertNameScopeToName(scopeName)
-//          //Use attrScope and device(None) to simulate the behavior of
-//          //colocateWith when the _variable we want to colocate with doesn't
-//          //yet exist.
-//          val attr = tensorflow.AttrValue()
-//          attr.mutable_list().apply {
-//            add_s("loc:@$trueName")
-//          }
             val variableHandle = gen_state_ops.variableV2(inferredShape, inferredDataType.baseDataType,
                                                           sharedName = trueName, name = scopeName)
             val initialValue = tf.nameScope("Initializer") {

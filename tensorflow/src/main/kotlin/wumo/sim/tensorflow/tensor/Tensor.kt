@@ -19,7 +19,8 @@ import wumo.sim.util.ndarray.NDArray
 import wumo.sim.util.ndarray.implementation.*
 import java.nio.*
 
-abstract class Tensor<T : Any> protected constructor(c_tensor: TF_Tensor) : Buf<T> {
+abstract class Tensor<T : Any>
+protected constructor(open val c_tensor: TF_Tensor) : Buf<T> {
   companion object {
     private val convert_switch = SwitchType2<Shape, Tensor<*>>().apply {
       case<FloatArrayBuf> { Tensor(_2, _1.raw) }
@@ -68,27 +69,26 @@ abstract class Tensor<T : Any> protected constructor(c_tensor: TF_Tensor) : Buf<
     operator fun invoke(value: IntArray) = invoke(Shape(value.size), value)
     operator fun invoke(value: LongArray) = invoke(Shape(value.size), value)
     operator fun invoke(value: Array<String>) = invoke(Shape(value.size), value)
-    
-    operator fun invoke(shape: Shape, value: FloatArray) = FloatTensor(create(shape, FloatPointer(*value), DT_FLOAT))
-    operator fun invoke(shape: Shape, value: DoubleArray) = DoubleTensor(create(shape, DoublePointer(*value), DT_DOUBLE))
-    operator fun invoke(shape: Shape, value: BooleanArray) = BooleanTensor(create(shape, BytePointer(*ByteArray(value.size) { if (value[it]) 1 else 0 }), DT_BOOL))
-    operator fun invoke(shape: Shape, value: ByteArray) = ByteTensor(create(shape, BytePointer(*value), DT_INT8))
-    operator fun invoke(shape: Shape, value: ShortArray) = ShortTensor(create(shape, ShortPointer(*value), DT_INT16))
-    operator fun invoke(shape: Shape, value: IntArray) = IntTensor(create(shape, IntPointer(*value), DT_INT32))
-    operator fun invoke(shape: Shape, value: LongArray) = LongTensor(create(shape, LongPointer(*value), DT_INT64))
+  
+    operator fun invoke(shape: Shape, value: FloatArray) = FloatTensor(create(shape, FloatPointer(*value), FLOAT))
+    operator fun invoke(shape: Shape, value: DoubleArray) = DoubleTensor(create(shape, DoublePointer(*value), DOUBLE))
+    operator fun invoke(shape: Shape, value: BooleanArray) = BooleanTensor(create(shape, BytePointer(*ByteArray(value.size) { if (value[it]) 1 else 0 }), BOOL))
+    operator fun invoke(shape: Shape, value: ByteArray) = ByteTensor(create(shape, BytePointer(*value), INT8))
+    operator fun invoke(shape: Shape, value: ShortArray) = ShortTensor(create(shape, ShortPointer(*value), INT16))
+    operator fun invoke(shape: Shape, value: IntArray) = IntTensor(create(shape, IntPointer(*value), INT32))
+    operator fun invoke(shape: Shape, value: LongArray) = LongTensor(create(shape, LongPointer(*value), INT64))
     operator fun invoke(shape: Shape, array: Array<String>): StringTensor {
       val data = TFStringArray.encode(array)
       val t = newTensor(DT_STRING, shape.asLongArray(), data)
       return StringTensor(t, array)
     }
-    
-    internal fun create(shape: Shape, array: Pointer, dtype: Int) =
+  
+    internal fun create(shape: Shape, array: Pointer, dtype: DataType<*>) =
         create(shape.asLongArray(), array, dtype)
-    
-    internal fun create(dims: LongArray, array: Pointer, dtype: Int): TF_Tensor {
-      val total = array.sizeof() * array.limit()
-      val byteSize = sizeof(dtype) * array.limit()
-      return newTensor(dtype, dims, BytePointer(array).capacity(byteSize))
+  
+    internal fun create(dims: LongArray, array: Pointer, dtype: DataType<*>): TF_Tensor {
+      val byteSize = dtype.byteSize * array.limit()
+      return newTensor(dtype.cValue, dims, BytePointer(array).capacity(byteSize))
     }
     
     internal fun sizeof(dtype: Int): Int {
@@ -102,7 +102,6 @@ abstract class Tensor<T : Any> protected constructor(c_tensor: TF_Tensor) : Buf<
     }
   }
   
-  open val c_tensor = c_tensor
   protected val stride: LongArray
   protected val dims: LongArray
   protected val numElements: Long
@@ -127,12 +126,18 @@ abstract class Tensor<T : Any> protected constructor(c_tensor: TF_Tensor) : Buf<
     val ptr = BytePointer(TF_TensorData(c_tensor))
     val size = TF_TensorByteSize(c_tensor)
     return when (dtype) {
-      COMPLEX64, FLOAT -> FloatPointer(ptr).position(0L).capacity((size / 4)).asBuffer()
-      DOUBLE -> DoublePointer(ptr).position(0L).capacity((size / 8)).asBuffer()
-      QINT32, INT32 -> IntPointer(ptr).position(0L).capacity((size / 4)).asBuffer()
-      BOOL, QUINT8, UINT8, QINT8, INT8 -> ptr.position(0L).capacity(size).asBuffer()
-      BFLOAT16, INT16 -> ShortPointer(ptr).position(0L).capacity((size / 2)).asBuffer()
-      INT64 -> LongPointer(ptr).position(0L).capacity((size / 8)).asBuffer()
+      COMPLEX64, FLOAT -> if (size == 0L) FloatBuffer.allocate(0)
+      else FloatPointer(ptr).position(0L).capacity((size / 4)).asBuffer()
+      DOUBLE -> if (size == 0L) DoubleBuffer.allocate(0)
+      else DoublePointer(ptr).position(0L).capacity((size / 8)).asBuffer()
+      QINT32, INT32 -> if (size == 0L) IntBuffer.allocate(0)
+      else IntPointer(ptr).position(0L).capacity((size / 4)).asBuffer()
+      BOOL, QUINT8, UINT8, QINT8, INT8 -> if (size == 0L) ByteBuffer.allocate(0)
+      else ptr.position(0L).capacity(size).asBuffer()
+      BFLOAT16, INT16 -> if (size == 0L) ShortBuffer.allocate(0)
+      else ShortPointer(ptr).position(0L).capacity((size / 2)).asBuffer()
+      INT64 -> if (size == 0L) LongBuffer.allocate(0)
+      else LongPointer(ptr).position(0L).capacity((size / 8)).asBuffer()
       else -> throw IllegalStateException("invalid DataType($dtype)")
     } as B
   }
@@ -251,7 +256,7 @@ class StringTensor(private var _c_tensor: TF_Tensor, val array: Array<String>? =
 }
 
 object TFStringArray {
-  val sizeofUInt64 = Tensor.sizeof(DT_UINT64).toLong()
+  val sizeofUInt64 = UINT64.byteSize.toLong()
   
   fun encode(array: Array<String>): BytePointer {
     // Compute bytes needed for encoding.

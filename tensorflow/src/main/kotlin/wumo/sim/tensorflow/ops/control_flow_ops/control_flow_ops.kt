@@ -509,9 +509,9 @@ object control_flow_ops {
         inputs.all { it is Output } -> {
           inputs as List<Output>
           if (inputs.all { it.dataType.isRefType })
-            tf.refMerge(inputs, name)
+            gen_control_flow_ops.refMerge(inputs, name)
           else
-            tf.merge(inputs, name)
+            gen_control_flow_ops.merge(inputs, name)
         }
         inputs.all { it is SparseOutput } -> TODO()
         else -> TODO()

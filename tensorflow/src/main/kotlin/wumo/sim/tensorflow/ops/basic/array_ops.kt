@@ -274,9 +274,6 @@ object array_ops {
     fun <T : OutputLike> identity(data: T, name: String = "Identity"): Output {
       return when (data) {
         is Output -> {
-          if (data.dataType.isRefType)
-            gen_array_ops.refIdentity(data, name)
-          else
             gen_array_ops.identity(data, name)
         }
         is IndexedSlices -> TODO()

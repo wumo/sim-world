@@ -80,7 +80,7 @@ object random_ops {
                       dtype: DataType<*> = FLOAT,
                       seed: Int? = null,
                       name: String = "randomUniform"): Output {
-      require(dtype !in allowedTypes) { "Invalid dtype$dtype" }
+      require(dtype in allowedTypes) { "Invalid dtype$dtype" }
       
       return tf.nameScope(name, setOf(shape.op)) {
         val minval = tf.const(scalarDimension, dtype, min, name = "min")
