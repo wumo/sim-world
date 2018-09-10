@@ -1,15 +1,26 @@
 package wumo.sim.tensorflow.ops
 
+import org.bytedeco.javacpp.BytePointer
+import org.bytedeco.javacpp.tensorflow
 import org.junit.Test
+import wumo.sim.tensorflow.ops.basic.toProto
 import wumo.sim.tensorflow.tf
 import wumo.sim.util.Shape
 import wumo.sim.util.a
 import wumo.sim.util.f
+import wumo.sim.util.scalarDimension
 
 class Const_opsKtTest : BaseTest() {
   
   @Test
   fun const1() {
+    val p= scalarDimension.toProto()
+    val s=p.SerializeAsString()
+    val sss=BytePointer()
+    val pp=tensorflow.TensorShapeProto()
+    pp.ParseFromString("")
+    println(pp.dim_size())
+  
     val a = tf.const(1f)
     val b = tf.const(2f, name = "b")
     val c = tf.const(Shape(2, 2), 6L, name = "c")

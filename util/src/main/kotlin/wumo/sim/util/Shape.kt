@@ -53,8 +53,9 @@ class Shape(private val dims: IntArray? = null) : Iterable<Int> {
     }
   }
   
-  fun asLongArray() =
-      LongArray(dims!!.size) { dims[it].toLong() }
+  fun asLongArray() = if (dims == null) null
+  else
+    LongArray(dims.size) { dims[it].toLong() }
   
   fun asIntArray() = dims
   
@@ -65,6 +66,7 @@ class Shape(private val dims: IntArray? = null) : Iterable<Int> {
   
   val isUnknown: Boolean
     get() = !isFullyDefined
+  val isScalar = dims?.size == 0
   
   fun numElements() =
       if (!isFullyDefined) -1
@@ -91,11 +93,17 @@ class Shape(private val dims: IntArray? = null) : Iterable<Int> {
     }
   }
   
+  operator fun plus(d: Int): Shape =
+      if (dims == null) Shape()
+      else Shape(*dims, d)
+  
   @Suppress("NAME_SHADOWING")
   fun slice(start: Int, end: Int? = null, step: Int = 1): Shape =
       if (dims == null) Shape()
       else {
-        val end = end ?: if (start >= 0) dims.size else 0
+        var end = end ?: if (start >= 0) dims.size else 0
+        if (end < 0) end += dims.size
+        val start = if (start < 0) start + dims.size else start
         val size = (end - start) / step
         val iter = (start until end step step).iterator()
         Shape(IntArray(size) {
@@ -108,11 +116,14 @@ class Shape(private val dims: IntArray? = null) : Iterable<Int> {
   override fun toString(): String {
     val sb = StringBuilder()
     sb.append("(")
-    for ((i, value) in dims!!.withIndex()) {
-      sb.append(if (value == -1) "?" else value)
-      if (i < dims.lastIndex)
-        sb.append(", ")
-    }
+    if (dims != null)
+      for ((i, value) in dims!!.withIndex()) {
+        sb.append(if (value == -1) "?" else value)
+        if (i < dims.lastIndex)
+          sb.append(", ")
+      }
+    else
+      sb.append("unknow_rank:true")
     sb.append(")")
     return sb.toString()
   }

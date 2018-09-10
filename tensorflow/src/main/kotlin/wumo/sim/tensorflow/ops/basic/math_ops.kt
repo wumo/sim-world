@@ -1,8 +1,11 @@
 package wumo.sim.tensorflow.ops.basic
 
+import wumo.sim.tensorflow.OutputMaker
 import wumo.sim.tensorflow.core.InvalidArgumentException
 import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.ops.OutputConvertible
+import wumo.sim.tensorflow.ops.gen.gen_array_ops
+import wumo.sim.tensorflow.ops.gen.gen_array_ops.transpose
 import wumo.sim.tensorflow.ops.gen.gen_math_ops
 import wumo.sim.tensorflow.ops.variables.Variable
 import wumo.sim.tensorflow.tf
@@ -433,6 +436,25 @@ object math_ops {
             gen_math_ops.matMul(x, y, transposeX, transposeY, tf.currentNameScope)
           }
         }
+  
+    fun matrixTranspose(a: Output, conjugate: Boolean = false, name: String = "matrix_transpose"): Output =
+        tf.nameScope(name) {
+        
+          val a_shape = a.shape
+          val ndims = a_shape.rank
+          val perm = if (ndims != -1) {
+            require(ndims >= 2) { "Argument 'a' should be a (batch) matrix, with rank >= 2.  Found: $a_shape" }
+            tf.const((0 until ndims - 2).asSequence().plus(ndims - 1).plus(ndims - 2).toList().toIntArray())
+          } else {
+            val a_rank = tf.rank(a)
+            val zero = tf.const(0)
+            tf.concat(listOf(gen_math_ops.range(zero, a_rank - 2, tf.const(1)),
+                             tf.stack(listOf(a_rank - 1, a_rank - 2))),
+                      zero)
+          }
+        
+          tf.transpose(a, perm, conjugate)
+        }
     
     fun max(input: Output, reductionIndices: Output, keepDims: Boolean = false, name: String = "Max"): Output {
       return gen_math_ops.max(input, reductionIndices, keepDims, name)
@@ -442,10 +464,10 @@ object math_ops {
       return gen_math_ops.maximum(x, y, name)
     }
     
-    fun mean(input: Output, axis: Output? = null, keepDims: Boolean = false, name: String = "sum") =
+    fun mean(input: Output, axis: Output? = null, keepDims: Boolean = false, name: String = "mean") =
         gen_math_ops.mean(input, reductionDims(input, axis), keepDims, name)
     
-    fun min(input: Output, axis: Output? = null, keepDims: Boolean = false, name: String = "sum") =
+    fun min(input: Output, axis: Output? = null, keepDims: Boolean = false, name: String = "min") =
         gen_math_ops.min(input, reductionDims(input, axis), keepDims, name)
     
     fun minimum(x: Output, y: Output, name: String = "Minimum"): Output {
@@ -494,6 +516,19 @@ object math_ops {
     fun quantizedMul(x: Output, y: Output, minX: Output, maxX: Output, minY: Output, maxY: Output, toutput: DataType<*> = QINT32, name: String = "QuantizedMul"): List<Output> {
       return gen_math_ops.quantizedMul(x, y, minX, maxX, minY, maxY, toutput, name)
     }
+  
+    fun range(start: OutputMaker, limit: Output, delta: OutputMaker = { tf.const(1, it) }, name: String = "Range"): Output {
+      return tf.nameScope(name) {
+        val start_t = start("start")
+        val delta_t = delta("delta")
+        val dtypes = a(start_t.dataType, limit.dataType, delta_t.dataType)
+        val inferred_dtype = dtypes.maxBy { dtype_hierarchy[it]!! }!!
+        val start = cast(start_t, inferred_dtype)
+        val limit = cast(limit, inferred_dtype)
+        val delta = cast(delta_t, inferred_dtype)
+        gen_math_ops.range(start, limit, delta, tf.currentNameScope)
+      }
+    }
     
     fun range(start: Output, limit: Output, delta: Output = tf.const(1), name: String = "Range") = run {
       val dtypes = a(start.dataType, limit.dataType, delta.dataType)
@@ -524,7 +559,7 @@ object math_ops {
     
     fun realDiv(a: Output, b: Any, name: String = "RealDiv") =
         tf.nameScope("truediv") {
-          val y = tf.const(a.dataType.baseDataType, b, name = "y")
+          val y = b as? Output ?: tf.const(a.dataType.baseDataType, b, name = "y")
           gen_math_ops.realDiv(a, y, name = tf.currentNameScope)
         }
     
@@ -699,12 +734,12 @@ object math_ops {
     fun transpose(input: Output, perm: Output? = null, conjugate: Boolean = false,
                   name: String = "Transpose"): Output {
       val transposeFn: (Output, Output, String) -> Output = if (conjugate && input.dataType.isComplex)
-        tf::conjugateTranspose
+        gen_array_ops::conjugateTranspose
       else
-        tf::transpose
+        gen_array_ops::transpose
       return if (perm == null) {
-        val rank = tf.rank(input)
-        val perm = (rank - 1) - tf.range(tf.const(0), rank, tf.const(1))
+        val rank = gen_array_ops.rank(input)
+        val perm = (rank - 1) - gen_math_ops.range(tf.const(0), rank, tf.const(1))
         val transposed = transposeFn(input, perm, name)
         val inputShape = transposed.op.inputs[0].shape
         if (inputShape.rank != -1)

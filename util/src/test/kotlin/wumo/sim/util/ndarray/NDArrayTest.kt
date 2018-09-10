@@ -55,4 +55,20 @@ class NDArrayTest {
                                              NDArray(Shape(2, 2), floatArrayOf(9f, 10f, 11f, 12f)))))
     println(L)
   }
+  
+  @Test
+  fun slice() {
+    val m = NDArray(Shape(2, 2, 2),
+                    floatArrayOf(1f, 2f, 3f, 4f,
+                                 5f, 6f, 7f, 8f))
+    println(m)
+    println(m(0))
+    println(m(1))
+    println(m(0, 0))
+    println(m(0, 1))
+    println(m(1, 0))
+    println(m(1, 1))
+    println(m(0, 0, 0))
+    println(m(0, 0, 1))
+  }
 }

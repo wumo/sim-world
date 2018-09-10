@@ -1,12 +1,17 @@
 package wumo.sim.tensorflow.ops.variables
 
 import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.ops.basic.times
+import wumo.sim.tensorflow.ops.basic.toOutput
+import wumo.sim.tensorflow.ops.gen.gen_linalg_ops
 import wumo.sim.tensorflow.ops.variables.mode.*
 import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.types.DataType
 import wumo.sim.tensorflow.types.FLOAT
 import wumo.sim.tensorflow.types.types
 import wumo.sim.util.Shape
+import wumo.sim.util.t2
+import kotlin.math.max
 import kotlin.math.sqrt
 
 interface initializers {
@@ -36,10 +41,100 @@ interface initializers {
     override val name: String = "RandomUniformInitializer"
     override val dataType: DataType<*>? = dataType
     override val init: (Shape, DataType<*>, String) -> Output
-      get() = { shape, dataType, s ->
-        tf.randomUniform(shape, minval, maxval, dataType)
+      get() = { shape, dataType, _ ->
+        tf.randomUniform(shape, minval, maxval, dataType, seed)
       }
-    
+  }
+  
+  fun randomNormalInitializer(mean: Float = 0f,
+                              stddev: Float = 0.05f,
+                              seed: Int? = null,
+                              dataType: DataType<*>? = FLOAT) = object : Initializer {
+    override val name: String = "RandomNormalInitializer"
+    override val dataType: DataType<*>? = dataType
+    override val init: (Shape, DataType<*>, String) -> Output
+      get() = { shape, dataType, _ ->
+        tf.randomNormal(shape, mean, stddev, dataType, seed)
+      }
+  }
+  
+  fun truncatedNormalInitializer(mean: Float = 0f,
+                                 stddev: Float = 0.05f,
+                                 seed: Int? = null,
+                                 dataType: DataType<*>? = FLOAT) = object : Initializer {
+    override val name: String = "TruncatedNormalInitializer"
+    override val dataType: DataType<*>? = dataType
+    override val init: (Shape, DataType<*>, String) -> Output
+      get() = { shape, dataType, _ ->
+        tf.truncatedNormal(shape, mean, stddev, dataType, seed)
+      }
+  }
+  
+  fun orthogonalInitializer(gain: Float = 0f,
+                            seed: Int? = null,
+                            dataType: DataType<*>? = FLOAT) = object : Initializer {
+    override val name: String = "OrthogonalInitializer"
+    override val dataType: DataType<*>? = dataType
+    override val init: (Shape, DataType<*>, String) -> Output
+      get() = { shape, dataType, _ ->
+        require(shape.rank >= 2) { "The tensor to initialize must be at least two-dimensional" }
+        val num_rows = shape.slice(0, -1).reduce { num_rows, dim -> num_rows * dim }
+        val num_cols = shape[-1]
+        val flat_shape = if (num_rows < num_cols) Shape(num_cols, num_rows)
+        else Shape(num_rows, num_cols)
+        
+        val a = tf.randomNormal(flat_shape, dtype = dataType, seed = seed)
+        var (q, r) = gen_linalg_ops.qr(a, fullMatrices = false)
+        val d = tf.diagPart(r)
+        q *= tf.sign(d)
+        if (num_rows < num_cols)
+          q = tf.matrixTranspose(q)
+        gain * tf.reshape(q, shape.toOutput())
+      }
+  }
+  
+  private fun computeFans(shape: Shape): t2<Int, Int> =
+      when {
+        shape.rank < 1 -> t2(1, 1)
+        shape.rank == 1 -> t2(shape[0], shape[0])
+        shape.rank == 2 -> t2(shape[0], shape[1])
+        else -> {
+          var receptive_field_size = 1
+          for (dim in shape.slice(0, -2))
+            receptive_field_size *= dim
+          t2(shape[-2] * receptive_field_size,
+             shape[-1] * receptive_field_size)
+        }
+      }
+  
+  fun glorotNormalInitializer(seed: Int? = null,
+                              dataType: DataType<*>? = FLOAT) = object : Initializer {
+    override val name: String = "GlorotNormalInitializer"
+    override val dataType: DataType<*>? = dataType
+    override val init: (Shape, DataType<*>, String) -> Output
+      get() = { shape, dataType, _ ->
+        var scale = 1f
+        val (fanIn, fanOut) = computeFans(shape)
+        scale /= max(1f, (fanIn + fanOut) / 2f)
+        //truncated_normal
+        val stddev = sqrt(scale.toDouble()) / .87962566103423978
+        tf.truncatedNormal(shape, 0f, stddev.toFloat(), dataType, seed)
+      }
+  }
+  
+  fun glorotUniformInitializer(seed: Int? = null,
+                               dataType: DataType<*>? = FLOAT) = object : Initializer {
+    override val name: String = "GlorotUniformInitializer"
+    override val dataType: DataType<*>? = dataType
+    override val init: (Shape, DataType<*>, String) -> Output
+      get() = { shape, dataType, _ ->
+        var scale = 1f
+        val (fanIn, fanOut) = computeFans(shape)
+        scale /= max(1f, (fanIn + fanOut) / 2f)
+        //uniform
+        val limit = sqrt(3f * scale)
+        tf.randomUniform(shape, -limit, limit, dataType, seed)
+      }
   }
   
   /**
@@ -127,7 +222,7 @@ interface initializers {
               tf.randomUniform(shape, -limit, limit)
             } else {
               val trunc_stddev = sqrt(1.3 * factor / n).toFloat()
-              tf.truncatedNormal(tf.const(shape.asIntArray()!!), 0f, trunc_stddev, dtype = dtype)
+              tf.truncatedNormal(shape, 0f, trunc_stddev, dtype = dtype)
             }
           }
       }

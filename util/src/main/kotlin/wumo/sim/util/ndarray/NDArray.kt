@@ -14,6 +14,7 @@ interface Buf<T> {
       this[i] = other[i]
   }
   
+  fun slice(start: Int, end: Int): Buf<T>
   val size: Int
 }
 
@@ -158,7 +159,6 @@ open class NDArray<T : Any>(val shape: Shape, val raw: Buf<T>, val dtype: Class<
   /**number of elements*/
   val size: Int
   val numDims = shape.rank
-  
   init {
     stride = IntArray(numDims)
     dims = shape.asIntArray()!!
@@ -169,6 +169,8 @@ open class NDArray<T : Any>(val shape: Shape, val raw: Buf<T>, val dtype: Class<
     }
     size = raw.size
   }
+  
+  val numElements = size
   
   private inline fun <U> get_set(vararg idx: Int, op: (Int) -> U): U {
     val offset = if (idx.isEmpty()) 0L
@@ -188,6 +190,15 @@ open class NDArray<T : Any>(val shape: Shape, val raw: Buf<T>, val dtype: Class<
   
   operator fun set(vararg idx: Int, data: T) = get_set(*idx) {
     raw[it] = data
+  }
+  
+  operator fun invoke(vararg idx: Int): NDArray<T> {
+    var offset = 0
+    for ((i, value) in idx.withIndex()) {
+      offset += value * stride[i]
+    }
+    val size = stride[idx.size - 1]
+    return NDArray(shape.slice(idx.size), raw.slice(offset, offset + size), dtype)
   }
   
   fun rawSet(idx: Int, data: T) {
@@ -305,11 +316,4 @@ open class NDArray<T : Any>(val shape: Shape, val raw: Buf<T>, val dtype: Class<
   operator fun component4() = raw[3]
   operator fun component5() = raw[4]
   operator fun component6() = raw[5]
-  fun max(): T {
-    TODO("not implemented")
-  }
-  
-  fun min(): T? {
-    TODO("not implemented")
-  }
 }

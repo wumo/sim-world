@@ -4,6 +4,7 @@ import wumo.sim.tensorflow.core.Graph.Graph
 import wumo.sim.tensorflow.core.InvalidDataTypeException
 import wumo.sim.tensorflow.core.ShapeMismatchException
 import wumo.sim.tensorflow.ops.DeviceFunction
+import wumo.sim.tensorflow.ops.ops
 import wumo.sim.tensorflow.ops.variables.Variable.VariableGetter
 import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.types.DataType
@@ -33,16 +34,15 @@ import wumo.sim.util.emptyMutableSet
  *
  * 此[VariableScope]对应的[NameScope]，通常是复用的
  */
-internal class VariableScope(
+class VariableScope(
     val reuse: Reuse,
-    val name: String? = "",
+    val name: String = "",
     val dataType: DataType<*>? = types.FLOAT16,
     val initializer: Initializer? = null,
     val regularizer: Regularizer? = null,
     val cachingDevice: DeviceFunction? = null,
     val partitioner: Partitioner? = null,
-    val nameScope:String="",
-    val underlyingGetter: VariableGetter? = null) {
+    val nameScope: String = "") {
   
   /** Gets an existing variable with the specified name or creates a new one.
    *
@@ -86,11 +86,12 @@ internal class VariableScope(
       collections: MutableSet<Graph.Key<Variable>> = emptyMutableSet(),
       cachingDevice: DeviceFunction? = null
   ): Variable {
-    val fullName = if (this.name != null && this.name != "") "${this.name}/$name" else name
+    val fullName = if (this.name != "") "${this.name}/$name" else name
     // Variable names only depend on the variable scope and not the name scope,
     // so we reset it below for the time of variable creation.
     return tf.nameScope("") {
-      store.getVariable(fullName, shape, dataType, initializer, regularizer, trainable, reuse, collections, cachingDevice)
+      store.getVariable(fullName, shape, dataType, initializer,
+                        regularizer, trainable, reuse, collections, cachingDevice)
     }
   }
   
@@ -128,7 +129,6 @@ internal class VariableScope(
         regularizer: Regularizer? = null,
         cachingDevice: DeviceFunction? = null,
         partitioner: Partitioner? = null,
-        underlyingGetter: VariableGetter? = null,
         isDefaultName: Boolean = false,
         isPure: Boolean = false,
         block: () -> R
@@ -136,8 +136,8 @@ internal class VariableScope(
       val variableScopeStore = VariableScopeStore.current
       val oldVariableScope = variableScopeStore.scope
       val newName = run {
-        val uniqueName = if (isDefaultName) name else name
-        if (oldVariableScope.name != null && oldVariableScope.name != "")
+        val uniqueName = if (isDefaultName) unique(name) else name
+        if (oldVariableScope.name != "")
           "${oldVariableScope.name}/$uniqueName"
         else
           uniqueName
@@ -152,15 +152,34 @@ internal class VariableScope(
           regularizer = regularizer ?: oldVariableScope.regularizer,
           cachingDevice = cachingDevice ?: oldVariableScope.cachingDevice,
           partitioner = partitioner ?: oldVariableScope.partitioner,
-          nameScope = name,
-          underlyingGetter = if (underlyingGetter == null) oldVariableScope.underlyingGetter
-          else maybeWrapCustomVariableGetter(underlyingGetter, oldVariableScope.underlyingGetter)
+          nameScope = name
       )
       variableScopeStore.scope = newVariableScope
       val result = if (isPure) block() else tf.nameScope(name) { block() }
       variableScopeStore.closeVariableSubScopes(newName)
       variableScopeStore.scope = oldVariableScope
       return result
+    }
+  
+    fun unique(prefix: String): String {
+      val currentScopeStore = VariableScopeStore.current
+      val currentScope = ops.convertNameScopeToName(VariableScope.current.name)
+      val name = if (currentScope == "")
+        prefix
+      else
+        "$currentScope/$prefix"
+    
+      return if (currentScopeStore.variableScopeCount(name) == 0) {
+        prefix
+      } else {
+        var uniqueName = name
+        var count = 1
+        while (currentScopeStore.variableScopeCount(uniqueName) > 0) {
+          uniqueName = "${name}_$count"
+          count += 1
+        }
+        uniqueName
+      }
     }
     
     /**

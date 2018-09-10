@@ -103,12 +103,12 @@ fun register_math_grad() {
     val inputSize = op.inputs[0].size
     val outputSize = op.outputs[0].size
     lateinit var factor: Output
-    if (inputSize != -1 && outputSize != -1) {
-      factor = tf.const(sumGrad.dataType, inputSize / max(outputSize, 1))
+    factor = if (inputSize != -1 && outputSize != -1) {
+      tf.const(sumGrad.dataType, inputSize / max(outputSize, 1))
     } else {
       val inputShape = tf.shape(op.inputs[0])
       val outputShape = tf.shape(op.outputs[0])
-      var factor = safeShapeDiv(tf.prod(inputShape), tf.prod(outputShape))
+      safeShapeDiv(tf.prod(inputShape), tf.prod(outputShape))
     }
     return@register listOf(tf.realDiv(sumGrad, tf.cast(factor, sumGrad.dataType)), null)
   }

@@ -7,6 +7,7 @@ import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.types.DataType
 import wumo.sim.tensorflow.types.INT64
 import wumo.sim.util.Shape
+import wumo.sim.util.ndarray.NDArray
 
 /** Class wrapping dynamic-sized, per-time-step, write-once tensor arrays.
  *
@@ -204,6 +205,7 @@ class TensorArray private constructor(
         if (inferShape) {
           val valueShape = splitFlow.op.inputs[1].shape
           val clengths = constantValue(splitFlow.op.inputs[2])
+          clengths as NDArray<Int>?
           val shape = if (valueShape.rank != -1 && clengths != null && clengths.max() == clengths.min())
             Shape(intArrayOf((clengths.get() as Long).toInt(), *valueShape.slice(1).asIntArray()!!))
           else

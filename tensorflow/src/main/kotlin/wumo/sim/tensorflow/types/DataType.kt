@@ -13,6 +13,7 @@ interface DataType<KotlinType> {
   val byteSize: Int
   val priority: Int
   val protoType: org.tensorflow.framework.DataType
+  val kotlinType: Class<KotlinType>
   //endregion Data Type Properties
   
   //region Data Type Set Helper Methods

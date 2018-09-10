@@ -11,7 +11,6 @@ import wumo.sim.tensorflow.core.check
 import wumo.sim.tensorflow.ops.Op
 import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.ops.OutputConvertible
-import wumo.sim.tensorflow.ops.variables.Variable
 import wumo.sim.tensorflow.tensor.Tensor
 import wumo.sim.util.ndarray.NDArray
 import wumo.sim.util.t2
@@ -50,30 +49,30 @@ class Session(val c_graph: TF_Graph) {
   
   fun eval() = _eval()
   
-  fun <T : Any> eval(t: Output): NDArray<T> {
+  fun <T : Any> eval(t: OutputConvertible): NDArray<T> {
     val (t) = _eval(t)
     return t as NDArray<T>
   }
   
-  fun <T1 : Any, T2 : Any> eval(t1: Output, t2: Output): t2<NDArray<T1>, NDArray<T2>> {
+  fun <T1 : Any, T2 : Any> eval(t1: OutputConvertible, t2: OutputConvertible): t2<NDArray<T1>, NDArray<T2>> {
     val (r1, r2) = _eval(t1, t2)
     return t2(r1 as NDArray<T1>, r2 as NDArray<T2>)
   }
   
-  fun <T1 : Any, T2 : Any, T3 : Any> eval(t1: Output, t2: Output, t3: Output): t3<NDArray<T1>, NDArray<T2>, NDArray<T3>> {
+  fun <T1 : Any, T2 : Any, T3 : Any> eval(t1: OutputConvertible, t2: OutputConvertible, t3: OutputConvertible): t3<NDArray<T1>, NDArray<T2>, NDArray<T3>> {
     val (r1, r2, r3) = _eval(t1, t2, t3)
     return t3(r1 as NDArray<T1>, r2 as NDArray<T2>,
               r3 as NDArray<T3>)
   }
   
-  fun <T1 : Any, T2 : Any, T3 : Any, T4 : Any> eval(t1: Output, t2: Output, t3: Output, t4: Output):
+  fun <T1 : Any, T2 : Any, T3 : Any, T4 : Any> eval(t1: OutputConvertible, t2: OutputConvertible, t3: OutputConvertible, t4: OutputConvertible):
       t4<NDArray<T1>, NDArray<T2>, NDArray<T3>, NDArray<T4>> {
     val (r1, r2, r3, r4) = _eval(t1, t2, t3, t4)
     return t4(r1 as NDArray<T1>, r2 as NDArray<T2>,
               r3 as NDArray<T3>, r4 as NDArray<T4>)
   }
   
-  fun <T1 : Any, T2 : Any, T3 : Any, T4 : Any, T5 : Any> eval(t1: Output, t2: Output, t3: Output, t4: Output, t5: Output):
+  fun <T1 : Any, T2 : Any, T3 : Any, T4 : Any, T5 : Any> eval(t1: OutputConvertible, t2: OutputConvertible, t3: OutputConvertible, t4: OutputConvertible, t5: OutputConvertible):
       t5<NDArray<T1>, NDArray<T2>, NDArray<T3>, NDArray<T4>, NDArray<T5>> {
     val (r1, r2, r3, r4, r5) = _eval(t1, t2, t3, t4, t5)
     return t5(r1 as NDArray<T1>, r2 as NDArray<T2>,
@@ -103,15 +102,17 @@ class Session(val c_graph: TF_Graph) {
     }
   }
   
-  fun _eval(vararg fetch: Output): Array<NDArray<Any>> {
+  fun _eval(vararg fetch: OutputConvertible): Array<NDArray<Any>> {
     val status = newStatus()
     val (inputs, input_values, ninputs) = accumulateFeedDict()
     val (target_opers, ntargets) = accumulateRuns()
     val noutputs = fetch.size
     val outputs = TF_Output(noutputs.toLong())
     val output_values = PointerPointer<TF_Tensor>(noutputs.toLong())
-    for ((i, f) in fetch.withIndex())
+    for ((i, f) in fetch.withIndex()) {
+      val f = f.toOutput()
       outputs.position(i.toLong()).oper(f.op.c_op).index(f.valueIndex)
+    }
     outputs.position(0L)
     TF_SessionRun(c_session, null, inputs, input_values, ninputs,
                   outputs, output_values, noutputs,
@@ -147,17 +148,13 @@ class Session(val c_graph: TF_Graph) {
     return t2(target_opers, ntargets.toInt())
   }
   
-  fun Variable.eval() = toOutput().eval()
-  fun Output.eval() {
-    print(eval<Any>(this))
+  fun OutputConvertible.eval() {
+    print(eval<Any>(this.toOutput()))
   }
   
-  fun Op.eval() {
-  
-  }
-  
-  private fun Output.print(v: NDArray<*>) {
-    val prefix = "${op.name}:${dataType.name}$shape\n  ="
+  private fun OutputConvertible.print(v: NDArray<*>) {
+    val output = toOutput()
+    val prefix = "${output.op.name}:${output.dataType.name}${output.shape}\n  ="
     println("$prefix${v.toString(3)}\n")
   }
   

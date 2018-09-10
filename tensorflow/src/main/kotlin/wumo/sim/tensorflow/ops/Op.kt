@@ -11,7 +11,6 @@ import wumo.sim.tensorflow.core.check
 import wumo.sim.tensorflow.ops.control_flow_ops.ControlFlowContext
 import wumo.sim.tensorflow.ops.ops.COLOCATION_OPS_ATTRIBUTE_NAME
 import wumo.sim.tensorflow.ops.ops.COLOCATION_OPS_ATTRIBUTE_PREFIX
-import wumo.sim.tensorflow.tensor.Tensor
 import wumo.sim.tensorflow.types.DataType
 import kotlin.collections.emptySet
 import java.util.Collections.emptySet as emptyMutableSet
@@ -217,9 +216,14 @@ class Op(val graph: Graph, val c_op: TF_Operation) : HasName {
     }
   }
   
-  fun attrTensor(name: String): Tensor<*> {
+  fun attrTensor(name: String): TensorProto {
     val value = attrs.Find(name)
-    value.tensor()
+    return value.tensor()
+  }
+  
+  fun attrShape(name: String): wumo.sim.util.Shape {
+    val value = attrs.Find(name)
+    val s = value.shape()
     TODO()
   }
   
@@ -245,10 +249,6 @@ class Op(val graph: Graph, val c_op: TF_Operation) : HasName {
   
   fun toNodeDef() =
       node.def()!!
-  
-  fun attrShape(s: String): Output {
-    TODO("not implemented")
-  }
 }
 
 internal inline fun StringAttrValueMap.forEach(block: (String, AttrValue) -> Unit) {

@@ -1,11 +1,16 @@
 package wumo.sim.tensorflow.ops.gradients
 
 import register_array_grad
+import register_control_flow_grad
 import register_cudnn_rnn_grad
+import register_data_flow_grad
+import register_image_grad
 import register_manip_grad
 import register_math_grad
+import register_nn_grad
 import register_random_grad
 import register_state_grad
+import register_tensor_array_grad
 import wumo.sim.tensorflow.core.InvalidDataTypeException
 import wumo.sim.tensorflow.ops.*
 import wumo.sim.tensorflow.ops.control_flow_ops.ControlFlowContext
@@ -26,11 +31,16 @@ object gradient_ops {
   
   init {
     register_array_grad()
+    register_control_flow_grad()
     register_cudnn_rnn_grad()
+    register_data_flow_grad()
+    register_image_grad()
     register_manip_grad()
     register_math_grad()
+    register_nn_grad()
     register_random_grad()
     register_state_grad()
+    register_tensor_array_grad()
   }
   
   interface API {
@@ -124,8 +134,6 @@ object gradient_ops {
       val to_ops = ys.mapTo(mutableSetOf()) { it.op }
       val from_ops = xs.mapTo(mutableSetOf()) { it.op }
       val grad_ops = grad_ys?.mapTo(mutableSetOf()) { it.op } ?: emptyMutableSet<Op>()
-      
-      ys.mapTo(mutableSetOf()) { it.op }
       
       val grads = tf.nameScope(name, to_ops + from_ops + grad_ops) {
         // Get a uid for this call to gradients that can be used to help

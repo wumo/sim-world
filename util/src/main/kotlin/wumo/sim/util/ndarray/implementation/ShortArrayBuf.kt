@@ -13,5 +13,8 @@ class ShortArrayBuf(val raw: ShortArray) : Buf<Short> {
   
   override fun copy() = ShortArrayBuf(raw.clone())
   
+  override fun slice(start: Int, end: Int): Buf<Short> =
+      ShortArrayBuf(raw.sliceArray(start until end))
+  
   override val size = raw.size
 }

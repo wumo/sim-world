@@ -14,7 +14,7 @@ import wumo.sim.util.Shape
 /**
  * Variable store that carries a number of named Variables.
  */
-internal class VariableStore {
+class VariableStore {
   
   /** Map with variable names as keys and the corresponding variables as values. */
   private val variables = hashMapOf<String, Variable>()
@@ -59,7 +59,7 @@ internal class VariableStore {
       reuse: Reuse = ReuseOrCreateNew,
       collections: MutableSet<Graph.Key<Variable>> = mutableSetOf(),
       cachingDevice: DeviceFunction? = null
-  ): Variable = run {
+  ): Variable {
     // Single variable case.
     if ("$name/part_0" in variables)
       throw IllegalArgumentException(
@@ -80,7 +80,7 @@ internal class VariableStore {
         throw InvalidDataTypeException(
             "Trying to share variable '$name', but the specified data type '$dataType' is not compatible with the " +
                 "existing variable data type '${foundVariable.dataType}'.")
-      foundVariable
+      return foundVariable
     } else {
       // Here we handle the case of creating a new variable.
       if (reuse == ReuseExistingOnly)
@@ -106,7 +106,7 @@ internal class VariableStore {
             tf.currentGraph.addToCollection(loss, Graph.Keys.REGULARIZATION_LOSSES)
         }
       }
-      variable
+      return variable
     }
   }
   

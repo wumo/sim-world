@@ -27,35 +27,23 @@ object random_ops {
     fun randomGammaGrad(alpha: Output, sample: Output, name: String = "RandomGammaGrad"): Output {
       return gen_random_ops.randomGammaGrad(alpha, sample, name)
     }
-    
-    fun randomNormal(shape: Output, dtype: DataType<*> = FLOAT,
-                     mean: Float = 0f, stddev: Output,
-                     name: String = "randomNormal"): Output =
-        tf.nameScope(name) {
-          val mean_t = tf.const(mean, name = "mean")
-          val rnd = gen_random_ops.randomStandardNormal(shape, dtype, 0L, 0L, "RandomStandardNormal")
-          val mul = rnd * stddev
-          tf.add(mul, mean_t, tf.currentNameScope)
-        }
-    
-    fun randomNormal(shape: Output, dtype: DataType<*> = FLOAT,
+  
+    fun randomNormal(shape: Shape,
                      mean: Float = 0f, stddev: Float = 1f,
-                     name: String = "randomNormal"): Output =
+                     dtype: DataType<*> = FLOAT,
+                     seed: Int? = null,
+                     name: String = "random_normal"): Output =
         tf.nameScope(name) {
-          val mean_t = tf.const(mean, name = "mean")
-          val stddev_t = tf.const(stddev)
-          val rnd = gen_random_ops.randomStandardNormal(shape, dtype, 0L, 0L, "RandomStandardNormal")
+          val shape_t = shape.toOutput()
+          val mean_t = tf.const(dtype, mean, name = "mean")
+          val stddev_t = tf.const(dtype, stddev, name = "stddev")
+          val (seed1, seed2) = getSeed(seed)
+          val rnd = gen_random_ops.randomStandardNormal(shape_t, dtype,
+                                                        seed1?.toLong() ?: 0L,
+                                                        seed2?.toLong() ?: 0L,
+                                                        "RandomStandardNormal")
           val mul = rnd * stddev_t
           tf.add(mul, mean_t, tf.currentNameScope)
-        }
-    
-    fun randomNormal(shape: Output, dtype: DataType<*> = FLOAT,
-                     mean: Output, stddev: Output,
-                     name: String = "RandomStandardNormal"): Output =
-        tf.nameScope(name) {
-          val rnd = gen_random_ops.randomStandardNormal(shape, dtype, 0L, 0L, "RandomStandardNormal")
-          val mul = rnd * stddev
-          tf.add(mul, mean, tf.currentNameScope)
         }
     
     fun randomPoisson(shape: Output, rate: Output, seed: Long = 0L, seed2: Long = 0L, name: String = "RandomPoisson"): Output {
@@ -99,14 +87,23 @@ object random_ops {
         }
       }
     }
-    
-    fun truncatedNormal(shape: Output, mean: Float = 0f, stddev: Float = 1f, dtype: DataType<*> = FLOAT, name: String = "truncated_normal"): Output =
+  
+    fun truncatedNormal(shape: Shape,
+                        mean: Float = 0f, stddev: Float = 1f,
+                        dtype: DataType<*> = FLOAT,
+                        seed: Int? = null,
+                        name: String = "truncated_normal"): Output =
         tf.nameScope(name) {
-          val mean_t = tf.const(mean, name = "mean")
-          val stddev_t = tf.const(stddev, name = "stddev")
-          val rnd = gen_random_ops.truncatedNormal(shape, dtype, 0L, 0L, name = name)
+          val shape_t = shape.toOutput()
+          val mean_t = tf.const(dtype, mean, name = "mean")
+          val stddev_t = tf.const(dtype, stddev, name = "stddev")
+          val (seed1, seed2) = getSeed(seed)
+          val rnd = gen_random_ops.truncatedNormal(shape_t, dtype,
+                                                   seed1?.toLong() ?: 0L,
+                                                   seed2?.toLong() ?: 0L,
+                                                   "RandomStandardNormal")
           val mul = rnd * stddev_t
-          tf.add(mul, mean_t, name = tf.currentNameScope)
+          tf.add(mul, mean_t, tf.currentNameScope)
         }
   }
 }

@@ -11,5 +11,8 @@ class BooleanArrayBuf(val raw: BooleanArray) : Buf<Boolean> {
   
   override fun copy() = BooleanArrayBuf(raw.clone())
   
+  override fun slice(start: Int, end: Int): Buf<Boolean> =
+      BooleanArrayBuf(raw.sliceArray(start until end))
+  
   override val size = raw.size
 }

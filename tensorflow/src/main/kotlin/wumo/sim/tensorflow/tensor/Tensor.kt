@@ -84,7 +84,7 @@ protected constructor(open val c_tensor: TF_Tensor) : Buf<T> {
     }
   
     internal fun create(shape: Shape, array: Pointer, dtype: DataType<*>) =
-        create(shape.asLongArray(), array, dtype)
+        create(shape.asLongArray()!!, array, dtype)
   
     internal fun create(dims: LongArray, array: Pointer, dtype: DataType<*>): TF_Tensor {
       val byteSize = dtype.byteSize * array.limit()
@@ -156,6 +156,10 @@ protected constructor(open val c_tensor: TF_Tensor) : Buf<T> {
 }
 
 class FloatTensor(c_tensor: TF_Tensor) : Tensor<Float>(c_tensor) {
+  override fun slice(start: Int, end: Int): Buf<Float> {
+    TODO("not implemented")
+  }
+  
   private val buf = createBuffer<FloatBuffer>()
   override fun get(offset: Int) = buf[offset]
   
@@ -167,6 +171,10 @@ class FloatTensor(c_tensor: TF_Tensor) : Tensor<Float>(c_tensor) {
 }
 
 class DoubleTensor(c_tensor: TF_Tensor) : Tensor<Double>(c_tensor) {
+  override fun slice(start: Int, end: Int): Buf<Double> {
+    TODO("not implemented")
+  }
+  
   private val buf = createBuffer<DoubleBuffer>()
   override fun get(offset: Int) = buf[offset]
   
@@ -178,6 +186,10 @@ class DoubleTensor(c_tensor: TF_Tensor) : Tensor<Double>(c_tensor) {
 }
 
 class ByteTensor(c_tensor: TF_Tensor) : Tensor<Byte>(c_tensor) {
+  override fun slice(start: Int, end: Int): Buf<Byte> {
+    TODO("not implemented")
+  }
+  
   private val buf = createBuffer<ByteBuffer>()
   override fun get(offset: Int) = buf[offset]
   
@@ -189,6 +201,10 @@ class ByteTensor(c_tensor: TF_Tensor) : Tensor<Byte>(c_tensor) {
 }
 
 class ShortTensor(c_tensor: TF_Tensor) : Tensor<Short>(c_tensor) {
+  override fun slice(start: Int, end: Int): Buf<Short> {
+    TODO("not implemented")
+  }
+  
   private val buf = createBuffer<ShortBuffer>()
   override fun get(offset: Int) = buf[offset]
   
@@ -200,6 +216,10 @@ class ShortTensor(c_tensor: TF_Tensor) : Tensor<Short>(c_tensor) {
 }
 
 class IntTensor(c_tensor: TF_Tensor) : Tensor<Int>(c_tensor) {
+  override fun slice(start: Int, end: Int): Buf<Int> {
+    TODO("not implemented")
+  }
+  
   private val buf = createBuffer<IntBuffer>()
   override fun get(offset: Int) = buf[offset]
   
@@ -211,6 +231,10 @@ class IntTensor(c_tensor: TF_Tensor) : Tensor<Int>(c_tensor) {
 }
 
 class LongTensor(c_tensor: TF_Tensor) : Tensor<Long>(c_tensor) {
+  override fun slice(start: Int, end: Int): Buf<Long> {
+    TODO("not implemented")
+  }
+  
   private val buf = createBuffer<LongBuffer>()
   override fun get(offset: Int) = buf[offset]
   
@@ -222,6 +246,10 @@ class LongTensor(c_tensor: TF_Tensor) : Tensor<Long>(c_tensor) {
 }
 
 class BooleanTensor(c_tensor: TF_Tensor) : Tensor<Boolean>(c_tensor) {
+  override fun slice(start: Int, end: Int): Buf<Boolean> {
+    TODO("not implemented")
+  }
+  
   private val buf = createBuffer<ByteBuffer>()
   override fun get(offset: Int) = buf[offset].toInt() != 0
   
@@ -233,6 +261,10 @@ class BooleanTensor(c_tensor: TF_Tensor) : Tensor<Boolean>(c_tensor) {
 }
 
 class StringTensor(private var _c_tensor: TF_Tensor, val array: Array<String>? = null) : Tensor<String>(_c_tensor) {
+  override fun slice(start: Int, end: Int): Buf<String> {
+    TODO("not implemented")
+  }
+  
   private val buf = array ?: TFStringArray.decode(_c_tensor, numElements)
   var modified = false
   override val c_tensor

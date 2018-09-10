@@ -13,5 +13,8 @@ class FloatArrayBuf(val raw: FloatArray) : Buf<Float> {
   
   override fun copy() = FloatArrayBuf(raw.clone())
   
+  override fun slice(start: Int, end: Int): Buf<Float> =
+      FloatArrayBuf(raw.sliceArray(start until end))
+  
   override val size = raw.size
 }

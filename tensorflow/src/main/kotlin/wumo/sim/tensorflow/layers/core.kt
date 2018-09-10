@@ -2,9 +2,15 @@ package wumo.sim.tensorflow.layers
 
 import wumo.sim.tensorflow.core.TensorFunction
 import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.ops.gen.gen_math_ops
 import wumo.sim.tensorflow.ops.variables.Initializer
+import wumo.sim.tensorflow.ops.variables.Reuse
+import wumo.sim.tensorflow.ops.variables.Variable
+import wumo.sim.tensorflow.ops.variables.VariableScope
 import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.types.DataType
+import wumo.sim.util.Shape
+import wumo.sim.util.i
 
 object layers {
   fun flatten(inputs: Output): Output {
@@ -22,7 +28,7 @@ object layers {
 class Dense(val units: Int,
             val activation: TensorFunction? = null,
             val use_bias: Boolean = true,
-            val kernel_initializer: Initializer,
+            val kernel_initializer: Initializer = tf.glorotUniformInitializer(),
             val bias_initializer: Initializer? = tf.zerosInitializer(),
             val kernel_regularizer: TensorFunction? = null,
             val bias_regularizer: TensorFunction? = null,
@@ -30,41 +36,57 @@ class Dense(val units: Int,
             val kernel_constraint: Any? = null,
             val bias_constraint: Any? = null,
             trainable: Boolean = true,
-            dataType: DataType<*>) : Layer(trainable = trainable,
-                                           activity_reqularizer = activity_regularizer,
-                                           dataType = dataType) {
-//  lateinit var input_spec: Any
-//  lateinit var kernel: Output
-//  var bias: Output? = null
-//  override fun build(input_shape: Shape) {
-//    if (input_shape[-1] == -1)
-//      throw IllegalArgumentException("The last dimension of the inputs to `Dense`" +
-//                                         "should be defined. Found `None`.")
-//    kernel = add_variable(name = "weights",
-//                          shape = input_shape[-1] x units, dataType = dataType,
-//                          initializer = kernel_initializer,
-//                          regularizer = kernel_regularizer,
-//                          trainable = true)
-//
-//    if (use_bias)
-//      bias = add_variable(name = "biases",
-//                          shape = dim(units), dataType = dataType,
-//                          initializer = bias_initializer!!,
-//                          regularizer = bias_regularizer,
-//                          trainable = true)
-//    built = true
-//  }
-//
-//  override fun call(input: Output): Output {
-//    val shape = input.shape
-//    var output = if (shape.rank() > 2) {
-//      tf.tensordot(input, kernel, tf.const(2 x 1, i(shape.rank() - 1, 0)))
-//    } else
-//      tf.matMul(input, kernel)
-//    if (use_bias)
-//      output = tf.biasAdd(output, bias!!)
-//    if (activation != null)
-//      output = activation!!(output)
-//    return output
-//  }
+            dataType: DataType<*>,
+            name: String,
+            _scope: VariableScope,
+            _reuse: Reuse) : Layer(trainable = trainable,
+                                   name = name,
+                                   dataType = dataType,
+                                   activity_reqularizer = activity_regularizer,
+                                   _scope = _scope,
+                                   _reuse = _reuse) {
+  
+  lateinit var input_spec: Any
+  lateinit var kernel: Variable
+  var bias: Variable? = null
+  override fun build(input_shape: Shape) {
+    
+    if (input_shape[-1] == -1)
+      throw IllegalArgumentException("The last dimension of the inputs to `Dense`" +
+                                         "should be defined. Found `None`.")
+    kernel = addWeight(name = "kernel",
+                       shape = Shape(input_shape[-1], units),
+                       initializer = kernel_initializer,
+                       regularizer = kernel_regularizer,
+                       constraint = kernel_constraint,
+                       dataType = dataType,
+                       trainable = true)
+    
+    if (use_bias)
+      bias = addWeight(name = "bias",
+                       shape = Shape(units),
+                       initializer = bias_initializer!!,
+                       regularizer = bias_regularizer,
+                       constraint = bias_constraint,
+                       dataType = dataType,
+                       trainable = true)
+    built = true
+  }
+  
+  override fun call(input: Output): Output {
+    val shape = input.shape
+    var output = if (shape.rank > 2) {
+      val outputs = tf.tensordot(input, kernel.toOutput(),
+                                 tf.const(Shape(2, 1), i(shape.rank - 1, 0)))
+      outputs.setShape(shape.slice(0, -1) + units)
+      outputs
+    } else
+      gen_math_ops.matMul(input, kernel.toOutput())
+    if (use_bias)
+      output = tf.biasAdd(output, bias!!.toOutput())
+    activation?.let {
+      output = it(output)!!
+    }
+    return output
+  }
 }

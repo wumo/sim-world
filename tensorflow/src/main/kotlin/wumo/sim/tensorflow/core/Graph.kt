@@ -473,7 +473,7 @@ open class Graph {
       }
       
       /** Key to collect the subset of `Variable` objects that are used in models for inference (feed forward).
-       * TODO: Note: use `tf.contrib.framework.model_variable` to add to this collection. */
+       * TODO: Note: use `tf.contrib.framework.modelVariable` to add to this collection. */
       object MODEL_VARIABLES : VariableCollectionKey {
         
         override val name: String = "model_variables"

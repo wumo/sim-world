@@ -1,5 +1,6 @@
 package wumo.sim.tensorflow.ops.basic
 
+import org.bytedeco.javacpp.tensorflow
 import org.bytedeco.javacpp.tensorflow.AttrValue
 import org.bytedeco.javacpp.tensorflow.TensorProto
 import wumo.sim.tensorflow.buildOpTensor
@@ -16,6 +17,15 @@ import wumo.sim.util.scalarDimension
 import wumo.sim.util.toByte
 
 fun Shape.toOutput(): Output = tf.const(asIntArray()!!)
+fun Shape.toProto(): tensorflow.TensorShapeProto =
+    tensorflow.TensorShapeProto().let { proto ->
+      val dims = asIntArray()
+      if (dims == null) proto.set_unknown_rank(true)
+      else
+        for (d in this)
+          proto.add_dim().set_size(d.toLong())
+      proto
+    }
 
 object const_ops {
   val const_switch = SwitchValue3<DataType<*>, Shape, Any, String, Output>().apply {

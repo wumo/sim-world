@@ -7,6 +7,7 @@ import org.tensorflow.framework.OpDef
 import wumo.sim.tensorflow.core.check
 import wumo.sim.tensorflow.ops.Op
 import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.ops.basic.toProto
 import wumo.sim.tensorflow.ops.control_flow_ops.control_flow_ops.checkInputFromValidContext
 import wumo.sim.tensorflow.ops.ops
 import wumo.sim.tensorflow.ops.ops.graphConstructionScope
@@ -20,6 +21,8 @@ import wumo.sim.util.toByte
 import wumo.sim.util.warn
 import java.util.*
 import java.util.Collections.emptySet as emptyMutableSet
+
+typealias OutputMaker = (String) -> Output
 
 fun buildOp(op: String, name: String, setAttr: OperationBuilder.() -> Unit = {}) = run {
   tf.nameScope(name) {
@@ -319,9 +322,7 @@ class OperationBuilder(val opType: String, val name: String) {
   }
   
   fun attr(name: String, value: Shape) {
-    attributes[name] = {
-      TF_SetAttrShape(c_op_desc, name, value.asLongArray(), value.rank)
-    }
+    attr(name, value.toProto())
   }
   
   fun attr(name: String, value: NDArray<*>) {
@@ -385,7 +386,7 @@ class OperationBuilder(val opType: String, val name: String) {
   fun attr(name: String, tensor_shape_proto: TensorShapeProto) {
     attributes[name] = {
       val status = newStatus()
-      val buf = tensor_shape_proto.SerializeAsString()
+      val buf = tensor_shape_proto.SerializeAsString() ?: BytePointer()
       TF_SetAttrTensorShapeProto(c_op_desc, name, buf, buf.limit(), status)
       status.check()
     }

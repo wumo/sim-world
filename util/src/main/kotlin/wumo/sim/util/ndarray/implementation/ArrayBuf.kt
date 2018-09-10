@@ -10,5 +10,8 @@ class ArrayBuf<T>(val raw: Array<T>) : Buf<T> {
   
   override fun copy() = ArrayBuf(raw.clone())
   
+  override fun slice(start: Int, end: Int): Buf<T> =
+      ArrayBuf(raw.sliceArray(start until end))
+  
   override val size = raw.size
 }

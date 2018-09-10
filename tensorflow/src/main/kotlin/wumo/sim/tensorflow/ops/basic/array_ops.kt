@@ -103,9 +103,9 @@ operator fun Output.get(vararg indexers: Indexer): Output {
     tf.stridedSlice(this@get, packed_begin, packed_end, packed_strides,
                     begin_mask,
                     end_mask,
-                    shrink_axis_mask,
-                    new_axis_mask,
                     ellipsis_mask,
+                    new_axis_mask,
+                    shrink_axis_mask,
                     tf.currentNameScope)
   }
 }
@@ -262,6 +262,7 @@ object array_ops {
     
     fun gather(params: Output, indices: Output, axis: Int = 0, name: String = "GatherV2"): Output {
       if (axis == 0) {
+        gen_array_ops.gatherV2(params, indices, tf.const(axis), name)
       }
       //TODO detect resource variables
       return gen_array_ops.gatherV2(params, indices, tf.const(axis), name)
@@ -365,7 +366,7 @@ object array_ops {
           if (shape.numElements() < 1000)
             tf.const(shape, dtype, 1, tf.currentNameScope)
           else {
-            gen_array_ops.fill(tf.const(shape.asLongArray()),
+            gen_array_ops.fill(tf.const(shape.asLongArray()!!),
                                tf.const(dtype, 1), tf.currentNameScope)
           }
         }
@@ -608,10 +609,6 @@ object array_ops {
       return gen_array_ops.tileGrad(input, multiples, name)
     }
     
-    fun transpose(x: Output, perm: Output, name: String = "Transpose"): Output {
-      return gen_array_ops.transpose(x, perm, name)
-    }
-    
     fun unique(x: Output, outIdx: DataType<*> = INT32, name: String = "Unique"): List<Output> {
       return gen_array_ops.unique(x, outIdx, name)
     }
@@ -697,7 +694,7 @@ object array_ops {
           if (shape.numElements() < 1000)
             tf.const(shape, dtype, zero, tf.currentNameScope)
           else {
-            val shape = gen_array_ops.reshape(tf.const(shape.asLongArray()), tf.const(-1), name)
+            val shape = gen_array_ops.reshape(tf.const(shape.asLongArray()!!), tf.const(-1), name)
             gen_array_ops.fill(shape, tf.const(dtype, zero), tf.currentNameScope)
           }
         }

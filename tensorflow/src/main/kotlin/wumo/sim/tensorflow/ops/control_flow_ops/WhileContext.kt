@@ -4,6 +4,7 @@ import wumo.sim.tensorflow.core.ShapeMismatchException
 import wumo.sim.tensorflow.ops.*
 import wumo.sim.tensorflow.ops.basic.minus
 import wumo.sim.tensorflow.ops.basic.plus
+import wumo.sim.tensorflow.ops.basic.toOutput
 import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.types.RESOURCE
 import wumo.sim.util.*
@@ -355,7 +356,7 @@ class WhileContext(
         var v = value
         while (v.op.inputs.isNotEmpty())
           v = v.op.inputs[0]
-        v.op.attrShape("shape")
+        v.op.attrShape("shape").toOutput()
       } else
         tf.shape(value, optimize = false)
   

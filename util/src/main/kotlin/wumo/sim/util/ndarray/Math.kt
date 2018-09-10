@@ -1,10 +1,7 @@
 package wumo.sim.util.ndarray
 
-import wumo.sim.util.Rand
-import wumo.sim.util.Shape
-import wumo.sim.util.SwitchType2
+import wumo.sim.util.*
 import wumo.sim.util.ndarray.NDArray.Companion.toNDArray
-import wumo.sim.util.nextGaussian
 
 operator fun NDArray<Float>.unaryMinus(): NDArray<Float> {
   val c = copy()
@@ -48,3 +45,47 @@ fun randomNormal(mean: Float = 0f, scale: Float = 1f, shape: Shape): NDArray<Flo
     NDArray(shape, FloatArray(shape.numElements()) {
       Rand().nextGaussian(mean, scale)
     })
+
+fun <T : Any> randomChoice(a: NDArray<T>, p: NDArray<out Number>): T {
+  val _p = DoubleArray(p.size) { p[it].toDouble() }
+  val base = _p.sum()
+  val chosen = Rand().nextDouble(0.0, base)
+  var acc = 0.0
+  for ((i, v) in _p.withIndex()) {
+    acc += v
+    if (acc > chosen) return a[i]
+  }
+  NONE()
+}
+
+fun randomChoice(p: NDArray<out Number>): Int {
+  val _p = DoubleArray(p.size) { p[it].toDouble() }
+  val base = _p.sum()
+  val chosen = Rand().nextDouble(0.0, base)
+  var acc = 0.0
+  for ((i, v) in _p.withIndex()) {
+    acc += v
+    if (acc > chosen) return i
+  }
+  NONE()
+}
+//
+//inline fun <T> NDArray<T>.maxOrMin(selector: (T, T) -> Boolean): T
+//    where T : Number, T : Comparable<T> {
+//  val iter = iterator()
+//  var _max = iter.next()
+//  while (iter.hasNext()) {
+//    val next = iter.next()
+//    if (selector(next, _max))
+//      _max = next
+//  }
+//  return _max
+//}
+//
+//fun <T> NDArray<T>.max(): T
+//    where T : Number, T : Comparable<T> =
+//    maxOrMin { a, b -> a > b }
+//
+//fun <T> NDArray<T>.min(): T
+//    where T : Number, T : Comparable<T> =
+//    maxOrMin { a, b -> a < b }

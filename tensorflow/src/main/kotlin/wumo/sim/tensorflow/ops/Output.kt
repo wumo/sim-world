@@ -4,8 +4,12 @@ import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
 import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.tensorflow.core.Graph
 import wumo.sim.tensorflow.core.check
+import wumo.sim.tensorflow.ops.basic.get
+import wumo.sim.tensorflow.tensor.constantValue
+import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.types.DataType
 import wumo.sim.util.Shape
+import wumo.sim.util.warn
 
 interface OutputConvertible {
   fun toOutput(): Output
@@ -18,6 +22,8 @@ sealed class OutputLike : OutputConvertible,HasName {
   abstract val op: Op
   abstract val consumers: List<Op>
 }
+
+val LARGE_SPARSE_NUM_ELEMENTS = 100000000
 
 /** Sparse representation of a set of tensor slices at given indices.
  *
@@ -60,7 +66,20 @@ class IndexedSlices(val indices: Output, val values: Output, val denseShape: Out
     if (denseShape == null)
       throw IllegalStateException("Conversion of 'OutputIndexedSlices', '$this', " +
                                       "which has no dense shape information available, is not possible.")
-    TODO()
+    val denseShapeValue = constantValue(denseShape)
+    if (denseShapeValue != null
+        && denseShapeValue.numElements >= LARGE_SPARSE_NUM_ELEMENTS) {
+      ops.logger.warn {
+        "Converting sparse 'OutputIndexedSlices' to a dense 'Output' " +
+            "with ${denseShapeValue.numElements} " +
+            "elements. This may consume a large amount of memory."
+      }
+    } else
+      ops.logger.warn {
+        "Converting sparse 'OutputIndexedSlices' to a dense 'Output' of unknown shape. " +
+            "This may consume a large amount of memory."
+      }
+    return tf.unsortedSegmentSum(values, indices, denseShape[0], "${values.op.name}/ToOutput")
   }
 }
 
@@ -197,7 +216,7 @@ class Output(override val op: Op, val valueIndex: Int) : OutputLike() {
     op
     val dims = shape.asLongArray()
     val status = newStatus()
-    TF_GraphSetTensorShape(op.graph.c_graph, asTF_Output(), dims, dims.size, status)
+    TF_GraphSetTensorShape(op.graph.c_graph, asTF_Output(), dims, dims!!.size, status)
     status.check()
   }
   

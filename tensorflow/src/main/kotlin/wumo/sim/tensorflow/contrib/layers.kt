@@ -1,43 +1,92 @@
 package wumo.sim.tensorflow.contrib
 
+import wumo.sim.tensorflow.core.Graph
 import wumo.sim.tensorflow.core.TensorFunction
+import wumo.sim.tensorflow.layers.Dense
+import wumo.sim.tensorflow.ops.DeviceFunction
 import wumo.sim.tensorflow.ops.Output
-import wumo.sim.tensorflow.ops.variables.CreateNewOnly
-import wumo.sim.tensorflow.ops.variables.Initializer
-import wumo.sim.tensorflow.ops.variables.Reuse
+import wumo.sim.tensorflow.ops.variables.*
 import wumo.sim.tensorflow.ops.variables.Variable.VariableGetter
 import wumo.sim.tensorflow.tf
+import wumo.sim.tensorflow.types.DataType
+import wumo.sim.tensorflow.types.INT32
+import wumo.sim.util.Shape
 
 object layers {
+  
+  @Suppress("NAME_SHADOWING")
+  fun one_hot_encoding(labels: Output,
+                       num_class: Int,
+                       on_value: Float = 1f, off_value: Float = 0f,
+                       name: String = "OneHotEncoding"): Output =
+      tf.nameScope(name) {
+        val labels = if (labels.dataType == INT32) tf.toInt64(labels) else labels
+        tf.oneHot(labels, tf.const(num_class, name = "depth"),
+                  tf.const(on_value, name = "on_value"),
+                  tf.const(off_value, name = "off_value"), name = tf.currentNameScope)
+      }
+  
   fun flatten(inputs: Output): Output {
     TODO()
   }
   
-  private fun buildVariableGetter(rename: Map<String, String>): VariableGetter {
-    TODO()
-  }
+  private fun buildVariableGetter(rename: Map<String, String>): VariableGetter =
+      object : VariableGetter {
+        override fun invoke(name: String,
+                            dataType: DataType<*>?,
+                            shape: Shape?,
+                            initializer: Initializer?,
+                            regularizer: Regularizer?,
+                            trainable: Boolean,
+                            reuse: Reuse,
+                            collections: MutableSet<Graph.Graph.Key<Variable>>,
+                            cachingDevice: DeviceFunction?,
+                            underlyingGetter: VariableGetter?): Variable {
+          val nameParts = name.split('/').toMutableList()
+          val shortName = nameParts.last()
+          val name = if (shortName in rename) {
+            nameParts[nameParts.lastIndex] = rename[shortName]!!
+            nameParts.joinToString("/")
+          } else name
+          return tf.modelVariable(name, shape, dataType, initializer, regularizer,
+                                  trainable, reuse, collections, cachingDevice)
+        }
+      }
   
   fun fully_connected(inputs: Output,
                       num_outputs: Int,
                       activation_fn: TensorFunction? = { tf.relu(it) },
                       normalizer_fn: ((Output, Any?) -> Output)? = null,
-                      normalizer_params: Any? = null,
+                      normalizer_params: Map<String, Any>? = null,
                       weights_initializer: Initializer = tf.xavier_initializer(),
                       weights_regularizer: TensorFunction? = null,
                       biases_initializer: Initializer? = tf.zerosInitializer(),
                       biases_regularizer: TensorFunction? = null,
-                      reuse: Reuse = CreateNewOnly,
-                      variables_collections: Any? = null,
-                      outputs_collections: Any? = null,
+                      reuse: Reuse = ReuseOrCreateNew,
                       trainable: Boolean = true,
                       scope: String = "fully_connected"): Output {
-    val layerVariableGetter = buildVariableGetter(mapOf("bias" to "biases",
-                                                        "kernel" to "wieghts"))
-    tf.variableScope(scope, reuse,
-                     underlyingGetter = layerVariableGetter) {
-      
+    return tf.variableScope(scope, reuse, isDefaultName = true) {
+      val layer = Dense(units = num_outputs,
+                        activation = null,
+                        use_bias = normalizer_fn == null && biases_initializer != null,
+                        kernel_initializer = weights_initializer,
+                        bias_initializer = biases_initializer,
+                        kernel_regularizer = weights_regularizer,
+                        bias_regularizer = biases_regularizer,
+                        activity_regularizer = null,
+                        trainable = trainable,
+                        name = VariableScope.current.name,
+                        dataType = inputs.dataType.baseDataType,
+                        _scope = VariableScope.current,
+                        _reuse = reuse)
+      var outputs = layer(inputs)
+      //Apply normalizer function / layer.
+      if (normalizer_fn != null)
+        outputs = normalizer_fn(outputs, normalizer_params ?: mapOf<String, Any>())
+      if (activation_fn != null)
+        outputs = activation_fn(outputs)!!
+      outputs
     }
-    TODO()
   }
   
   fun layer_norm(action_out: Output, center: Boolean, scale: Boolean): Output {
@@ -59,18 +108,6 @@ object layers {
 //import wumo.sim.tensorflow.ops.gen.relu
 //import wumo.sim.tensorflow.tf
 //
-//@Suppress("NAME_SHADOWING")
-//fun TF.one_hot_encoding(labels: Output,
-//                        num_class: Int,
-//                        on_value: Float = 1f, off_value: Float = 0f,
-//                        name: String = "OneHotEncoding"): Output {
-//  nameScope(name) {
-//    val labels = if (labels.dataType == DT_INT32) cast(labels, DT_INT64) else labels
-//    return oneHot(labels, const(num_class, name = "depth"),
-//                  const(on_value, name = "on_value"),
-//                  const(off_value, name = "off_value"), name = ctxNs.scopeName)
-//  }
-//}
 //
 //fun TF.fully_connected(inputs: Output,
 //                       num_outputs: Int,

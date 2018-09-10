@@ -89,6 +89,7 @@ object types {
     override fun one() = NONE()
     
     override val protoType = DT_STRING
+    override val kotlinType = String::class.java
   }
   
   object BOOL : DataTypeComparator<Boolean>(), ReducibleDataType<Boolean> {
@@ -99,6 +100,7 @@ object types {
     override fun one() = true
     
     override val protoType = DT_BOOL
+    override val kotlinType = Boolean::class.java
   }
   
   object FLOAT16 : DataTypeComparator<Float>(), Float16OrFloat32OrFloat64<Float>, BFloat16OrFloat16OrFloat32<Float> {
@@ -109,6 +111,7 @@ object types {
     override fun one() = 1.0f
     
     override val protoType = DT_HALF
+    override val kotlinType = Float::class.java
   }
   
   object FLOAT : DataTypeComparator<Float>(), Float32OrFloat64<Float>, BFloat16OrFloat16OrFloat32<Float> {
@@ -119,6 +122,7 @@ object types {
     override fun one() = 1.0f
     
     override val protoType = DT_FLOAT
+    override val kotlinType = Float::class.java
   }
   
   object FLOAT64 : DataTypeComparator<Double>(), Float32OrFloat64<Double> {
@@ -130,6 +134,7 @@ object types {
     override fun one() = 1.0
     
     override val protoType = DT_DOUBLE
+    override val kotlinType = Double::class.java
   }
   
   object BFLOAT16 : DataTypeComparator<Float>(), BFloat16OrFloat32OrFloat64<Float>, BFloat16OrFloat16OrFloat32<Float> {
@@ -141,6 +146,7 @@ object types {
     override fun one() = 1.0f
     
     override val protoType = DT_BFLOAT16
+    override val kotlinType = Float::class.java
   }
   
   object COMPLEX64 : DataTypeComparator<Double>(), ComplexDataType<Double> {
@@ -152,6 +158,7 @@ object types {
     override fun one() = NONE()
     
     override val protoType = DT_COMPLEX64
+    override val kotlinType = Double::class.java
   }
   
   object COMPLEX128 : DataTypeComparator<Double>(), ComplexDataType<Double> {
@@ -163,6 +170,7 @@ object types {
     override fun one() = NONE()
     
     override val protoType = DT_COMPLEX128
+    override val kotlinType = Double::class.java
   }
   
   object INT8 : DataTypeComparator<Byte>(), IntOrUInt<Byte> {
@@ -174,6 +182,7 @@ object types {
     override fun one(): Byte = 1
     
     override val protoType = DT_INT8
+    override val kotlinType = Byte::class.java
   }
   
   object INT16 : DataTypeComparator<Short>(), IntOrUInt<Short> {
@@ -185,6 +194,7 @@ object types {
     override fun one(): Short = 1
     
     override val protoType = DT_INT16
+    override val kotlinType = Short::class.java
   }
   
   object INT32 : DataTypeComparator<Int>(), Int32OrInt64<Int> {
@@ -196,6 +206,7 @@ object types {
     override fun one() = 1
     
     override val protoType = DT_INT32
+    override val kotlinType = Int::class.java
   }
   
   object INT64 : DataTypeComparator<Long>(), Int32OrInt64<Long> {
@@ -207,6 +218,7 @@ object types {
     override fun one() = 1L
     
     override val protoType = DT_INT64
+    override val kotlinType = Long::class.java
   }
   
   object UINT8 : DataTypeComparator<Byte>(), UInt8OrInt32OrInt64<Byte> {
@@ -218,6 +230,7 @@ object types {
     override fun one(): Byte = 1
     
     override val protoType = DT_UINT8
+    override val kotlinType = Byte::class.java
   }
   
   object UINT16 : DataTypeComparator<Short>(), IntOrUInt<Short> {
@@ -229,6 +242,7 @@ object types {
     override fun one(): Short = 1
     
     override val protoType = DT_UINT16
+    override val kotlinType = Short::class.java
   }
   
   object UINT32 : DataTypeComparator<Long>(), IntOrUInt<Long> {
@@ -240,6 +254,7 @@ object types {
     override fun one(): Long = 1
     
     override val protoType = DT_UINT32
+    override val kotlinType = Long::class.java
     override fun toString() = name
   }
   
@@ -252,6 +267,7 @@ object types {
     override fun one() = NONE()
     
     override val protoType = DT_UINT64
+    override val kotlinType = Long::class.java
   }
   
   object QINT8 : DataTypeComparator<Byte>(), QuantizedDataType<Byte> {
@@ -263,6 +279,7 @@ object types {
     override fun one(): Byte = 1
     
     override val protoType = DT_QINT8
+    override val kotlinType = Byte::class.java
     override fun toString() = name
   }
   
@@ -275,6 +292,7 @@ object types {
     override fun one(): Short = 1
     
     override val protoType = DT_QINT16
+    override val kotlinType = Short::class.java
   }
   
   object QINT32 : DataTypeComparator<Int>(), QuantizedDataType<Int> {
@@ -286,6 +304,7 @@ object types {
     override fun one(): Int = 1
     
     override val protoType = DT_QINT32
+    override val kotlinType = Int::class.java
   }
   
   object QUINT8 : DataTypeComparator<Byte>(), QuantizedDataType<Byte> {
@@ -297,6 +316,7 @@ object types {
     override fun one(): Byte = 1
     
     override val protoType = DT_QUINT8
+    override val kotlinType = Byte::class.java
   }
   
   object QUINT16 : DataTypeComparator<Short>(), QuantizedDataType<Short> {
@@ -308,6 +328,7 @@ object types {
     override fun one(): Short = 1
     
     override val protoType = DT_QUINT16
+    override val kotlinType = Short::class.java
   }
   
   object RESOURCE : DataTypeComparator<Long>(), DataType<Long> {
@@ -319,6 +340,7 @@ object types {
     override fun one() = NONE()
     
     override val protoType = DT_RESOURCE
+    override val kotlinType = Long::class.java
   }
   
   object VARIANT : DataTypeComparator<Long>(), DataType<Long> {
@@ -330,6 +352,7 @@ object types {
     override fun one() = NONE()
     
     override val protoType = DT_VARIANT
+    override val kotlinType = Long::class.java
     override fun toString() = name
   }
   
@@ -342,6 +365,7 @@ object types {
     override fun one() = NONE()
     
     override val protoType = DT_STRING_REF
+    override val kotlinType = String::class.java
   }
   
   object BOOL_REF : DataTypeComparator<Boolean>(), ReducibleDataType<Boolean> {
@@ -353,6 +377,7 @@ object types {
     override fun one() = true
     
     override val protoType = DT_BOOL_REF
+    override val kotlinType = Boolean::class.java
   }
   
   object FLOAT16_REF : DataTypeComparator<Float>(), Float16OrFloat32OrFloat64<Float>, BFloat16OrFloat16OrFloat32<Float> {
@@ -364,6 +389,7 @@ object types {
     override fun one() = 1.0f
     
     override val protoType = DT_HALF_REF
+    override val kotlinType = Float::class.java
   }
   
   object FLOAT_REF : DataTypeComparator<Float>(), Float32OrFloat64<Float>, BFloat16OrFloat16OrFloat32<Float> {
@@ -375,6 +401,7 @@ object types {
     override fun one() = 1.0f
     
     override val protoType = DT_FLOAT_REF
+    override val kotlinType = Float::class.java
   }
   
   object DOUBLE_REF : DataTypeComparator<Double>(), Float32OrFloat64<Double> {
@@ -386,6 +413,7 @@ object types {
     override fun one() = 1.0
     
     override val protoType = DT_DOUBLE_REF
+    override val kotlinType = Double::class.java
   }
   
   object BFLOAT16_REF : DataTypeComparator<Float>(), BFloat16OrFloat32OrFloat64<Float>, BFloat16OrFloat16OrFloat32<Float> {
@@ -397,6 +425,7 @@ object types {
     override fun one() = 1.0f
     
     override val protoType = DT_BFLOAT16_REF
+    override val kotlinType = Float::class.java
   }
   
   object COMPLEX64_REF : DataTypeComparator<Double>(), ComplexDataType<Double> {
@@ -408,6 +437,7 @@ object types {
     override fun one() = NONE()
     
     override val protoType = DT_COMPLEX64_REF
+    override val kotlinType = Double::class.java
   }
   
   object COMPLEX128_REF : DataTypeComparator<Double>(), ComplexDataType<Double> {
@@ -419,6 +449,7 @@ object types {
     override fun one() = NONE()
     
     override val protoType = DT_COMPLEX128_REF
+    override val kotlinType = Double::class.java
   }
   
   object INT8_REF : DataTypeComparator<Byte>(), IntOrUInt<Byte> {
@@ -430,6 +461,7 @@ object types {
     override fun one(): Byte = 1
     
     override val protoType = DT_INT8_REF
+    override val kotlinType = Byte::class.java
   }
   
   object INT16_REF : DataTypeComparator<Short>(), IntOrUInt<Short> {
@@ -441,6 +473,7 @@ object types {
     override fun one(): Short = 1
     
     override val protoType = DT_INT16_REF
+    override val kotlinType = Short::class.java
   }
   
   object INT32_REF : DataTypeComparator<Int>(), Int32OrInt64<Int> {
@@ -452,6 +485,7 @@ object types {
     override fun one() = 1
     
     override val protoType = DT_INT32_REF
+    override val kotlinType = Int::class.java
   }
   
   object INT64_REF : DataTypeComparator<Long>(), Int32OrInt64<Long> {
@@ -463,6 +497,7 @@ object types {
     override fun one() = 1L
     
     override val protoType = DT_INT64_REF
+    override val kotlinType = Long::class.java
   }
   
   object UINT8_REF : DataTypeComparator<Byte>(), UInt8OrInt32OrInt64<Byte> {
@@ -474,6 +509,7 @@ object types {
     override fun one(): Byte = 1
     
     override val protoType = DT_UINT8_REF
+    override val kotlinType = Byte::class.java
   }
   
   object UINT16_REF : DataTypeComparator<Short>(), IntOrUInt<Short> {
@@ -485,6 +521,7 @@ object types {
     override fun one(): Short = 1
     
     override val protoType = DT_UINT16_REF
+    override val kotlinType = Short::class.java
   }
   
   object UINT32_REF : DataTypeComparator<Long>(), IntOrUInt<Long> {
@@ -496,6 +533,7 @@ object types {
     override fun one(): Long = 1
     
     override val protoType = DT_UINT32_REF
+    override val kotlinType = Long::class.java
   }
   
   object UINT64_REF : DataTypeComparator<Long>(), IntOrUInt<Long> {
@@ -507,6 +545,7 @@ object types {
     override fun one() = NONE()
     
     override val protoType = DT_UINT64_REF
+    override val kotlinType = Long::class.java
   }
   
   object QINT8_REF : DataTypeComparator<Byte>(), QuantizedDataType<Byte> {
@@ -518,6 +557,7 @@ object types {
     override fun one(): Byte = 1
     
     override val protoType = DT_QINT8_REF
+    override val kotlinType = Byte::class.java
   }
   
   object QINT16_REF : DataTypeComparator<Short>(), QuantizedDataType<Short> {
@@ -529,6 +569,7 @@ object types {
     override fun one(): Short = 1
     
     override val protoType = DT_QINT16_REF
+    override val kotlinType = Short::class.java
   }
   
   object QINT32_REF : DataTypeComparator<Int>(), QuantizedDataType<Int> {
@@ -540,6 +581,7 @@ object types {
     override fun one(): Int = 1
     
     override val protoType = DT_QINT32_REF
+    override val kotlinType = Int::class.java
   }
   
   object QUINT8_REF : DataTypeComparator<Byte>(), QuantizedDataType<Byte> {
@@ -551,6 +593,7 @@ object types {
     override fun one(): Byte = 1
     
     override val protoType = DT_QUINT8_REF
+    override val kotlinType = Byte::class.java
   }
   
   object QUINT16_REF : DataTypeComparator<Short>(), QuantizedDataType<Short> {
@@ -562,6 +605,7 @@ object types {
     override fun one(): Short = 1
     
     override val protoType = DT_QUINT16_REF
+    override val kotlinType = Short::class.java
   }
   
   object RESOURCE_REF : DataTypeComparator<Long>(), DataType<Long> {
@@ -573,6 +617,7 @@ object types {
     override fun one() = NONE()
     
     override val protoType = DT_RESOURCE_REF
+    override val kotlinType = Long::class.java
   }
   
   object VARIANT_REF : DataTypeComparator<Long>(), DataType<Long> {
@@ -584,5 +629,6 @@ object types {
     override fun one() = NONE()
     
     override val protoType = DT_VARIANT_REF
+    override val kotlinType = Long::class.java
   }
 }
