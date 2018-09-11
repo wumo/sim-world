@@ -10,6 +10,7 @@ import wumo.sim.tensorflow.ops.control_flow_ops.CondContext
 import wumo.sim.tensorflow.ops.control_flow_ops.ControlFlowContext
 import wumo.sim.tensorflow.ops.control_flow_ops.control_flow_ops
 import wumo.sim.tensorflow.ops.gradients.gradient_ops
+import wumo.sim.tensorflow.ops.variables.VariableScope
 import wumo.sim.tensorflow.ops.variables.initializers
 import wumo.sim.tensorflow.ops.variables.variables
 import wumo.sim.tensorflow.tf
@@ -312,6 +313,7 @@ object ops {
       boosted_trees_ops.API,
       candidate_sampling_ops.API,
       checkpoint_ops.API,
+      clip_ops.API,
       collective_ops.API,
       const_ops.API,
       control_flow_ops.API,
@@ -373,6 +375,7 @@ object ops {
     val currentContainer get() = graphConstructionScope.value.container
     /** Returns the control flow context of the current op creation context. */
     val currentControlFlowContext get() = graphConstructionScope.value.controlFlowContext
+    val currentVariableScope get() = VariableScope.current
 
 //  val g = Graph()
 //  val trainables = mutableListOf<Variable>()

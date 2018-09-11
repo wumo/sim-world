@@ -1,29 +1,16 @@
-package wumo.sim.tensorflow.layers
+package wumo.sim.tensorflow.layers.core
 
 import wumo.sim.tensorflow.core.TensorFunction
+import wumo.sim.tensorflow.layers.Layer
 import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.ops.gen.gen_math_ops
 import wumo.sim.tensorflow.ops.variables.Initializer
-import wumo.sim.tensorflow.ops.variables.Reuse
 import wumo.sim.tensorflow.ops.variables.Variable
 import wumo.sim.tensorflow.ops.variables.VariableScope
 import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.types.DataType
 import wumo.sim.util.Shape
 import wumo.sim.util.i
-
-object layers {
-  fun flatten(inputs: Output): Output {
-    TODO()
-  }
-}
-
-//import wumo.sim.tensorflow.ops.Output
-//import wumo.sim.tensorflow.ops.variables.Initializer
-//import wumo.sim.tensorflow.tf
-//import wumo.sim.util.Shape
-//import wumo.sim.util.i
-//import wumo.sim.util.x
 
 class Dense(val units: Int,
             val activation: TensorFunction? = null,
@@ -38,13 +25,11 @@ class Dense(val units: Int,
             trainable: Boolean = true,
             dataType: DataType<*>,
             name: String,
-            _scope: VariableScope,
-            _reuse: Reuse) : Layer(trainable = trainable,
-                                   name = name,
-                                   dataType = dataType,
-                                   activity_reqularizer = activity_regularizer,
-                                   _scope = _scope,
-                                   _reuse = _reuse) {
+            _scope: VariableScope) : Layer(trainable = trainable,
+                                  name = name,
+                                  dataType = dataType,
+                                  activity_reqularizer = activity_regularizer,
+                                  _scope = _scope) {
   
   lateinit var input_spec: Any
   lateinit var kernel: Variable
@@ -54,7 +39,7 @@ class Dense(val units: Int,
     if (input_shape[-1] == -1)
       throw IllegalArgumentException("The last dimension of the inputs to `Dense`" +
                                          "should be defined. Found `None`.")
-    kernel = addWeight(name = "kernel",
+    kernel = addWeight(name = "weights",
                        shape = Shape(input_shape[-1], units),
                        initializer = kernel_initializer,
                        regularizer = kernel_regularizer,
@@ -63,7 +48,7 @@ class Dense(val units: Int,
                        trainable = true)
     
     if (use_bias)
-      bias = addWeight(name = "bias",
+      bias = addWeight(name = "biases",
                        shape = Shape(units),
                        initializer = bias_initializer!!,
                        regularizer = bias_regularizer,

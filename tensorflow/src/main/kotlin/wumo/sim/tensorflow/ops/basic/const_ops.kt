@@ -4,7 +4,6 @@ import org.bytedeco.javacpp.tensorflow
 import org.bytedeco.javacpp.tensorflow.AttrValue
 import org.bytedeco.javacpp.tensorflow.TensorProto
 import wumo.sim.tensorflow.buildOpTensor
-import wumo.sim.tensorflow.dtypeFromClass
 import wumo.sim.tensorflow.ops.Op
 import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.tensor.Tensor
@@ -16,7 +15,7 @@ import wumo.sim.util.ndarray.NDArray
 import wumo.sim.util.scalarDimension
 import wumo.sim.util.toByte
 
-fun Shape.toOutput(): Output = tf.const(asIntArray()!!)
+fun Shape.toOutput(name: String = "shape"): Output = tf.const(asIntArray()!!, name = name)
 fun Shape.toProto(): tensorflow.TensorShapeProto =
     tensorflow.TensorShapeProto().let { proto ->
       val dims = asIntArray()
@@ -112,7 +111,7 @@ object const_ops {
         }
     
     fun <T : Any> const(value: NDArray<T>, name: String = "Const"): Output {
-      val dtype = dtypeFromClass(value.dtype)
+      val dtype = value.dtype.toDataType()
       return buildOpTensor("Const", name = name) {
         attr("value", Tensor.fromNDArray(value))
         attr("dtype", dtype)

@@ -13,7 +13,7 @@ import wumo.sim.util.t2
 fun observationPlaceholder(obSpace: Space<*>,
                            batch_size: Int = -1,
                            name: String = "Ob"): Output {
-  assert(obSpace is Discrete && obSpace is Box) {
+  assert(obSpace is Discrete || obSpace is Box) {
     "Can only deal with Discrete and Box observation spaces for now"
   }
   

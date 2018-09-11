@@ -62,15 +62,22 @@ object random_ops {
                       dtype: DataType<*> = FLOAT,
                       seed: Int? = null,
                       name: String = "randomUniform"): Output =
-        randomUniform(shape.toOutput(), min, max, dtype, seed, name)
+        randomUniform({ shape.toOutput(it) }, min, max, dtype, seed, name)
     
     fun randomUniform(shape: Output, min: Number, max: Number,
                       dtype: DataType<*> = FLOAT,
                       seed: Int? = null,
+                      name: String = "randomUniform"): Output =
+        randomUniform({ shape }, min, max, dtype, seed, name)
+  
+    fun randomUniform(shape: (String) -> Output, min: Number, max: Number,
+                      dtype: DataType<*> = FLOAT,
+                      seed: Int? = null,
                       name: String = "randomUniform"): Output {
       require(dtype in allowedTypes) { "Invalid dtype$dtype" }
-      
-      return tf.nameScope(name, setOf(shape.op)) {
+    
+      return tf.nameScope(name) {
+        val shape = shape("shape")
         val minval = tf.const(scalarDimension, dtype, min, name = "min")
         val maxval = tf.const(scalarDimension, dtype, max, name = "max")
         val (seed1, seed2) = getSeed(seed)

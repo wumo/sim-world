@@ -133,15 +133,15 @@ class VariableScope(
         isPure: Boolean = false,
         block: () -> R
     ): R {
+      if (reuse == ReuseExistingOnly && isDefaultName)
+        error("'reuse' cannot be set to 'ReuseExistingOnly' with 'isDefaultName' set to 'true'.")
       val variableScopeStore = VariableScopeStore.current
       val oldVariableScope = variableScopeStore.scope
-      val newName = run {
-        val uniqueName = if (isDefaultName) unique(name) else name
-        if (oldVariableScope.name != "")
+      val uniqueName = if (isDefaultName) unique(name) else name
+      val newName = if (oldVariableScope.name != "")
           "${oldVariableScope.name}/$uniqueName"
-        else
+      else
           uniqueName
-      }
       variableScopeStore.enterVariableScope(newName)
       
       val newVariableScope = VariableScope(
@@ -161,6 +161,42 @@ class VariableScope(
       return result
     }
   
+    internal fun <R> updatedScope(
+        variableScope: VariableScope = VariableScope.current,
+        reuse: Reuse = ReuseOrCreateNew,
+        dataType: DataType<*>? = null,
+        initializer: Initializer? = null,
+        regularizer: Regularizer? = null,
+        cachingDevice: DeviceFunction? = null,
+        partitioner: Partitioner? = null,
+        isDefaultName: Boolean = false,
+        isPure: Boolean = false,
+        block: () -> R
+    ): R {
+      val variableScopeStore = VariableScopeStore.current
+      val oldVariableScope = variableScopeStore.scope
+      val oldVariableScopeCounts = variableScopeStore.variableScopeCounts
+      variableScopeStore.enterVariableScope(variableScope.name)
+    
+      val newVariableScope = VariableScope(
+          reuse = if (reuse == ReuseOrCreateNew) oldVariableScope.reuse else reuse,
+          name = variableScope.name,
+          dataType = dataType ?: oldVariableScope.dataType,
+          initializer = initializer ?: oldVariableScope.initializer,
+          regularizer = regularizer ?: oldVariableScope.regularizer,
+          cachingDevice = cachingDevice ?: oldVariableScope.cachingDevice,
+          partitioner = partitioner ?: oldVariableScope.partitioner,
+          nameScope = variableScope.nameScope
+      )
+      variableScopeStore.scope = newVariableScope
+      val result = if (isPure) block()
+      else tf.nameScope(variableScope.name.split("/").last()) { block() }
+      variableScopeStore.closeVariableSubScopes(variableScope.name)
+      variableScopeStore.variableScopeCounts = oldVariableScopeCounts
+      variableScopeStore.scope = oldVariableScope
+      return result
+    }
+    
     fun unique(prefix: String): String {
       val currentScopeStore = VariableScopeStore.current
       val currentScope = ops.convertNameScopeToName(VariableScope.current.name)
@@ -172,13 +208,10 @@ class VariableScope(
       return if (currentScopeStore.variableScopeCount(name) == 0) {
         prefix
       } else {
-        var uniqueName = name
-        var count = 1
-        while (currentScopeStore.variableScopeCount(uniqueName) > 0) {
-          uniqueName = "${name}_$count"
-          count += 1
-        }
-        uniqueName
+        var idx = 1
+        while (currentScopeStore.variableScopeCount("${name}_$idx") > 0)
+          idx += 1
+        "${prefix}_$idx"
       }
     }
     

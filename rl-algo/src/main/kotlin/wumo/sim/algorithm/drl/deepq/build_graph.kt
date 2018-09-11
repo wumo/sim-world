@@ -5,20 +5,20 @@ import wumo.sim.algorithm.drl.common.Q_func
 import wumo.sim.algorithm.drl.common.function
 import wumo.sim.algorithm.drl.common.huber_loss
 import wumo.sim.tensorflow.core.Graph.Graph.Keys
-import wumo.sim.tensorflow.ops.*
+import wumo.sim.tensorflow.ops.Op
+import wumo.sim.tensorflow.ops.Output
+import wumo.sim.tensorflow.ops.basic.get
 import wumo.sim.tensorflow.ops.basic.minus
 import wumo.sim.tensorflow.ops.basic.plus
 import wumo.sim.tensorflow.ops.basic.times
 import wumo.sim.tensorflow.ops.training.Optimizer
-import wumo.sim.tensorflow.ops.variables.CreateNewOnly
-import wumo.sim.tensorflow.ops.variables.Reuse
-import wumo.sim.tensorflow.ops.variables.ReuseExistingOnly
-import wumo.sim.tensorflow.ops.variables.Variable
+import wumo.sim.tensorflow.ops.variables.*
 import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.tf.variableScope
 import wumo.sim.tensorflow.types.BOOL
 import wumo.sim.tensorflow.types.FLOAT
 import wumo.sim.tensorflow.types.INT32
+import wumo.sim.tensorflow.types.INT64
 import wumo.sim.util.*
 import wumo.sim.util.ndarray.NDArray
 
@@ -31,7 +31,7 @@ fun build_train(
     gamma: Float = 1f,
     doubleQ: Boolean = true,
     scope: String = "deepq",
-    reuse: Reuse = CreateNewOnly,
+    reuse: Reuse = ReuseOrCreateNew,
     paramNoise: Boolean = false,
     paramNoiseFilterFunc: ((Variable) -> Boolean)? = null)
     : t4<ActFunction, Function, Function, Map<String, Any>> {
@@ -51,18 +51,18 @@ fun build_train(
     
     //q network evaluation
     val q_t = qFunc(obs_t_input.get(), numActions, "q_func", ReuseExistingOnly)
-    val q_func_vars =
-        tf.currentGraph.getCollection(Keys.GLOBAL_VARIABLES,
-                                      tf.currentNameScope + "/q_func")
+    val q_func_vars = tf.currentGraph.getCollection(
+        Keys.GLOBAL_VARIABLES,
+        "^${tf.currentVariableScope.name}/q_func")
     
     //target q network evaluation
-    val q_tp1 = qFunc(obs_tp1_input.get(), numActions, "target_q_func", CreateNewOnly)
-    val target_q_func_vars =
-        tf.currentGraph.getCollection(Keys.GLOBAL_VARIABLES,
-                                      tf.currentNameScope + "/target_q_func")
+    val q_tp1 = qFunc(obs_tp1_input.get(), numActions, "target_q_func", ReuseOrCreateNew)
+    val target_q_func_vars = tf.currentGraph.getCollection(
+        Keys.GLOBAL_VARIABLES,
+        "^${tf.currentVariableScope.name}/target_q_func")
     
     //q scores for actions which we know were selected in the given state.
-    val q_t_selected = tf.sum(q_t * tf.oneHot(act_t_ph, tf.const(numActions)),
+    val q_t_selected = tf.sum(q_t * tf.oneHot({ act_t_ph }, { tf.const(numActions, it) }),
                               tf.const(1))
     
     //compute estimate of best possible value starting from state at t + 1
@@ -132,16 +132,15 @@ fun buildAct(makeObsPh: (String) -> TfInput,
       val observations_ph = makeObsPh("observation")
       val stochastic_ph = tf.placeholder(scalarDimension, BOOL, name = "stochastic")
       val update_eps_ph = tf.placeholder(scalarDimension, FLOAT, name = "update_eps")
-      
-      val eps = tf.variable(scalarDimension, tf.constantInitializer(0), name = "eps")
-      
-      val q_values = qFunc(observations_ph.get(), numActions, "q_func", CreateNewOnly)
+      val eps = tf.variable(scalarDimension, initializer = tf.constantInitializer(0), name = "eps")
+  
+      val q_values = qFunc(observations_ph.get(), numActions, "q_func", ReuseOrCreateNew)
       val deterministic_actions = tf.argmax(q_values, 1, name = "deterministic_actions")
       
       val batch_size = tf.shape(observations_ph.get())[0]
       val random_actions = tf.randomUniform(tf.stack(listOf(batch_size)),
                                             min = 0, max = numActions,
-                                            dtype = INT32, name = "random_actions")
+                                            dtype = INT64, name = "random_actions")
       val chose_random = tf.less(tf.randomUniform(tf.stack(listOf(batch_size)),
                                                   min = 0, max = 1, dtype = FLOAT), eps.toOutput())
       val stochastic_actions = tf.where(chose_random, random_actions,
@@ -149,7 +148,7 @@ fun buildAct(makeObsPh: (String) -> TfInput,
       val output_actions = tf.cond(stochastic_ph,
                                    { stochastic_actions },
                                    { deterministic_actions }, name = "output_actions")
-      val update_eps_expr = eps.assign(tf.cond(tf.greaterEqual(update_eps_ph, tf.const(0f)),
+      val update_eps_expr = eps.assign(tf.cond(tf.greaterEqual({ update_eps_ph }, { tf.const(0f, it) }),
                                                { update_eps_ph }, { eps.toOutput() }))
 //    val q_func_vars = tf.ctxVs.variable_subscopes["q_func"]!!.all_variables()
       val _act = function(inputs = a(observations_ph, stochastic_ph, update_eps_ph),

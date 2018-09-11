@@ -3,6 +3,7 @@ package wumo.sim.algorithm.drl.deepq
 import wumo.sim.algorithm.drl.common.LinearSchedule
 import wumo.sim.algorithm.drl.common.Schedule
 import wumo.sim.core.Env
+import wumo.sim.tensorflow.core.TensorFunction
 import wumo.sim.tensorflow.ops.training.AdamOptimizer
 import wumo.sim.tensorflow.ops.variables.Variable
 import wumo.sim.tensorflow.tf
@@ -10,7 +11,7 @@ import wumo.sim.util.ndarray.*
 
 fun <O : Any, A : Any> learn(
     env: Env<O, A>,
-    network: String,
+    network: TensorFunction,
     seed: Int? = null,
     learning_rate: Float = 5e-4f,
     total_timesteps: Int = 10_0000,
@@ -33,9 +34,11 @@ fun <O : Any, A : Any> learn(
     param_noise: Boolean = false,
     callback: Any? = null,
     load_path: String? = null,
-    network_kwargs: Map<String, Any> = mapOf()) {
+    hiddens: List<Int> = listOf(256),
+    dueling: Boolean = true,
+    layer_norm: Boolean = false) {
   
-  val q_func = build_q_func(network, network_kwargs = network_kwargs)
+  val q_func = build_q_func(network, hiddens, dueling, layer_norm)
   
   fun makeObservationPlaceholder(name: String) =
       ObservationInput(observation_space = env.observation_space, name = name)

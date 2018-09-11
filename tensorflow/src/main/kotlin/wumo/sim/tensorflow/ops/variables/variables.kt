@@ -27,11 +27,10 @@ object variables {
                       collections: MutableSet<Graph.Key<Variable>> = mutableSetOf(),
                       cachingDevice: DeviceFunction? = null): Variable {
       collections += listOf(Graph.Keys.GLOBAL_VARIABLES, Graph.Keys.MODEL_VARIABLES)
-      return variable(name, shape, dataType, initializer, regularizer,
-                      trainable, reuse, collections, cachingDevice)
+      return variable(shape, dataType, initializer, regularizer, trainable,
+                      reuse, collections, cachingDevice, name)
     }
     fun variable(
-        name: String,
         shape: Shape? = null,
         dataType: DataType<*>? = null,
         initializer: Initializer? = null,
@@ -39,7 +38,8 @@ object variables {
         trainable: Boolean = true,
         reuse: Reuse = ReuseOrCreateNew,
         collections: MutableSet<Graph.Key<Variable>> = mutableSetOf(),
-        cachingDevice: DeviceFunction? = null
+        cachingDevice: DeviceFunction? = null,
+        name: String
     ): Variable =
         Variable.getVariable(
             name, shape, dataType, initializer, regularizer, trainable, reuse, collections, cachingDevice)
@@ -59,6 +59,21 @@ object variables {
         name, reuse, dataType, initializer, regularizer,
         cachingDevice, partitioner, isDefaultName,
         isPure, block)
+  
+    fun <R> updatedScope(
+        variableScope: VariableScope = VariableScope.current,
+        reuse: Reuse = ReuseOrCreateNew,
+        dataType: DataType<*>? = null,
+        initializer: Initializer? = null,
+        regularizer: Regularizer? = null,
+        cachingDevice: DeviceFunction? = null,
+        partitioner: Partitioner? = null,
+        isDefaultName: Boolean = false,
+        isPure: Boolean = false,
+        block: () -> R
+    ): R = VariableScope.updatedScope(
+        variableScope, reuse, dataType, initializer, regularizer,
+        cachingDevice, partitioner, isDefaultName, isPure, block)
   }
   
   /**

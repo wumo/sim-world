@@ -67,6 +67,7 @@ object slot_creator {
    * @param  colocateWithPrimary Boolean value indicating whether to colocate the slot variable with the primary
    *                             variable.
    * @return Created slot variable.
+   * @see "tensorflow.python.training.slot_creator.create_slot_with_initializer"
    */
   internal fun create(
       primary: Variable,

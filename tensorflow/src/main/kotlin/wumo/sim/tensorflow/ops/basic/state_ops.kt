@@ -5,7 +5,6 @@ import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.ops.OutputLike
 import wumo.sim.tensorflow.ops.gen.gen_state_ops
 import wumo.sim.tensorflow.ops.variables.DynamicInitializer
-import wumo.sim.tensorflow.ops.variables.Initializer
 import wumo.sim.tensorflow.ops.variables.Variable
 import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.types.DataType
@@ -132,8 +131,8 @@ object state_ops {
     fun variable(initial_value: Any, name: String = "Variable", trainable: Boolean = true) =
         variable_switch(initial_value, name, trainable)
     
-    fun variable(shape: Shape, initializer: Initializer, name: String = "Variable", trainable: Boolean = true) =
-        _variable({ initializer(shape) }, name, trainable)
+//    fun variable(shape: Shape, initializer: Initializer, name: String = "Variable", trainable: Boolean = true) =
+//        _variable({ initializer(shape) }, name, trainable)
     
   }
   
@@ -160,6 +159,6 @@ object state_ops {
   }
   
   private fun _variable(initializer: (String) -> Output, name: String, trainable: Boolean = true): Variable =
-      tf.variable(name, initializer = DynamicInitializer(initializer("${tf.currentNameScope}$name/initial_value")), trainable = trainable)
+      tf.variable(initializer = DynamicInitializer(initializer("${tf.currentNameScope}$name/initial_value")), trainable = trainable, name = name)
   
 }

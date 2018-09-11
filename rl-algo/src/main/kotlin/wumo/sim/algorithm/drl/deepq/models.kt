@@ -1,21 +1,19 @@
 package wumo.sim.algorithm.drl.deepq
 
 import wumo.sim.algorithm.drl.common.Q_func
-import wumo.sim.algorithm.drl.common.get_nerwork_builder
 import wumo.sim.tensorflow.contrib.layers
+import wumo.sim.tensorflow.core.TensorFunction
+import wumo.sim.tensorflow.ops.basic.minus
+import wumo.sim.tensorflow.ops.basic.plus
 import wumo.sim.tensorflow.tf
 
-fun build_q_func(network: String,
-                 network_kwargs: Map<String, Any>): Q_func {
-  
-  val hiddens = network_kwargs.getOrElse("hiddens") { listOf(256) } as List<Int>
-  val dueling = network_kwargs.getOrDefault("dueling", true) as Boolean
-  val layer_norm = network_kwargs.getOrDefault("layer_norm", false) as Boolean
-  
-  val network = get_nerwork_builder(network)(network_kwargs)
+fun build_q_func(network: TensorFunction,
+                 hiddens: List<Int> = listOf(256),
+                 dueling: Boolean = true,
+                 layer_norm: Boolean = false): Q_func {
   return { input_placeholder, num_actions, scope, reuse ->
     tf.variableScope(scope, reuse = reuse) {
-      var latent = network(input_placeholder)
+      var latent = network(input_placeholder)!!
       latent = layers.flatten(latent)
       val action_scores = tf.variableScope("action_value") {
         var action_out = latent
@@ -26,6 +24,7 @@ fun build_q_func(network: String,
                                               activation_fn = null)
           if (layer_norm)
             action_out = layers.layer_norm(action_out, center = true, scale = true)
+          action_out = tf.relu(action_out)
         }
         layers.fully_connected(action_out, num_outputs = num_actions, activation_fn = null)
       }

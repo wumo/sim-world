@@ -1,5 +1,7 @@
 package wumo.sim.tensorflow.ops.basic
 
+import wumo.sim.tensorflow.NullableOutputMaker
+import wumo.sim.tensorflow.OutputMaker
 import wumo.sim.tensorflow.core.InvalidArgumentException
 import wumo.sim.tensorflow.core.InvalidIndexerException
 import wumo.sim.tensorflow.ops.*
@@ -334,27 +336,40 @@ object array_ops {
     fun mirrorPadGrad(input: Output, paddings: Output, mode: String, name: String = "MirrorPadGrad"): Output {
       return gen_array_ops.mirrorPadGrad(input, paddings, mode, name)
     }
-    
+  
     fun oneHot(indices: Output,
                depth: Output,
                on_value: Output? = null,
                off_value: Output? = null,
                axis: Long = -1L,
                dataType: DataType<*>? = null,
+               name: String = "OneHot"): Output =
+        oneHot({ indices }, { depth }, { on_value }, { off_value }, axis, dataType, name)
+  
+    fun oneHot(indices: OutputMaker,
+               depth: OutputMaker,
+               on_value: NullableOutputMaker = { null },
+               off_value: NullableOutputMaker = { null },
+               axis: Long = -1L,
+               dataType: DataType<*>? = null,
                name: String = "OneHot"): Output {
-      val inferredDataType = dataType ?: when {
-        on_value != null && off_value != null ->
-          DataType.mostPrecise(on_value.dataType, off_value.dataType)
-        on_value != null -> on_value.dataType
-        off_value != null -> off_value.dataType
-        else -> FLOAT
-      }
       return tf.nameScope(name) {
+        val indices = indices("indices")
+        val depth = depth("depth")
+        val on_value = on_value("on_value")
+        val off_value = off_value("off_value")
+        val inferredDataType = dataType ?: when {
+          on_value != null && off_value != null ->
+            DataType.mostPrecise(on_value.dataType, off_value.dataType)
+          on_value != null -> on_value.dataType
+          off_value != null -> off_value.dataType
+          else -> FLOAT
+        }
         gen_array_ops.oneHot(
             indices,
             depth,
-            on_value?.cast(inferredDataType) ?: tf.const(inferredDataType, 1),
-            off_value?.cast(inferredDataType) ?: tf.const(inferredDataType, 0),
+            on_value?.cast(inferredDataType) ?: tf.const(inferredDataType, 1, "on_value"),
+            off_value?.cast(inferredDataType) ?: tf.const(inferredDataType, 0, "off_value"),
             axis,
             tf.currentNameScope
         )
@@ -684,8 +699,8 @@ object array_ops {
           }
           gen_array_ops.fill(shape, tf.const(dtype, zero), tf.currentNameScope)
         }
-    
-    fun zeros(shape: Shape, dtype: DataType<*> = FLOAT, name: String = "Ones"): Output =
+  
+    fun zeros(shape: Shape, dtype: DataType<*> = FLOAT, name: String = "Zeros"): Output =
         tf.nameScope(name) {
           val zero = when (dtype) {
             STRING -> ""

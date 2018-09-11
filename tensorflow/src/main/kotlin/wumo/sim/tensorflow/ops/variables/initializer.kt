@@ -8,7 +8,6 @@ import wumo.sim.tensorflow.ops.variables.mode.*
 import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.types.DataType
 import wumo.sim.tensorflow.types.FLOAT
-import wumo.sim.tensorflow.types.types
 import wumo.sim.util.Shape
 import wumo.sim.util.t2
 import kotlin.math.max
@@ -17,66 +16,55 @@ import kotlin.math.sqrt
 interface initializers {
   fun zerosInitializer(dtype: DataType<*> = FLOAT) = ZerosInitializer()
   fun onesInitializer(dtype: DataType<*> = FLOAT) = object : Initializer {
-    override val name: String
-      get() = "ones_initializer"
-    override val init: (Shape, DataType<*>, String) -> Output
-      get() = { shape, dtype, name ->
-        tf.ones(shape, dtype, "ones")
-      }
+    override val dataType: DataType<*>? = dtype
+    override fun init(shape: Shape, dataType: DataType<*>,
+                      partitionInfo: PartitionInformation?): Output =
+        tf.ones(shape, dtype)
   }
   
   fun constantInitializer(value: Any, dtype: DataType<*> = FLOAT) = object : Initializer {
-    override val name: String
-      get() = "const_initializer"
-    override val init: (Shape, DataType<*>, String) -> Output
-      get() = { shape, dtype, name ->
-        tf.const(shape, dtype, value, name = "Const")
-      }
+    override val dataType: DataType<*>? = dtype
+    override fun init(shape: Shape, dataType: DataType<*>,
+                      partitionInfo: PartitionInformation?): Output =
+        tf.const(shape, dtype, value)
   }
   
   fun randomUniformInitializer(minval: Float = -0.05f,
                                maxval: Float = 0.05f,
                                seed: Int? = null,
                                dataType: DataType<*>? = FLOAT) = object : Initializer {
-    override val name: String = "RandomUniformInitializer"
     override val dataType: DataType<*>? = dataType
-    override val init: (Shape, DataType<*>, String) -> Output
-      get() = { shape, dataType, _ ->
+    override fun init(shape: Shape, dataType: DataType<*>,
+                      partitionInfo: PartitionInformation?): Output =
         tf.randomUniform(shape, minval, maxval, dataType, seed)
-      }
   }
   
   fun randomNormalInitializer(mean: Float = 0f,
                               stddev: Float = 0.05f,
                               seed: Int? = null,
                               dataType: DataType<*>? = FLOAT) = object : Initializer {
-    override val name: String = "RandomNormalInitializer"
     override val dataType: DataType<*>? = dataType
-    override val init: (Shape, DataType<*>, String) -> Output
-      get() = { shape, dataType, _ ->
+    override fun init(shape: Shape, dataType: DataType<*>,
+                      partitionInfo: PartitionInformation?): Output =
         tf.randomNormal(shape, mean, stddev, dataType, seed)
-      }
   }
   
   fun truncatedNormalInitializer(mean: Float = 0f,
                                  stddev: Float = 0.05f,
                                  seed: Int? = null,
                                  dataType: DataType<*>? = FLOAT) = object : Initializer {
-    override val name: String = "TruncatedNormalInitializer"
     override val dataType: DataType<*>? = dataType
-    override val init: (Shape, DataType<*>, String) -> Output
-      get() = { shape, dataType, _ ->
+    override fun init(shape: Shape, dataType: DataType<*>,
+                      partitionInfo: PartitionInformation?): Output =
         tf.truncatedNormal(shape, mean, stddev, dataType, seed)
-      }
   }
   
   fun orthogonalInitializer(gain: Float = 0f,
                             seed: Int? = null,
                             dataType: DataType<*>? = FLOAT) = object : Initializer {
-    override val name: String = "OrthogonalInitializer"
     override val dataType: DataType<*>? = dataType
-    override val init: (Shape, DataType<*>, String) -> Output
-      get() = { shape, dataType, _ ->
+    override fun init(shape: Shape, dataType: DataType<*>,
+                      partitionInfo: PartitionInformation?): Output {
         require(shape.rank >= 2) { "The tensor to initialize must be at least two-dimensional" }
         val num_rows = shape.slice(0, -1).reduce { num_rows, dim -> num_rows * dim }
         val num_cols = shape[-1]
@@ -89,8 +77,8 @@ interface initializers {
         q *= tf.sign(d)
         if (num_rows < num_cols)
           q = tf.matrixTranspose(q)
-        gain * tf.reshape(q, shape.toOutput())
-      }
+      return gain * tf.reshape(q, shape.toOutput())
+    }
   }
   
   private fun computeFans(shape: Shape): t2<Int, Int> =
@@ -109,32 +97,30 @@ interface initializers {
   
   fun glorotNormalInitializer(seed: Int? = null,
                               dataType: DataType<*>? = FLOAT) = object : Initializer {
-    override val name: String = "GlorotNormalInitializer"
     override val dataType: DataType<*>? = dataType
-    override val init: (Shape, DataType<*>, String) -> Output
-      get() = { shape, dataType, _ ->
+    override fun init(shape: Shape, dataType: DataType<*>,
+                      partitionInfo: PartitionInformation?): Output {
         var scale = 1f
         val (fanIn, fanOut) = computeFans(shape)
         scale /= max(1f, (fanIn + fanOut) / 2f)
         //truncated_normal
         val stddev = sqrt(scale.toDouble()) / .87962566103423978
-        tf.truncatedNormal(shape, 0f, stddev.toFloat(), dataType, seed)
-      }
+      return tf.truncatedNormal(shape, 0f, stddev.toFloat(), dataType, seed)
+    }
   }
   
   fun glorotUniformInitializer(seed: Int? = null,
                                dataType: DataType<*>? = FLOAT) = object : Initializer {
-    override val name: String = "GlorotUniformInitializer"
     override val dataType: DataType<*>? = dataType
-    override val init: (Shape, DataType<*>, String) -> Output
-      get() = { shape, dataType, _ ->
+    override fun init(shape: Shape, dataType: DataType<*>,
+                      partitionInfo: PartitionInformation?): Output {
         var scale = 1f
         val (fanIn, fanOut) = computeFans(shape)
         scale /= max(1f, (fanIn + fanOut) / 2f)
         //uniform
         val limit = sqrt(3f * scale)
-        tf.randomUniform(shape, -limit, limit, dataType, seed)
-      }
+      return tf.randomUniform(shape, -limit, limit, dataType, seed)
+    }
   }
   
   /**
@@ -198,66 +184,56 @@ interface initializers {
    */
   fun variance_scaling_initializer(factor: Float = 2.0f,
                                    mode: mode = FAN_IN,
-                                   uniform: Boolean = false) =
-      object : Initializer {
-        override val dataType: DataType<*>?
-          get() = types.FLOAT
-        override val name: String
-          get() = "variance_scaling_initializer"
-        override val init: (Shape, DataType<*>, String) -> Output
-          get() = { shape, dtype, name ->
-            var fan_in = (if (shape.rank > 1) shape[-2] else shape[-1]).toFloat()
-            var fan_out = shape[-1].toFloat()
-            for (dim in 0 until shape.rank - 2) {
-              fan_in *= shape[dim]
-              fan_out *= shape[dim]
-            }
-            val n = when (mode) {
-              FAN_IN -> fan_in //Count only number of input connections.
-              FAN_OUT -> fan_out //Count only number of output connections.
-              FAN_AVG -> (fan_in + fan_out) / 2 //Average number of inputs and output connections.
-            }
-            if (uniform) {
-              val limit = sqrt(3.0 * factor / n).toFloat()
-              tf.randomUniform(shape, -limit, limit)
-            } else {
-              val trunc_stddev = sqrt(1.3 * factor / n).toFloat()
-              tf.truncatedNormal(shape, 0f, trunc_stddev, dtype = dtype)
-            }
-          }
+                                   uniform: Boolean = false) = object : Initializer {
+    override val dataType: DataType<*>? = FLOAT
+    override fun init(shape: Shape, dataType: DataType<*>,
+                      partitionInfo: PartitionInformation?): Output {
+      var fan_in = (if (shape.rank > 1) shape[-2] else shape[-1]).toFloat()
+      var fan_out = shape[-1].toFloat()
+      for (dim in 0 until shape.rank - 2) {
+        fan_in *= shape[dim]
+        fan_out *= shape[dim]
       }
+      val n = when (mode) {
+        FAN_IN -> fan_in //Count only number of input connections.
+        FAN_OUT -> fan_out //Count only number of output connections.
+        FAN_AVG -> (fan_in + fan_out) / 2 //Average number of inputs and output connections.
+      }
+      return if (uniform) {
+        val limit = sqrt(3.0 * factor / n).toFloat()
+        tf.randomUniform(shape, -limit, limit)
+      } else {
+        val trunc_stddev = sqrt(1.3 * factor / n).toFloat()
+        tf.truncatedNormal(shape, 0f, trunc_stddev, dtype = dataType)
+      }
+    }
+  }
 }
 
 interface Initializer {
-  val dataType: DataType<*>?
-    get() = null
-  val shape: Shape?
-    get() = null
-  val name: String
-  val init: (Shape, DataType<*>, String) -> Output
-  operator fun invoke(shape: Shape, dtype: DataType<*>? = null) =
-      tf.nameScope(name) { init(shape, dtype ?: this.dataType!!, tf.currentNameScope) }
+  val dataType: DataType<*>? get() = null
+  val shape: Shape? get() = null
+  
+  fun init(shape: Shape, dataType: DataType<*>,
+           partitionInfo: PartitionInformation? = null): Output
+  
+  operator fun invoke(shape: Shape, dtype: DataType<*>? = null,
+                      partitionInfo: PartitionInformation? = null) =
+      init(shape, dtype ?: this.dataType!!)
 }
 
 class ZerosInitializer : Initializer {
-  override val name: String
-    get() = "zeroes_initializer"
-  override val init: (Shape, DataType<*>, String) -> Output
-    get() = { shape, dtype, name ->
-      tf.zeros(shape, dtype, name)
-    }
+  override fun init(shape: Shape, dataType: DataType<*>,
+                    partitionInfo: PartitionInformation?): Output =
+      tf.zeros(shape, dataType)
 }
 
 class DynamicInitializer(val value: Output) : Initializer {
   override val dataType = value.dataType
   override val shape = value.shape
-  override val name: String
-    get() = "constantInitializer"
-  override val init: (Shape, DataType<*>, String) -> Output
-    get() = { shape, dtype, name ->
-      value
-    }
   
+  override fun init(shape: Shape, dataType: DataType<*>,
+                    partitionInfo: PartitionInformation?): Output = value
 }
 
 enum class mode {

@@ -23,6 +23,7 @@ import java.util.*
 import java.util.Collections.emptySet as emptyMutableSet
 
 typealias OutputMaker = (String) -> Output
+typealias NullableOutputMaker = (String) -> Output?
 
 fun buildOp(op: String, name: String, setAttr: OperationBuilder.() -> Unit = {}) = run {
   tf.nameScope(name) {

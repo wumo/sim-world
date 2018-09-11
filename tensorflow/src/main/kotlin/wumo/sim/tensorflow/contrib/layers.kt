@@ -2,7 +2,7 @@ package wumo.sim.tensorflow.contrib
 
 import wumo.sim.tensorflow.core.Graph
 import wumo.sim.tensorflow.core.TensorFunction
-import wumo.sim.tensorflow.layers.Dense
+import wumo.sim.tensorflow.layers.core.Dense
 import wumo.sim.tensorflow.ops.DeviceFunction
 import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.ops.variables.*
@@ -11,7 +11,7 @@ import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.types.DataType
 import wumo.sim.tensorflow.types.INT32
 import wumo.sim.util.Shape
-
+import wumo.sim.tensorflow.layers.core.layers as core_layers
 object layers {
   
   @Suppress("NAME_SHADOWING")
@@ -26,9 +26,10 @@ object layers {
                   tf.const(off_value, name = "off_value"), name = tf.currentNameScope)
       }
   
-  fun flatten(inputs: Output): Output {
-    TODO()
-  }
+  fun flatten(inputs: Output, scope: String = "Flatten"): Output =
+      tf.nameScope(scope) {
+        core_layers.flatten(inputs)
+      }
   
   private fun buildVariableGetter(rename: Map<String, String>): VariableGetter =
       object : VariableGetter {
@@ -77,8 +78,7 @@ object layers {
                         trainable = trainable,
                         name = VariableScope.current.name,
                         dataType = inputs.dataType.baseDataType,
-                        _scope = VariableScope.current,
-                        _reuse = reuse)
+                        _scope = VariableScope.current)
       var outputs = layer(inputs)
       //Apply normalizer function / layer.
       if (normalizer_fn != null)
@@ -100,7 +100,7 @@ object layers {
 //import wumo.sim.tensorflow.TF
 //import wumo.sim.tensorflow.ops.Output
 //import wumo.sim.tensorflow.base_dtype
-//import wumo.sim.tensorflow.layers.Dense
+//import wumo.sim.tensorflow.layers.core.Dense
 //import wumo.sim.tensorflow.layers.TensorFunction
 //import wumo.sim.tensorflow.ops.variables.xavier_initializer
 //import wumo.sim.tensorflow.ops.*

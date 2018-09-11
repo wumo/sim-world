@@ -4,6 +4,7 @@ package wumo.sim.util
 
 import org.apache.commons.lang3.ClassUtils
 
+typealias Fun0<R> = () -> R
 typealias Fun1<P1, R> = (P1) -> R
 typealias Fun2<P1, P2, R> = t2<P1, P2>.() -> R
 typealias Fun3<P1, P2, P3, R> = t3<P1, P2, P3>.() -> R
@@ -100,19 +101,19 @@ inline fun put(branches: MutableMap<Class<*>, Any>, c: Class<*>, block: Any) {
 }
 
 class SwitchOnClass<R> {
-  val branches = HashMap<Class<*>, Fun1<Any, R>>()
-  var elseBranch: (Any) -> R = { throw IllegalArgumentException("unsupported ${it::class.java}") }
-  inline fun <reified P1> case(noinline block: Fun1<P1, R>) {
+  val branches = HashMap<Class<*>, Fun0<R>>()
+  var elseBranch: (Class<*>) -> R = { throw IllegalArgumentException("unsupported ${it::class.java}") }
+  inline fun <reified P1> case(noinline block: Fun0<R>) {
     put(branches as MutableMap<Class<*>, Any>, P1::class.java, block)
   }
   
-  inline fun caseElse(noinline block: Fun1<Any, R>) {
+  inline fun caseElse(noinline block: Fun1<Class<*>, R>) {
     elseBranch = block
   }
   
   operator fun invoke(cls: Class<*>): R {
     val block = branches[cls] ?: return elseBranch(cls)
-    return block(cls)
+    return block()
   }
   
 }

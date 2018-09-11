@@ -319,11 +319,12 @@ object math_ops {
     fun greater(x: Output, y: Output, name: String = "Greater"): Output {
       return gen_math_ops.greater(x, y, name)
     }
-    
-    fun greaterEqual(a: Output, b: Any, name: String = "GreaterEqual") =
+  
+    fun greaterEqual(x: (String) -> Output, y: (String) -> Output, name: String = "GreaterEqual"): Output =
         tf.nameScope(name) {
-          val y = tf.const(a.dataType.baseDataType, b, name = "y")
-          gen_math_ops.greaterEqual(a, y, tf.currentNameScope)
+          val x = x("x")
+          val y = y("y")
+          gen_math_ops.greaterEqual(x, y, tf.currentNameScope)
         }
     
     fun greaterEqual(x: Output, y: Output, name: String = "GreaterEqual"): Output {
