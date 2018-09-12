@@ -8,6 +8,7 @@ import wumo.sim.tensorflow.ops.training.AdamOptimizer
 import wumo.sim.tensorflow.ops.variables.Variable
 import wumo.sim.tensorflow.tf
 import wumo.sim.util.ndarray.*
+import wumo.sim.util.ndarray.implementation.LongArrayBuf
 
 fun <O : Any, A : Any> learn(
     env: Env<O, A>,
@@ -49,7 +50,7 @@ fun <O : Any, A : Any> learn(
       numActions = env.action_space.n,
       optimizer = AdamOptimizer(learningRate = { learning_rate }),
       gamma = gamma,
-      gradNormClipping = tf.const(10),
+      gradNormClipping = 10,
       paramNoise = param_noise)
   
   val act_vars = debug["act_vars"] as Set<Variable>
@@ -129,8 +130,12 @@ fun <O : Any, A : Any> learn(
           replay_buffer.update_priorities(batch_idxes, new_priorities)
         } else {
           val (obses_t, actions, rewards, obses_tp1, dones) = replay_buffer.sample(batch_size)
+          actions as NDArray<Long>
+          val buf = actions.raw as LongArrayBuf
+          val _buf = IntArray(buf.raw.size) { buf.raw[it].toInt() }
+          val _actions = NDArray(actions.shape, _buf)
           val weights = ones_like(rewards)
-          train(obses_t, actions, rewards, obses_tp1, dones, weights)
+          train(obses_t, _actions, rewards, obses_tp1, dones, weights)
         }
       }
       

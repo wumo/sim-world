@@ -84,10 +84,9 @@ fun function(inputs: Array<out Any> = emptyArray(),
 }
 
 fun huber_loss(x: Output, delta: Float = 1f): Output {
-  val delta = tf.const(delta)
   return tf.where(
-      tf.less(tf.abs(x), delta),
-      tf.square(x) * tf.const(0.5f),
-      delta * (tf.abs(x) - tf.const(0.5f) * delta)
+      tf.less({ tf.abs(x) }, { tf.const(delta, it) }),
+      tf.square(x) * 0.5f,
+      delta * (tf.abs(x) - 0.5f * delta)
   )
 }

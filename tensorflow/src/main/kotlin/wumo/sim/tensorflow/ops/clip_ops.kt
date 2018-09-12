@@ -37,17 +37,16 @@ object clip_ops {
      
      * @return A clipped `Output`.
      */
-    fun clipByNorm(t: Output, clip_norm: Output, axes: Output? = null, name: String = "clipByNorm"): Output =
+    fun clipByNorm(t: Output, clip_norm: Any, axes: Output? = null, name: String = "clipByNorm"): Output =
         tf.nameScope(name) {
-          val clip_norm = tf.cast(clip_norm, t.dataType)
+          val clip_norm = tf.const(t.dataType, clip_norm)
           // Calculate L2-norm, clip elements by ratio of clip_norm to L2-norm
           
           val l2norm = tf.sqrt(tf.sum(t * t, axes, keepDims = true))
           val intermediate = t * clip_norm
           // Assert that the shape is compatible with the initial shape,
           // to prevent unintentional broadcasting.
-//    t.shape x intermediate.shape
-          assert(t.shape.isCompatibleWith(intermediate.shape))
+          require(t.shape.isCompatibleWith(intermediate.shape))
           tf.identity(
               intermediate / tf.maximum(l2norm, clip_norm), name = tf.currentNameScope)
         }

@@ -799,7 +799,9 @@ object ops {
     
     fun session(block: Session.() -> Unit) {
       val session = Session(currentGraph.c_graph)
-      block(session)
+      ops.currentSession.with(session) {
+        block(session)
+      }
     }
     
     val version get() = TF_Version().string

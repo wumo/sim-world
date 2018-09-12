@@ -69,23 +69,12 @@ fun randomChoice(p: NDArray<out Number>): Int {
   }
   NONE()
 }
-//
-//inline fun <T> NDArray<T>.maxOrMin(selector: (T, T) -> Boolean): T
-//    where T : Number, T : Comparable<T> {
-//  val iter = iterator()
-//  var _max = iter.next()
-//  while (iter.hasNext()) {
-//    val next = iter.next()
-//    if (selector(next, _max))
-//      _max = next
-//  }
-//  return _max
-//}
-//
-//fun <T> NDArray<T>.max(): T
-//    where T : Number, T : Comparable<T> =
-//    maxOrMin { a, b -> a > b }
-//
-//fun <T> NDArray<T>.min(): T
-//    where T : Number, T : Comparable<T> =
-//    maxOrMin { a, b -> a < b }
+
+fun arrayEqual(a: NDArray<*>, b: NDArray<*>): Boolean {
+  if (a.shape != b.shape) return false
+  val na = a.numElements
+  for (i in 0 until na)
+    if (a.rawGet(i) != b.rawGet(i))
+      return false
+  return true
+}

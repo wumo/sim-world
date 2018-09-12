@@ -2,14 +2,18 @@ import wumo.sim.tensorflow.ops.Op
 import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.ops.OutputLike
 import wumo.sim.tensorflow.ops.basic.*
+import wumo.sim.tensorflow.ops.gen.gen_array_ops
 import wumo.sim.tensorflow.ops.gradients.gradient_ops.Registry.register
 import wumo.sim.tensorflow.ops.gradients.gradient_ops.Registry.registerNonDifferentiable
+import wumo.sim.tensorflow.tensor.constantValue
 import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.types.BOOL
 import wumo.sim.tensorflow.types.DataType
 import wumo.sim.tensorflow.types.FLOAT
 import wumo.sim.tensorflow.types.INT32
 import wumo.sim.util.i
+import wumo.sim.util.ndarray.NDArray.Companion.toNDArray
+import wumo.sim.util.ndarray.arrayEqual
 import kotlin.math.PI
 import kotlin.math.max
 import kotlin.math.sqrt
@@ -32,40 +36,28 @@ fun register_math_grad() {
   fun sumGrad(op: Op, grad: List<OutputLike?>): List<OutputLike?> {
     /**Gradient for Sum.*/
     var grad = grad[0]!!.toOutput()
-    val input0Shape = op.inputs[0].shape
-    var axes = op.inputs[1]
+    val input = op.inputs[0]
+    val input0Shape = input.shape
     val rank = input0Shape.rank
     //TODO Fast path for when reducing to a scalar and rank is known, which adds only reshape and tile ops (and possibly a
     // shape op too).
-    if (rank == 0) {
+    if (rank == 0)
       return listOf(grad, null)
+    val axes = constantValue(op.inputs[1])
+    if (axes != null && arrayEqual(axes, toNDArray((0 until rank).toList()))) {
+      // In this case the reduction was over all dimensions.
+      val newShape = IntArray(rank) { 1 }
+      
+      grad = tf.reshape(grad, tf.const(newShape))
+      val inputshape = if (input0Shape.isFullyDefined)
+      // If the shape is not fully defined but the rank is, we use the shape op.
+        input0Shape.toOutput()
+      else
+        tf.shape(input)
+      return listOf(tf.tile(grad, inputshape), null)
     }
-//    if (np.arrayEqual(axes, np.arange(rank))) {
-//      if (context.executingEagerly()) {
-//        var ctx = context.context()
-//        var newShape = ctx.onesRankCache().get(rank)
-//        if (newShape == null) {
-//          newShape = tf.const(listOf(1) * rank, dtype = dtypes.int32)
-//          ctx.onesRankCache().put(rank, newShape)
-//
-//        }
-//
-//      } else {
-//        var newShape = listOf(1) * rank
-//
-//      }
-//      grad = tf.reshape(grad, newShape)
-//      if (null !in input0Shape) {
-//        var inputShape = tf.const(input0Shape, dtype = dtypes.int32)
-//
-//      } else {
-//        var inputShape = tf.shape(op.inputs[0])
-//
-//      }
-//      return listOf(tf.tile(grad, inputShape), null)
-//    }
     
-    val inputShape = tf.shape(op.inputs[0])
+    val inputShape = tf.shape(input)
     lateinit var outputShapeKeptDims: Output
     lateinit var tileScaling: Output
     tf.colocateWith(inputShape) {
@@ -100,10 +92,13 @@ fun register_math_grad() {
   register("Mean") { op, grad ->
     /**Gradient for Mean.*/
     val sumGrad = sumGrad(op, grad)[0]!!.toOutput()
-    val inputSize = op.inputs[0].size
-    val outputSize = op.outputs[0].size
+    val inputShape = op.inputs[0].shape
+    val outputShape = op.outputs[0].shape
     lateinit var factor: Output
-    factor = if (inputSize != -1 && outputSize != -1) {
+    factor = if (inputShape.isFullyDefined &&
+        outputShape.isFullyDefined) {
+      val inputSize=inputShape.numElements()
+      val outputSize=outputShape.numElements()
       tf.const(sumGrad.dataType, inputSize / max(outputSize, 1))
     } else {
       val inputShape = tf.shape(op.inputs[0])
@@ -727,7 +722,7 @@ fun register_math_grad() {
     val yShape = y.shape
     val gradShape = grad.shape
     return xShape == yShape && xShape == gradShape &&
-        xShape.isFullyDefined && yShape.isFullyDefined && gradShape.isFullyDefined
+        xShape.isFullyDefined
   }
   register("Add") { op, grad ->
     /**Gradient for Add.*/
@@ -753,7 +748,8 @@ fun register_math_grad() {
     val sx = tf.shape(x)
     val sy = tf.shape(y)
     val (rx, ry) = tf.broadcastGradientArgs(sx, sy)
-    return@register listOf(tf.reshape(tf.sum(grad, rx), sx), tf.reshape(-tf.sum(grad, ry), sy))
+    return@register listOf(tf.reshape(tf.sum(grad, rx), sx),
+                           tf.reshape(-tf.sum(grad, ry), sy))
   }
   register("Mul") { op, grad ->
     /**The gradient of scalar multiplication.*/
@@ -765,10 +761,11 @@ fun register_math_grad() {
     }
     val sx = tf.shape(x)
     val sy = tf.shape(y)
-    val (rx, ry) = tf.broadcastGradientArgs(sx, sy)
+    val (rx, ry) = gen_array_ops.broadcastGradientArgs(sx, sy)
     x = tf.conj(x)
     y = tf.conj(y)
-    return@register listOf(tf.reshape(tf.sum(tf.mul(grad, y), rx), sx), tf.reshape(tf.sum(tf.mul(x, grad), ry), sy))
+    return@register listOf(tf.reshape(tf.sum(tf.mul(grad, y), rx), sx),
+                           tf.reshape(tf.sum(tf.mul(x, grad), ry), sy))
   }
   register("Div") { op, grad ->
     /**The gradient for the Div operator.*/

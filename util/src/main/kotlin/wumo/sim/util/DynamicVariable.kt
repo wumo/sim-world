@@ -31,7 +31,7 @@ class DynamicVariable<T>(init: T) {
   
   var value: T
     /** Retrieve the current value */
-    get() = tl.get()!!
+    get() = tl.get()
     /** Change the currently bound value, discarding the old value.
      * Usually withValue() gives better semantics.
      */

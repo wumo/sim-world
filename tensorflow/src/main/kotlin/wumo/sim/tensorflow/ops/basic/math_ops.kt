@@ -1,11 +1,11 @@
 package wumo.sim.tensorflow.ops.basic
 
+import wumo.sim.tensorflow.NullableOutputMaker
 import wumo.sim.tensorflow.OutputMaker
 import wumo.sim.tensorflow.core.InvalidArgumentException
 import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.ops.OutputConvertible
 import wumo.sim.tensorflow.ops.gen.gen_array_ops
-import wumo.sim.tensorflow.ops.gen.gen_array_ops.transpose
 import wumo.sim.tensorflow.ops.gen.gen_math_ops
 import wumo.sim.tensorflow.ops.variables.Variable
 import wumo.sim.tensorflow.tf
@@ -27,65 +27,65 @@ operator fun <T : OutputConvertible, R : OutputConvertible> T.not() =
     tf.logicalNot(this.toOutput())
 
 operator fun <T : OutputConvertible> T.plus(b: Any) =
-    tf.nameScope("add") {
+    tf.nameScope("Add") {
       val a = this.toOutput()
       val y = tf.const(a.dataType.baseDataType, b, name = "y")
       tf.add(a, y, name = tf.currentNameScope)
     }
 
 operator fun <T : OutputConvertible> Any.plus(b: T) =
-    tf.nameScope("add") {
-      val a = b.toOutput()
-      val y = tf.const(a.dataType.baseDataType, this, name = "y")
-      tf.add(a, y, name = tf.currentNameScope)
+    tf.nameScope("Add") {
+      val y = b.toOutput()
+      val x = tf.const(y.dataType.baseDataType, this, name = "x")
+      tf.add(x, y, name = tf.currentNameScope)
     }
 
 operator fun <T : OutputConvertible, R : OutputConvertible> T.plus(b: R) =
     tf.add(this.toOutput(), b.toOutput())
 
 operator fun <T : OutputConvertible> T.div(b: Any) =
-    tf.nameScope("div") {
+    tf.nameScope("Div") {
       val a = this.toOutput()
       val y = tf.const(a.dataType.baseDataType, b, name = "y")
       tf.div(a, y, name = tf.currentNameScope)
     }
 
 operator fun <T : OutputConvertible> Any.div(b: T) =
-    tf.nameScope("div") {
-      val a = b.toOutput()
-      val y = tf.const(a.dataType.baseDataType, this, name = "y")
-      tf.div(a, y, name = tf.currentNameScope)
+    tf.nameScope("Div") {
+      val y = b.toOutput()
+      val x = tf.const(y.dataType.baseDataType, this, name = "x")
+      tf.div(x, y, name = tf.currentNameScope)
     }
 
 operator fun <T : OutputConvertible, R : OutputConvertible> T.div(b: R) =
     tf.div(this.toOutput(), b.toOutput())
 
 operator fun <T : OutputConvertible> T.minus(b: Any) =
-    tf.nameScope("sub") {
+    tf.nameScope("Sub") {
       val a = this.toOutput()
       val y = tf.const(a.dataType.baseDataType, b, name = "y")
       tf.sub(a, y, name = tf.currentNameScope)
     }
 
 operator fun <T : OutputConvertible> Any.minus(b: T) =
-    tf.nameScope("sub") {
-      val a = b.toOutput()
-      val y = tf.const(a.dataType.baseDataType, this, name = "y")
-      tf.sub(a, y, name = tf.currentNameScope)
+    tf.nameScope("Sub") {
+      val y = b.toOutput()
+      val x = tf.const(y.dataType.baseDataType, this, name = "x")
+      tf.sub(x, y, name = tf.currentNameScope)
     }
 
 operator fun <T : OutputConvertible, R : OutputConvertible> T.minus(b: R) =
     tf.sub(this.toOutput(), b.toOutput())
 
 operator fun <T : OutputConvertible> Any.times(b: T) =
-    tf.nameScope("mul") {
-      val a = b.toOutput()
-      val y = tf.const(a.dataType.baseDataType, this, name = "y")
-      tf.mul(a, y, name = tf.currentNameScope)
+    tf.nameScope("Mul") {
+      val y = b.toOutput()
+      val x = tf.const(y.dataType.baseDataType, this, name = "x")
+      tf.mul(x, y, name = tf.currentNameScope)
     }
 
 operator fun <T : OutputConvertible> T.times(b: Any) =
-    tf.nameScope("mul") {
+    tf.nameScope("Mul") {
       val a = this.toOutput()
       val y = tf.const(a.dataType.baseDataType, b, name = "y")
       tf.mul(a, y, name = tf.currentNameScope)
@@ -319,7 +319,7 @@ object math_ops {
     fun greater(x: Output, y: Output, name: String = "Greater"): Output {
       return gen_math_ops.greater(x, y, name)
     }
-  
+    
     fun greaterEqual(x: (String) -> Output, y: (String) -> Output, name: String = "GreaterEqual"): Output =
         tf.nameScope(name) {
           val x = x("x")
@@ -374,6 +374,11 @@ object math_ops {
     fun less(x: Output, y: Output, name: String = "Less"): Output {
       return gen_math_ops.less(x, y, name)
     }
+    
+    fun less(x: OutputMaker, y: OutputMaker, name: String = "Less"): Output =
+        tf.nameScope(name) {
+          gen_math_ops.less(x("x"), y("y"), name)
+        }
     
     fun lessEqual(x: Output, y: Output, name: String = "LessEqual"): Output {
       return gen_math_ops.lessEqual(x, y, name)
@@ -437,10 +442,10 @@ object math_ops {
             gen_math_ops.matMul(x, y, transposeX, transposeY, tf.currentNameScope)
           }
         }
-  
+    
     fun matrixTranspose(a: Output, conjugate: Boolean = false, name: String = "matrix_transpose"): Output =
         tf.nameScope(name) {
-        
+          
           val a_shape = a.shape
           val ndims = a_shape.rank
           val perm = if (ndims != -1) {
@@ -453,7 +458,7 @@ object math_ops {
                              tf.stack(listOf(a_rank - 1, a_rank - 2))),
                       zero)
           }
-        
+          
           tf.transpose(a, perm, conjugate)
         }
     
@@ -517,7 +522,7 @@ object math_ops {
     fun quantizedMul(x: Output, y: Output, minX: Output, maxX: Output, minY: Output, maxY: Output, toutput: DataType<*> = QINT32, name: String = "QuantizedMul"): List<Output> {
       return gen_math_ops.quantizedMul(x, y, minX, maxX, minY, maxY, toutput, name)
     }
-  
+    
     fun range(start: OutputMaker, limit: Output, delta: OutputMaker = { tf.const(1, it) }, name: String = "Range"): Output {
       return tf.nameScope(name) {
         val start_t = start("start")
@@ -696,8 +701,18 @@ object math_ops {
       return gen_math_ops.sub(x, y, name)
     }
     
-    fun sum(input: Output, axis: Output? = null, keepDims: Boolean = false, name: String = "sum") =
+    fun sum(input: Output, axis: Output? = null, keepDims: Boolean = false, name: String = "Sum") =
         gen_math_ops.sum(input, reductionDims(input, axis), keepDims, name)
+    
+    fun sum(input: OutputMaker, axis: NullableOutputMaker,
+            keepDims: Boolean = false, name: String = "Sum") =
+        tf.nameScope(name) {
+          val input = input("input")
+          val axis = axis("reduction_indices")
+          gen_math_ops.sum(input,
+                           reductionDims(input, axis),
+                           keepDims, tf.currentNameScope)
+        }
     
     fun tan(x: Output, name: String = "Tan"): Output {
       return gen_math_ops.tan(x, name)

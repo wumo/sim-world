@@ -2,6 +2,7 @@ import wumo.sim.tensorflow.ops.Op
 import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.ops.OutputLike
 import wumo.sim.tensorflow.ops.basic.*
+import wumo.sim.tensorflow.ops.gen.gen_nn_ops
 import wumo.sim.tensorflow.ops.gradients.gradient_ops.Registry.register
 import wumo.sim.tensorflow.tensor.constantValue
 import wumo.sim.tensorflow.tf
@@ -224,7 +225,8 @@ fun register_nn_grad() {
     } catch (_: Exception) {
       "NHWC"
     }
-    listOf(receivedGrad, tf.biasAddGrad(outBackprop = receivedGrad, dataFormat = dataFormat))  //return@register
+    listOf(receivedGrad, gen_nn_ops.biasAddGrad(
+        outBackprop = receivedGrad, dataFormat = dataFormat))  //return@register
   }
   register("BiasAddGrad") { op, grad ->
     val receivedGrad = grad[0]!!.toOutput()
@@ -289,7 +291,7 @@ fun register_nn_grad() {
   }
   register("Relu") { op, grad ->
     val grad = grad[0]!!.toOutput()
-    listOf(tf.reluGrad(grad, op.outputs[0]))  //return@register
+    listOf(gen_nn_ops.reluGrad(grad, op.outputs[0]))  //return@register
   }
   register("EluGrad") { op, grad ->
     val grad = grad[0]!!.toOutput()

@@ -2,6 +2,8 @@
 
 package wumo.sim.util
 
+import java.util.*
+
 val scalarDimension = Shape(IntArray(0))
 //infix fun Int.x(a: Int) = Shape(this, a)
 //infix fun Shape.x(a: Int) = run {
@@ -156,4 +158,20 @@ class Shape(private val dims: IntArray? = null) : Iterable<Int> {
       }
     }
   }
+  
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (javaClass != other?.javaClass) return false
+    
+    other as Shape
+    
+    if (!Arrays.equals(dims, other.dims)) return false
+    
+    return true
+  }
+  
+  override fun hashCode(): Int {
+    return dims?.let { Arrays.hashCode(it) } ?: 0
+  }
+  
 }

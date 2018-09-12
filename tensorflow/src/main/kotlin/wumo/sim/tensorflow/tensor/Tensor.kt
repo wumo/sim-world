@@ -21,6 +21,7 @@ import java.nio.*
 
 abstract class Tensor<T : Any>
 protected constructor(open val c_tensor: TF_Tensor) : Buf<T> {
+  
   companion object {
     private val convert_switch = SwitchType2<Shape, Tensor<*>>().apply {
       case<FloatArrayBuf> { Tensor(_2, _1.raw) }
@@ -36,6 +37,9 @@ protected constructor(open val c_tensor: TF_Tensor) : Buf<T> {
     fun <T : Any> toNDArray(tb: Tensor<T>) = NDArray(Shape(tb.dims), tb, dtypeToClass(tb.dtype.baseDataType.cValue))
     fun <T : Any> toNDArray(c_tensor: TF_Tensor) = toNDArray(invoke<T>(c_tensor))
     fun <T : Any> fromNDArray(ndarray: NDArray<T>) = (if (ndarray.raw is Tensor<*>) ndarray.raw
+    else convert_switch(ndarray.raw, ndarray.shape)) as Tensor<T>
+    
+    fun <T : Any> fromNDArray(ndarray: NDArray<T>, dtype: DataType<*>) = (if (ndarray.raw is Tensor<*>) ndarray.raw
     else convert_switch(ndarray.raw, ndarray.shape)) as Tensor<T>
     
     private val create_switch = SwitchValue<Int, TF_Tensor, Tensor<*>>().apply {
@@ -69,7 +73,7 @@ protected constructor(open val c_tensor: TF_Tensor) : Buf<T> {
     operator fun invoke(value: IntArray) = invoke(Shape(value.size), value)
     operator fun invoke(value: LongArray) = invoke(Shape(value.size), value)
     operator fun invoke(value: Array<String>) = invoke(Shape(value.size), value)
-  
+    
     operator fun invoke(shape: Shape, value: FloatArray) = FloatTensor(create(shape, FloatPointer(*value), FLOAT))
     operator fun invoke(shape: Shape, value: DoubleArray) = DoubleTensor(create(shape, DoublePointer(*value), DOUBLE))
     operator fun invoke(shape: Shape, value: BooleanArray) = BooleanTensor(create(shape, BytePointer(*ByteArray(value.size) { if (value[it]) 1 else 0 }), BOOL))
@@ -82,10 +86,10 @@ protected constructor(open val c_tensor: TF_Tensor) : Buf<T> {
       val t = newTensor(DT_STRING, shape.asLongArray(), data)
       return StringTensor(t, array)
     }
-  
+    
     internal fun create(shape: Shape, array: Pointer, dtype: DataType<*>) =
         create(shape.asLongArray()!!, array, dtype)
-  
+    
     internal fun create(dims: LongArray, array: Pointer, dtype: DataType<*>): TF_Tensor {
       val byteSize = dtype.byteSize * array.limit()
       return newTensor(dtype.cValue, dims, BytePointer(array).capacity(byteSize))

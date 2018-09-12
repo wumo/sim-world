@@ -27,7 +27,7 @@ fun build_train(
     qFunc: Q_func,
     numActions: Int,
     optimizer: Optimizer,
-    gradNormClipping: Output? = null,
+    gradNormClipping: Int? = null,
     gamma: Float = 1f,
     doubleQ: Boolean = true,
     scope: String = "deepq",
@@ -62,22 +62,22 @@ fun build_train(
         "^${tf.currentVariableScope.name}/target_q_func")
     
     //q scores for actions which we know were selected in the given state.
-    val q_t_selected = tf.sum(q_t * tf.oneHot({ act_t_ph }, { tf.const(numActions, it) }),
-                              tf.const(1))
+    val q_t_selected = tf.sum({ q_t * tf.oneHot({ act_t_ph }, { tf.const(numActions, it) }) },
+                              { tf.const(1, it) })
     
     //compute estimate of best possible value starting from state at t + 1
     val q_tp1_best = if (doubleQ) {
       val q_tp1_using_online_net = qFunc(obs_tp1_input.get(), numActions,
                                          "q_func", ReuseExistingOnly)
       val q_tp1_best_using_online_net = tf.argmax(q_tp1_using_online_net, 1)
-      tf.sum(q_tp1 * tf.oneHot(q_tp1_best_using_online_net, tf.const(numActions)),
-             tf.const(1))
+      tf.sum({ q_tp1 * tf.oneHot({ q_tp1_best_using_online_net }, { tf.const(numActions, it) }) },
+             { tf.const(1, it) })
     } else
       tf.max(q_tp1, tf.const(1))
-    val q_tp1_best_masked = (tf.const(1f) - done_mask_ph) * q_tp1_best
+    val q_tp1_best_masked = (1f - done_mask_ph) * q_tp1_best
     
     //compute RHS of bellman equation
-    val q_t_selected_target = rew_t_ph + tf.const(gamma) * q_tp1_best_masked
+    val q_t_selected_target = rew_t_ph + gamma * q_tp1_best_masked
     
     //compute the error (potentially clipped)
     val td_error = q_t_selected - tf.stopGradient(q_t_selected_target)
@@ -98,15 +98,12 @@ fun build_train(
       optimizer.minimize(weighted_error, variables = q_func_vars)
     
     //update_target_fn will be called periodically to copy Q network to target Q network
-    val update_target_expr = run {
-      val update_target_expr = mutableListOf<Op>()
-      for ((v, v_target) in q_func_vars.sortedBy { it.name }
-          .zip(target_q_func_vars.sortedBy { it.name }))
-        update_target_expr += v_target.assign(v.toOutput()).op
-      tf.group(update_target_expr)
-    }
+    val _update_target_expr = mutableListOf<Op>()
+    for ((v, v_target) in q_func_vars.sortedBy { it.name }
+        .zip(target_q_func_vars.sortedBy { it.name }))
+      _update_target_expr += v_target.assign(v.toOutput()).op
+    val update_target_expr = tf.group(_update_target_expr)
     
-    tf.printGraph()
     val train = function(
         inputs = a(
             obs_t_input,
@@ -133,7 +130,7 @@ fun buildAct(makeObsPh: (String) -> TfInput,
       val stochastic_ph = tf.placeholder(scalarDimension, BOOL, name = "stochastic")
       val update_eps_ph = tf.placeholder(scalarDimension, FLOAT, name = "update_eps")
       val eps = tf.variable(scalarDimension, initializer = tf.constantInitializer(0), name = "eps")
-  
+      
       val q_values = qFunc(observations_ph.get(), numActions, "q_func", ReuseOrCreateNew)
       val deterministic_actions = tf.argmax(q_values, 1, name = "deterministic_actions")
       
