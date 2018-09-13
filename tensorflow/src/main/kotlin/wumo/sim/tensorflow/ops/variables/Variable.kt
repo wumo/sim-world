@@ -12,7 +12,6 @@ import wumo.sim.tensorflow.ops.ops
 import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.types.DataType
 import wumo.sim.tensorflow.types.FLOAT
-import wumo.sim.tensorflow.types.types
 import wumo.sim.util.Shape
 
 class Variable(
@@ -78,7 +77,7 @@ class Variable(
   interface VariableGetter {
     operator fun invoke(
         name: String,
-        dataType: DataType<*>? = types.FLOAT,
+        dataType: DataType<*>? = FLOAT,
         shape: Shape? = null,
         initializer: Initializer? = null,
         regularizer: Regularizer? = null,

@@ -105,7 +105,7 @@ fun build_train(
     val update_target_expr = tf.group(_update_target_expr)
     
     val train = function(
-        inputs = a(
+        inputs = listOf(
             obs_t_input,
             act_t_ph,
             rew_t_ph,
@@ -113,9 +113,9 @@ fun build_train(
             done_mask_ph,
             importance_weights_ph),
         outputs = td_error,
-        updates = a(optimize_expr))
-    val update_target = function(updates = a(update_target_expr))
-    val q_values = function(a(obs_t_input), q_t)
+        updates = listOf(optimize_expr))
+    val update_target = function(updates = listOf(update_target_expr))
+    val q_values = function(listOf(obs_t_input), q_t)
     t4(act_f, train, update_target, mapOf("q_values" to q_values, "act_vars" to act_vars))
   }
 }
@@ -148,10 +148,10 @@ fun buildAct(makeObsPh: (String) -> TfInput,
       val update_eps_expr = eps.assign(tf.cond(tf.greaterEqual({ update_eps_ph }, { tf.const(0f, it) }),
                                                { update_eps_ph }, { eps.toOutput() }))
 //    val q_func_vars = tf.ctxVs.variable_subscopes["q_func"]!!.all_variables()
-      val _act = function(inputs = a(observations_ph, stochastic_ph, update_eps_ph),
+      val _act = function(inputs = listOf(observations_ph, stochastic_ph, update_eps_ph),
                           outputs = output_actions,
-                          givens = a(update_eps_ph to -1.0f, stochastic_ph to true),
-                          updates = a(update_eps_expr))
+                          givens = listOf(update_eps_ph to -1.0f, stochastic_ph to true),
+                          updates = listOf(update_eps_expr))
       t2(ActFunction(_act), tf.currentGraph.trainableVariables)
     }
 

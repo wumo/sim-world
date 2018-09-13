@@ -1,7 +1,10 @@
 package wumo.sim.tensorflow.types
 
+import org.bytedeco.javacpp.BytePointer
 import wumo.sim.tensorflow.tf
 import wumo.sim.util.NONE
+import wumo.sim.util.ndarray.Buf
+import java.nio.ByteBuffer
 
 fun Int.toDataType(): DataType<*> =
     DataType.fromCValue(this)
@@ -50,7 +53,7 @@ interface DataType<KotlinType> {
   
   /** Returns `true` if this data type represents a boolean data type. */
   val isBoolean: Boolean
-    get() = this == types.BOOL
+    get() = this == BOOL
   
   ///**Returns a reference `DType` based on this `DType`.*/
   val as_ref: DataType<KotlinType>
@@ -76,6 +79,14 @@ interface DataType<KotlinType> {
   
   //endregion Data Type Set Helper Methods
   
+  fun <R> cast(value: R): KotlinType = TODO()
+  
+  fun <R> castBuf(value: Buf<R>): Buf<KotlinType> = TODO()
+  
+  fun put(buffer: BytePointer, idx: Int, element: KotlinType): Unit = TODO()
+  
+  fun get(buffer: BytePointer, idx: Int): KotlinType = TODO()
+  
   override fun equals(that: Any?): Boolean
   
   override fun hashCode(): Int
@@ -97,7 +108,7 @@ interface DataType<KotlinType> {
     val quantizedDataTypes: Set<DataType<*>> = setOf(BFLOAT16, QINT8, QINT16, QINT32, QUINT8, QUINT16)
     
     /** Set of all unsigned data types. */
-    val unsignedDataTypes: Set<DataType<*>> = setOf(UINT8, UINT16, UINT32, UINT64, QUINT8, types.QUINT16)
+    val unsignedDataTypes: Set<DataType<*>> = setOf(UINT8, UINT16, UINT32, UINT64, QUINT8, QUINT16)
     
     /** Set of all numeric data types. */
     val numericDataTypes: Set<DataType<*>> = floatingPointDataTypes + complexDataTypes + integerDataTypes + quantizedDataTypes

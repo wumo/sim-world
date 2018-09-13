@@ -14,30 +14,51 @@ val switchKotlinType = SwitchOnClass<DataType<*>>().apply {
   case<Long> { INT64 }
 }
 
-fun Class<*>.toDataType(): DataType<*> =
-    switchKotlinType(this)
+fun <T : Any> Class<T>.toDataType(): DataType<T> =
+    switchKotlinType(this) as DataType<T>
 
-sealed class SupportedType<out T, D : DataType<*>> {
-  abstract val dataType: D
-  open fun cast(value: Any): T = throw InvalidDataTypeException("The Kotlin type of this data type is not supported.")
+val Int.kotlinType: Class<*>
+  get() {
+    return when (this) {
+      COMPLEX64.cValue, FLOAT.cValue -> Float::class.java
+      DOUBLE.cValue -> Double::class.java
+      BOOL.cValue -> Boolean::class.java
+      QUINT8.cValue, UINT8.cValue, QINT8.cValue, INT8.cValue -> Byte::class.java
+      BFLOAT16.cValue, INT16.cValue, UINT16.cValue -> Short::class.java
+      QINT32.cValue, INT32.cValue -> Int::class.java
+      INT64.cValue, UINT64.cValue -> Long::class.java
+      STRING.cValue -> String::class.java
+      else -> throw IllegalArgumentException("$this not supported")
+    }
+  }
+
+fun Int.name(): String {
+  return org.tensorflow.framework.DataType.forNumber(this).name.toLowerCase().substring(3)
 }
 
-object stringIsSupported : SupportedType<String, STRING>() {
-  override val dataType = STRING
-  override fun cast(value: Any) = value.toString()
+val supportedTypes = mutableMapOf<DataType<*>, SupportedType<*, *>>()
+
+sealed class SupportedType<out T, D : DataType<*>>(val dataType: D) {
+  open fun <R> cast(value: R): T = throw InvalidDataTypeException("The Kotlin type of this data type is not supported.")
+  
+  init {
+    supportedTypes[dataType] = this
+  }
 }
 
-object booleanIsSupported : SupportedType<Boolean, BOOL>() {
-  override val dataType = BOOL
-  override fun cast(value: Any): Boolean = when (value) {
+object stringIsSupported : SupportedType<String, types.STRING>(STRING) {
+  override fun <R> cast(value: R) = value.toString()
+}
+
+object booleanIsSupported : SupportedType<Boolean, types.BOOL>(BOOL) {
+  override fun <R> cast(value: R): Boolean = when (value) {
     is Boolean -> value
     else -> throw InvalidDataTypeException("Cannot convert the provided value a boolean.")
   }
 }
 
-object floatIsSupported : SupportedType<Float, FLOAT>() {
-  override val dataType = FLOAT
-  override fun cast(value: Any): Float = when (value) {
+object floatIsSupported : SupportedType<Float, types.FLOAT32>(FLOAT) {
+  override fun <R> cast(value: R): Float = when (value) {
     is Boolean -> if (value) 1.0f else 0.0f
     is Float -> value.toFloat()
     is Double -> value.toFloat()
@@ -49,9 +70,8 @@ object floatIsSupported : SupportedType<Float, FLOAT>() {
   }
 }
 
-object doubleIsSupported : SupportedType<Double, DOUBLE>() {
-  override val dataType = DOUBLE
-  override fun cast(value: Any): Double = when (value) {
+object doubleIsSupported : SupportedType<Double, types.FLOAT64>(DOUBLE) {
+  override fun <R> cast(value: R): Double = when (value) {
     is Boolean -> if (value) 1.0 else 0.0
     is Float -> value.toDouble()
     is Double -> value.toDouble()
@@ -63,9 +83,8 @@ object doubleIsSupported : SupportedType<Double, DOUBLE>() {
   }
 }
 
-object byteIsSupported : SupportedType<Byte, INT8>() {
-  override val dataType = INT8
-  override fun cast(value: Any): Byte = when (value) {
+object byteIsSupported : SupportedType<Byte, types.INT8>(INT8) {
+  override fun <R> cast(value: R): Byte = when (value) {
     is Boolean -> if (value) 1 else 0
     is Float -> value.toByte()
     is Double -> value.toByte()
@@ -77,9 +96,8 @@ object byteIsSupported : SupportedType<Byte, INT8>() {
   }
 }
 
-object shortIsSupported : SupportedType<Short, INT16>() {
-  override val dataType = INT16
-  override fun cast(value: Any): Short = when (value) {
+object shortIsSupported : SupportedType<Short, types.INT16>(INT16) {
+  override fun <R> cast(value: R): Short = when (value) {
     is Boolean -> if (value) 1 else 0
     is Float -> value.toShort()
     is Double -> value.toShort()
@@ -91,9 +109,8 @@ object shortIsSupported : SupportedType<Short, INT16>() {
   }
 }
 
-object intIsSupported : SupportedType<Int, INT32>() {
-  override val dataType = INT32
-  override fun cast(value: Any): Int = when (value) {
+object intIsSupported : SupportedType<Int, types.INT32>(INT32) {
+  override fun <R> cast(value: R): Int = when (value) {
     is Boolean -> if (value) 1 else 0
     is Float -> value.toInt()
     is Double -> value.toInt()
@@ -105,9 +122,8 @@ object intIsSupported : SupportedType<Int, INT32>() {
   }
 }
 
-object longIsSupported : SupportedType<Long, INT64>() {
-  override val dataType = INT64
-  override fun cast(value: Any): Long = when (value) {
+object longIsSupported : SupportedType<Long, types.INT64>(INT64) {
+  override fun <R> cast(value: R): Long = when (value) {
     is Boolean -> if (value) 1L else 0L
     is Float -> value.toLong()
     is Double -> value.toLong()
@@ -119,9 +135,8 @@ object longIsSupported : SupportedType<Long, INT64>() {
   }
 }
 
-object uByteIsSupported : SupportedType<Byte, UINT8>() {
-  override val dataType = UINT8
-  override fun cast(value: Any): Byte = when (value) {
+object uByteIsSupported : SupportedType<Byte, types.UINT8>(UINT8) {
+  override fun <R> cast(value: R): Byte = when (value) {
     is Boolean -> if (value) 1 else 0
     is Float -> value.toByte()
     is Double -> value.toByte()
@@ -133,9 +148,8 @@ object uByteIsSupported : SupportedType<Byte, UINT8>() {
   }
 }
 
-object uShortIsSupported : SupportedType<Short, UINT16>() {
-  override val dataType = UINT16
-  override fun cast(value: Any): Short = when (value) {
+object uShortIsSupported : SupportedType<Short, types.UINT16>(UINT16) {
+  override fun <R> cast(value: R): Short = when (value) {
     is Boolean -> if (value) 1 else 0
     is Float -> value.toShort()
     is Double -> value.toShort()

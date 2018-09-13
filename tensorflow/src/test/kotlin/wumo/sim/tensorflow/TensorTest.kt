@@ -2,11 +2,20 @@ package wumo.sim.tensorflow
 
 import org.junit.Test
 import wumo.sim.tensorflow.tensor.Tensor
+import wumo.sim.tensorflow.types.FLOAT
 import wumo.sim.util.Shape
 import wumo.sim.util.f
+import wumo.sim.util.i
 import wumo.sim.util.ndarray.NDArray
 
 class TensorTest {
+  @Test
+  fun test() {
+    val n = NDArray(Shape(2, 2), i(1, 2, 3, 4))
+    val t = Tensor.fromNDArray(n, FLOAT)
+    println(t)
+  }
+  
   @Test
   fun `get set`() {
     tf

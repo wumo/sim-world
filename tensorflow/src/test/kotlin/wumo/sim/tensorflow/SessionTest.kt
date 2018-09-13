@@ -16,7 +16,7 @@ class SessionTest : BaseTest() {
     val f = tf.const(a("hello", "tensorflow", "and", "you"), name = "f")
     printGraph()
     tf.session {
-      a(c, d, e, f).eval()
+      listOf(c, d, e, f).eval()
     }
   }
 }

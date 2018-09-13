@@ -9,7 +9,7 @@ import wumo.sim.tensorflow.ops.variables.Variable.VariableGetter
 import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.types.DataType
 import wumo.sim.tensorflow.types.FLOAT
-import wumo.sim.tensorflow.types.types
+import wumo.sim.tensorflow.types.FLOAT16
 import wumo.sim.util.Shape
 import wumo.sim.util.emptyMutableSet
 
@@ -37,7 +37,7 @@ import wumo.sim.util.emptyMutableSet
 class VariableScope(
     val reuse: Reuse,
     val name: String = "",
-    val dataType: DataType<*>? = types.FLOAT16,
+    val dataType: DataType<*>? = FLOAT16,
     val initializer: Initializer? = null,
     val regularizer: Regularizer? = null,
     val cachingDevice: DeviceFunction? = null,

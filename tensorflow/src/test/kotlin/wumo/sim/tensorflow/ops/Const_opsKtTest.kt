@@ -14,13 +14,13 @@ class Const_opsKtTest : BaseTest() {
   
   @Test
   fun const1() {
-    val p= scalarDimension.toProto()
-    val s=p.SerializeAsString()
-    val sss=BytePointer()
-    val pp=tensorflow.TensorShapeProto()
+    val p = scalarDimension.toProto()
+    val s = p.SerializeAsString()
+    val sss = BytePointer()
+    val pp = tensorflow.TensorShapeProto()
     pp.ParseFromString("")
     println(pp.dim_size())
-  
+    
     val a = tf.const(1f)
     val b = tf.const(2f, name = "b")
     val c = tf.const(Shape(2, 2), 6L, name = "c")
@@ -43,4 +43,12 @@ class Const_opsKtTest : BaseTest() {
     }
   }
   
+  @Test
+  fun const3() {
+    val d = tf.const(Shape(2, 3), f(1f, 2f, 3f, 4f, 5f, 6f), name = "d")
+    tf.session {
+      val _d = eval<Float>(d)
+      println(_d)
+    }
+  }
 }

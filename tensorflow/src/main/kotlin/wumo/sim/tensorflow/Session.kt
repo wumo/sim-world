@@ -30,10 +30,86 @@ class Session(val c_graph: TF_Graph) {
   val feed_dict = mutableListOf<Pair<Output, NDArray<*>>>()
   val run_list = mutableListOf<Op>()
   
+  fun <T : Any> eval(t: OutputConvertible): NDArray<T> {
+    val (t) = eval(listOf(t))
+    return t as NDArray<T>
+  }
+  
+  fun <T1 : Any, T2 : Any> eval(t1: OutputConvertible, t2: OutputConvertible): t2<NDArray<T1>, NDArray<T2>> {
+    val (r1, r2) = eval(listOf(t1, t2))
+    return t2(r1 as NDArray<T1>, r2 as NDArray<T2>)
+  }
+  
+  fun <T1 : Any, T2 : Any, T3 : Any> eval(t1: OutputConvertible, t2: OutputConvertible, t3: OutputConvertible): t3<NDArray<T1>, NDArray<T2>, NDArray<T3>> {
+    val (r1, r2, r3) = eval(listOf(t1, t2, t3))
+    return t3(r1 as NDArray<T1>, r2 as NDArray<T2>,
+              r3 as NDArray<T3>)
+  }
+  
+  fun <T1 : Any, T2 : Any, T3 : Any, T4 : Any> eval(t1: OutputConvertible, t2: OutputConvertible, t3: OutputConvertible, t4: OutputConvertible):
+      t4<NDArray<T1>, NDArray<T2>, NDArray<T3>, NDArray<T4>> {
+    val (r1, r2, r3, r4) = eval(listOf(t1, t2, t3, t4))
+    return t4(r1 as NDArray<T1>, r2 as NDArray<T2>,
+              r3 as NDArray<T3>, r4 as NDArray<T4>)
+  }
+  
+  fun <T1 : Any, T2 : Any, T3 : Any, T4 : Any, T5 : Any> eval(t1: OutputConvertible, t2: OutputConvertible, t3: OutputConvertible, t4: OutputConvertible, t5: OutputConvertible):
+      t5<NDArray<T1>, NDArray<T2>, NDArray<T3>, NDArray<T4>, NDArray<T5>> {
+    val (r1, r2, r3, r4, r5) = eval(listOf(t1, t2, t3, t4, t5))
+    return t5(r1 as NDArray<T1>, r2 as NDArray<T2>,
+              r3 as NDArray<T3>, r4 as NDArray<T4>,
+              r5 as NDArray<T5>)
+  }
+  
   fun Op.run(vararg feeds: Pair<Output, NDArray<*>>) {
     feed_dict += feeds
     run_list += this
-    _eval()
+    eval(listOf())
+  }
+  
+  fun OutputConvertible.eval() {
+    print(eval<Any>(this.toOutput()))
+  }
+  
+  fun List<OutputConvertible>.eval() {
+    val ts = eval(this)
+    for (i in 0 until size)
+      this[i].print(ts[i])
+  }
+  
+  private fun OutputConvertible.print(v: NDArray<*>) {
+    val output = toOutput()
+    val prefix = "${output.op.name}:${output.dataType.name}${output.shape}\n  ="
+    println("$prefix${v.toString(3)}\n")
+  }
+  
+  fun runString(fetch: List<String>,
+                updates: List<String>,
+                feed_dict: Map<String, NDArray<*>>): List<NDArray<*>> =
+      run(fetch.map { tf.currentGraph.getTensor(it) },
+          updates.map { tf.currentGraph.getTensor(it).op },
+          feed_dict.mapKeys { tf.currentGraph.getTensor(it.key) })
+  
+  fun run(fetch: List<Output>,
+          updates: List<Any>,
+          feed_dict: Map<Output, NDArray<*>>): List<NDArray<*>> {
+    run_list += updates.map {
+      when (it) {
+        is Output -> it.op
+        is Op -> it
+        else -> throw Exception()
+      }
+    }
+    feed_dict.forEach { k, v -> this.feed_dict += k to v }
+    return eval(fetch)
+  }
+  
+  fun feed(vararg feeds: Pair<Output, NDArray<*>>) {
+    feed_dict += feeds
+  }
+  
+  fun target(vararg target: Op) {
+    run_list += target
   }
   
   fun clear() {
@@ -41,54 +117,15 @@ class Session(val c_graph: TF_Graph) {
     run_list.clear()
   }
   
-  fun Array<Output>.eval() {
-    val ts = _eval(*this)
-    for (i in 0 until size)
-      this[i].print(ts[i])
-  }
-  
-  fun eval() = _eval()
-  
-  fun <T : Any> eval(t: OutputConvertible): NDArray<T> {
-    val (t) = _eval(t)
-    return t as NDArray<T>
-  }
-  
-  fun <T1 : Any, T2 : Any> eval(t1: OutputConvertible, t2: OutputConvertible): t2<NDArray<T1>, NDArray<T2>> {
-    val (r1, r2) = _eval(t1, t2)
-    return t2(r1 as NDArray<T1>, r2 as NDArray<T2>)
-  }
-  
-  fun <T1 : Any, T2 : Any, T3 : Any> eval(t1: OutputConvertible, t2: OutputConvertible, t3: OutputConvertible): t3<NDArray<T1>, NDArray<T2>, NDArray<T3>> {
-    val (r1, r2, r3) = _eval(t1, t2, t3)
-    return t3(r1 as NDArray<T1>, r2 as NDArray<T2>,
-              r3 as NDArray<T3>)
-  }
-  
-  fun <T1 : Any, T2 : Any, T3 : Any, T4 : Any> eval(t1: OutputConvertible, t2: OutputConvertible, t3: OutputConvertible, t4: OutputConvertible):
-      t4<NDArray<T1>, NDArray<T2>, NDArray<T3>, NDArray<T4>> {
-    val (r1, r2, r3, r4) = _eval(t1, t2, t3, t4)
-    return t4(r1 as NDArray<T1>, r2 as NDArray<T2>,
-              r3 as NDArray<T3>, r4 as NDArray<T4>)
-  }
-  
-  fun <T1 : Any, T2 : Any, T3 : Any, T4 : Any, T5 : Any> eval(t1: OutputConvertible, t2: OutputConvertible, t3: OutputConvertible, t4: OutputConvertible, t5: OutputConvertible):
-      t5<NDArray<T1>, NDArray<T2>, NDArray<T3>, NDArray<T4>, NDArray<T5>> {
-    val (r1, r2, r3, r4, r5) = _eval(t1, t2, t3, t4, t5)
-    return t5(r1 as NDArray<T1>, r2 as NDArray<T2>,
-              r3 as NDArray<T3>, r4 as NDArray<T4>,
-              r5 as NDArray<T5>)
-  }
-  
-  fun eval(fetch: Collection<OutputConvertible>): Array<NDArray<Any>> {
-    val fetch = fetch.map { it.toOutput() }
+  fun eval(fetch: Iterable<OutputConvertible>): MutableList<NDArray<Any>> {
+    val fetches = fetch.map { it.toOutput() }
     val status = newStatus()
     val (inputs, input_values, ninputs) = accumulateFeedDict()
     val (target_opers, ntargets) = accumulateRuns()
-    val noutputs = fetch.size
+    val noutputs = fetches.size
     val outputs = TF_Output(noutputs.toLong())
     val output_values = PointerPointer<TF_Tensor>(noutputs.toLong())
-    for ((i, f) in fetch.withIndex())
+    for ((i, f) in fetches.withIndex())
       outputs.position(i.toLong()).oper(f.op.c_op).index(f.valueIndex)
     outputs.position(0L)
     TF_SessionRun(c_session, null, inputs, input_values, ninputs,
@@ -97,30 +134,7 @@ class Session(val c_graph: TF_Graph) {
                   null, status)
     status.check()
     clear()
-    return Array(noutputs) {
-      Tensor.toNDArray<Any>(output_values.get(TF_Tensor::class.java, it.toLong()))
-    }
-  }
-  
-  fun _eval(vararg fetch: OutputConvertible): Array<NDArray<Any>> {
-    val status = newStatus()
-    val (inputs, input_values, ninputs) = accumulateFeedDict()
-    val (target_opers, ntargets) = accumulateRuns()
-    val noutputs = fetch.size
-    val outputs = TF_Output(noutputs.toLong())
-    val output_values = PointerPointer<TF_Tensor>(noutputs.toLong())
-    for ((i, f) in fetch.withIndex()) {
-      val f = f.toOutput()
-      outputs.position(i.toLong()).oper(f.op.c_op).index(f.valueIndex)
-    }
-    outputs.position(0L)
-    TF_SessionRun(c_session, null, inputs, input_values, ninputs,
-                  outputs, output_values, noutputs,
-                  target_opers, ntargets,
-                  null, status)
-    status.check()
-    clear()
-    return Array(noutputs) {
+    return MutableList(noutputs) {
       Tensor.toNDArray<Any>(output_values.get(TF_Tensor::class.java, it.toLong()))
     }
   }
@@ -132,7 +146,7 @@ class Session(val c_graph: TF_Graph) {
     for ((i, pair) in feed_dict.withIndex()) {
       val (input, input_value) = pair
       inputs.position(i.toLong()).oper(input.op.c_op).index(input.valueIndex)
-      input_values.position(i.toLong()).put(Tensor.fromNDArray(input_value).c_tensor)
+      input_values.position(i.toLong()).put(Tensor.fromNDArray(input_value, input.dataType).c_tensor)
     }
     inputs.position(0L)
     input_values.position(0L)
@@ -148,108 +162,4 @@ class Session(val c_graph: TF_Graph) {
     return t2(target_opers, ntargets.toInt())
   }
   
-  fun OutputConvertible.eval() {
-    print(eval<Any>(this.toOutput()))
-  }
-  
-  private fun OutputConvertible.print(v: NDArray<*>) {
-    val output = toOutput()
-    val prefix = "${output.op.name}:${output.dataType.name}${output.shape}\n  ="
-    println("$prefix${v.toString(3)}\n")
-  }
-  
-  fun feed(vararg feeds: Pair<Output, NDArray<*>>) {
-    feed_dict += feeds
-  }
-  
-  fun target(vararg target: Op) {
-    run_list += target
-  }
-  
-  fun run(fetch: Array<String>,
-          updates: Array<String>,
-          feed_dict: Map<String, NDArray<*>>): Array<NDArray<*>> {
-    val ninputs = feed_dict.size
-    val inputs = TF_Output(ninputs.toLong())
-    val input_values = PointerPointer<TF_Tensor>(ninputs.toLong())
-    for ((i, pair) in feed_dict.entries.withIndex()) {
-      val (_input, input_value) = pair
-      val input = tf.currentGraph.getTensor(_input)
-      inputs.position(i.toLong()).oper(input.op.c_op).index(input.valueIndex)
-      input_values.position(i.toLong()).put(Tensor.fromNDArray(input_value).c_tensor)
-    }
-    inputs.position(0L)
-    input_values.position(0L)
-    
-    val ntargets = updates.size
-    val target_opers = PointerPointer<TF_Operation>(ntargets.toLong())
-    for ((i, op) in updates.withIndex()) {
-      val op = tf.currentGraph.getTensor(op).op
-      target_opers.position(i.toLong()).put(op.c_op)
-    }
-    target_opers.position(0L)
-    
-    val status = newStatus()
-    val noutputs = fetch.size
-    val outputs = TF_Output(noutputs.toLong())
-    val output_values = PointerPointer<TF_Tensor>(noutputs.toLong())
-    for ((i, _f) in fetch.withIndex()) {
-      val f = tf.currentGraph.getTensor(_f)
-      outputs.position(i.toLong()).oper(f.op.c_op).index(f.valueIndex)
-    }
-    outputs.position(0L)
-    TF_SessionRun(c_session, null, inputs, input_values, ninputs,
-                  outputs, output_values, noutputs,
-                  target_opers, ntargets,
-                  null, status)
-    status.check()
-    clear()
-    return Array(noutputs) {
-      Tensor.toNDArray<Any>(output_values.get(TF_Tensor::class.java, it.toLong()))
-    }
-  }
-  
-  fun run(fetch: Array<Output>,
-          updates: Array<out Any>,
-          feed_dict: Map<Output, NDArray<*>>): Array<NDArray<*>> {
-    val ninputs = feed_dict.size
-    val inputs = TF_Output(ninputs.toLong())
-    val input_values = PointerPointer<TF_Tensor>(ninputs.toLong())
-    for ((i, pair) in feed_dict.entries.withIndex()) {
-      val (input, input_value) = pair
-      inputs.position(i.toLong()).oper(input.op.c_op).index(input.valueIndex)
-      input_values.position(i.toLong()).put(Tensor.fromNDArray(input_value,input.dataType).c_tensor)
-    }
-    inputs.position(0L)
-    input_values.position(0L)
-    
-    val ntargets = updates.size
-    val target_opers = PointerPointer<TF_Operation>(ntargets.toLong())
-    for ((i, op) in updates.withIndex()) {
-      val op = when (op) {
-        is Output -> op.op
-        is Op -> op
-        else -> throw Exception()
-      }
-      target_opers.position(i.toLong()).put(op!!.c_op)
-    }
-    target_opers.position(0L)
-    
-    val status = newStatus()
-    val noutputs = fetch.size
-    val outputs = TF_Output(noutputs.toLong())
-    val output_values = PointerPointer<TF_Tensor>(noutputs.toLong())
-    for ((i, f) in fetch.withIndex())
-      outputs.position(i.toLong()).oper(f.op.c_op).index(f.valueIndex)
-    outputs.position(0L)
-    TF_SessionRun(c_session, null, inputs, input_values, ninputs,
-                  outputs, output_values, noutputs,
-                  target_opers, ntargets,
-                  null, status)
-    status.check()
-    clear()
-    return Array(noutputs) {
-      Tensor.toNDArray<Any>(output_values.get(TF_Tensor::class.java, it.toLong()))
-    }
-  }
 }

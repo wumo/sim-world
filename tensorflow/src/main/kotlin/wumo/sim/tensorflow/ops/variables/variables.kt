@@ -7,7 +7,6 @@ import wumo.sim.tensorflow.ops.variables.Variable.VariableGetter
 import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.types.DataType
 import wumo.sim.tensorflow.types.FLOAT
-import wumo.sim.tensorflow.types.types
 import wumo.sim.util.Shape
 
 typealias Regularizer = TensorFunction
@@ -80,7 +79,7 @@ object variables {
    * Provide a default initializer and a corresponding value.
    *
    */
-  fun defaultInitializer(name: String, dataType: DataType<*>? = types.FLOAT): Initializer =
+  fun defaultInitializer(name: String, dataType: DataType<*>? = FLOAT): Initializer =
       when {
         dataType!!.isFloatingPoint -> TODO()
         dataType.isInteger || dataType.isUnsigned || dataType.isBoolean -> ZerosInitializer()

@@ -9,15 +9,15 @@ import wumo.sim.util.a
 import wumo.sim.util.ndarray.NDArray
 
 interface Function {
-  operator fun invoke(vararg args: Any): Array<NDArray<*>>
+  operator fun invoke(vararg args: Any): List<NDArray<*>>
 }
 
-class FunctionTensor(val inputs: Array<out Any>,
-                     val outputs: Array<Output>,
-                     val updates: Array<out Any>,
-                     val givens: Array<out Pair<Output, NDArray<*>>>) : Function {
+class FunctionTensor(val inputs: List<Any>,
+                     val outputs: List<Output>,
+                     val updates: List<Any>,
+                     val givens: List<Pair<Output, NDArray<*>>>) : Function {
   
-  override operator fun invoke(vararg args: Any): Array<NDArray<*>> {
+  override operator fun invoke(vararg args: Any): List<NDArray<*>> {
     assert(args.size <= inputs.size) { "Too many arguments provided" }
     val feed_dict = mutableMapOf<Output, NDArray<*>>()
     for (i in 0 until inputs.size) {
@@ -35,12 +35,12 @@ class FunctionTensor(val inputs: Array<out Any>,
   }
 }
 
-class FunctionString(val inputs: Array<String>,
-                     val outputs: Array<String>,
-                     val updates: Array<String>,
-                     val givens: Array<out Pair<String, NDArray<*>>>) : Function {
+class FunctionString(val inputs: List<String>,
+                     val outputs: List<String>,
+                     val updates: List<String>,
+                     val givens: List<Pair<String, NDArray<*>>>) : Function {
   
-  override operator fun invoke(vararg args: Any): Array<NDArray<*>> {
+  override operator fun invoke(vararg args: Any): List<NDArray<*>> {
     assert(args.size <= inputs.size) { "Too many arguments provided" }
     val feed_dict = mutableMapOf<String, NDArray<*>>()
     for (i in 0 until inputs.size) {
@@ -50,33 +50,33 @@ class FunctionString(val inputs: Array<String>,
     }
     for ((input, value) in givens)
       feed_dict.putIfAbsent(input, value)
-    return tf.currentSession!!.run(outputs, updates, feed_dict = feed_dict)
+    return tf.currentSession!!.runString(outputs, updates, feed_dict = feed_dict)
   }
 }
 
-fun function(inputs: Array<String> = emptyArray(),
-             outputs: Array<String> = emptyArray(),
-             updates: Array<String> = emptyArray(),
-             givens: Array<Pair<String, NDArray<*>>> = emptyArray()): Function {
+fun functionString(inputs: List<String> = emptyList(),
+                   outputs: List<String> = emptyList(),
+                   updates: List<String> = emptyList(),
+                   givens: List<Pair<String, NDArray<*>>> = emptyList()): Function {
   return FunctionString(inputs, outputs, updates, givens)
 }
 
-fun function(inputs: Array<out Any> = emptyArray(),
+fun function(inputs: List<Any> = emptyList(),
              outputs: Output,
-             updates: Array<out Any> = emptyArray(),
-             givens: Array<Pair<Output, Any>> = emptyArray()): Function {
-  val _givens = a(givens.size) {
+             updates: List<Any> = emptyList(),
+             givens: List<Pair<Output, Any>> = emptyList()): Function {
+  val _givens = List(givens.size) {
     val p = givens[it]
     p.first to NDArray.toNDArray(p.second)
   }
-  return FunctionTensor(inputs, a(outputs), updates, _givens)
+  return FunctionTensor(inputs, listOf(outputs), updates, _givens)
 }
 
-fun function(inputs: Array<out Any> = emptyArray(),
-             outputs: Array<Output> = emptyArray(),
-             updates: Array<out Any> = emptyArray(),
-             givens: Array<Pair<Output, Any>> = emptyArray()): Function {
-  val _givens = a(givens.size) {
+fun function(inputs: List<Any> = emptyList(),
+             outputs: List<Output> = emptyList(),
+             updates: List<Any> = emptyList(),
+             givens: List<Pair<Output, Any>> = emptyList()): Function {
+  val _givens = List(givens.size) {
     val p = givens[it]
     p.first to NDArray.toNDArray(p.second)
   }
