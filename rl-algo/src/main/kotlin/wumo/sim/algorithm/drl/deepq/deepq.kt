@@ -84,7 +84,7 @@ fun <O : Any, A : Any> learn(
     var obs = env.reset()
     var reset = true
     
-    for (t in 0 until total_timesteps) {
+    for (t in 0..total_timesteps) {
       //Take action and update exploration to the newest value
       var update_eps: Float
       var update_param_noise_threshold: Float
@@ -106,7 +106,7 @@ fun <O : Any, A : Any> learn(
       val env_action = action
       reset = false
       val (new_obs, rew, done, _) = env.step(env_action)
-      env.render()
+//      env.render()
       //Store transition in the replay buffer.
       replay_buffer.add(obs, action, rew, new_obs, done)
       obs = new_obs
@@ -150,8 +150,8 @@ fun <O : Any, A : Any> learn(
                     "mean 100 episode reward: $mean_100ep_reward\n" +
                     "${100 * exploration.value(t)} time spent exploring")
       }
-//      if(mean_100ep_reward>200)
-//        env.render()
+      if (mean_100ep_reward >= 200)
+        env.render()
       if (checkpoint_freq > 0 && t > learning_starts && num_episodes > 100 && t % checkpoint_freq == 0) {
         if (mean_100ep_reward > saved_mean_reward) {
           if (print_freq > 0)

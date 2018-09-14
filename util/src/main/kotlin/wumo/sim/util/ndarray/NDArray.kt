@@ -5,7 +5,7 @@ package wumo.sim.util.ndarray
 import wumo.sim.util.*
 import wumo.sim.util.ndarray.implementation.*
 
-interface Buf<T> {
+interface Buf<T : Any> {
   operator fun get(offset: Int): T
   operator fun set(offset: Int, data: T)
   fun copy(): Buf<T>
@@ -222,9 +222,10 @@ open class NDArray<T : Any>(val shape: Shape, val raw: Buf<T>, val dtype: Class<
     
     override fun next(): t2<Int, T> {
       val value = raw[a]
-      if (this::element.isInitialized)
+      if (this::element.isInitialized) {
+        element._1 = a
         element._2 = value
-      else
+      } else
         element = t2(a, value)
       a++
       return element

@@ -20,11 +20,10 @@ class `Q-Learning with Neural Networks test` : BaseTest() {
     val Qout = tf.matMul(inputs, W.toOutput(), name = "Qout")
     val predict = tf.argmax(Qout, 1, name = "predict")
     val nextQ = tf.placeholder(Shape(1, 4), name = "nextQ")
-  
-    val loss = tf.sum(tf.square(nextQ - Qout), tf.const(intArrayOf(0, 1)))
+    
+    val loss = tf.sum(tf.square(nextQ - Qout), name = "loss")
     val optimizer = GradientDescentOptimizer(learningRate = { 0.1f }, name = "train")
     val train = optimizer.minimize(loss)
-//    val train = tf.gradientDescentOptimizer(0.1f, loss, "train")
     val init = tf.globalVariablesInitializer()
     printGraph()
     tf.session {
@@ -50,7 +49,7 @@ class `Q-Learning with Neural Networks test` : BaseTest() {
           val maxQ1 = Q1.max()!!
           val targetQ = allQ
           targetQ[0, a[0]] = (r + y * maxQ1).toFloat()
-        
+          
           feed(inputs to NDArray(Shape(1, 16), f(16) { if (it == s) 1f else 0f }),
                nextQ to targetQ)
           train.run()

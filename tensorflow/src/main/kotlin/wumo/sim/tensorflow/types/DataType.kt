@@ -9,7 +9,7 @@ import java.nio.ByteBuffer
 fun Int.toDataType(): DataType<*> =
     DataType.fromCValue(this)
 
-interface DataType<KotlinType> {
+interface DataType<KotlinType : Any> {
   //region Data Type Properties
   val name: String get() = protoType.name
   val cValue: Int get() = protoType.number
@@ -81,7 +81,7 @@ interface DataType<KotlinType> {
   
   fun <R> cast(value: R): KotlinType = TODO()
   
-  fun <R> castBuf(value: Buf<R>): Buf<KotlinType> = TODO()
+  fun <R : Any> castBuf(value: Buf<R>): Buf<KotlinType> = TODO()
   
   fun put(buffer: BytePointer, idx: Int, element: KotlinType): Unit = TODO()
   

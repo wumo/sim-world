@@ -147,7 +147,7 @@ protected constructor(_c_tensor: TF_Tensor) : Buf<T> {
   init {
     stride = LongArray(numDims)
     dims = LongArray(numDims) { TF_Dim(_c_tensor, it) }
-    var n = 0L
+    var n = 1L
     if (dims.isNotEmpty()) {
       stride[stride.lastIndex] = 1
       for (a in stride.lastIndex - 1 downTo 0)
@@ -196,7 +196,7 @@ class FixedSizeTensor<T : Any>(c_tensor: TF_Tensor) : Tensor<T>(c_tensor) {
   override fun copy(): Buf<T> = FixedSizeTensor(copy_tensor())
   
   override fun slice(start: Int, end: Int): Buf<T> {
-    TODO("not implemented")
+    TODO()
   }
 }
 

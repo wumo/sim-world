@@ -59,25 +59,25 @@ object QUINT16_REF : types.QUINT16_REF()
 object RESOURCE_REF : types.RESOURCE_REF()
 object VARIANT_REF : types.VARIANT_REF()
 
-interface ReducibleDataType<KotlinType> : DataType<KotlinType>
-interface NumericDataType<KotlinType> : ReducibleDataType<KotlinType>
-interface NonQuantizedDataType<KotlinType> : NumericDataType<KotlinType>
-interface MathDataType<KotlinType> : NonQuantizedDataType<KotlinType>
-interface RealDataType<KotlinType> : MathDataType<KotlinType>
-interface ComplexDataType<KotlinType> : MathDataType<KotlinType>
-interface Int32OrInt64OrFloat16OrFloat32OrFloat64<KotlinType> : RealDataType<KotlinType>
-interface IntOrUInt<KotlinType> : RealDataType<KotlinType>
-interface UInt8OrInt32OrInt64<KotlinType> : IntOrUInt<KotlinType>, Int32OrInt64OrFloat16OrFloat32OrFloat64<KotlinType>
-interface Int32OrInt64<KotlinType> : UInt8OrInt32OrInt64<KotlinType>
-interface DecimalDataType<KotlinType> : RealDataType<KotlinType>
-interface BFloat16OrFloat32OrFloat64<KotlinType> : DecimalDataType<KotlinType>
-interface BFloat16OrFloat16OrFloat32<KotlinType> : DecimalDataType<KotlinType>
-interface Float16OrFloat32OrFloat64<KotlinType> : DecimalDataType<KotlinType>, Int32OrInt64OrFloat16OrFloat32OrFloat64<KotlinType>, BFloat16OrFloat32OrFloat64<KotlinType>
-interface Float32OrFloat64<KotlinType> : Float16OrFloat32OrFloat64<KotlinType>
-interface Int32OrInt64OrFloat32OrFloat64<KotlinType> : Float32OrFloat64<KotlinType>, Int32OrInt64<KotlinType>
-interface QuantizedDataType<KotlinType> : NumericDataType<KotlinType>
+interface ReducibleDataType<KotlinType : Any> : DataType<KotlinType>
+interface NumericDataType<KotlinType : Any> : ReducibleDataType<KotlinType>
+interface NonQuantizedDataType<KotlinType : Any> : NumericDataType<KotlinType>
+interface MathDataType<KotlinType : Any> : NonQuantizedDataType<KotlinType>
+interface RealDataType<KotlinType : Any> : MathDataType<KotlinType>
+interface ComplexDataType<KotlinType : Any> : MathDataType<KotlinType>
+interface Int32OrInt64OrFloat16OrFloat32OrFloat64<KotlinType : Any> : RealDataType<KotlinType>
+interface IntOrUInt<KotlinType : Any> : RealDataType<KotlinType>
+interface UInt8OrInt32OrInt64<KotlinType : Any> : IntOrUInt<KotlinType>, Int32OrInt64OrFloat16OrFloat32OrFloat64<KotlinType>
+interface Int32OrInt64<KotlinType : Any> : UInt8OrInt32OrInt64<KotlinType>
+interface DecimalDataType<KotlinType : Any> : RealDataType<KotlinType>
+interface BFloat16OrFloat32OrFloat64<KotlinType : Any> : DecimalDataType<KotlinType>
+interface BFloat16OrFloat16OrFloat32<KotlinType : Any> : DecimalDataType<KotlinType>
+interface Float16OrFloat32OrFloat64<KotlinType : Any> : DecimalDataType<KotlinType>, Int32OrInt64OrFloat16OrFloat32OrFloat64<KotlinType>, BFloat16OrFloat32OrFloat64<KotlinType>
+interface Float32OrFloat64<KotlinType : Any> : Float16OrFloat32OrFloat64<KotlinType>
+interface Int32OrInt64OrFloat32OrFloat64<KotlinType : Any> : Float32OrFloat64<KotlinType>, Int32OrInt64<KotlinType>
+interface QuantizedDataType<KotlinType : Any> : NumericDataType<KotlinType>
 
-abstract class DataTypeComparator<T> : DataType<T> {
+abstract class DataTypeComparator<T : Any> : DataType<T> {
   override fun toString() = name
   override fun equals(that: Any?) =
       if (that is DataType<*>) cValue == that.cValue
@@ -98,7 +98,7 @@ object types {
     override val kotlinType = String::class.java
     
     override fun <R> cast(value: R): String = value.toString()
-    override fun <R> castBuf(value: Buf<R>): Buf<String> =
+    override fun <R : Any> castBuf(value: Buf<R>): Buf<String> =
         ArrayBuf(Array(value.size) { value[it].toString() })
   }
   
@@ -114,7 +114,7 @@ object types {
     
     override fun <R> cast(value: R): Boolean = booleanIsSupported.cast(value)
     
-    override fun <R> castBuf(value: Buf<R>): Buf<Boolean> =
+    override fun <R : Any> castBuf(value: Buf<R>): Buf<Boolean> =
         BooleanArrayBuf(BooleanArray(value.size) { cast(value[it]) })
     
     override fun put(buffer: BytePointer, idx: Int, element: Boolean) {
@@ -149,7 +149,7 @@ object types {
     
     override fun <R> cast(value: R): Float = floatIsSupported.cast(value)
     
-    override fun <R> castBuf(value: Buf<R>): Buf<Float> =
+    override fun <R : Any> castBuf(value: Buf<R>): Buf<Float> =
         FloatArrayBuf(FloatArray(value.size) { cast(value[it]) })
     
     override fun put(buffer: BytePointer, idx: Int, element: Float) {
@@ -174,7 +174,7 @@ object types {
     
     override fun <R> cast(value: R): Double = doubleIsSupported.cast(value)
     
-    override fun <R> castBuf(value: Buf<R>): Buf<Double> =
+    override fun <R : Any> castBuf(value: Buf<R>): Buf<Double> =
         DoubleArrayBuf(DoubleArray(value.size) { cast(value[it]) })
     
     override fun put(buffer: BytePointer, idx: Int, element: Double) {
@@ -234,7 +234,7 @@ object types {
     override val kotlinType = Byte::class.java
     
     override fun <R> cast(value: R): Byte = byteIsSupported.cast(value)
-    override fun <R> castBuf(value: Buf<R>): Buf<Byte> =
+    override fun <R:Any> castBuf(value: Buf<R>): Buf<Byte> =
         ByteArrayBuf(ByteArray(value.size) { cast(value[it]) })
     
     override fun put(buffer: BytePointer, idx: Int, element: Byte) {
@@ -259,7 +259,7 @@ object types {
     
     override fun <R> cast(value: R): Short = shortIsSupported.cast(value)
     
-    override fun <R> castBuf(value: Buf<R>): Buf<Short> =
+    override fun <R : Any> castBuf(value: Buf<R>): Buf<Short> =
         ShortArrayBuf(ShortArray(value.size) { cast(value[it]) })
     
     override fun put(buffer: BytePointer, idx: Int, element: Short) {
@@ -284,7 +284,7 @@ object types {
     
     override fun <R> cast(value: R): Int = intIsSupported.cast(value)
     
-    override fun <R> castBuf(value: Buf<R>): Buf<Int> =
+    override fun <R : Any> castBuf(value: Buf<R>): Buf<Int> =
         IntArrayBuf(IntArray(value.size) { cast(value[it]) })
     
     override fun put(buffer: BytePointer, idx: Int, element: Int) {
@@ -308,7 +308,7 @@ object types {
     override val kotlinType = Long::class.java
     
     override fun <R> cast(value: R): Long = longIsSupported.cast(value)
-    override fun <R> castBuf(value: Buf<R>): Buf<Long> =
+    override fun <R : Any> castBuf(value: Buf<R>): Buf<Long> =
         LongArrayBuf(LongArray(value.size) { cast(value[it]) })
     
     override fun put(buffer: BytePointer, idx: Int, element: Long) {
@@ -332,7 +332,7 @@ object types {
     override val kotlinType = Byte::class.java
     
     override fun <R> cast(value: R): Byte = uByteIsSupported.cast(value)
-    override fun <R> castBuf(value: Buf<R>): Buf<Byte> = wumo.sim.tensorflow.types.INT8.castBuf(value)
+    override fun <R : Any> castBuf(value: Buf<R>): Buf<Byte> = wumo.sim.tensorflow.types.INT8.castBuf(value)
     
     override fun put(buffer: BytePointer, idx: Int, element: Byte) {
       buffer.put(idx.toLong(), element)
@@ -355,7 +355,7 @@ object types {
     override val kotlinType = Short::class.java
     
     override fun <R> cast(value: R): Short = uShortIsSupported.cast(value)
-    override fun <R> castBuf(value: Buf<R>): Buf<Short> = wumo.sim.tensorflow.types.INT16.castBuf(value)
+    override fun <R : Any> castBuf(value: Buf<R>): Buf<Short> = wumo.sim.tensorflow.types.INT16.castBuf(value)
     
     override fun put(buffer: BytePointer, idx: Int, element: Short) {
       buffer.putShort(idx.toLong(), element)
