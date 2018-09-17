@@ -1,5 +1,6 @@
 package wumo.sim.tensorflow.ops.basic
 
+import wumo.sim.tensorflow.OutputMaker
 import wumo.sim.tensorflow.framework.getSeed
 import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.ops.gen.gen_random_ops
@@ -27,16 +28,17 @@ object random_ops {
     fun randomGammaGrad(alpha: Output, sample: Output, name: String = "RandomGammaGrad"): Output {
       return gen_random_ops.randomGammaGrad(alpha, sample, name)
     }
-  
-    fun randomNormal(shape: Shape,
-                     mean: Float = 0f, stddev: Float = 1f,
+    
+    fun randomNormal(shape: OutputMaker,
+                     mean: OutputMaker = { tf.const(dtype, 0f, it) },
+                     stddev: OutputMaker = { tf.const(dtype, 1f, it) },
                      dtype: DataType<*> = FLOAT,
                      seed: Int? = null,
                      name: String = "random_normal"): Output =
         tf.nameScope(name) {
-          val shape_t = shape.toOutput()
-          val mean_t = tf.const(dtype, mean, name = "mean")
-          val stddev_t = tf.const(dtype, stddev, name = "stddev")
+          val shape_t = shape("shape")
+          val mean_t = mean("mean")
+          val stddev_t = stddev("stddev")
           val (seed1, seed2) = getSeed(seed)
           val rnd = gen_random_ops.randomStandardNormal(shape_t, dtype,
                                                         seed1?.toLong() ?: 0L,
@@ -69,13 +71,13 @@ object random_ops {
                       seed: Int? = null,
                       name: String = "randomUniform"): Output =
         randomUniform({ shape }, min, max, dtype, seed, name)
-  
+    
     fun randomUniform(shape: (String) -> Output, min: Number, max: Number,
                       dtype: DataType<*> = FLOAT,
                       seed: Int? = null,
                       name: String = "randomUniform"): Output {
       require(dtype in allowedTypes) { "Invalid dtype$dtype" }
-    
+      
       return tf.nameScope(name) {
         val shape = shape("shape")
         val minval = tf.const(scalarDimension, dtype, min, name = "min")
@@ -94,7 +96,7 @@ object random_ops {
         }
       }
     }
-  
+    
     fun truncatedNormal(shape: Shape,
                         mean: Float = 0f, stddev: Float = 1f,
                         dtype: DataType<*> = FLOAT,

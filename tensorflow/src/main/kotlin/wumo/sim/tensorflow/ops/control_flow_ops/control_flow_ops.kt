@@ -351,10 +351,10 @@ object control_flow_ops {
           
           // Check that the return values of the two branches have matching data types.
           resultTrue.zip(resultFalse).forEach {
-            if (it.first.dataType != it.second.dataType)
+            if (it.first.dataType.baseDataType != it.second.dataType.baseDataType)
               throw InvalidDataTypeException(
-                  "The outputs of `trueFn` (dataType = ${it.first.dataType}) and " +
-                      "`falseFn` (dataType = ${it.second.dataType}) must have the same data type.")
+                  "The outputs of `trueFn` (dataType = ${it.first.dataType.baseDataType}) and " +
+                      "`falseFn` (dataType = ${it.second.dataType.baseDataType}) must have the same data type.")
           }
           
           val merges = resultFalse.zip(resultTrue).map { merge(listOf(it.first, it.second))[0] }
@@ -460,6 +460,8 @@ object control_flow_ops {
      * @return An Operation that executes all its inputs.
      */
     fun group(inputs: Iterable<Op>, name: String = "group_deps"): Op {
+      if (inputs.none())
+        return tf.noOp(name)
       // Sorts *inputs according to their devices.
       val ops_on_device = inputs.groupBy { it.device }
       if (ops_on_device.size == 1) {

@@ -23,9 +23,6 @@ interface HasName {
 }
 
 class Op(val graph: Graph, val c_op: TF_Operation) : HasName {
-  //  init {
-//    graph.cache(c_op)
-//  }
   override val name: String by lazy { TF_OperationName(c_op).string }
   val device: String get() = TF_OperationDevice(c_op).string
   val opType: String by lazy { TF_OperationOpType(c_op).string }

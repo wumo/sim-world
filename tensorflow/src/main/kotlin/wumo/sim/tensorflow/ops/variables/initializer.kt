@@ -46,7 +46,10 @@ interface initializers {
     override val dataType: DataType<*>? = dataType
     override fun init(shape: Shape, dataType: DataType<*>,
                       partitionInfo: PartitionInformation?): Output =
-        tf.randomNormal(shape, mean, stddev, dataType, seed)
+        tf.randomNormal({ shape.toOutput(it) },
+                        { tf.const(dataType, mean, it) },
+                        { tf.const(dataType, stddev, it) },
+                        dataType, seed)
   }
   
   fun truncatedNormalInitializer(mean: Float = 0f,
@@ -65,18 +68,18 @@ interface initializers {
     override val dataType: DataType<*>? = dataType
     override fun init(shape: Shape, dataType: DataType<*>,
                       partitionInfo: PartitionInformation?): Output {
-        require(shape.rank >= 2) { "The tensor to initialize must be at least two-dimensional" }
-        val num_rows = shape.slice(0, -1).reduce { num_rows, dim -> num_rows * dim }
-        val num_cols = shape[-1]
-        val flat_shape = if (num_rows < num_cols) Shape(num_cols, num_rows)
-        else Shape(num_rows, num_cols)
-        
-        val a = tf.randomNormal(flat_shape, dtype = dataType, seed = seed)
-        var (q, r) = gen_linalg_ops.qr(a, fullMatrices = false)
-        val d = tf.diagPart(r)
-        q *= tf.sign(d)
-        if (num_rows < num_cols)
-          q = tf.matrixTranspose(q)
+      require(shape.rank >= 2) { "The tensor to initialize must be at least two-dimensional" }
+      val num_rows = shape.slice(0, -1).reduce { num_rows, dim -> num_rows * dim }
+      val num_cols = shape[-1]
+      val flat_shape = if (num_rows < num_cols) Shape(num_cols, num_rows)
+      else Shape(num_rows, num_cols)
+      
+      val a = tf.randomNormal({ flat_shape.toOutput(it) }, dtype = dataType, seed = seed)
+      var (q, r) = gen_linalg_ops.qr(a, fullMatrices = false)
+      val d = tf.diagPart(r)
+      q *= tf.sign(d)
+      if (num_rows < num_cols)
+        q = tf.matrixTranspose(q)
       return gain * tf.reshape(q, shape.toOutput())
     }
   }
@@ -100,11 +103,11 @@ interface initializers {
     override val dataType: DataType<*>? = dataType
     override fun init(shape: Shape, dataType: DataType<*>,
                       partitionInfo: PartitionInformation?): Output {
-        var scale = 1f
-        val (fanIn, fanOut) = computeFans(shape)
-        scale /= max(1f, (fanIn + fanOut) / 2f)
-        //truncated_normal
-        val stddev = sqrt(scale.toDouble()) / .87962566103423978
+      var scale = 1f
+      val (fanIn, fanOut) = computeFans(shape)
+      scale /= max(1f, (fanIn + fanOut) / 2f)
+      //truncated_normal
+      val stddev = sqrt(scale.toDouble()) / .87962566103423978
       return tf.truncatedNormal(shape, 0f, stddev.toFloat(), dataType, seed)
     }
   }
@@ -114,11 +117,11 @@ interface initializers {
     override val dataType: DataType<*>? = dataType
     override fun init(shape: Shape, dataType: DataType<*>,
                       partitionInfo: PartitionInformation?): Output {
-        var scale = 1f
-        val (fanIn, fanOut) = computeFans(shape)
-        scale /= max(1f, (fanIn + fanOut) / 2f)
-        //uniform
-        val limit = sqrt(3f * scale)
+      var scale = 1f
+      val (fanIn, fanOut) = computeFans(shape)
+      scale /= max(1f, (fanIn + fanOut) / 2f)
+      //uniform
+      val limit = sqrt(3f * scale)
       return tf.randomUniform(shape, -limit, limit, dataType, seed)
     }
   }

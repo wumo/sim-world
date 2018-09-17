@@ -52,7 +52,7 @@
             <groupId>org.bytedeco.javacpp-presets</groupId>
             <artifactId>tensorflow</artifactId>
             <version>${javacpp-resets-tensorflow.version}</version>
-            <classifier>${platform.class}</classifier>
+            <classifier>${platform.class}-gpu</classifier>
         </dependency>
         <!--<dependency>-->
         <!--<groupId>org.bytedeco.javacpp-presets</groupId>-->
@@ -67,10 +67,10 @@
         <!--<classifier>windows-x86_64-gpu</classifier>-->
         <!--</dependency>-->
         <!--<dependency>-->
-        <!--<groupId>org.bytedeco.javacpp-presets</groupId>-->
-        <!--<artifactId>cuda</artifactId>-->
-        <!--<version>${javacpp-resets-cuda.version}</version>-->
-        <!--<classifier>${platform}-redist</classifier>-->
+            <!--<groupId>org.bytedeco.javacpp-presets</groupId>-->
+            <!--<artifactId>cuda</artifactId>-->
+            <!--<version>${javacpp-resets-cuda.version}</version>-->
+            <!--<classifier>${platform.class}-redist</classifier>-->
         <!--</dependency>-->
 
         <dependency>

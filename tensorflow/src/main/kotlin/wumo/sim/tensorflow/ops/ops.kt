@@ -376,22 +376,6 @@ object ops {
     /** Returns the control flow context of the current op creation context. */
     val currentControlFlowContext get() = graphConstructionScope.value.controlFlowContext
     val currentVariableScope get() = VariableScope.current
-
-//  val g = Graph()
-//  val trainables = mutableListOf<Variable>()
-//  val global_variables = mutableListOf<Variable>()
-//  val train_ops = mutableListOf<Op>()
-//  private val rootNs = NameScope("$", null)
-//  private val rootVs = VariableScope("$", rootNs)
-//  var ctxNs = rootNs
-//  var ctxVs = rootVs
-
-//  var device: String = ""
-//  var colocateWith = ArrayDeque<Op>()
-//  val control_ops = ArrayDeque<Op>()
-//  val attr_scope_map = hashMapOf<String, tensorflow.AttrValue>()
-
-//    lateinit var session: Session
     
     /** Creates a context that can be used for initialization ops.
      *
@@ -744,6 +728,12 @@ object ops {
         block()
       }
     }
+    
+    /**
+     * [VariableScope] hasn't been updated and so are some other properties of [Graph]
+     */
+    fun <T> unsafeDefaultGraph(graph: Graph, block: () -> T): T =
+        graphConstructionScope.with(GraphConstructionScope(graph), block)
     
     /**
      * 在[ctxNs]下新生成名称为[nameScope]的sub[NameScope]（名称冲突则会重新命名解决冲突），

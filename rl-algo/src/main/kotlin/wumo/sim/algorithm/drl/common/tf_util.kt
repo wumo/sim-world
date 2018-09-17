@@ -54,10 +54,10 @@ class FunctionString(val inputs: List<String>,
   }
 }
 
-fun functionString(inputs: List<String> = emptyList(),
-                   outputs: List<String> = emptyList(),
-                   updates: List<String> = emptyList(),
-                   givens: List<Pair<String, NDArray<*>>> = emptyList()): Function {
+fun functionFromName(inputs: List<String> = emptyList(),
+                     outputs: List<String> = emptyList(),
+                     updates: List<String> = emptyList(),
+                     givens: List<Pair<String, NDArray<*>>> = emptyList()): Function {
   return FunctionString(inputs, outputs, updates, givens)
 }
 

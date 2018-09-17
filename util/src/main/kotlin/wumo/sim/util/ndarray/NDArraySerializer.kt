@@ -22,6 +22,19 @@ fun BufferedSource.decodeInt() = readInt()
 fun BufferedSink.encode(v: Long) = writeLong(v)
 fun BufferedSource.decodeLong() = readLong()
 
+fun BufferedSink.encode(b: LongArray) {
+  writeInt(b.size)
+  for (i in b)
+    writeLong(i)
+}
+
+fun BufferedSource.decodeLongArray(): LongArray {
+  val size = readInt()
+  return LongArray(size) {
+    readLong()
+  }
+}
+
 fun BufferedSink.encode(b: IntArray) {
   writeInt(b.size)
   for (i in b)

@@ -137,7 +137,11 @@ fun makeNDArray(tensor: tensorflow.TensorProto): NDArray<*> {
         NDArray(shape, IntArray(int_val_size) { tensor.int_val(it) })
     }
     INT64 -> {
-      TODO()
+      val int64_val_size = tensor.int64_val_size()
+      if (int64_val_size == 1)
+        NDArray(shape, tensor.int64_val(0))
+      else
+        NDArray(shape, LongArray(int64_val_size) { tensor.int64_val(it) })
     }
     STRING -> {
       TODO()

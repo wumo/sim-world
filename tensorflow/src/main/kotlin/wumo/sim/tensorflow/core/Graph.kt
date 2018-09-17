@@ -340,7 +340,6 @@ open class Graph {
   }
   
   fun findOp(name: String): Op? {
-    
     val op = TF_GraphOperationByName(c_graph, name)
     return if (op.isNull) null
     else opsCache[op]
@@ -350,19 +349,16 @@ open class Graph {
     val pos = SizeTPointer(1)
     val ops = arrayListOf<Op>()
     do {
-      val op = TF_GraphNextOperation(c_graph, pos)
+      val op = TF_GraphNextOperation(c_graph, pos) ?: break
       ops += opsCache[op]
     } while (op.isNotNull)
     return ops
   }
-
-//  fun getOp(name: String): Op {
-//
-//    findOp(name)
-//  }
   
   fun getTensor(name: String): Output {
-    val (opName, idx) = name.split(':')
+    val parts = name.split(':')
+    val opName = parts[0]
+    val idx = if (parts.size > 1) parts[1] else "0"
     val valueIdx = idx.toInt()
     val op = findOp(opName)!!
     if (valueIdx > op.numOutputs - 1)
@@ -394,6 +390,7 @@ open class Graph {
   }
   
   fun import(act_graph_def: ByteArray, prefix: String = "") {
+    assertNotFrozen()
     val buf = TF_NewBufferFromString(BytePointer(*act_graph_def), act_graph_def.size.toLong())
     val status = newStatus()
     val opt = TF_NewImportGraphDefOptions()
@@ -403,14 +400,8 @@ open class Graph {
     status.check()
     TF_DeleteImportGraphDefOptions(opt)
     TF_DeleteBuffer(buf)
-  }
-  
-  fun create_op(new_op_type: String,
-                new_op_inputs: MutableList<Output>,
-                output_types: List<Int>,
-                name: String,
-                attrs: Map<String, Any>): Op {
-    TODO("not implemented")
+    
+    ops().forEach { namesInUse[it.name] = 1 }
   }
   
   /** Prevents the feeding of values to the provided op output, while running in a session.

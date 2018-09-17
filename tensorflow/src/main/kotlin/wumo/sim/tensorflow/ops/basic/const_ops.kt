@@ -81,7 +81,7 @@ object const_ops {
     fun const(shape: Shape, value: IntArray, name: String = "Const") = const(Tensor(shape, value), name)
     fun const(shape: Shape, value: LongArray, name: String = "Const") = const(Tensor(shape, value), name)
     fun const(shape: Shape, value: Array<String>, name: String = "Const") = const(Tensor(shape, value), name)
-    fun <R:Any> const(dtype: DataType<R>, value: Any, name: String = "Const") =
+    fun <R : Any> const(dtype: DataType<R>, value: Any, name: String = "Const") =
         const(scalarDimension, dtype, value, name)
     
     fun const(shape: Shape, dtype: DataType<*>, value: Any, name: String = "Const"): Output {
@@ -103,6 +103,12 @@ object const_ops {
         attr("dtype", dtype)
       }
     }
+    
+    fun const(value: tensorflow.TF_Tensor, dtype: DataType<*>, name: String = "Const") =
+        buildOpTensor("Const", name = name) {
+          attr("value", value)
+          attr("dtype", dtype)
+        }
     
     fun <T : Any> const(value: Tensor<T>, name: String = "Const") =
         buildOpTensor("Const", name = name) {

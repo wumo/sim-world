@@ -202,7 +202,10 @@ class OperationBuilder(val opType: String, val name: String) {
       addInput(input.asTF_Output())
     }
     inputs += input
-    if (ref) maybeColocateInputs += input.op
+    if (ref) {
+      require(input.dataType.isRefType)
+      maybeColocateInputs += input.op
+    }
   }
   
   fun addInput(input: List<Output>, ref: Boolean = false) {
@@ -218,7 +221,12 @@ class OperationBuilder(val opType: String, val name: String) {
       }
       TF_AddInputList(c_op_desc, inputs.position(0L), input.size)
     }
-    if (ref) input.forEach { maybeColocateInputs += it.op }
+    if (ref) {
+      input.forEach {
+        require(it.dataType.isRefType)
+        maybeColocateInputs += it.op
+      }
+    }
     input.forEach { inputs += it }
   }
   
@@ -311,6 +319,14 @@ class OperationBuilder(val opType: String, val name: String) {
   fun attr(name: String, dtype: DataType<*>) {
     attributes[name] = {
       TF_SetAttrType(c_op_desc, name, dtype.cValue)
+    }
+  }
+  
+  fun attr(name: String, value: TF_Tensor) {
+    attributes[name] = {
+      val status = newStatus()
+      TF_SetAttrTensor(c_op_desc, name, value, status)
+      status.check()
     }
   }
   

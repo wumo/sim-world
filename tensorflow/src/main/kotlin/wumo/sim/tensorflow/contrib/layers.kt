@@ -96,40 +96,52 @@ object layers {
                  reuse: Reuse = ReuseOrCreateNew,
                  trainable: Boolean = true,
                  begin_norm_axis: Int = 1,
-                 begin_params_axis: Int = 1): Output {
-    tf.variableScope("LayerNorm", reuse = reuse, isDefaultName = true) {
-      val inputs_shape = inputs.shape
-      val inputs_rank = inputs_shape.rank
-      require(inputs_rank >= 0) { "Inputs ${inputs.name} has undefined rank." }
-      val dtype = inputs.dataType.baseDataType
-      val begin_norm_axis = if (begin_norm_axis < 0) inputs_rank + begin_norm_axis
-      else begin_norm_axis
-      errorIf(begin_params_axis >= inputs_rank || begin_norm_axis >= inputs_rank) {
-        "begin_params_axis ($begin_params_axis) and begin_norm_axis " +
-            "($begin_norm_axis) must be < rank(inputs) ($inputs_rank)"
+                 begin_params_axis: Int = 1): Output =
+      tf.variableScope("LayerNorm", reuse = reuse, isDefaultName = true) {
+        val inputs_shape = inputs.shape
+        val inputs_rank = inputs_shape.rank
+        require(inputs_rank >= 0) { "Inputs ${inputs.name} has undefined rank." }
+        val dtype = inputs.dataType.baseDataType
+        val _begin_norm_axis = if (begin_norm_axis < 0) inputs_rank + begin_norm_axis
+        else begin_norm_axis
+        errorIf(begin_params_axis >= inputs_rank || _begin_norm_axis >= inputs_rank) {
+          "begin_params_axis ($begin_params_axis) and begin_norm_axis " +
+              "($_begin_norm_axis) must be < rank(inputs) ($inputs_rank)"
+        }
+        val params_shape = inputs_shape.slice(begin_params_axis)
+        errorIf(!params_shape.isFullyDefined) {
+          "Inputs ${inputs.name}: shape(inputs)[$begin_params_axis:] is not fully defined:" +
+              " $inputs_shape"
+        }
+        val beta = if (center)
+          tf.modelVariable("beta",
+                           shape = params_shape,
+                           dataType = dtype,
+                           initializer = tf.zerosInitializer(),
+                           trainable = trainable)
+        else null
+        val gamma = if (scale)
+          tf.modelVariable("gamma",
+                           shape = params_shape,
+                           dataType = dtype,
+                           initializer = tf.onesInitializer(),
+                           trainable = trainable)
+        else null
+        val norm_axes = (_begin_norm_axis until inputs_rank).map { it.toLong() }.toLongArray()
+        val (mean, variance) = tf.moments(inputs, norm_axes, keep_dims = true)
+        //Compute layer normalization using the batchNormalization function.
+        var outputs = tf.batchNormalization(
+            inputs,
+            mean,
+            variance,
+            offset = beta?.toOutput(),
+            scale = gamma?.toOutput(),
+            variance_epsilon = 1e-12f)
+        outputs.setShape(inputs_shape)
+        if (activation_fn != null)
+          outputs = activation_fn(outputs)!!
+        outputs
       }
-      val params_shape = inputs_shape.slice(begin_params_axis)
-      errorIf(!params_shape.isFullyDefined) {
-        "Inputs ${inputs.name}: shape(inputs)[$begin_params_axis:] is not fully defined:" +
-            " $inputs_shape"
-      }
-      var beta = if (center)
-        tf.modelVariable("beta",
-                         shape = params_shape,
-                         dataType = dtype,
-                         initializer = tf.zerosInitializer(),
-                         trainable = trainable)
-      else null
-      val gamma = if (scale)
-        tf.modelVariable("gamma",
-                         shape = params_shape,
-                         dataType = dtype,
-                         initializer = tf.onesInitializer(),
-                         trainable = trainable)
-      else null
-      
-    }
-  }
 }
 
 //fun TF.layer_norm(inputs: Output,
@@ -162,8 +174,8 @@ object layers {
 //    //Calculate the moments on the last axis (layer activations).
 //    val norm_axes = (begin_norm_axis until inputs_rank).map { it.toLong() }.toLongArray()
 //    val (mean, variance) = tf.moments(inputs, norm_axes, keep_dims = true)
-//    //Compute layer normalization using the batch_normalization function.
-//    var outputs = tf.batch_normalization(
+//    //Compute layer normalization using the batchNormalization function.
+//    var outputs = tf.batchNormalization(
 //        inputs,
 //        mean,
 //        variance,

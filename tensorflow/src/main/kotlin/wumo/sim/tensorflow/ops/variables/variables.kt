@@ -29,6 +29,7 @@ object variables {
       return variable(shape, dataType, initializer, regularizer, trainable,
                       reuse, collections, cachingDevice, name)
     }
+    
     fun variable(
         shape: Shape? = null,
         dataType: DataType<*>? = null,
@@ -58,7 +59,7 @@ object variables {
         name, reuse, dataType, initializer, regularizer,
         cachingDevice, partitioner, isDefaultName,
         isPure, block)
-  
+    
     fun <R> updatedScope(
         variableScope: VariableScope = VariableScope.current,
         reuse: Reuse = ReuseOrCreateNew,

@@ -5,12 +5,14 @@ import wumo.sim.algorithm.drl.common.Schedule
 import wumo.sim.core.Env
 import wumo.sim.tensorflow.core.TensorFunction
 import wumo.sim.tensorflow.ops.training.AdamOptimizer
+import wumo.sim.tensorflow.ops.variables.ReuseOrCreateNew
 import wumo.sim.tensorflow.ops.variables.Variable
 import wumo.sim.tensorflow.tf
 import wumo.sim.util.ndarray.*
 import wumo.sim.util.ndarray.implementation.LongArrayBuf
 
 fun <O : Any, A : Any> learn(
+    model_file_path: String,
     env: Env<O, A>,
     network: TensorFunction,
     seed: Int? = null,
@@ -97,7 +99,8 @@ fun <O : Any, A : Any> learn(
         // policy is comparable to eps-greedy exploration with eps = exploration.value(t).
         // See Appendix C.1 in Parameter Space Noise for Exploration, Plappert et al., 2017
         // for detailed explanation.
-        update_param_noise_threshold = (-Math.log((1 - exploration.value(t) + exploration.value(t) / env.action_space.n).toDouble())).toFloat()
+        update_param_noise_threshold = (-Math.log(
+            (1 - exploration.value(t) + exploration.value(t) / env.action_space.n).toDouble())).toFloat()
         act as ActWithParamNoise
         act(newaxis(NDArray.toNDArray(obs)), reset, update_param_noise_threshold, update_param_noise_scale = true, update_eps = update_eps)
       }
@@ -150,19 +153,25 @@ fun <O : Any, A : Any> learn(
                     "mean 100 episode reward: $mean_100ep_reward\n" +
                     "${100 * exploration.value(t)} time spent exploring")
       }
-      if (mean_100ep_reward >= 200)
-        env.render()
       if (checkpoint_freq > 0 && t > learning_starts && num_episodes > 100 && t % checkpoint_freq == 0) {
         if (mean_100ep_reward > saved_mean_reward) {
           if (print_freq > 0)
             System.err.println("Saving model due to mean reward increase: $saved_mean_reward -> $mean_100ep_reward")
           saved_mean_reward = mean_100ep_reward
           val result = eval(act_vars)
-          result
-//          saveModel(model_file_path, act_graph_def, act_vars.map { it.name }.zip(result), act)
+          saveVariable(act_vars.map { it.name }.zip(result))
         }
       }
     }
+    println("Saving model to $model_file_path")
+    val result = eval(act_vars)
+    saveModel(model_file_path, {
+      buildAct(makeObsPh = ::makeObservationPlaceholder,
+               qFunc = q_func,
+               numActions = env.action_space.n,
+               scope = "deepq",
+               reuse = ReuseOrCreateNew)
+    }, act_vars.map { it.name }.zip(result))
   }
 }
 
