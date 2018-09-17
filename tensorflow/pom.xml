@@ -52,7 +52,7 @@
             <groupId>org.bytedeco.javacpp-presets</groupId>
             <artifactId>tensorflow</artifactId>
             <version>${javacpp-resets-tensorflow.version}</version>
-            <classifier>${platform.class}-gpu</classifier>
+            <classifier>linux-x86_64-gpu</classifier>
         </dependency>
         <!--<dependency>-->
         <!--<groupId>org.bytedeco.javacpp-presets</groupId>-->
