@@ -27,7 +27,7 @@ class train_mountaincar {
           print_freq = 10,
           param_noise = true,
           hiddens = listOf(64),
-          dueling = false,
+          dueling = true,
           layer_norm = true)
   }
   

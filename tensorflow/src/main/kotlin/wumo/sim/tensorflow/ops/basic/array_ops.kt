@@ -277,7 +277,7 @@ object array_ops {
     fun <T : OutputLike> identity(data: T, name: String = "Identity"): Output {
       return when (data) {
         is Output -> {
-            gen_array_ops.identity(data, name)
+          gen_array_ops.identity(data, name)
         }
         is IndexedSlices -> TODO()
         is SparseOutput -> TODO()
@@ -336,7 +336,7 @@ object array_ops {
     fun mirrorPadGrad(input: Output, paddings: Output, mode: String, name: String = "MirrorPadGrad"): Output {
       return gen_array_ops.mirrorPadGrad(input, paddings, mode, name)
     }
-  
+    
     fun oneHot(indices: Output,
                depth: Output,
                on_value: Output? = null,
@@ -345,7 +345,7 @@ object array_ops {
                dataType: DataType<*>? = null,
                name: String = "OneHot"): Output =
         oneHot({ indices }, { depth }, { on_value }, { off_value }, axis, dataType, name)
-  
+    
     fun oneHot(indices: OutputMaker,
                depth: OutputMaker,
                on_value: NullableOutputMaker = { null },
@@ -463,6 +463,13 @@ object array_ops {
     
     fun refIdentity(input: Output, name: String = "RefIdentity"): Output {
       return gen_array_ops.refIdentity(input, name)
+    }
+    
+    fun requiredSpaceToBatchPaddings(inputShape: Output,
+                                     blockShape: Output,
+                                     basePaddings: Output? = null,
+                                     name: String = "required_space_to_batch_paddings"): Output {
+      TODO()
     }
     
     fun reshape(tensor: Output, shape: Output, name: String = "Reshape"): Output {
@@ -699,7 +706,7 @@ object array_ops {
           }
           gen_array_ops.fill(shape, tf.const(dtype, zero), tf.currentNameScope)
         }
-  
+    
     fun zeros(shape: Shape, dtype: DataType<*> = FLOAT, name: String = "Zeros"): Output =
         tf.nameScope(name) {
           val zero = when (dtype) {

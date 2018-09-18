@@ -25,7 +25,7 @@ class train_cartpole {
           exploration_final_eps = 0.02f,
           print_freq = 10,
           hiddens = listOf(64),
-          dueling = false,
+          dueling = true,
           layer_norm = false)
     
   }

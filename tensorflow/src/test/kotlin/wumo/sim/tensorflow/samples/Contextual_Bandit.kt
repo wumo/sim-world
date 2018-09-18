@@ -35,10 +35,10 @@ class Contextual_Bandit : BaseTest() {
   
     val state_in = tf.placeholder(Shape(1), dtype = INT32, name = "state_in")
     val state_in_OH = layers.one_hot_encoding(state_in, num_bandits)
-    var output = layers.fully_connected(state_in_OH, num_actions,
-                                        biases_initializer = null,
-                                        activation_fn = { tf.sigmoid(it) },
-                                        weights_initializer = tf.onesInitializer())
+    var output = layers.fullyConnected(state_in_OH, num_actions,
+                                       biases_initializer = null,
+                                       activation_fn = { tf.sigmoid(it) },
+                                       weights_initializer = tf.onesInitializer())
     output = tf.reshape(output, tf.const(i(-1)), name = "output")
     val chosen_action = tf.argmax(output, 0, name = "chosen_action")
   

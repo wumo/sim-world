@@ -60,7 +60,7 @@ open class Layer(var name: String,
     val variable = tf.variable(shape, dataType, initializer, regularizer, trainable && this.trainable, name = name)
     if (regularizer != null)
       tf.colocateWith(variable.op) {
-        val regularization = tf.nameScope(name + "/Regularizer") {
+        val regularization = tf.nameScope("$name/Regularizer") {
           regularizer(variable.toOutput())
         }
         if (regularization != null)

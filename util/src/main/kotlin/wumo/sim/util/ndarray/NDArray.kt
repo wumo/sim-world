@@ -18,6 +18,8 @@ interface Buf<T : Any> {
   val size: Int
 }
 
+fun <T : Any> Any.toNDArray(): NDArray<T> = NDArray.toNDArray(this) as NDArray<T>
+
 open class NDArray<T : Any>(val shape: Shape, val raw: Buf<T>, val dtype: Class<*> = raw[0]::class.java) : Iterable<T> {
   
   companion object {

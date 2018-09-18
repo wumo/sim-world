@@ -160,7 +160,7 @@ open class ActFunction(val act: Function) {
 
 fun defaultParamNoiseFilter(variable: Variable): Boolean =
     (variable in tf.currentGraph.trainableVariables) &&
-        ("fully_connected" in variable.name)
+        ("fullyConnected" in variable.name)
 
 fun buildActWithParamNoise(
     makeObsPh: (String) -> TfInput,

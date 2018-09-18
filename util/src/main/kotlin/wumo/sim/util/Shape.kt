@@ -53,6 +53,13 @@ class Shape(private val dims: IntArray? = null) : Iterable<Int> {
       return if (dims == null) Shape(d)
       else Shape(d, *dims)
     }
+    
+    operator fun invoke(dims: Collection<Int>): Shape =
+        Shape(dims.toIntArray())
+    
+    fun unknown(rank: Int = -1): Shape =
+        if (rank == -1) Shape()
+        else Shape(IntArray(rank) { -1 })
   }
   
   fun asLongArray() = if (dims == null) null
@@ -93,6 +100,10 @@ class Shape(private val dims: IntArray? = null) : Iterable<Int> {
         this[iter.nextInt()]
       })
     }
+  }
+  
+  operator fun set(idx: Int, d: Int) {
+    dims!![idx] = d
   }
   
   operator fun plus(d: Int): Shape =
@@ -146,8 +157,8 @@ class Shape(private val dims: IntArray? = null) : Iterable<Int> {
       rank == -1 -> other
       other.rank == -1 -> this
       else -> {
-        assert(rank == other.rank) { "Shape '$this' must have the same rank as shape '$other'" }
-        assert(isCompatibleWith(other)) { "Shape '$this' must be compatible with shape '$other'." }
+        assertSameRank(other)
+        assertIsCompatibleWith(other)
         Shape(this.dims!!.zip(other.dims!!).map { (_1, _2) ->
           when {
             _1 == -1 -> _2
@@ -158,6 +169,30 @@ class Shape(private val dims: IntArray? = null) : Iterable<Int> {
       }
     }
   }
+  
+  fun withRank(rank: Int): Shape = mergeWith(unknown(rank))
+  
+  fun withRankAtLeast(rank: Int): Shape {
+    assertRankAtLeast(rank)
+    return this
+  }
+  
+  fun assertSameRank(other: Shape) =
+      errorIf(this.rank != other.rank) {
+        "Shape '$this' must have the same rank as shape '$other'"
+      }
+  
+  fun assertRankAtLeast(rank: Int) =
+      errorIf(this.rank < rank) {
+        "Shape '$this' must have rank at least $rank."
+      }
+  
+  fun assertIsCompatibleWith(other: Shape) =
+      errorIf(!isCompatibleWith(other)) {
+        "Shape '$this' must be compatible with shape '$other'."
+      }
+  
+  fun copy(): Shape = Shape(dims?.copyOf())
   
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
@@ -175,3 +210,7 @@ class Shape(private val dims: IntArray? = null) : Iterable<Int> {
   }
   
 }
+
+fun Int.isCompatibleWith(other: Int): Boolean =
+    this == -1 || other == -1 || this == other
+  

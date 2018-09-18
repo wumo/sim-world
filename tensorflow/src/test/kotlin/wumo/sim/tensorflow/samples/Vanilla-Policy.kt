@@ -33,12 +33,12 @@ class VanillaPolicyTest : BaseTest() {
     val a_size = 2
     val h_size = 8
     val state_in = tf.placeholder(Shape(-1, s_size), FLOAT, name = "state_in")
-    val hidden = layers.fully_connected(state_in, h_size,
-                                             biases_initializer = null,
-                                             activation_fn = { tf.relu(it) })
-    val output = layers.fully_connected(hidden, a_size,
-                                    biases_initializer = null,
-                                    activation_fn = { tf.softmax(it) })
+    val hidden = layers.fullyConnected(state_in, h_size,
+                                       biases_initializer = null,
+                                       activation_fn = { tf.relu(it) })
+    val output = layers.fullyConnected(hidden, a_size,
+                                       biases_initializer = null,
+                                       activation_fn = { tf.softmax(it) })
     val chosen_action = tf.argmax(output, 1, name = "chosen_action")
     
     //The next six lines establish the training proceedure. We feed the reward and chosen action into the network
