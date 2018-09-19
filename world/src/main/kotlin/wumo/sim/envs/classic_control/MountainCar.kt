@@ -11,9 +11,10 @@ import wumo.sim.spaces.Box
 import wumo.sim.spaces.Discrete
 import wumo.sim.util.*
 import wumo.sim.util.ndarray.NDArray
+import wumo.sim.utils.np_random
 import kotlin.math.cos
 import kotlin.math.sin
-
+import kotlin.random.Random
 
 class MountainCar : Env<NDArray<Float>, Int> {
   companion object {
@@ -28,6 +29,13 @@ class MountainCar : Env<NDArray<Float>, Int> {
   override val action_space = Discrete(3)
   override val observation_space = Box(low = NDArray(f(min_position, -max_speed)),
                                        high = NDArray(f(max_position, max_speed)))
+  
+  lateinit var rand: Random
+  
+  init {
+    seed()
+    reset()
+  }
   
   override fun step(a: Int): t4<NDArray<Float>, Float, Boolean, Map<String, Any>> {
     assert(action_space.contains(a)) { "invalid a:$a" }
@@ -45,7 +53,7 @@ class MountainCar : Env<NDArray<Float>, Int> {
   }
   
   override fun reset(): NDArray<Float> {
-    state[0] = Rand().nextFloat(-0.6f, -0.4f)
+    state[0] = rand.nextDouble(-0.6, -0.4).toFloat()
     state[1] = 0.0f
     return state.copy()
   }
@@ -104,9 +112,13 @@ class MountainCar : Env<NDArray<Float>, Int> {
   }
   
   override fun close() {
-    viewer.close()
+    if (::viewer.isInitialized)
+      viewer.close()
   }
   
-  override fun seed() {
+  override fun seed(seed: Long?): List<Long> {
+    val (rand, seed) = np_random(seed)
+    this.rand = rand
+    return listOf(seed)
   }
 }

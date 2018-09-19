@@ -13,9 +13,12 @@ import wumo.sim.util.f
 import wumo.sim.util.ndarray.NDArray
 import wumo.sim.util.ndarray.unaryMinus
 import wumo.sim.util.t4
+import wumo.sim.util.uniform
+import wumo.sim.utils.np_random
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
+import kotlin.random.Random
 
 class CartPole : Env<NDArray<Float>, Int> {
   companion object {
@@ -44,6 +47,12 @@ class CartPole : Env<NDArray<Float>, Int> {
   
   var steps_beyond_done = Double.NaN
   
+  lateinit var rand: Random
+  
+  init {
+    seed()
+  }
+  
   override val action_space = Discrete(2)
   override val observation_space = Box(-high, high)
   
@@ -66,9 +75,9 @@ class CartPole : Env<NDArray<Float>, Int> {
     state[2] = theta
     state[3] = theta_dot
     val done = x < -x_threshold
-               || x > x_threshold
-               || theta < -theta_threshold_radians
-               || theta > theta_threshold_radians
+        || x > x_threshold
+        || theta < -theta_threshold_radians
+        || theta > theta_threshold_radians
     val reward = when {
       !done -> 1.0f
       steps_beyond_done.isNaN() -> {
@@ -86,7 +95,7 @@ class CartPole : Env<NDArray<Float>, Int> {
   }
   
   override fun reset(): NDArray<Float> {
-    val s = Rand(-0.05f, 0.05f, 4)
+    val s = rand.uniform(-0.05f, 0.05f, 4)
     state.setFrom(s)
 //    arrayCopy(s, state, state.size)
     steps_beyond_done = Double.NaN
@@ -157,9 +166,13 @@ class CartPole : Env<NDArray<Float>, Int> {
   }
   
   override fun close() {
-    viewer.close()
+    if (::viewer.isInitialized)
+      viewer.close()
   }
   
-  override fun seed() {
+  override fun seed(seed: Long?): List<Long> {
+    val (rand, seed) = np_random(seed)
+    this.rand = rand
+    return listOf(seed)
   }
 }

@@ -20,6 +20,18 @@ interface Buf<T : Any> {
 
 fun <T : Any> Any.toNDArray(): NDArray<T> = NDArray.toNDArray(this) as NDArray<T>
 
+val castSwitch = SwitchOnClass1<Number, Any>().apply {
+  case<Byte> { it.toByte() }
+  case<Int> { it.toInt() }
+  case<Short> { it.toShort() }
+  case<Long> { it.toLong() }
+  case<Float> { it.toFloat() }
+  case<Double> { it.toDouble() }
+}
+
+fun <R : Number, T : Number> R.cast(dataType: Class<T>): T =
+    castSwitch(dataType, this as Number) as T
+
 open class NDArray<T : Any>(val shape: Shape, val raw: Buf<T>, val dtype: Class<*> = raw[0]::class.java) : Iterable<T> {
   
   companion object {
@@ -154,6 +166,9 @@ open class NDArray<T : Any>(val shape: Shape, val raw: Buf<T>, val dtype: Class<
     operator fun invoke(shape: Shape, initvalue: Int) = NDArray(shape, IntArray(shape.numElements()) { initvalue })
     operator fun invoke(shape: Shape, initvalue: Long) = NDArray(shape, LongArray(shape.numElements()) { initvalue })
     operator fun invoke(shape: Shape, initvalue: String) = NDArray(shape, Array(shape.numElements()) { initvalue })
+    
+    inline operator fun <reified T : Any> invoke(shape: Shape, initvalue: T) =
+        Array(shape.numElements()) { initvalue }.toNDArray<T>()
   }
   
   private val stride: IntArray

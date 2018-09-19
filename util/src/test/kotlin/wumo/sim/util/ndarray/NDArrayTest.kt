@@ -71,4 +71,14 @@ class NDArrayTest {
     println(m(0, 0, 0))
     println(m(0, 0, 1))
   }
+  
+  inline fun <reified T : Any> make(shape: Shape, initvalue: T): NDArray<T> =
+      NDArray(shape, initvalue)
+  
+  @Test
+  fun shapeNDArray() {
+    
+    val n1 = make(Shape(2, 2), 1)
+    println(n1)
+  }
 }

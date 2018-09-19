@@ -4,6 +4,7 @@ package wumo.sim.util
 
 import wumo.sim.util.ndarray.NDArray
 import java.util.concurrent.ThreadLocalRandom
+import kotlin.random.Random
 
 inline fun Rand() = ThreadLocalRandom.current()!!
 inline fun ThreadLocalRandom.nextFloat(origin: Float, bound: Float) = origin + nextFloat() * (bound - origin)
@@ -11,6 +12,12 @@ fun ThreadLocalRandom.nextGaussian(mean: Float = 0f, deviation: Float = 1f): Flo
     nextGaussian().toFloat() * deviation + mean
 
 fun Rand(low: Float, high: Float, n: Int) = NDArray(f(n) { Rand().nextFloat(low, high) })
+
+fun Random.uniform(low: Float, high: Float, n: Int): NDArray<Float> =
+    NDArray(f(n) {
+      this@uniform.nextDouble(low.toDouble(),
+                              high.toDouble()).toFloat()
+    })
 
 fun <T> max(set: Iterable<T>, default: Double = Double.NaN, evaluate: T.(T) -> Double): Double {
   val iterator = set.iterator()

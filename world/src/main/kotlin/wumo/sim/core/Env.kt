@@ -12,6 +12,6 @@ interface Env<O : Any, A : Any> {
   fun reset(): O
   fun render()
   fun close()
-  fun seed()
+  fun seed(seed: Long? = null): List<Long>
   
 }

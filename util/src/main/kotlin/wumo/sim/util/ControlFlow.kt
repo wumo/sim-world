@@ -103,17 +103,27 @@ inline fun put(branches: MutableMap<Class<*>, Any>, c: Class<*>, block: Any) {
 class SwitchOnClass<R> {
   val branches = HashMap<Class<*>, Fun0<R>>()
   var elseBranch: (Class<*>) -> R = { throw IllegalArgumentException("unsupported ${it::class.java}") }
-  inline fun <reified P1> case(noinline block: Fun0<R>) {
-    put(branches as MutableMap<Class<*>, Any>, P1::class.java, block)
-  }
-  
-  inline fun caseElse(noinline block: Fun1<Class<*>, R>) {
-    elseBranch = block
+  inline fun <reified P0> case(noinline block: Fun0<R>) {
+    put(branches as MutableMap<Class<*>, Any>, P0::class.java, block)
   }
   
   operator fun invoke(cls: Class<*>): R {
     val block = branches[cls] ?: return elseBranch(cls)
     return block()
+  }
+  
+}
+
+class SwitchOnClass1<P1, R> {
+  val branches = HashMap<Class<*>, Fun1<P1, R>>()
+  var elseBranch: (Class<*>) -> R = { throw IllegalArgumentException("unsupported ${it::class.java}") }
+  inline fun <reified P0> case(noinline block: Fun1<P1, R>) {
+    put(branches as MutableMap<Class<*>, Any>, P0::class.java, block)
+  }
+  
+  operator fun invoke(cls: Class<*>, p1: P1): R {
+    val block = branches[cls] ?: return elseBranch(cls)
+    return block(p1)
   }
   
 }
