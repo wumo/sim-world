@@ -3,16 +3,17 @@ package wumo.sim.util
 import java.io.File
 import java.io.File.separatorChar
 import java.nio.file.Files.copy
+import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
 
 fun unpackFileToTemp(resource: String, override: Boolean = false): String {
-  val file = File(System.getProperty("java.io.tmpdir") +
-                      separatorChar + resource)
+  val path = Paths.get(System.getProperty("java.io.tmpdir"), resource)
+  val file = path.toFile()
   if (!override && file.exists()) return file.path
   file.parentFile.mkdirs()
   val source = Thread.currentThread().contextClassLoader
       .getResourceAsStream(resource)
-  copy(source, file.toPath(), StandardCopyOption.REPLACE_EXISTING)
+  copy(source, path, StandardCopyOption.REPLACE_EXISTING)
   return file.path
 }
 
@@ -20,10 +21,10 @@ fun unpackDirToTemp(resourceDir: String, override: Boolean = false): String {
   val loader = Thread.currentThread().contextClassLoader
   val dir = File(loader.getResource(resourceDir).path)
   dir.listFiles().forEach {
-    unpackFileToTemp(resourceDir + separatorChar + it.name,
+    unpackFileToTemp(Paths.get(resourceDir, it.name).toString(),
                      override)
   }
-  return System.getProperty("java.io.tmpdir") + separatorChar + resourceDir
+  return Paths.get(System.getProperty("java.io.tmpdir"), resourceDir).toString()
 }
 
 fun listResources(resourceDir: String): Array<File> {

@@ -14,7 +14,7 @@ class TimeLimit<O : Any, A : Any>(val env: Env<O, A>,
   
   fun past_limit() = when {
     (max_episode_steps != null && max_episode_steps <= elapsed_steps) ||
-    (max_episode_seconds != null && max_episode_seconds <= elapsed_seconds) ->
+        (max_episode_seconds != null && max_episode_seconds <= elapsed_seconds) ->
       true
     else ->
       false
@@ -45,7 +45,6 @@ class TimeLimit<O : Any, A : Any>(val env: Env<O, A>,
     env.close()
   }
   
-  override fun seed() {
-    env.seed()
-  }
+  override fun seed(seed: Long?): List<Long> =
+      env.seed(seed)
 }

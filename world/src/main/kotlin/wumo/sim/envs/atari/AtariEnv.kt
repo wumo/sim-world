@@ -1,5 +1,7 @@
 package wumo.sim.envs.atari
 
+import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.Pixmap
 import org.bytedeco.javacpp.IntPointer
 import org.bytedeco.javacpp.ale.ALEInterface
 import wumo.sim.core.Env
@@ -7,6 +9,7 @@ import wumo.sim.core.Space
 import wumo.sim.envs.atari.AtariEnv.Companion.ObsType.image
 import wumo.sim.envs.atari.AtariEnv.Companion.ObsType.ram
 import wumo.sim.graphics.Config
+import wumo.sim.graphics.Image
 import wumo.sim.graphics.Viewer
 import wumo.sim.spaces.Box
 import wumo.sim.spaces.Discrete
@@ -14,7 +17,8 @@ import wumo.sim.util.*
 import wumo.sim.util.ndarray.NDArray
 import wumo.sim.utils.hash_seed
 import wumo.sim.utils.np_random
-import java.io.File.separatorChar
+import java.nio.file.Paths
+import kotlin.math.abs
 import kotlin.random.Random
 
 class AtariEnv(val game: String = "pong",
@@ -35,7 +39,7 @@ class AtariEnv(val game: String = "pong",
   }
   
   lateinit var rand: Random
-  val game_path = "$game_dir$separatorChar$game.bin"
+  val game_path = Paths.get(game_dir, "$game.bin").toString()
   val ale = ALEInterface()
   val action_set: IntPointer
   val screen_width: Int
@@ -46,7 +50,8 @@ class AtariEnv(val game: String = "pong",
   init {
     require(game in games)
     ale.setFloat("repeat_action_probability", repeat_action_probability)
-    
+//    ale.setBool("display_screen", true)
+//    ale.setBool("sound", false)
     seed()
     
     action_set = ale.minimalActionSet
@@ -64,8 +69,9 @@ class AtariEnv(val game: String = "pong",
   
   override fun seed(seed: Long?): List<Long> {
     val (rand, seed1) = np_random(seed)
+    this.rand = rand
     val seed2 = hash_seed(seed1 + 1) % (1 shl 31)
-    ale.setInt("random_seed", seed2.toInt())
+    ale.setInt("random_seed", abs(seed2).toInt())
     ale.loadROM(game_path)
     return listOf(seed1, seed2)
   }
@@ -89,17 +95,27 @@ class AtariEnv(val game: String = "pong",
       }
   
   private fun getRam(): NDArray<Byte> {
-    val ram = ale.ram.array()
-    val array = ByteArray(ram.limit().toInt())
+    val _ram = ale.ram
+    val ram = _ram.array()
+    val array = ByteArray(_ram.size().toInt())
     ram.get(array)
     return NDArray(array)
   }
   
   private fun getImage(): NDArray<Byte> {
-    val screen_size = screen_width * screen_height
-    val array = ByteArray(screen_size)
-    ale.getScreenRGB(array)
-    return NDArray(Shape(screen_height, screen_width, 3), array)
+    val shape = Shape(screen_height, screen_width, 3)
+    val array = ByteArray(shape.numElements())
+//    ale.getScreenRGB(array)
+    
+    val ale_screen_data = ale.screen.array
+    var j = 0
+    for (i in 0 until screen_width * screen_height) {
+      val zrgb = rgb_palette[ale_screen_data[i.toLong()].toUByte().toInt()]
+      array[j++] = ((zrgb shr 16) and 0xff).toByte()
+      array[j++] = ((zrgb shr 8) and 0xff).toByte()
+      array[j++] = ((zrgb shr 0) and 0xff).toByte()
+    }
+    return NDArray(shape, array)
   }
   
   override fun reset(): NDArray<Byte> {
@@ -108,11 +124,32 @@ class AtariEnv(val game: String = "pong",
   }
   
   lateinit var viewer: Viewer
+  
+  private fun NDArray<Byte>.toPixmap(): Pixmap {
+    val img = this
+    val pixmap = Pixmap(screen_width, screen_height, Pixmap.Format.RGB888)
+    for (x in 0 until screen_width)
+      for (y in 0 until screen_height) {
+        val r = img[y, x, 0].toUByte().toInt()
+        val g = img[y, x, 1].toUByte().toInt()
+        val b = img[y, x, 2].toUByte().toInt()
+        val color = (r shl 16) or (g shl 8) or b
+        pixmap.drawPixel(x, y, color)
+      }
+    return pixmap
+  }
+  
+  lateinit var img: Image
+  
   override fun render() {
     val img = getImage()
     if (!::viewer.isInitialized) {
       viewer = Viewer(Config(screen_width, screen_height, isContinousRendering = false))
-      
+      this.img = Image { img.toPixmap() }
+      viewer += this.img
+      viewer.startAsync()
+    } else {
+      this.img.change { img.toPixmap() }
     }
     viewer.requestRender()
     Thread.sleep(1000 / 60)
@@ -122,5 +159,39 @@ class AtariEnv(val game: String = "pong",
     if (::viewer.isInitialized)
       viewer.close()
   }
-  
 }
+
+val rgb_palette = intArrayOf(
+    0x000000,0x000000,0x2121ff,0x3a3a3a,0xf03c79,0x797979,0xff50ff,0x989898,
+    0x7fff00,0xbcbcbc,0x7fffff,0xd9d9d9,0xffff3f,0xe9e9e9,0xffffff,0xffffff,
+    0x000000,0x000000,0x2121ff,0x3a3a3a,0xf03c79,0x797979,0xff50ff,0x989898,
+    0x7fff00,0xbcbcbc,0x7fffff,0xd9d9d9,0xffff3f,0xe9e9e9,0xffffff,0xffffff,
+    0x000000,0x000000,0x2121ff,0x3a3a3a,0xf03c79,0x797979,0xff50ff,0x989898,
+    0x7fff00,0xbcbcbc,0x7fffff,0xd9d9d9,0xffff3f,0xe9e9e9,0xffffff,0xffffff,
+    0x000000,0x000000,0x2121ff,0x3a3a3a,0xf03c79,0x797979,0xff50ff,0x989898,
+    0x7fff00,0xbcbcbc,0x7fffff,0xd9d9d9,0xffff3f,0xe9e9e9,0xffffff,0xffffff,
+    0x000000,0x000000,0x2121ff,0x3a3a3a,0xf03c79,0x797979,0xff50ff,0x989898,
+    0x7fff00,0xbcbcbc,0x7fffff,0xd9d9d9,0xffff3f,0xe9e9e9,0xffffff,0xffffff,
+    0x000000,0x000000,0x2121ff,0x3a3a3a,0xf03c79,0x797979,0xff50ff,0x989898,
+    0x7fff00,0xbcbcbc,0x7fffff,0xd9d9d9,0xffff3f,0xe9e9e9,0xffffff,0xffffff,
+    0x000000,0x000000,0x2121ff,0x3a3a3a,0xf03c79,0x797979,0xff50ff,0x989898,
+    0x7fff00,0xbcbcbc,0x7fffff,0xd9d9d9,0xffff3f,0xe9e9e9,0xffffff,0xffffff,
+    0x000000,0x000000,0x2121ff,0x3a3a3a,0xf03c79,0x797979,0xff50ff,0x989898,
+    0x7fff00,0xbcbcbc,0x7fffff,0xd9d9d9,0xffff3f,0xe9e9e9,0xffffff,0xffffff,
+    0x000000,0x000000,0x2121ff,0x3a3a3a,0xf03c79,0x797979,0xff50ff,0x989898,
+    0x7fff00,0xbcbcbc,0x7fffff,0xd9d9d9,0xffff3f,0xe9e9e9,0xffffff,0xffffff,
+    0x000000,0x000000,0x2121ff,0x3a3a3a,0xf03c79,0x797979,0xff50ff,0x989898,
+    0x7fff00,0xbcbcbc,0x7fffff,0xd9d9d9,0xffff3f,0xe9e9e9,0xffffff,0xffffff,
+    0x000000,0x000000,0x2121ff,0x3a3a3a,0xf03c79,0x797979,0xff50ff,0x989898,
+    0x7fff00,0xbcbcbc,0x7fffff,0xd9d9d9,0xffff3f,0xe9e9e9,0xffffff,0xffffff,
+    0x000000,0x000000,0x2121ff,0x3a3a3a,0xf03c79,0x797979,0xff50ff,0x989898,
+    0x7fff00,0xbcbcbc,0x7fffff,0xd9d9d9,0xffff3f,0xe9e9e9,0xffffff,0xffffff,
+    0x000000,0x000000,0x2121ff,0x3a3a3a,0xf03c79,0x797979,0xff50ff,0x989898,
+    0x7fff00,0xbcbcbc,0x7fffff,0xd9d9d9,0xffff3f,0xe9e9e9,0xffffff,0xffffff,
+    0x000000,0x000000,0x2121ff,0x3a3a3a,0xf03c79,0x797979,0xff50ff,0x989898,
+    0x7fff00,0xbcbcbc,0x7fffff,0xd9d9d9,0xffff3f,0xe9e9e9,0xffffff,0xffffff,
+    0x000000,0x000000,0x2121ff,0x3a3a3a,0xf03c79,0x797979,0xff50ff,0x989898,
+    0x7fff00,0xbcbcbc,0x7fffff,0xd9d9d9,0xffff3f,0xe9e9e9,0xffffff,0xffffff,
+    0x000000,0x000000,0x2121ff,0x3a3a3a,0xf03c79,0x797979,0xff50ff,0x989898,
+    0x7fff00,0xbcbcbc,0x7fffff,0xd9d9d9,0xffff3f,0xe9e9e9,0xffffff,0xffffff
+)

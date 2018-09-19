@@ -8,6 +8,7 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
+import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Quaternion
 import com.badlogic.gdx.math.Vector3
 import java.util.concurrent.ConcurrentHashMap
@@ -21,9 +22,11 @@ class Config(val width: Int, val height: Int,
 class Viewer(val config: Config) : ApplicationListener {
   private val geoms = ConcurrentHashMap.newKeySet<Geom>()
   private val geomsToRemove = ConcurrentHashMap.newKeySet<Geom>()
+  private val imgs = ConcurrentHashMap.newKeySet<Image>()
   lateinit var camera: OrthographicCamera
   lateinit var builder: MeshPartBuilder
   lateinit var renderer: MeshPartRender
+  lateinit var sprite: SpriteBatch
   private var running = false
   private var startCallback = {}
   private var closeCallback = {}
@@ -61,6 +64,8 @@ class Viewer(val config: Config) : ApplicationListener {
   
   inline operator fun plusAssign(geom: Geom) = add(geom)
   inline operator fun minusAssign(geom: Geom) = remove(geom)
+  inline operator fun plusAssign(img: Image) = add(img)
+  inline operator fun minusAssign(img: Image) = remove(img)
   
   fun add(geom: Geom) {
     geoms.add(geom)
@@ -71,6 +76,13 @@ class Viewer(val config: Config) : ApplicationListener {
     geomsToRemove.add(geom)
   }
   
+  fun add(img: Image) {
+    imgs += img
+  }
+  
+  fun remove(img: Image) {
+  }
+  
   fun requestRender() {
     Gdx.graphics.requestRendering()
   }
@@ -79,6 +91,7 @@ class Viewer(val config: Config) : ApplicationListener {
     camera = OrthographicCamera(Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
     builder = MeshPartBuilder(config.maxVertices)
     renderer = MeshPartRender()
+    sprite = SpriteBatch()
     Gdx.graphics.isContinuousRendering = config.isContinousRendering
     startCallback()
   }
@@ -108,6 +121,13 @@ class Viewer(val config: Config) : ApplicationListener {
       renderer.render(geom.mesh)
     }
     renderer.end()
+    
+    sprite.begin()
+    for (img in imgs) {
+      img.prepare()
+      sprite.draw(img.tex, 0f, 0f)
+    }
+    sprite.end()
   }
   
   override fun pause() {
@@ -120,9 +140,10 @@ class Viewer(val config: Config) : ApplicationListener {
     camera.setToOrtho(false, width.toFloat(), height.toFloat())
   }
   
-  
   override fun dispose() {
     renderer.dispose()
     builder.dispose()
+    for (img in imgs)
+      img.dispose()
   }
 }
