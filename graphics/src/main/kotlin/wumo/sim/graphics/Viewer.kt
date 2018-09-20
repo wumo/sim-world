@@ -125,7 +125,9 @@ class Viewer(val config: Config) : ApplicationListener {
     sprite.begin()
     for (img in imgs) {
       img.prepare()
-      sprite.draw(img.tex, 0f, 0f)
+      sprite.draw(img.tex, 0f, 0f,
+                  img.tex.width * img.scale,
+                  img.tex.height * img.scale)
     }
     sprite.end()
   }

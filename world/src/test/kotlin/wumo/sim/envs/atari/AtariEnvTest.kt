@@ -3,12 +3,19 @@ package wumo.sim.envs.atari
 import org.junit.Assert.*
 import org.junit.Test
 import wumo.sim.envs.atari.AtariEnv.Companion.ObsType.image
+import wumo.sim.envs.envs
 
 class AtariEnvTest {
+  
+  @Test
+  fun make() {
+    val a = envs.Atari("SpaceInvaders-ram-v4")
+  }
+  
   @Test
   fun test() {
     
-    val env = AtariEnv(game = "space_invaders")
+    val env = envs.Atari("MontezumaRevengeNoFrameskip-v4")
     
     val episode = 10
     repeat(episode) {

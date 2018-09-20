@@ -7,6 +7,7 @@ import wumo.sim.algorithm.drl.deepq.loadModel
 import wumo.sim.algorithm.drl.deepq.saveModel
 import wumo.sim.envs.classic_control.CartPole
 import wumo.sim.envs.classic_control.MountainCar
+import wumo.sim.envs.envs
 import wumo.sim.tensorflow.tf
 import wumo.sim.util.ndarray.NDArray
 import wumo.sim.util.ndarray.newaxis
@@ -15,7 +16,7 @@ import wumo.sim.wrappers.TimeLimit
 class train_mountaincar {
   @Test
   fun train() {
-    val env = TimeLimit(MountainCar(), max_episode_steps = 200)
+    val env = envs.`MountainCar-v0`()
     learn("mountaincar.model",
           env = env,
           network = identity,
@@ -33,7 +34,7 @@ class train_mountaincar {
   
   @Test
   fun enjoy() {
-    val env = TimeLimit(MountainCar(), max_episode_steps = 200)
+    val env = envs.`MountainCar-v0`()
     val (graph, init, act) = loadModel("mountaincar.model")
     tf.unsafeDefaultGraph(graph) {
       tf.session {

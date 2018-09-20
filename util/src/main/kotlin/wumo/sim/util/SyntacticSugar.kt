@@ -1,6 +1,7 @@
 package wumo.sim.util
 
 import java.lang.Exception
+import kotlin.contracts.*
 
 /**
  * Always throws [NotImplementedError] stating that operation is not implemented.

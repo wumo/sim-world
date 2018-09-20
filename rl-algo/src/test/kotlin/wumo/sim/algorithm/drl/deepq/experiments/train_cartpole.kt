@@ -6,6 +6,7 @@ import wumo.sim.algorithm.drl.deepq.learn
 import wumo.sim.algorithm.drl.deepq.loadModel
 import wumo.sim.envs.classic_control.CartPole
 import wumo.sim.envs.classic_control.MountainCar
+import wumo.sim.envs.envs
 import wumo.sim.tensorflow.tf
 import wumo.sim.util.ndarray.NDArray
 import wumo.sim.util.ndarray.newaxis
@@ -14,7 +15,7 @@ import wumo.sim.wrappers.TimeLimit
 class train_cartpole {
   @Test
   fun train() {
-    val env = TimeLimit(CartPole(), 200)
+    val env = envs.`CartPole-v0`()
     learn("cartpole.model",
           env = env,
           network = identity,
@@ -32,7 +33,7 @@ class train_cartpole {
   
   @Test
   fun enjoy() {
-    val env = TimeLimit(CartPole(), 200)
+    val env =  envs.`CartPole-v0`()
     val (graph, init, act) = loadModel("cartpole.model")
     tf.unsafeDefaultGraph(graph) {
       tf.session {

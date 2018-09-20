@@ -13,7 +13,7 @@ import wumo.sim.util.t2
 fun observationPlaceholder(obSpace: Space<*>,
                            batch_size: Int = -1,
                            name: String = "Ob"): Output {
-  assert(obSpace is Discrete || obSpace is Box) {
+  assert(obSpace is Discrete || obSpace is Box<*>) {
     "Can only deal with Discrete and Box observation spaces for now"
   }
   
@@ -38,6 +38,6 @@ fun observation_input(obSpace: Space<*>,
 fun encodeObservation(obSpace: Space<*>, placeholder: Output): Output =
     when (obSpace) {
       is Discrete -> tf.toFloat(tf.oneHot(placeholder, tf.const(obSpace.n)))
-      is Box -> tf.toFloat(placeholder)
+      is Box<*> -> tf.toFloat(placeholder)
       else -> NONE()
     }

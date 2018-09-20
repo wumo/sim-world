@@ -3,7 +3,7 @@ package wumo.sim.graphics
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
 
-class Image(var img: () -> Pixmap) {
+class Image(val scale:Float,var img: () -> Pixmap) {
   private var changed = true
   internal lateinit var tex: Texture
   
