@@ -24,6 +24,11 @@ operator fun <T : Any> NDArray<T>.plus(b: Number): NDArray<T> {
   TODO()
 }
 
+operator fun NDArray<Float>.divAssign(b: Float) {
+  for (i in 0 until raw.size)
+    raw[i] /= b
+}
+
 fun <T : Any> abs(a: NDArray<T>): NDArray<T> {
   TODO()
 }
@@ -77,4 +82,42 @@ fun arrayEqual(a: NDArray<*>, b: NDArray<*>): Boolean {
     if (a.rawGet(i) != b.rawGet(i))
       return false
   return true
+}
+
+fun <T : Any> NDArray<T>.reduce(axis: Int = 0,
+                                accumulator: (T, T) -> T): NDArray<T> {
+  val origin = this
+  val shape = shape
+  if (isScalar) return copy()
+  require(shape.rank >= 1)
+  val resultShape = Shape(List(shape.rank - 1) {
+    if (it < axis) shape[it]
+    else shape[it + 1]
+  })
+  val N = shape[axis]
+  val idx = IntArray(shape.rank)
+  return NDArray.from<Any>(resultShape) {
+    if (axis > 0) System.arraycopy(it, 0, idx, 0, axis - 1)
+    System.arraycopy(it, axis, idx, axis + 1, it.size - axis)
+    idx[axis] = 0
+    var acc = origin.get(*idx)
+    for (i in 1 until N) {
+      idx[axis] = i
+      val element = origin.get(*idx)
+      acc = accumulator(acc, element)
+    }
+    acc
+  } as NDArray<T>
+}
+
+fun <T> NDArray<T>.max(axis: Int = 0): NDArray<T>
+    where T : Number, T : Comparable<T> =
+    reduce(axis) { a, b -> if (a > b) a else b }
+
+fun <T> NDArray<T>.min(axis: Int = 0): NDArray<T>
+    where T : Number, T : Comparable<T> =
+    reduce(axis) { a, b -> if (a < b) a else b }
+
+inline fun <reified R : Number, reified T : Number> NDArray<T>.cast(): NDArray<R> {
+  TODO()
 }

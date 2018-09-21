@@ -5,20 +5,49 @@ package wumo.sim.util.ndarray
 import wumo.sim.util.*
 import wumo.sim.util.ndarray.implementation.*
 
-interface Buf<T : Any> {
-  operator fun get(offset: Int): T
-  operator fun set(offset: Int, data: T)
-  fun copy(): Buf<T>
+abstract class Buf<T : Any> : Iterable<T> {
+  abstract operator fun get(offset: Int): T
+  abstract operator fun set(offset: Int, data: T)
+  abstract fun copy(): Buf<T>
   fun setFrom(other: Buf<T>) {
     for (i in 0 until size)
       this[i] = other[i]
   }
   
-  fun slice(start: Int, end: Int): Buf<T>
-  val size: Int
+  abstract fun slice(start: Int, end: Int): Buf<T>
+  
+  abstract val size: Int
+  
+  override fun iterator() = object : Iterator<T> {
+    var a = 0
+    override fun hasNext() = a < size
+    
+    override fun next() = get(a++)
+  }
+  
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (javaClass != other?.javaClass) return false
+    
+    other as Buf<*>
+    
+    if (size != other.size) return false
+    for (i in 0 until size)
+      if (get(i) != other[i])
+        return false
+    return true
+  }
+  
+  override fun hashCode(): Int {
+    var result = 1
+    for (i in 0 until size)
+      result = 31 * result + get(i).hashCode()
+    
+    return result
+  }
 }
 
-fun <T : Any> Any.toNDArray(): NDArray<T> = NDArray.toNDArray(this) as NDArray<T>
+fun <T : Any> Any.toNDArray(shape: Shape? = null): NDArray<T> = NDArray.toNDArray(this, shape) as NDArray<T>
 
 val castSwitch = SwitchOnClass1<Number, Any>().apply {
   case<Byte> { it.toByte() }
@@ -36,68 +65,68 @@ open class NDArray<T : Any>(val shape: Shape, val raw: Buf<T>, val dtype: Class<
   
   companion object {
     fun zeros(shape: Int): NDArray<Float> {
-      return NDArray(Shape(shape), FloatArray(shape))
+      return NDArray(Shape(shape), 0f)
     }
     
     fun zeros(shape: Shape): NDArray<Float> {
-      return NDArray(shape, FloatArray(shape.numElements()))
+      return NDArray(shape, 0f)
     }
     
-    private val toNDArraySwitch = SwitchType<NDArray<*>>().apply {
-      case<NDArray<*>> { it }
-      case<Float> { NDArray(it) }
-      case<Double> { NDArray(it) }
-      case<Boolean> { NDArray(it) }
-      case<Byte> { NDArray(it) }
-      case<Short> { NDArray(it) }
-      case<Int> { NDArray(it) }
-      case<Long> { NDArray(it) }
-      case<String> { NDArray(it) }
-      case<FloatArray> { NDArray(it) }
-      case<DoubleArray> { NDArray(it) }
-      case<BooleanArray> { NDArray(it) }
-      case<ByteArray> { NDArray(it) }
-      case<ShortArray> { NDArray(it) }
-      case<IntArray> { NDArray(it) }
-      case<LongArray> { NDArray(it) }
-      case<Array<Float>> { NDArray(it) }
-      case<Array<Double>> { NDArray(it) }
-      case<Array<Boolean>> { NDArray(it) }
-      case<Array<Byte>> { NDArray(it) }
-      case<Array<Short>> { NDArray(it) }
-      case<Array<Int>> { NDArray(it) }
-      case<Array<Long>> { NDArray(it) }
-      case<Array<String>> { NDArray(it) }
+    private val toBufSwitch = SwitchType<Pair<Buf<*>, Shape>>().apply {
+      case<NDArray<*>> { it.raw to it.shape }
+      case<Float> { FloatArrayBuf(f(it)) to scalarDimension }
+      case<Double> { DoubleArrayBuf(d(it)) to scalarDimension }
+      case<Boolean> { BooleanArrayBuf(B(it)) to scalarDimension }
+      case<Byte> { ByteArrayBuf(b(it)) to scalarDimension }
+      case<Short> { ShortArrayBuf(s(it)) to scalarDimension }
+      case<Int> { IntArrayBuf(i(it)) to scalarDimension }
+      case<Long> { LongArrayBuf(l(it)) to scalarDimension }
+      case<String> { ArrayBuf(a(it)) to scalarDimension }
+      case<FloatArray> { FloatArrayBuf(it) to Shape(it.size) }
+      case<DoubleArray> { DoubleArrayBuf(it) to Shape(it.size) }
+      case<BooleanArray> { BooleanArrayBuf(it) to Shape(it.size) }
+      case<ByteArray> { ByteArrayBuf(it) to Shape(it.size) }
+      case<ShortArray> { ShortArrayBuf(it) to Shape(it.size) }
+      case<IntArray> { IntArrayBuf(it) to Shape(it.size) }
+      case<LongArray> { LongArrayBuf(it) to Shape(it.size) }
+      case<Array<Float>> { FloatArrayBuf(it.toFloatArray()) to Shape(it.size) }
+      case<Array<Double>> { DoubleArrayBuf(it.toDoubleArray()) to Shape(it.size) }
+      case<Array<Boolean>> { BooleanArrayBuf(it.toBooleanArray()) to Shape(it.size) }
+      case<Array<Byte>> { ByteArrayBuf(it.toByteArray()) to Shape(it.size) }
+      case<Array<Short>> { ShortArrayBuf(it.toShortArray()) to Shape(it.size) }
+      case<Array<Int>> { IntArrayBuf(it.toIntArray()) to Shape(it.size) }
+      case<Array<Long>> { LongArrayBuf(it.toLongArray()) to Shape(it.size) }
+      case<Array<String>> { ArrayBuf(it) to Shape(it.size) }
       case<Array<NDArray<*>>> {
-        combine(it.asIterable(), it.size)
+        expand(it.asIterable(), it.size)
       }
       caseIs<Array<*>> {
         val wrap = it.map { toNDArray(it!!) }
-        combine(wrap, wrap.size)
+        expand(wrap, wrap.size)
       }
       caseIs<Collection<*>> {
         collectionSwitch(it.first()!!, it)
       }
     }
-    private val collectionSwitch = SwitchType2<Collection<*>, NDArray<*>>().apply {
-      case<Float> { NDArray((_2 as Collection<Float>).toFloatArray()) }
-      case<Double> { NDArray((_2 as Collection<Double>).toDoubleArray()) }
-      case<Boolean> { NDArray((_2 as Collection<Boolean>).toBooleanArray()) }
-      case<Byte> { NDArray((_2 as Collection<Byte>).toByteArray()) }
-      case<Short> { NDArray((_2 as Collection<Short>).toShortArray()) }
-      case<Int> { NDArray((_2 as Collection<Int>).toIntArray()) }
-      case<Long> { NDArray((_2 as Collection<Long>).toLongArray()) }
-      case<String> { NDArray((_2 as Collection<String>).toTypedArray()) }
+    private val collectionSwitch = SwitchType2<Collection<*>, Pair<Buf<*>, Shape>>().apply {
+      case<Float> { val array = (_2 as Collection<Float>).toFloatArray();FloatArrayBuf(array) to Shape(array.size) }
+      case<Double> { val array = (_2 as Collection<Double>).toDoubleArray();DoubleArrayBuf(array) to Shape(array.size) }
+      case<Boolean> { val array = (_2 as Collection<Boolean>).toBooleanArray();BooleanArrayBuf(array) to Shape(array.size) }
+      case<Byte> { val array = (_2 as Collection<Byte>).toByteArray();ByteArrayBuf(array) to Shape(array.size) }
+      case<Short> { val array = (_2 as Collection<Short>).toShortArray();ShortArrayBuf(array) to Shape(array.size) }
+      case<Int> { val array = (_2 as Collection<Int>).toIntArray();IntArrayBuf(array) to Shape(array.size) }
+      case<Long> { val array = (_2 as Collection<Long>).toLongArray();LongArrayBuf(array) to Shape(array.size) }
+      case<String> { val array = (_2 as Collection<String>).toTypedArray();ArrayBuf(array) to Shape(array.size) }
       case<NDArray<*>> {
-        combine(_2 as Collection<NDArray<*>>, _2.size)
+        expand(_2 as Collection<NDArray<*>>, _2.size)
       }
       caseElse {
         val wrap = _2.map { toNDArray(it!!) }
-        combine(wrap, wrap.size)
+        expand(wrap, wrap.size)
       }
     }
     
-    private fun combine(c: Iterable<NDArray<*>>, size: Int): NDArray<*> {
+    private fun expand(c: Iterable<NDArray<*>>, size: Int): Pair<Buf<*>, Shape> {
       val first = c.first()
       val shape = Shape(size, first.shape)
       val firstElement = first.first()
@@ -108,7 +137,7 @@ open class NDArray<T : Any>(val shape: Shape, val raw: Buf<T>, val dtype: Class<
         for (element in ndarray) {
           buf[i++] = element
         }
-      return NDArray(shape, buf, firstElement::class.java)
+      return buf to shape
     }
     
     private val collectionNDArraySwitch = SwitchType2<Int, Buf<*>>().apply {
@@ -122,7 +151,10 @@ open class NDArray<T : Any>(val shape: Shape, val raw: Buf<T>, val dtype: Class<
       case<String> { ArrayBuf(Array(_2) { "" }) }
     }
     
-    fun toNDArray(value: Any): NDArray<*> = toNDArraySwitch(value)
+    fun toNDArray(value: Any, shape: Shape? = null): NDArray<*> {
+      val (buf, inferredShape) = toBufSwitch(value)
+      return NDArray(shape ?: inferredShape, buf)
+    }
     
     operator fun invoke(value: Float) = invoke(scalarDimension, f(value))
     operator fun invoke(value: Double) = invoke(scalarDimension, d(value))
@@ -168,7 +200,25 @@ open class NDArray<T : Any>(val shape: Shape, val raw: Buf<T>, val dtype: Class<
     operator fun invoke(shape: Shape, initvalue: String) = NDArray(shape, Array(shape.numElements()) { initvalue })
     
     inline operator fun <reified T : Any> invoke(shape: Shape, initvalue: T) =
-        Array(shape.numElements()) { initvalue }.toNDArray<T>()
+        Array(shape.numElements()) { initvalue }.toNDArray<T>(shape)
+    
+    inline operator fun <reified T : Any> invoke(shape: Shape, initvalue: (Int) -> T) =
+        Array(shape.numElements()) { initvalue(it) }.toNDArray<T>(shape)
+    
+    inline fun <reified T : Any> from(shape: Shape, initvalue: (IntArray) -> T): NDArray<T> {
+      val idx = IntArray(shape.rank)
+      return Array(shape.numElements()) {
+        initvalue(idx).apply {
+          var i = idx.lastIndex
+          do {
+            idx[i]++
+            if (idx[i] < shape[i]) break
+            idx[i] = 0
+            i--
+          } while (i >= 0)
+        }
+      }.toNDArray(shape)
+    }
   }
   
   private val stride: IntArray
@@ -189,11 +239,18 @@ open class NDArray<T : Any>(val shape: Shape, val raw: Buf<T>, val dtype: Class<
   }
   
   val numElements = size
+  inline val isScalar
+    get() = shape.isScalar
   
-  private inline fun <U> get_set(vararg idx: Int, op: (Int) -> U): U {
+  val scalar: T
+    get() {
+      require(isScalar)
+      return raw[0]
+    }
+  
+  private fun idxToOffset(vararg idx: Int): Int {
     val offset = if (idx.isEmpty()) 0L
     else {
-      require(idx.size == dims.size)
       var offset = 0L
       for ((i, value) in idx.withIndex()) {
         require(value in 0 until dims[i]) { "dim($i)=$value is out of range[0,${dims[i]})" }
@@ -201,7 +258,12 @@ open class NDArray<T : Any>(val shape: Shape, val raw: Buf<T>, val dtype: Class<
       }
       offset
     }
-    return op(offset.toInt())
+    return offset.toInt()
+  }
+  
+  private inline fun <U> get_set(vararg idx: Int, op: (Int) -> U): U {
+    require(idx.size == dims.size)
+    return op(idxToOffset(*idx))
   }
   
   operator fun get(vararg idx: Int) = get_set(*idx) { raw[it] }
@@ -210,11 +272,14 @@ open class NDArray<T : Any>(val shape: Shape, val raw: Buf<T>, val dtype: Class<
     raw[it] = data
   }
   
+  operator fun set(vararg idx: Int, data: NDArray<T>) {
+    val offset = idxToOffset(*idx)
+    for ((i, v) in data.flatten())
+      raw[offset + i] = v
+  }
+  
   operator fun invoke(vararg idx: Int): NDArray<T> {
-    var offset = 0
-    for ((i, value) in idx.withIndex()) {
-      offset += value * stride[i]
-    }
+    val offset = idxToOffset(*idx)
     val size = stride[idx.size - 1]
     return NDArray(shape.slice(idx.size), raw.slice(offset, offset + size), dtype)
   }
@@ -337,4 +402,23 @@ open class NDArray<T : Any>(val shape: Shape, val raw: Buf<T>, val dtype: Class<
   operator fun component4() = raw[3]
   operator fun component5() = raw[4]
   operator fun component6() = raw[5]
+  
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (javaClass != other?.javaClass) return false
+    
+    other as NDArray<*>
+    
+    if (shape != other.shape) return false
+    if (dtype != other.dtype) return false
+    if (raw != other.raw) return false
+    return true
+  }
+  
+  override fun hashCode(): Int {
+    var result = shape.hashCode()
+    result = 31 * result + raw.hashCode()
+    result = 31 * result + dtype.hashCode()
+    return result
+  }
 }

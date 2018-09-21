@@ -11,7 +11,7 @@ import wumo.sim.util.ndarray.NDArray
 
 class BytePointerBuf<T : Any>(
     val bytePointer: BytePointer,
-    val dataType: DataType<T>) : Buf<T> {
+    val dataType: DataType<T>) : Buf<T>() {
   
   override fun get(offset: Int): T =
       dataType.get(bytePointer, offset * dataType.byteSize)

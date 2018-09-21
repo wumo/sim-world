@@ -64,7 +64,7 @@ inline fun FloatArray.scaleAdd(s: Float, x: IntArray) {
     this[i] += s
 }
 
-inline fun Env<NDArray<Float>, Int>.`True Online Sarsa(λ)`(
+inline fun Env<NDArray<Float>, Int, *>.`True Online Sarsa(λ)`(
     Qfunc: LinearTileCodingFunc,
     π: (NDArray<Float>) -> Int,
     λ: Float,
@@ -117,7 +117,7 @@ inline fun Env<NDArray<Float>, Int>.`True Online Sarsa(λ)`(
   }
 }
 
-inline fun Env<NDArray<Float>, Int>.Play(
+inline fun Env<NDArray<Float>, Int, *>.Play(
     π: (NDArray<Float>) -> Int,
     episodes: Int,
     maxStep: Int = Int.MAX_VALUE) {

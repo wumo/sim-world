@@ -19,7 +19,7 @@ import wumo.sim.util.ndarray.implementation.ArrayBuf
 import java.nio.ByteBuffer
 
 abstract class Tensor<T : Any>
-protected constructor(_c_tensor: TF_Tensor) : Buf<T> {
+protected constructor(_c_tensor: TF_Tensor) : Buf<T>() {
   
   companion object {
     fun <T : Any> toNDArray(c_tensor: TF_Tensor): NDArray<T> =

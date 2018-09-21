@@ -1,9 +1,9 @@
 package wumo.sim.envs
 
-import javafx.animation.Timeline
 import wumo.sim.core.Env
 import wumo.sim.envs.atari.AtariEnv
 import wumo.sim.envs.atari.AtariEnv.Companion.ObsType
+import wumo.sim.envs.atari.AtariEnvType
 import wumo.sim.envs.classic_control.CartPole
 import wumo.sim.envs.classic_control.MountainCar
 import wumo.sim.envs.toy_text.FrozenLake
@@ -13,29 +13,29 @@ import wumo.sim.wrappers.TimeLimit
 
 object envs {
   fun `CartPole-v0`(max_episode_steps: Int = 200,
-                    reward_threshold: Float = 195f): Env<NDArray<Float>, Int> {
+                    reward_threshold: Float = 195f): Env<NDArray<Float>, Int, CartPole> {
     return TimeLimit(CartPole(), max_episode_steps)
   }
   
   fun `MountainCar-v0`(max_episode_steps: Int = 200,
-                       reward_threshold: Float = -110f): Env<NDArray<Float>, Int> {
+                       reward_threshold: Float = -110f): Env<NDArray<Float>, Int, MountainCar> {
     return TimeLimit(MountainCar(), max_episode_steps)
   }
   
   fun `FrozenLake-v0`(max_episode_steps: Int = 200,
-                      reward_threshold: Float = 0.78f): Env<Int, Int> {
+                      reward_threshold: Float = 0.78f): Env<Int, Int, FrozenLake> {
     return TimeLimit(FrozenLake(map_name = "4x4"), max_episode_steps)
   }
   
   fun `FrozenLake8x8-v0`(max_episode_steps: Int = 200,
-                         reward_threshold: Float = 0.99f): Env<Int, Int> {
+                         reward_threshold: Float = 0.99f): Env<Int, Int, FrozenLake> {
     return TimeLimit(FrozenLake(map_name = "8x8"), max_episode_steps)
   }
   
   private val namePattern =
       Regex("""^(?:((?:[A-Z][a-z]*)+)(-ram)?(Deterministic|NoFrameskip)-(v0|v4))|(?:((?:[A-Z][a-z]*)+)(-ram)?-(v0|v4))$""")
   private val wordPattern = Regex("[A-Z][a-z]*")
-  fun Atari(id: String): Env<NDArray<Byte>, Int> {
+  fun Atari(id: String): AtariEnvType {
     val result = namePattern.matchEntire(id)
     errorIf(result == null) { "invalid game id:$id" }
     val (_game, _ram, mode, _version, _game1, _ram1, _version1) = result!!.destructured

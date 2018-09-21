@@ -13,7 +13,7 @@ import wumo.sim.util.ndarray.implementation.LongArrayBuf
 
 fun <O : Any, A : Any> learn(
     model_file_path: String,
-    env: Env<O, A>,
+    env: Env<O, A, *>,
     network: TensorFunction,
     seed: Int? = null,
     learning_rate: Float = 5e-4f,

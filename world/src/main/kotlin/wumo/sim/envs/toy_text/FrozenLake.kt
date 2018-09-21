@@ -32,7 +32,8 @@ class FrozenLake
 private constructor(val desc: Array<String>, val nrow: Int, val ncol: Int,
                     nS: Int, nA: Int,
                     P: Transition,
-                    isd: FloatArray) : DiscreteEnv(nS, nA, P, isd) {
+                    isd: FloatArray) : DiscreteEnv<FrozenLake>(nS, nA, P, isd) {
+  
   companion object {
     operator fun invoke(_desc: Array<String>? = null,
                         map_name: String? = "4x4",

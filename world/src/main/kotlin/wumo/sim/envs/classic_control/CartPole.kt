@@ -20,7 +20,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.random.Random
 
-class CartPole : Env<NDArray<Float>, Int> {
+class CartPole : Env<NDArray<Float>, Int, CartPole> {
   companion object {
     val gravity = 9.8f
     val masscart = 1.0f
@@ -47,7 +47,7 @@ class CartPole : Env<NDArray<Float>, Int> {
   
   var steps_beyond_done = Double.NaN
   
-  lateinit var rand: Random
+  override lateinit var rand: Random
   
   init {
     seed()

@@ -1,11 +1,14 @@
 package wumo.sim.wrappers
 
 import wumo.sim.core.Env
+import wumo.sim.core.Wrapper
 import wumo.sim.util.t4
 
-class TimeLimit<O : Any, A : Any>(val env: Env<O, A>,
-                                  val max_episode_steps: Int? = null,
-                                  val max_episode_seconds: Int? = null) : Env<O, A> {
+class TimeLimit<O, A, WrappedENV>(
+    env: Env<O, A, WrappedENV>,
+    val max_episode_steps: Int? = null,
+    val max_episode_seconds: Int? = null) : Wrapper<O, A, WrappedENV>(env) {
+  
   var elapsed_steps = 0
   var episode_started_at: Long = 0
   
@@ -34,17 +37,6 @@ class TimeLimit<O : Any, A : Any>(val env: Env<O, A>,
   override fun reset(): O {
     episode_started_at = System.currentTimeMillis()
     elapsed_steps = 0
-    return env.reset() as O
+    return env.reset()
   }
-  
-  override fun render() {
-    env.render()
-  }
-  
-  override fun close() {
-    env.close()
-  }
-  
-  override fun seed(seed: Long?): List<Long> =
-      env.seed(seed)
 }

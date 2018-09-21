@@ -107,8 +107,14 @@ class Shape(private val dims: IntArray? = null) : Iterable<Int> {
   }
   
   operator fun plus(d: Int): Shape =
-      if (dims == null) Shape()
-      else Shape(*dims, d)
+      plus(Shape(d))
+  
+  operator fun plus(shape: Shape): Shape =
+      when {
+        dims == null -> shape.copy()
+        shape.dims == null -> copy()
+        else -> Shape(*dims, *shape.dims)
+      }
   
   @Suppress("NAME_SHADOWING")
   fun slice(start: Int, end: Int? = null, step: Int = 1): Shape =

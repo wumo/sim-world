@@ -2,7 +2,7 @@ package wumo.sim.util.ndarray.implementation
 
 import wumo.sim.util.ndarray.Buf
 
-class BooleanArrayBuf(val raw: BooleanArray) : Buf<Boolean> {
+class BooleanArrayBuf(val raw: BooleanArray) : Buf<Boolean>() {
   override fun get(offset: Int) = raw[offset]
   
   override fun set(offset: Int, data: Boolean) {

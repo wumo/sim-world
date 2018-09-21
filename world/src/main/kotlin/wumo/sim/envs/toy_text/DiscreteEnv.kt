@@ -9,17 +9,18 @@ import kotlin.random.Random
 
 typealias Transition = Array<Array<MutableList<t4<Float, Int, Float, Boolean>>>>
 
-abstract class DiscreteEnv(val nS: Int,
-                           val nA: Int,
-                           val P: Transition,
-                           val isd: FloatArray) : Env<Int, Int> {
+abstract class DiscreteEnv<WrappedENV>(
+    val nS: Int,
+    val nA: Int,
+    val P: Transition,
+    val isd: FloatArray) : Env<Int, Int, WrappedENV> {
   
   var lastAction = -1
   var s = -1
   override val action_space = Discrete(nA)
   override val observation_space = Discrete(nS)
   
-  lateinit var rand: Random
+  override lateinit var rand: Random
   
   init {
     seed()

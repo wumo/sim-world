@@ -2,7 +2,7 @@ package wumo.sim.util.ndarray.implementation
 
 import wumo.sim.util.ndarray.Buf
 
-class LongArrayBuf(val raw: LongArray) : Buf<Long> {
+class LongArrayBuf(val raw: LongArray) : Buf<Long>() {
   override fun get(offset: Int): Long {
     return raw[offset]
   }
