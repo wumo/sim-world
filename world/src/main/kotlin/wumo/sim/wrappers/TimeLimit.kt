@@ -4,10 +4,11 @@ import wumo.sim.core.Env
 import wumo.sim.core.Wrapper
 import wumo.sim.util.t4
 
-class TimeLimit<O, A, WrappedENV>(
-    env: Env<O, A, WrappedENV>,
+class TimeLimit<O, OE : Any, A, AE : Any, WrappedENV>(
+    env: Env<O, OE, A, AE, WrappedENV>,
     val max_episode_steps: Int? = null,
-    val max_episode_seconds: Int? = null) : Wrapper<O, A, WrappedENV>(env) {
+    val max_episode_seconds: Int? = null)
+  : Wrapper<O, OE, A, AE, WrappedENV>(env) {
   
   var elapsed_steps = 0
   var episode_started_at: Long = 0

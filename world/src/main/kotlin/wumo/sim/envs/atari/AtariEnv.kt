@@ -21,13 +21,13 @@ import kotlin.math.abs
 import kotlin.random.Random
 
 typealias AtariObsType = NDArray<Byte>
-typealias AtariEnvType = Env<AtariObsType, Int, AtariEnv>
+typealias AtariEnvType = Env<AtariObsType, Byte, Int, Int, AtariEnv>
 
 class AtariEnv(val game: String = "pong",
                val obs_type: ObsType = ram,
                val frameskip: Pair<Int, Int> = 2 to 5,
                repeat_action_probability: Float = 0f)
-  : Env<AtariObsType, Int, AtariEnv> {
+  : Env<AtariObsType, Byte, Int, Int, AtariEnv> {
   
   companion object {
     val atari_roms_path = "atari_roms"
@@ -47,8 +47,8 @@ class AtariEnv(val game: String = "pong",
   val action_set: IntArray
   val screen_width: Int
   val screen_height: Int
-  override val action_space: Space<Int>
-  override val observation_space: Space<AtariObsType>
+  override val action_space: Space<Int, Int>
+  override val observation_space: Space<AtariObsType, Byte>
   
   init {
     require(game in games)

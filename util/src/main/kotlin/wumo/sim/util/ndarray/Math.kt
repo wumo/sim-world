@@ -2,6 +2,7 @@ package wumo.sim.util.ndarray
 
 import wumo.sim.util.*
 import wumo.sim.util.ndarray.NDArray.Companion.toNDArray
+import wumo.sim.util.ndarray.types.NDType
 
 operator fun NDArray<Float>.unaryMinus(): NDArray<Float> {
   val c = copy()
@@ -42,7 +43,8 @@ val ones_like_switch = SwitchType2<Shape, NDArray<*>>().apply {
   case<Long> { NDArray(_2, 1L) }
 }
 
-fun <T : Number> ones_like(a: NDArray<T>) = ones_like_switch(a.first(), a.shape) as NDArray<T>
+inline fun <reified T : Number> ones_like(a: NDArray<T>): NDArray<T> =
+    NDArray(a.shape, a.dtype.one())
 
 fun <T : Any> newaxis(a: NDArray<T>) = toNDArray(arrayOf(a))
 
@@ -73,15 +75,6 @@ fun randomChoice(p: NDArray<out Number>): Int {
     if (acc > chosen) return i
   }
   NONE()
-}
-
-fun arrayEqual(a: NDArray<*>, b: NDArray<*>): Boolean {
-  if (a.shape != b.shape) return false
-  val na = a.numElements
-  for (i in 0 until na)
-    if (a.rawGet(i) != b.rawGet(i))
-      return false
-  return true
 }
 
 fun <T : Any> NDArray<T>.reduce(axis: Int = 0,
@@ -118,6 +111,7 @@ fun <T> NDArray<T>.min(axis: Int = 0): NDArray<T>
     where T : Number, T : Comparable<T> =
     reduce(axis) { a, b -> if (a < b) a else b }
 
-inline fun <reified R : Number, reified T : Number> NDArray<T>.cast(): NDArray<R> {
-  TODO()
-}
+fun <R : Number, T : Number> NDArray<T>.cast(dst: NDType<R>): NDArray<R> =
+    if (dtype == dst) this as NDArray<R>
+    else
+      NDArray(shape, dst.makeBuf(shape.numElements()) { dst.cast(rawGet(it)) })

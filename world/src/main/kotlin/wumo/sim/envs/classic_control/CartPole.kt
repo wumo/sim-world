@@ -20,7 +20,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.random.Random
 
-class CartPole : Env<NDArray<Float>, Int, CartPole> {
+class CartPole : Env<NDArray<Float>, Float, Int, Int, CartPole> {
   companion object {
     val gravity = 9.8f
     val masscart = 1.0f

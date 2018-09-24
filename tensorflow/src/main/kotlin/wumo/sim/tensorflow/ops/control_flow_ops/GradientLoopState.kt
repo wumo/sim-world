@@ -139,7 +139,7 @@ class GradientLoopState(val forwardContext: WhileContext, val outerGradState: Gr
               // the gradient loop rather than using a stack.
               // TODO(phawkins): consider hoisting the constant out of the loop
               // instead.
-              realValue = tf.const(constantValue(currentValue)!!)
+              realValue = tf.const(constantValue<Any>(currentValue)!!)
               break@outer
             }
             else -> {

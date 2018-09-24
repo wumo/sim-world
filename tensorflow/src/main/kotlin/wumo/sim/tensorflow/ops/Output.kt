@@ -66,7 +66,7 @@ class IndexedSlices(val indices: Output, val values: Output, val denseShape: Out
     if (denseShape == null)
       throw IllegalStateException("Conversion of 'OutputIndexedSlices', '$this', " +
                                       "which has no dense shape information available, is not possible.")
-    val denseShapeValue = constantValue(denseShape)
+    val denseShapeValue = constantValue<Any>(denseShape)
     if (denseShapeValue != null
         && denseShapeValue.numElements >= LARGE_SPARSE_NUM_ELEMENTS) {
       ops.logger.warn {

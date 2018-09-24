@@ -242,7 +242,7 @@ object control_flow_ops {
           // We cannot use `maxIter` because it is defined in a nested while-loop or cond context, and so
           // an error will be thrown if we try to use it as input to any ops in `currentContext` (e.g., `maxSize` or
           // the final accumulator stack). We attempt to get a constant value out to use instead.
-          val constMaxIter = constantValue(maxIter)
+          val constMaxIter = constantValue<Any>(maxIter)
           if (constMaxIter == null)
             throw InvalidArgumentException(
                 "Cannot create a gradient accumulator for tensor '$valueName', inside an XLA while loop, because " +

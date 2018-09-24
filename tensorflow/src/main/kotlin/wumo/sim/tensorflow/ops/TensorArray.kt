@@ -204,7 +204,7 @@ class TensorArray private constructor(
             colocateWithFirstWriteCall, colocationOps)
         if (inferShape) {
           val valueShape = splitFlow.op.inputs[1].shape
-          val clengths = constantValue(splitFlow.op.inputs[2])
+          val clengths = constantValue<Any>(splitFlow.op.inputs[2])
           clengths as NDArray<Int>?
           val shape = if (valueShape.rank != -1 && clengths != null && clengths.max() == clengths.min())
             Shape(intArrayOf((clengths.get() as Long).toInt(), *valueShape.slice(1).asIntArray()!!))

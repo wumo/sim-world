@@ -8,6 +8,7 @@ import wumo.sim.tensorflow.types.*
 import wumo.sim.util.Shape
 import wumo.sim.util.ndarray.Buf
 import wumo.sim.util.ndarray.NDArray
+import wumo.sim.util.ndarray.types.NDType
 
 class BytePointerBuf<T : Any>(
     val bytePointer: BytePointer,
@@ -59,13 +60,13 @@ or None if it cannot be calculated.
  
  * @see "tensorflow.python.framework.tensor_util.constant_value"
  */
-fun constantValue(tensor: Output): NDArray<*>? {
-  val result: NDArray<*>? = when (tensor.op.opType) {
+fun <T : Any> constantValue(tensor: Output): NDArray<T>? {
+  val result: NDArray<T>? = when (tensor.op.opType) {
     "Const" -> makeNDArray(tensor.op.attrTensor("value"))
     "Shape" -> {
       val inputShape = tensor.op.inputs[0].shape
       if (inputShape.isFullyDefined)
-        NDArray(inputShape.asIntArray()!!)
+        NDArray(inputShape.asIntArray()!!) as NDArray<T>
       else
         null
     }
@@ -79,7 +80,7 @@ fun constantValue(tensor: Output): NDArray<*>? {
       TODO()
     }
     "Cast" -> {
-      val pre_cast = constantValue(tensor.op.inputs[0]) ?: return null
+      val pre_cast = constantValue<T>(tensor.op.inputs[0]) ?: return null
       val castDtype = tensor.op.attrDataType("DstT")
       
       TODO()
@@ -103,7 +104,7 @@ fun constantValue(tensor: Output): NDArray<*>? {
   return result
 }
 
-fun makeNDArray(tensor: tensorflow.TensorProto): NDArray<*> {
+fun <T : Any> makeNDArray(tensor: tensorflow.TensorProto): NDArray<T> {
   val shape = Shape(tensor.tensor_shape().let { dims ->
     IntArray(dims.dim_size()) {
       dims.dim(it).size().toInt()
@@ -111,14 +112,13 @@ fun makeNDArray(tensor: tensorflow.TensorProto): NDArray<*> {
   })
   
   val num_elements = shape.numElements()
-  val tensor_dtype: DataType<*> = DataType.fromCValue(tensor.dtype())
+  val tensor_dtype: DataType<T> = DataType.fromCValue(tensor.dtype())
   val dtype = tensor_dtype
   val tensor_content = tensor.tensor_content()
   if (tensor_content != null)
     return NDArray(shape,
-                   dtype.castBuf(BytePointerBuf(tensor_content,
-                                                dtype as DataType<Any>)),
-                   dtype.kotlinType)
+                   dtype.castBuf(BytePointerBuf(tensor_content, dtype)),
+                   dtype.kotlinType.NDType())
   return when (tensor_dtype) {
     FLOAT16, BFLOAT16 ->
       TODO()
@@ -156,5 +156,5 @@ fun makeNDArray(tensor: tensorflow.TensorProto): NDArray<*> {
       TODO()
     }
     else -> error("Unsupported tensor type: $tensor_dtype")
-  }
+  } as NDArray<T>
 }

@@ -16,7 +16,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.random.Random
 
-class MountainCar : Env<NDArray<Float>, Int, MountainCar> {
+class MountainCar : Env<NDArray<Float>, Float, Int, Int, MountainCar> {
   companion object {
     val min_position = -1.2f
     val max_position = 0.6f

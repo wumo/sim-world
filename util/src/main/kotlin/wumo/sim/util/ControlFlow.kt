@@ -12,7 +12,20 @@ typealias Fun4<P1, P2, P3, P4, R> = t4<P1, P2, P3, P4>.() -> R
 typealias Fun5<P1, P2, P3, P4, P5, R> = t5<P1, P2, P3, P4, P5>.() -> R
 typealias Fun6<P1, P2, P3, P4, P5, P6, R> = t6<P1, P2, P3, P4, P5, P6>.() -> R
 
-class SwitchValue<T, P1, R> {
+class SwitchValue<T, R> {
+  private val branches = HashMap<T, Fun0<R>>()
+  fun case(vararg b: T, block: Fun0<R>) {
+    for (t in b)
+      branches[t] = block
+  }
+  
+  operator fun invoke(b: T): R {
+    val block = branches[b] ?: throw IllegalArgumentException("unsupported $b")
+    return block()
+  }
+}
+
+class SwitchValue1<T, P1, R> {
   private val branches = HashMap<T, Fun1<P1, R>>()
   fun case(vararg b: T, block: Fun1<P1, R>) {
     for (t in b)

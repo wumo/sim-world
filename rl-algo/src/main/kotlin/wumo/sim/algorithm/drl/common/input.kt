@@ -10,7 +10,7 @@ import wumo.sim.util.NONE
 import wumo.sim.util.Shape
 import wumo.sim.util.t2
 
-fun observationPlaceholder(obSpace: Space<*>,
+fun observationPlaceholder(obSpace: Space<*, *>,
                            batch_size: Int = -1,
                            name: String = "Ob"): Output {
   assert(obSpace is Discrete || obSpace is Box<*>) {
@@ -19,7 +19,7 @@ fun observationPlaceholder(obSpace: Space<*>,
   
   return tf.placeholder(
       Shape(intArrayOf(batch_size, *obSpace.shape.asIntArray()!!)),
-      obSpace.dataType.toDataType(),
+      obSpace.dtype.toDataType(),
       name)
 }
 
@@ -28,14 +28,14 @@ fun observationPlaceholder(obSpace: Space<*>,
  * observation space type
  *
  */
-fun observation_input(obSpace: Space<*>,
+fun observation_input(obSpace: Space<*, *>,
                       batchSize: Int = -1,
                       name: String = "Ob"): t2<Output, Output> {
   val placeholder = observationPlaceholder(obSpace, batchSize, name)
   return t2(placeholder, encodeObservation(obSpace, placeholder))
 }
 
-fun encodeObservation(obSpace: Space<*>, placeholder: Output): Output =
+fun encodeObservation(obSpace: Space<*, *>, placeholder: Output): Output =
     when (obSpace) {
       is Discrete -> tf.toFloat(tf.oneHot(placeholder, tf.const(obSpace.n)))
       is Box<*> -> tf.toFloat(placeholder)

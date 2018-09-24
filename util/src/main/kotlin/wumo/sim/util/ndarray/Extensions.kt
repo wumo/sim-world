@@ -1,5 +1,49 @@
 package wumo.sim.util.ndarray
 
-fun <T : Any> concatenate(array: Iterable<NDArray<T>>, axis: Int): NDArray<T> {
-  
+import wumo.sim.util.Shape
+
+fun <T : Any> concatenate(array: List<NDArray<T>>, axis: Int = 0): NDArray<T> {
+  val iter = array.iterator()
+  val first = iter.next()
+  val finalShapeDims = first.shape.asIntArray()!!.copyOf()
+  val offset = IntArray(array.size)
+  var finalDim = finalShapeDims[axis]
+  var i = 0
+  offset[i++] = finalShapeDims[axis]
+  while (iter.hasNext()) {
+    val shape = iter.next().shape
+    offset[i++] = shape[axis]
+    finalDim += shape[axis]
+  }
+  finalShapeDims[axis] = finalDim
+  for (i in 0 until offset.size)
+    if (i > 0)
+      offset[i] += offset[i - 1]
+  val finalShape = Shape(finalShapeDims)
+  val idx = IntArray(finalShape.rank)
+  var j = 0
+  return NDArray(finalShape, first.dtype.makeBuf(finalShape.numElements()) {
+    val k = idx[axis]
+    val min = if (j > 0) offset[j - 1] else 0
+    val max = offset[j]
+    lateinit var element: T
+    outer@ while (true)
+      when {
+        k in min until max -> {
+          idx[axis] = k - min
+          element = array[j].get(*idx)
+          break@outer
+        }
+        k == max -> {
+          j++
+          require(j < array.size)
+        }
+        k == 0 -> {
+          j = 0
+        }
+        else -> error("current idx:$k, current j:$j, min:$min, max:$max")
+      }
+    assert(k == 0 || k in min until max || k == max)
+    element.apply { idx.advance(finalShape) }
+  }, first.dtype)
 }

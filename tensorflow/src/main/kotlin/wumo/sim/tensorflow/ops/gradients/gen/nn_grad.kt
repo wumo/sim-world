@@ -371,7 +371,7 @@ fun register_nn_grad() {
         if (g.op.opType == "ZerosLike" || g.op.opType == "Zeros") {
           true
         } else {
-          val constFillValue = constantValue(g)
+          val constFillValue = constantValue<Any>(g)
           constFillValue != null && constFillValue.all { it == 0 }
         }
     

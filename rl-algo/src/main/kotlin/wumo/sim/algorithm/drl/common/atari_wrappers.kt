@@ -14,6 +14,7 @@ import wumo.sim.spaces.Box
 import wumo.sim.util.Shape
 import wumo.sim.util.ndarray.*
 import wumo.sim.util.ndarray.implementation.ByteArrayBuf
+import wumo.sim.util.ndarray.types.NDFloat
 import wumo.sim.util.t4
 import java.util.*
 import kotlin.math.sign
@@ -27,18 +28,21 @@ fun make_atari(env_id: String): AtariEnvType {
   return env
 }
 
+fun wrap_atari_dqn(env: AtariEnvType) =
+    wrap_deepmind(env, frame_stack = true, scale = true)
+
 fun wrap_deepmind(env: AtariEnvType,
                   episode_life: Boolean = true,
                   clip_rewards: Boolean = true,
                   frame_stack: Boolean = false,
-                  scale: Boolean = false): Env<NDArray<Float>, Int, Any> {
+                  scale: Boolean = false): Env<NDArray<Float>, Float, Int, Int, Any> {
   var _env = env
   if (episode_life)
     _env = EpisodicLifeEnv(_env)
   if (PLAYER_A_FIRE in _env.unwrapped.action_set)
     _env = FireResetEnv(_env)
   _env = WarpFrame(_env)
-  var env: Env<NDArray<Float>, Int, Any> = FloatFrame(_env)
+  var env: Env<NDArray<Float>, Float, Int, Int, Any> = FloatFrame(_env)
   if (scale)
     env = ScaledFloatFrame(env)
   if (clip_rewards)
@@ -50,7 +54,7 @@ fun wrap_deepmind(env: AtariEnvType,
 
 class NoopResetEnv(env: AtariEnvType,
                    val noop_max: Int = 30)
-  : Wrapper<AtariObsType, Int, AtariEnv>(env) {
+  : Wrapper<AtariObsType, Byte, Int, Int, AtariEnv>(env) {
   
   val noop_action: Int = 0
   var override_num_noops: Int? = null
@@ -75,7 +79,7 @@ class NoopResetEnv(env: AtariEnvType,
 }
 
 class MaxAndSkipEnv(env: AtariEnvType, val skip: Int = 4)
-  : Wrapper<AtariObsType, Int, AtariEnv>(env) {
+  : Wrapper<AtariObsType, Byte, Int, Int, AtariEnv>(env) {
   
   val obs_buffer = NDArray<Byte>(
       Shape(2) + env.observation_space.shape, 0)
@@ -99,7 +103,7 @@ class MaxAndSkipEnv(env: AtariEnvType, val skip: Int = 4)
 }
 
 class EpisodicLifeEnv(env: AtariEnvType)
-  : Wrapper<AtariObsType, Int, AtariEnv>(env) {
+  : Wrapper<AtariObsType, Byte, Int, Int, AtariEnv>(env) {
   
   var lives = 0
   var was_real_done = true
@@ -120,14 +124,14 @@ class EpisodicLifeEnv(env: AtariEnvType)
     val obs = if (was_real_done)
       env.reset()
     else
-      env.step(PLAYER_A_NOOP)._1
+      env.step(0)._1
     lives = env.unwrapped.ale.lives()
     return obs
   }
 }
 
 class FireResetEnv(env: AtariEnvType)
-  : Wrapper<AtariObsType, Int, AtariEnv>(env) {
+  : Wrapper<AtariObsType, Byte, Int, Int, AtariEnv>(env) {
   
   init {
     require(env.unwrapped.action_set[1] == PLAYER_A_FIRE)
@@ -164,7 +168,7 @@ fun Mat.toNDArray(): AtariObsType {
 }
 
 class WarpFrame(env: AtariEnvType) :
-    ObservationWrapper<AtariObsType, Int, AtariEnv>(env) {
+    ObservationWrapper<AtariObsType, Byte, Int, Int, AtariEnv>(env) {
   
   val width = 84
   val height = 84
@@ -182,40 +186,41 @@ class WarpFrame(env: AtariEnvType) :
   }
 }
 
-class FloatFrame<WrappedEnv>(val env: AtariEnvType) : Env<NDArray<Float>, Int, WrappedEnv> {
+class FloatFrame<WrappedEnv>(val env: AtariEnvType)
+  : Env<NDArray<Float>, Float, Int, Int, WrappedEnv> {
+  
   override var rand: Random = env.rand
-  override val action_space: Space<Int> = env.action_space
-  override val observation_space: Space<NDArray<Float>> = Box(0f, 1f, env.observation_space.shape)
+  override val action_space = env.action_space
+  override val observation_space = run {
+    val obspace = env.observation_space as Box<Byte>
+    Box(obspace.low.cast(NDFloat),
+        obspace.high.cast(NDFloat), env.observation_space.shape)
+  }
   
   override fun step(a: Int): t4<NDArray<Float>, Float, Boolean, Map<String, Any>> {
     val (_obs, reward, done, info) = env.step(a)
     
-    val obs: NDArray<Float> = _obs.cast()
+    val obs = _obs.cast(NDFloat)
     return t4(obs, reward, done, info)
   }
   
   override fun reset(): NDArray<Float> {
-    TODO("not implemented")
+    val obs = env.reset()
+    return obs.cast(NDFloat)
   }
   
-  override fun render() {
-    TODO("not implemented")
-  }
+  override fun render() = env.render()
   
-  override fun close() {
-    TODO("not implemented")
-  }
+  override fun close() = env.close()
   
-  override fun seed(seed: Long?): List<Long> {
-    TODO("not implemented")
-  }
+  override fun seed(seed: Long?) = env.seed(seed)
 }
 
-class ScaledFloatFrame(env: Env<NDArray<Float>, Int, Any>)
-  : ObservationWrapper<NDArray<Float>, Int, Any>(env) {
+class ScaledFloatFrame<WrappedEnv>(
+    env: Env<NDArray<Float>, Float, Int, Int, WrappedEnv>)
+  : ObservationWrapper<NDArray<Float>, Float, Int, Int, WrappedEnv>(env) {
   
-  override val observation_space: Space<NDArray<Float>> =
-      Box(0f, 1f, env.observation_space.shape)
+  override val observation_space = Box(0f, 1f, env.observation_space.shape)
   
   override fun observation(frame: NDArray<Float>): NDArray<Float> {
     frame /= 255f
@@ -224,8 +229,9 @@ class ScaledFloatFrame(env: Env<NDArray<Float>, Int, Any>)
   
 }
 
-class ClipRewardEnv<O, A, WrappedEnv>(env: Env<O, A, WrappedEnv>)
-  : RewardWrapper<O, A, WrappedEnv>(env) {
+class ClipRewardEnv<WrappedEnv>(
+    env: Env<NDArray<Float>, Float, Int, Int, WrappedEnv>)
+  : RewardWrapper<NDArray<Float>, Float, Int, Int, WrappedEnv>(env) {
   
   override fun reward(frame: Float): Float {
     return frame.sign
@@ -246,19 +252,17 @@ class FixedSizeDeque<E>(val capacity: Int) : ArrayDeque<E>(capacity + 1) {
   }
 }
 
-class FrameStack<O : Any, A, WrappedENV>(env: Env<NDArray<O>, A, WrappedENV>, val k: Int)
-  : Wrapper<NDArray<O>, A, WrappedENV>(env) {
+class FrameStack<WrappedEnv>(
+    env: Env<NDArray<Float>, Float, Int, Int, WrappedEnv>, val k: Int)
+  : Wrapper<NDArray<Float>, Float, Int, Int, WrappedEnv>(env) {
   
-  val frames = FixedSizeDeque<NDArray<O>>(k)
-  override val observation_space: Space<NDArray<O>>
-  
-  init {
+  val frames = FixedSizeDeque<NDArray<Float>>(k)
+  override val observation_space = run {
     val shape = env.observation_space.shape
-    observation_space = Box(0, 255, Shape(shape[0], shape[1], shape[2] * k),
-                            env.observation_space.dataType) as Space<NDArray<O>>
+    Box(0f, 255f, Shape(shape[0], shape[1], shape[2] * k))
   }
   
-  override fun reset(): NDArray<O> {
+  override fun reset(): NDArray<Float> {
     val ob = env.reset()
     repeat(k) {
       frames += ob
@@ -266,14 +270,14 @@ class FrameStack<O : Any, A, WrappedENV>(env: Env<NDArray<O>, A, WrappedENV>, va
     return get_ob()
   }
   
-  override fun step(a: A): t4<NDArray<O>, Float, Boolean, Map<String, Any>> {
+  override fun step(a: Int): t4<NDArray<Float>, Float, Boolean, Map<String, Any>> {
     val result = env.step(a)
     frames += result._1
     result._1 = get_ob()
     return result
   }
   
-  private fun get_ob(): NDArray<O> {
+  private fun get_ob(): NDArray<Float> {
     require(frames.size == k)
     return concatenate(frames, axis = 2)
   }

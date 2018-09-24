@@ -13,22 +13,26 @@ import wumo.sim.wrappers.TimeLimit
 
 object envs {
   fun `CartPole-v0`(max_episode_steps: Int = 200,
-                    reward_threshold: Float = 195f): Env<NDArray<Float>, Int, CartPole> {
+                    reward_threshold: Float = 195f)
+      : Env<NDArray<Float>, Float, Int, Int, CartPole> {
     return TimeLimit(CartPole(), max_episode_steps)
   }
   
   fun `MountainCar-v0`(max_episode_steps: Int = 200,
-                       reward_threshold: Float = -110f): Env<NDArray<Float>, Int, MountainCar> {
+                       reward_threshold: Float = -110f)
+      : Env<NDArray<Float>, Float, Int, Int, MountainCar> {
     return TimeLimit(MountainCar(), max_episode_steps)
   }
   
   fun `FrozenLake-v0`(max_episode_steps: Int = 200,
-                      reward_threshold: Float = 0.78f): Env<Int, Int, FrozenLake> {
+                      reward_threshold: Float = 0.78f)
+      : Env<Int, Int, Int, Int, FrozenLake> {
     return TimeLimit(FrozenLake(map_name = "4x4"), max_episode_steps)
   }
   
   fun `FrozenLake8x8-v0`(max_episode_steps: Int = 200,
-                         reward_threshold: Float = 0.99f): Env<Int, Int, FrozenLake> {
+                         reward_threshold: Float = 0.99f)
+      : Env<Int, Int, Int, Int, FrozenLake> {
     return TimeLimit(FrozenLake(map_name = "8x8"), max_episode_steps)
   }
   

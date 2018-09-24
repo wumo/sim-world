@@ -1,20 +1,22 @@
 package wumo.sim.tensorflow.types
 
 import wumo.sim.tensorflow.core.InvalidDataTypeException
-import wumo.sim.util.SwitchOnClass
+import wumo.sim.util.SwitchValue
+import wumo.sim.util.SwitchValue1
+import wumo.sim.util.ndarray.types.*
 
-val switchKotlinType = SwitchOnClass<DataType<*>>().apply {
-  case<String> { STRING }
-  case<Boolean> { BOOL }
-  case<Float> { FLOAT }
-  case<Double> { DOUBLE }
-  case<Byte> { INT8 }
-  case<Short> { INT16 }
-  case<Int> { INT32 }
-  case<Long> { INT64 }
+val switchKotlinType = SwitchValue<NDType<*>, DataType<*>>().apply {
+  case(NDFloat) { STRING }
+  case(NDBool) { BOOL }
+  case(NDFloat) { FLOAT }
+  case(NDDouble) { DOUBLE }
+  case(NDByte) { INT8 }
+  case(NDShort) { INT16 }
+  case(NDInt) { INT32 }
+  case(NDLong) { INT64 }
 }
 
-fun <T : Any> Class<T>.toDataType(): DataType<T> =
+fun <T : Any> NDType<T>.toDataType(): DataType<T> =
     switchKotlinType(this) as DataType<T>
 
 val Int.kotlinType: Class<*>

@@ -13,7 +13,6 @@ import wumo.sim.tensorflow.types.FLOAT
 import wumo.sim.tensorflow.types.INT32
 import wumo.sim.util.i
 import wumo.sim.util.ndarray.NDArray.Companion.toNDArray
-import wumo.sim.util.ndarray.arrayEqual
 import kotlin.math.PI
 import kotlin.math.max
 import kotlin.math.sqrt
@@ -43,8 +42,8 @@ fun register_math_grad() {
     // shape op too).
     if (rank == 0)
       return listOf(grad, null)
-    val axes = constantValue(op.inputs[1])
-    if (axes != null && arrayEqual(axes, toNDArray((0 until rank).toList()))) {
+    val axes = constantValue<Any>(op.inputs[1])
+    if (axes != null && axes == toNDArray((0 until rank).toList())) {
       // In this case the reduction was over all dimensions.
       val newShape = IntArray(rank) { 1 }
       
@@ -97,8 +96,8 @@ fun register_math_grad() {
     lateinit var factor: Output
     factor = if (inputShape.isFullyDefined &&
         outputShape.isFullyDefined) {
-      val inputSize=inputShape.numElements()
-      val outputSize=outputShape.numElements()
+      val inputSize = inputShape.numElements()
+      val outputSize = outputShape.numElements()
       tf.const(sumGrad.dataType, inputSize / max(outputSize, 1))
     } else {
       val inputShape = tf.shape(op.inputs[0])

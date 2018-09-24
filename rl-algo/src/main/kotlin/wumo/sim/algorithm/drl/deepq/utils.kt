@@ -17,7 +17,7 @@ open class PlaceholderTfInput(val placeholder: Output) : TfInput(placeholder.nam
 
 class ObservationInput(input: Output, val processed_input: Output) : PlaceholderTfInput(input) {
   companion object {
-    operator fun invoke(observation_space: Space<*>, name: String = ""): ObservationInput {
+    operator fun invoke(observation_space: Space<*,*>, name: String = ""): ObservationInput {
       val (input, processed_input) = observation_input(observation_space, name = name)
       return ObservationInput(input, processed_input)
     }

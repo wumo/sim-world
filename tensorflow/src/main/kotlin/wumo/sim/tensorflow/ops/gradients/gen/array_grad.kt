@@ -1,4 +1,3 @@
-
 import wumo.sim.tensorflow.core.InvalidArgumentException
 import wumo.sim.tensorflow.ops.IndexedSlices
 import wumo.sim.tensorflow.ops.Op
@@ -79,7 +78,7 @@ fun register_array_grad() {
           val gradContext = control_flow_ops.getOutputContext(grad.op)
           val dimContext = control_flow_ops.getOutputContext(concatDim.op)
           if (dimContext != gradContext) {
-            val value = constantValue(concatDim)
+            val value = constantValue<Any>(concatDim)
             concatDim = tf.const(value = value!!)
           }
         }
@@ -99,11 +98,11 @@ fun register_array_grad() {
       }
       is IndexedSlices -> {
         val nonNegConcatDim = concatDim % tf.rank(inputValues[0])
-        val concatDimStatic = constantValue(concatDim) as NDArray<Int>?
+        val concatDimStatic = constantValue<Any>(concatDim) as NDArray<Int>?
             ?: throw IllegalArgumentException("Can only compute IndexedSlices gradient with ")
         var realNumericAxis: Int = concatDimStatic.get()
         if (realNumericAxis < 0) {
-          val rank = constantValue(tf.rank(inputValues[0])) as NDArray<Int>?
+          val rank = constantValue<Int>(tf.rank(inputValues[0]))
               ?: throw  IllegalArgumentException("Can only compute IndexedSlices gradient with " +
                                                      "negative concat_dim when first value rank is " +
                                                      "statically-known.")
@@ -308,7 +307,7 @@ fun register_array_grad() {
     var indices = op.inputs[1]
     val indicesSize = tf.expandDims(tf.size(indices), tf.const(0))
     val axis = op.inputs[2]
-    val axisStatic = constantValue(axis) as NDArray<Int>?
+    val axisStatic = constantValue<Int>(axis)
     if (axisStatic?.get() == 0) {
       val paramsTailShape = paramsShape.slice(1)
       val valuesShape = tf.concat(listOf(indicesSize, paramsTailShape), tf.const(0))

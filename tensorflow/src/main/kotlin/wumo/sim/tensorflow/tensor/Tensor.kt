@@ -16,7 +16,7 @@ import wumo.sim.util.Shape
 import wumo.sim.util.ndarray.Buf
 import wumo.sim.util.ndarray.NDArray
 import wumo.sim.util.ndarray.implementation.ArrayBuf
-import java.nio.ByteBuffer
+import wumo.sim.util.ndarray.types.NDType
 
 abstract class Tensor<T : Any>
 protected constructor(_c_tensor: TF_Tensor) : Buf<T>() {
@@ -112,7 +112,7 @@ protected constructor(_c_tensor: TF_Tensor) : Buf<T>() {
       return newTensor(dtype.cValue, shape.asLongArray()!!, bytePointer)
     }
     
-    private val pointer_switch = SwitchValue<Int, Buf<*>, Pointer>().apply {
+    private val pointer_switch = SwitchValue1<Int, Buf<*>, Pointer>().apply {
       case(COMPLEX64.cValue, FLOAT.cValue) { raw ->
         FloatPointer(*FloatArray(raw.size) { floatIsSupported.cast(raw[it]!!) })
       }
@@ -177,7 +177,9 @@ protected constructor(_c_tensor: TF_Tensor) : Buf<T>() {
     return t
   }
   
-  fun toNDArray(): NDArray<T> = NDArray(Shape(dims), dtype.castBuf(this), dtype.kotlinType)
+  fun toNDArray(): NDArray<T> = NDArray(Shape(dims),
+                                        dtype.castBuf(this),
+                                        dtype.kotlinType.NDType())
   
   override val size: Int
     get() = numElements.toInt()

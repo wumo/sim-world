@@ -7,6 +7,7 @@ import wumo.sim.util.Shape
 import wumo.sim.util.f
 import wumo.sim.util.i
 import wumo.sim.util.ndarray.NDArray
+import wumo.sim.util.ndarray.types.NDFloat
 
 class TensorTest {
   @Test
@@ -20,7 +21,7 @@ class TensorTest {
   fun `get set`() {
     tf
     val _t = Tensor(Shape(2, 2), f(1f, 2f, 3f, 4f))
-    val t = NDArray(Shape(2, 2), _t, Float::class.java)
+    val t = NDArray(Shape(2, 2), _t, NDFloat)
     println(t)
     t[0, 0] = 3f
     println(t)

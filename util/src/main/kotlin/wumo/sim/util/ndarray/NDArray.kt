@@ -4,6 +4,7 @@ package wumo.sim.util.ndarray
 
 import wumo.sim.util.*
 import wumo.sim.util.ndarray.implementation.*
+import wumo.sim.util.ndarray.types.*
 
 abstract class Buf<T : Any> : Iterable<T> {
   abstract operator fun get(offset: Int): T
@@ -49,6 +50,16 @@ abstract class Buf<T : Any> : Iterable<T> {
 
 fun <T : Any> Any.toNDArray(shape: Shape? = null): NDArray<T> = NDArray.toNDArray(this, shape) as NDArray<T>
 
+fun IntArray.advance(shape: Shape) {
+  var i = lastIndex
+  do {
+    this[i]++
+    if (this[i] < shape[i]) break
+    this[i] = 0
+    i--
+  } while (i >= 0)
+}
+
 val castSwitch = SwitchOnClass1<Number, Any>().apply {
   case<Byte> { it.toByte() }
   case<Int> { it.toInt() }
@@ -61,7 +72,7 @@ val castSwitch = SwitchOnClass1<Number, Any>().apply {
 fun <R : Number, T : Number> R.cast(dataType: Class<T>): T =
     castSwitch(dataType, this as Number) as T
 
-open class NDArray<T : Any>(val shape: Shape, val raw: Buf<T>, val dtype: Class<*> = raw[0]::class.java) : Iterable<T> {
+open class NDArray<T : Any>(val shape: Shape, val raw: Buf<T>, val dtype: NDType<T> = raw[0].NDType()) : Iterable<T> {
   
   companion object {
     fun zeros(shape: Int): NDArray<Float> {
@@ -181,14 +192,14 @@ open class NDArray<T : Any>(val shape: Shape, val raw: Buf<T>, val dtype: Class<
     operator fun invoke(value: Array<Long>) = NDArray(Shape(value.size), value.toLongArray())
     operator fun invoke(value: Array<String>) = NDArray(Shape(value.size), value)
     
-    operator fun invoke(shape: Shape, value: FloatArray) = NDArray(shape, FloatArrayBuf(value), Float::class.java)
-    operator fun invoke(shape: Shape, value: DoubleArray) = NDArray(shape, DoubleArrayBuf(value), Double::class.java)
-    operator fun invoke(shape: Shape, value: BooleanArray) = NDArray(shape, BooleanArrayBuf(value), Boolean::class.java)
-    operator fun invoke(shape: Shape, value: ByteArray) = NDArray(shape, ByteArrayBuf(value), Byte::class.java)
-    operator fun invoke(shape: Shape, value: ShortArray) = NDArray(shape, ShortArrayBuf(value), Short::class.java)
-    operator fun invoke(shape: Shape, value: IntArray) = NDArray(shape, IntArrayBuf(value), Int::class.java)
-    operator fun invoke(shape: Shape, value: LongArray) = NDArray(shape, LongArrayBuf(value), Long::class.java)
-    operator fun invoke(shape: Shape, value: Array<String>) = NDArray(shape, ArrayBuf(value), String::class.java)
+    operator fun invoke(shape: Shape, value: FloatArray) = NDArray(shape, FloatArrayBuf(value), NDFloat)
+    operator fun invoke(shape: Shape, value: DoubleArray) = NDArray(shape, DoubleArrayBuf(value), NDDouble)
+    operator fun invoke(shape: Shape, value: BooleanArray) = NDArray(shape, BooleanArrayBuf(value), NDBool)
+    operator fun invoke(shape: Shape, value: ByteArray) = NDArray(shape, ByteArrayBuf(value), NDByte)
+    operator fun invoke(shape: Shape, value: ShortArray) = NDArray(shape, ShortArrayBuf(value), NDShort)
+    operator fun invoke(shape: Shape, value: IntArray) = NDArray(shape, IntArrayBuf(value), NDInt)
+    operator fun invoke(shape: Shape, value: LongArray) = NDArray(shape, LongArrayBuf(value), NDLong)
+    operator fun invoke(shape: Shape, value: Array<String>) = NDArray(shape, ArrayBuf(value), NDString)
     
     operator fun invoke(shape: Shape, initvalue: Float) = NDArray(shape, FloatArray(shape.numElements()) { initvalue })
     operator fun invoke(shape: Shape, initvalue: Double) = NDArray(shape, DoubleArray(shape.numElements()) { initvalue })
@@ -209,13 +220,7 @@ open class NDArray<T : Any>(val shape: Shape, val raw: Buf<T>, val dtype: Class<
       val idx = IntArray(shape.rank)
       return Array(shape.numElements()) {
         initvalue(idx).apply {
-          var i = idx.lastIndex
-          do {
-            idx[i]++
-            if (idx[i] < shape[i]) break
-            idx[i] = 0
-            i--
-          } while (i >= 0)
+          idx.advance(shape)
         }
       }.toNDArray(shape)
     }

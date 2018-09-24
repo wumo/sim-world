@@ -13,7 +13,7 @@ abstract class DiscreteEnv<WrappedENV>(
     val nS: Int,
     val nA: Int,
     val P: Transition,
-    val isd: FloatArray) : Env<Int, Int, WrappedENV> {
+    val isd: FloatArray) : Env<Int, Int, Int, Int, WrappedENV> {
   
   var lastAction = -1
   var s = -1

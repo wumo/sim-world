@@ -5,6 +5,9 @@ import org.junit.Assert.*
 import org.junit.Test
 import wumo.sim.util.Shape
 import wumo.sim.util.l
+import wumo.sim.util.ndarray.types.NDFloat
+import wumo.sim.util.ndarray.types.NDInt
+import wumo.sim.util.ndarray.types.NDLong
 import java.util.*
 
 class NDArrayTest {
@@ -12,22 +15,22 @@ class NDArrayTest {
   fun toNDArray() {
     val a = NDArray.toNDArray(1)
     assertEquals(1, a.size)
-    assertEquals(Integer::class.java, a.dtype)
+    assertEquals(NDInt, a.dtype)
     assertEquals(1, a.get())
     
     val d = NDArray.toNDArray(Integer(1))
     assertEquals(1, d.size)
-    assertEquals(Integer::class.java, d.dtype)
+    assertEquals(NDInt, d.dtype)
     assertEquals(1, d.get())
     
     val b = NDArray.toNDArray(2f)
     assertEquals(1, b.size)
-    assertEquals(java.lang.Float::class.java, b.dtype)
+    assertEquals(NDFloat, b.dtype)
     assertEquals(2f, b.get())
     
     val c = NDArray.toNDArray(l(1L, 2L, 3L))
     assertEquals(3, c.size)
-    assertEquals(java.lang.Long::class.java, c.dtype)
+    assertEquals(NDLong, c.dtype)
     
     val e = NDArray.toNDArray(arrayOf("h", "e", "l", "l", "o"))
     println(e)
@@ -86,13 +89,10 @@ class NDArrayTest {
     println(m(0, 0, 1))
   }
   
-  inline fun <reified T : Any> make(shape: Shape, initvalue: T): NDArray<T> =
-      NDArray(shape, initvalue)
-  
   @Test
   fun shapeNDArray() {
     
-    val n1 = make(Shape(2, 2), 1)
+    val n1 = NDArray(Shape(2, 2), 1)
     println(n1)
   }
   

@@ -3,27 +3,28 @@ package wumo.sim.spaces
 import wumo.sim.core.Space
 import wumo.sim.util.*
 import wumo.sim.util.ndarray.NDArray
-import wumo.sim.util.ndarray.cast
-import wumo.sim.util.ndarray.toNDArray
+import wumo.sim.util.ndarray.types.NDFloat
 
 class Box<T> constructor(
     val low: NDArray<T>,
     val high: NDArray<T>)
-  : Space<NDArray<T>>(low.shape, low.dtype)
+  : Space<NDArray<T>, T>(low.dtype, low.shape)
     where T : Number, T : Comparable<T> {
   
   override val n = low.size
   
   init {
-    require(low.size == high.size)
+    require(low.shape == high.shape)
   }
   
-  override fun sample(): NDArray<T> = Array(low.size) {
-    Rand().nextFloat(low[it].toFloat(),
-                     high[it].toFloat() +
-                         if (dataType == Float::class.java) 0f else 1f)
-        .cast(dataType as Class<T>) as Any
-  }.toNDArray()
+  override fun sample(): NDArray<T> = NDArray(
+      shape,
+      dtype.makeBuf(shape.numElements()) {
+        val e = Rand().nextFloat(low[it].toFloat(),
+                                 high[it].toFloat() +
+                                     if (dtype == NDFloat) 0f else 1f)
+        dtype.cast(e)
+      }, dtype)
   
   override fun contains(x: NDArray<T>): Boolean {
     if (x.size != low.size) return false

@@ -2,8 +2,8 @@ package wumo.sim.core
 
 import wumo.sim.util.t4
 
-open class ActionWrapper<O, A, WrappedEnv>(
-    env: Env<O, A, WrappedEnv>) : Wrapper<O, A, WrappedEnv>(env) {
+open class ActionWrapper<O, OE : Any, A, AE : Any, WrappedEnv>(
+    env: Env<O, OE, A, AE, WrappedEnv>) : Wrapper<O, OE, A, AE, WrappedEnv>(env) {
   
   override fun step(a: A): t4<O, Float, Boolean, Map<String, Any>> {
     val a = action(a)

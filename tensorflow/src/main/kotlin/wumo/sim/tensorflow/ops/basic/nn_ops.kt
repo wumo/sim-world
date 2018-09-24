@@ -533,7 +533,7 @@ object nn_ops {
         
         input_shape.withRankAtLeast(expected_input_rank)
         
-        val const_rate = constantValue(dilation_rate)
+        val const_rate = constantValue<Any>(dilation_rate)
         var rate_or_const_rate: Any = dilation_rate
         if (const_rate != null) {
           const_rate as NDArray<Int>
