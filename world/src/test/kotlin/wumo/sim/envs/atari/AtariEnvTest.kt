@@ -15,7 +15,7 @@ class AtariEnvTest {
   @Test
   fun test() {
     
-    val env = envs.Atari("BreakoutNoFrameskip-v4")
+    val env = envs.Atari("PongNoFrameskip-v4")
     
     val episode = 10
     var i=0

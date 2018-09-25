@@ -2,9 +2,7 @@ package wumo.sim.tensorflow.layers
 
 import wumo.sim.tensorflow.core.TensorFunction
 import wumo.sim.tensorflow.ops.Output
-import wumo.sim.tensorflow.ops.variables.Initializer
-import wumo.sim.tensorflow.ops.variables.Variable
-import wumo.sim.tensorflow.ops.variables.VariableScope
+import wumo.sim.tensorflow.ops.variables.*
 import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.types.DataType
 import wumo.sim.util.Shape
@@ -13,6 +11,7 @@ open class Layer(var name: String,
                  val trainable: Boolean = true,
                  var dataType: DataType<*>? = null,
                  val activity_reqularizer: Any? = null,
+                 val _reuse: Reuse = ReuseOrCreateNew,
                  val _scope: VariableScope? = null) {
   
   val use_resource_variables = false
@@ -30,7 +29,7 @@ open class Layer(var name: String,
   open operator fun invoke(inputs: Output): Output {
     val block = {
       val graph = inputs.graph
-    
+      
       if (!built) {
         dataType = dataType ?: inputs.dataType.baseDataType
         val input_shape = inputs.shape
@@ -45,7 +44,7 @@ open class Layer(var name: String,
       outputs
     }
     return if (_scope != null)
-      tf.updatedScope(_scope, isPure = true, block = block)
+      tf.updatedScope(_scope, reuse = _reuse, isPure = true, block = block)
     else
       tf.variableScope(name, isDefaultName = true, block = block)
   }
@@ -68,7 +67,7 @@ open class Layer(var name: String,
       }
     return variable
   }
-  
+
 //
 //  protected fun add_variable(shape: Shape, dataType: DataType<*>? = null,
 //                             initializer: Initializer,

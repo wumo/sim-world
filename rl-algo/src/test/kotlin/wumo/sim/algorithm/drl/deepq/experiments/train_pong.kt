@@ -1,34 +1,37 @@
 package wumo.sim.algorithm.drl.deepq.experiments
 
 import org.junit.Test
-import wumo.sim.algorithm.drl.common.identity
-import wumo.sim.algorithm.drl.common.make_atari
-import wumo.sim.algorithm.drl.common.wrap_deepmind
+import wumo.sim.algorithm.drl.common.*
 import wumo.sim.algorithm.drl.deepq.learn
 import wumo.sim.algorithm.drl.deepq.loadModel
 import wumo.sim.envs.envs
 import wumo.sim.tensorflow.tf
 import wumo.sim.util.ndarray.NDArray
 import wumo.sim.util.ndarray.newaxis
+import wumo.sim.util.t3
 
 class train_pong {
   @Test
   fun train() {
     val _env = make_atari("PongNoFrameskip-v4")
-    val env = wrap_deepmind(_env, frame_stack = true, scale = true)
+    val env = wrap_atari_dqn(_env)
     learn("PongNoFrameskip-v4.model",
           env = env,
-          network = identity,
-          learning_rate = 1e-3f,
-          total_timesteps = 10_0000,
-          buffer_size = 5_0000,
+          network = convOnly(convs = listOf(t3(32, 8, 4),
+                                            t3(64, 4, 2),
+                                            t3(64, 3, 1))),
+          learning_rate = 1e-4f,
+          total_timesteps = 1000_0000,
+          buffer_size = 2_0000,
           exploration_fraction = 0.1f,
-          exploration_final_eps = 0.02f,
+          exploration_final_eps = 0.01f,
+          train_freq = 4,
+          learning_starts = 2_0000,
+          gamma = 0.99f,
           print_freq = 10,
-          hiddens = listOf(64),
+          hiddens = listOf(256),
           dueling = true,
           layer_norm = false)
-    
   }
   
   @Test

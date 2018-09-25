@@ -108,7 +108,7 @@ object layers {
                     biases_regularizer: TensorFunction? = null,
                     reuse: Reuse = ReuseOrCreateNew,
                     trainable: Boolean = true,
-                    scope: String): Output =
+                    scope: String = "Conv"): Output =
       convolution(inputs, num_outputs, kernel_size, stride,
                   padding, data_format,
                   rate, activation_fn,
@@ -133,7 +133,7 @@ object layers {
                     biases_regularizer: TensorFunction? = null,
                     reuse: Reuse = ReuseOrCreateNew,
                     trainable: Boolean = true,
-                    scope: String): Output =
+                    scope: String = "Conv"): Output =
       convolution(inputs, num_outputs, kernel_size, stride,
                   padding, data_format,
                   rate, activation_fn,
@@ -158,7 +158,7 @@ object layers {
                     biases_regularizer: TensorFunction? = null,
                     reuse: Reuse = ReuseOrCreateNew,
                     trainable: Boolean = true,
-                    scope: String): Output =
+                    scope: String = "Conv"): Output =
       convolution(inputs, num_outputs, kernel_size, stride,
                   padding, data_format,
                   rate, activation_fn,

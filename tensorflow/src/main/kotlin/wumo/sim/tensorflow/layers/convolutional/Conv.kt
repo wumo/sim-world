@@ -47,6 +47,7 @@ open class Conv(val rank: Int,
                                        trainable,
                                        dataType = dataType,
                                        activity_reqularizer = activity_regularizer,
+                                       _reuse=_reuse,
                                        _scope = _scope) {
   
   val kernel_size = List(rank) { kernel_size }

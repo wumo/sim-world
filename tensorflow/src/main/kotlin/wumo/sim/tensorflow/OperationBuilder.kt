@@ -231,21 +231,17 @@ class OperationBuilder(val opType: String, val name: String) {
   }
   
   fun attr(name: String, value: String) {
-    attributes[name] = {
-      attr(name, value.toByteArray())
-    }
+    attr(name, value.toByteArray())
   }
   
   fun attr(name: String, values: Array<String>) {
-    attributes[name] = {
-      val attrValue = AttrValue()
-      attrValue.mutable_list().apply {
-        values.forEach { value ->
-          add_s(value)
-        }
+    val attrValue = AttrValue()
+    attrValue.mutable_list().apply {
+      values.forEach { value ->
+        add_s(value)
       }
-      attr(name, attrValue)
     }
+    attr(name, attrValue)
   }
   
   fun attr(name: String, value: ByteArray) {
@@ -351,35 +347,29 @@ class OperationBuilder(val opType: String, val name: String) {
   }
   
   fun attr(name: String, value: TensorProto) {
-    attributes[name] = {
-      val attrValue = AttrValue()
-      attrValue.mutable_tensor().CopyFrom(value)
-      attr(name, attrValue)
-    }
+    val attrValue = AttrValue()
+    attrValue.mutable_tensor().CopyFrom(value)
+    attr(name, attrValue)
   }
   
   fun attr(name: String, shapes: Array<Shape>) {
-    attributes[name] = {
-      val attrValue = AttrValue()
-      attrValue.mutable_list().apply {
-        shapes.forEach { shape ->
-          add_shape().apply {
-            shape.forEach { dim ->
-              add_dim().set_size(dim.toLong())
-            }
+    val attrValue = AttrValue()
+    attrValue.mutable_list().apply {
+      shapes.forEach { shape ->
+        add_shape().apply {
+          shape.forEach { dim ->
+            add_dim().set_size(dim.toLong())
           }
         }
       }
-      attr(name, attrValue)
     }
+    attr(name, attrValue)
   }
   
   fun attr(name: String, func: NameAttrList) {
-    attributes[name] = {
-      val attrValue = AttrValue()
-      attrValue.mutable_func().put(func)
-      attr(name, attrValue)
-    }
+    val attrValue = AttrValue()
+    attrValue.mutable_func().put(func)
+    attr(name, attrValue)
   }
   
   fun attr(name: String, attrValue: AttrValue) {

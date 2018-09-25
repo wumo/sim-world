@@ -478,7 +478,7 @@ object nn_ops {
                                                padding,
                                                data_format,
                                                _strides,
-                                               name!!);
+                                               name);
               { input: Output, filter: Output ->
                 _call(input, filter)
               }
@@ -627,8 +627,7 @@ object nn_ops {
                           padding: ConvPadding,
                           data_format: CNNDataFormat?,
                           strides: List<Int>?,
-                          name: String): NonAtrousConvolution {
-        
+                          name: String?): NonAtrousConvolution {
         val filterShape = fileterShape.withRank(input_shape.rank)
         val input_shape = input_shape.withRank(fileterShape.rank)
         errorIf(input_shape.rank == -1) {
@@ -652,7 +651,7 @@ object nn_ops {
               tf.conv1D(input, filter, _strides,
                         padding.name,
                         dataFormat = data_format,
-                        name = name)
+                        name = name?:"Conv1D")
             }
           }
           2 -> {
@@ -668,7 +667,7 @@ object nn_ops {
                                 strides,
                                 padding.name,
                                 dataFormat = (data_format ?: NHWC).name,
-                                name = name)
+                                name = name?:"Conv2D")
             }
           }
           3 -> {
@@ -683,7 +682,7 @@ object nn_ops {
               gen_nn_ops.conv3D(input, filter, strides,
                                 padding.name,
                                 dataFormat = (data_format ?: NDHWC).name,
-                                name = name)
+                                name = name?:"Conv3D")
             }
           }
           else -> error("Not supported $conv_dims")

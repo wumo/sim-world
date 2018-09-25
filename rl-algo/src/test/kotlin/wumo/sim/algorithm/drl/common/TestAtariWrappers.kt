@@ -26,10 +26,6 @@ class TestAtariWrappers {
         val color = (gray shl 24) or (gray shl 16) or (gray shl 8) or 0xff
         pixmap.drawPixel(_x, y, color)
       }
-//    pixmap.setColor(Color.WHITE)
-//    for (i in 0 until n) {
-//      pixmap.drawRectangle(screen_width * i, 0, screen_width, screen_height)
-//    }
     return pixmap
   }
   

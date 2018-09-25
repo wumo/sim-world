@@ -1,5 +1,6 @@
 package wumo.sim.algorithm.drl.common
 
+import wumo.sim.tensorflow.contrib.layers
 import wumo.sim.tensorflow.core.TensorFunction
 import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.ops.basic.div
@@ -36,8 +37,13 @@ fun convOnly(convs: List<t3<Int, Int, Int>> =
       var out = tf.cast(X, FLOAT) / 255f
       tf.variableScope("convnet") {
         for ((num_outputs, kernel_size, stride) in convs) {
-        
+          out = layers.convolution2d(out,
+                                     num_outputs = num_outputs,
+                                     kernel_size = kernel_size,
+                                     stride = stride,
+                                     activation_fn = { tf.relu(it) })
         }
+        out
       }
-      out
+      
     }

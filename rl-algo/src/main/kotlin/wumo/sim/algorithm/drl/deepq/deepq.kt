@@ -104,12 +104,12 @@ fun <O : Any, A : Any> learn(
         act as ActWithParamNoise
         act(newaxis(NDArray.toNDArray(obs)), reset, update_param_noise_threshold, update_param_noise_scale = true, update_eps = update_eps)
       }
-      val action = act_result[0].get() as A
+      val action = act_result[0].get(0) as A
 //      println(action)
       val env_action = action
       reset = false
       val (new_obs, rew, done, _) = env.step(env_action)
-//      env.render()
+      println(t)
       //Store transition in the replay buffer.
       replay_buffer.add(obs, action, rew, new_obs, done)
       obs = new_obs

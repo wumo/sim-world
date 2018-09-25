@@ -716,8 +716,10 @@ object array_ops {
           if (shape.numElements() < 1000)
             tf.const(shape, dtype, zero, tf.currentNameScope)
           else {
-            val shape = gen_array_ops.reshape(tf.const(shape.asLongArray()!!), tf.const(-1), name)
-            gen_array_ops.fill(shape, tf.const(dtype, zero), tf.currentNameScope)
+            var shape_t = tf.const(shape.asLongArray()!!)
+            if (shape_t.shape.rank == -1)
+              shape_t = gen_array_ops.reshape(shape_t, tf.const(-1), name)
+            gen_array_ops.fill(shape_t, tf.const(dtype, zero), tf.currentNameScope)
           }
         }
     
