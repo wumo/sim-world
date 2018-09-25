@@ -24,26 +24,25 @@ fun <T : Any> concatenate(array: List<NDArray<T>>, axis: Int = 0): NDArray<T> {
   var j = 0
   return NDArray(finalShape, first.dtype.makeBuf(finalShape.numElements()) {
     val k = idx[axis]
-    val min = if (j > 0) offset[j - 1] else 0
-    val max = offset[j]
-    lateinit var element: T
-    outer@ while (true)
-      when {
-        k in min until max -> {
-          idx[axis] = k - min
-          element = array[j].get(*idx)
-          break@outer
-        }
-        k == max -> {
+    var min = 0
+    outer@ while (true) {
+      min = if (j > 0) offset[j - 1] else 0
+      val max = offset[j]
+      when (k) {
+        in min until max -> break@outer
+        max -> {
           j++
           require(j < array.size)
         }
-        k == 0 -> {
-          j = 0
-        }
+        0 -> j = 0
         else -> error("current idx:$k, current j:$j, min:$min, max:$max")
       }
-    assert(k == 0 || k in min until max || k == max)
-    element.apply { idx.advance(finalShape) }
+    }
+    idx[axis] = k - min
+    val element = array[j].get(*idx)
+    element.apply {
+      idx[axis] = k
+      idx.advance(finalShape)
+    }
   }, first.dtype)
 }

@@ -1,6 +1,5 @@
 package wumo.sim.core
 
-import wumo.sim.util.ndarray.NDArray
 import wumo.sim.util.t4
 
 open class ObservationWrapper<O, OE : Any, A, AE : Any, WrappedEnv>(

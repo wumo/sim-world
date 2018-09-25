@@ -215,8 +215,17 @@ class Shape(private val dims: IntArray? = null) : Iterable<Int> {
     return dims?.let { Arrays.hashCode(it) } ?: 0
   }
   
+  operator fun component1() = this[0]
+  operator fun component2() = this[1]
+  operator fun component3() = this[2]
+  operator fun component4() = this[3]
+  operator fun component5() = this[4]
+  operator fun component6() = this[5]
+  operator fun component7() = this[6]
 }
 
 fun Int.isCompatibleWith(other: Int): Boolean =
     this == -1 || other == -1 || this == other
+
+
   

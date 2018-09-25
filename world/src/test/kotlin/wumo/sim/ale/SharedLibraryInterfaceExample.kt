@@ -23,11 +23,6 @@ fun copy(source: InputStream, destination: String): Boolean {
 }
 
 fun main(args: Array<String>) {
-  if (args.isEmpty()) {
-    System.err.println("Usage: java SharedLibraryInterfaceExample rom_file")
-    System.exit(1)
-  }
-  
   unpackDirToTemp("atari_roms")
   
 //  val source = Thread.currentThread().contextClassLoader
@@ -41,12 +36,12 @@ fun main(args: Array<String>) {
   //The default is already 0.25, this is just an example
   ale.setFloat("repeat_action_probability", 0.25f)
   
-  ale.setBool("display_screen", false)
+  ale.setBool("display_screen", true)
   ale.setBool("sound", false)
   
   // Load the ROM file. (Also resets the system for new settings to
   // take effect.)
-  ale.loadROM(args[0])
+  ale.loadROM("/tmp/atari_roms/breakout.bin")
   
   // Get the vector of legal actions
   val legal_actions = ale.legalActionSet

@@ -182,7 +182,7 @@ class WarpFrame(env: AtariEnvType) :
     cvtColor(src, dst, COLOR_RGB2GRAY)
     val dst2 = Mat()
     resize(dst, dst2, Size(width, height), 0.0, 0.0, INTER_AREA)
-    return dst.toNDArray()
+    return dst2.toNDArray()
   }
 }
 
@@ -193,8 +193,7 @@ class FloatFrame<WrappedEnv>(val env: AtariEnvType)
   override val action_space = env.action_space
   override val observation_space = run {
     val obspace = env.observation_space as Box<Byte>
-    Box(obspace.low.cast(NDFloat),
-        obspace.high.cast(NDFloat), env.observation_space.shape)
+    Box(obspace.low.cast(NDFloat), obspace.high.cast(NDFloat))
   }
   
   override fun step(a: Int): t4<NDArray<Float>, Float, Boolean, Map<String, Any>> {
@@ -258,8 +257,8 @@ class FrameStack<WrappedEnv>(
   
   val frames = FixedSizeDeque<NDArray<Float>>(k)
   override val observation_space = run {
-    val shape = env.observation_space.shape
-    Box(0f, 255f, Shape(shape[0], shape[1], shape[2] * k))
+    val (height,width,gray) = env.observation_space.shape
+    Box(0f, 255f, Shape(height,width,gray * k))
   }
   
   override fun reset(): NDArray<Float> {
@@ -279,7 +278,7 @@ class FrameStack<WrappedEnv>(
   
   private fun get_ob(): NDArray<Float> {
     require(frames.size == k)
-    return concatenate(frames, axis = 2)
+    return concatenate(frames.toList(), axis = 2)
   }
 }
 
