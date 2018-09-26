@@ -14,11 +14,14 @@ import wumo.sim.spaces.Box
 import wumo.sim.util.Shape
 import wumo.sim.util.ndarray.*
 import wumo.sim.util.ndarray.implementation.ByteArrayBuf
+import wumo.sim.util.ndarray.implementation.FloatArrayBuf
 import wumo.sim.util.ndarray.types.NDFloat
 import wumo.sim.util.t4
 import java.util.*
 import kotlin.math.sign
 import kotlin.random.Random
+import kotlin.system.measureNanoTime
+import kotlin.system.measureTimeMillis
 
 fun make_atari(env_id: String): AtariEnvType {
   require("NoFrameskip" in env_id)
@@ -81,8 +84,8 @@ class NoopResetEnv(env: AtariEnvType,
 class MaxAndSkipEnv(env: AtariEnvType, val skip: Int = 4)
   : Wrapper<AtariObsType, Byte, Int, Int, AtariEnv>(env) {
   
-  val obs_buffer = NDArray<Byte>(
-      Shape(2) + env.observation_space.shape, 0)
+  val obs_buffer = mutableListOf(NDArray(env.observation_space.shape, 0.toByte()),
+                                 NDArray(env.observation_space.shape, 0.toByte()))
   
   override fun step(a: Int): t4<AtariObsType, Float, Boolean, Map<String, Any>> {
     var total_reward = 0f
@@ -97,7 +100,13 @@ class MaxAndSkipEnv(env: AtariEnvType, val skip: Int = 4)
       total_reward += reward
       if (done) break
     }
-    val max_frame = obs_buffer.max(axis = 0)
+    val a = obs_buffer[0]
+    val b = obs_buffer[1]
+    val c = ByteArray(a.size) {
+      maxOf(a.rawGet(it), b.rawGet(it))
+    }
+    val max_frame = NDArray(a.shape, ByteArrayBuf(c), a.dtype)
+//    val max_frame = obs_buffer.max(axis = 0)
     return t4(max_frame, total_reward, done, info)
   }
 }
@@ -161,6 +170,9 @@ fun Mat.toNDArray(): AtariObsType {
   require(depth() == CV_8U) { "Only supported CV_8U" }
   val channels = channels()
   val data = data()
+  data.limit((rows() * cols() * channels).toLong())
+//  return NDArray(Shape(rows(), cols(), channels),
+//                 BytePointerBuf(data))
   return NDArray(Shape(rows(), cols(), channels),
                  ByteArray(rows() * cols() * channels) {
                    data[it.toLong()]
@@ -257,9 +269,11 @@ class FrameStack<WrappedEnv>(
   
   val frames = FixedSizeDeque<NDArray<Float>>(k)
   override val observation_space = run {
-    val (height,width,gray) = env.observation_space.shape
-    Box(0f, 255f, Shape(height,width,gray * k))
+    val (height, width, rgb) = env.observation_space.shape
+    Box(0f, 255f, Shape(height, width, rgb * k))
   }
+  val rgbDim = env.observation_space.shape[2]
+  val base = observation_space.shape[2]
   
   override fun reset(): NDArray<Float> {
     val ob = env.reset()
@@ -278,7 +292,15 @@ class FrameStack<WrappedEnv>(
   
   private fun get_ob(): NDArray<Float> {
     require(frames.size == k)
-    return concatenate(frames.toList(), axis = 2)
+    val frames = frames.toList()
+    val raw = FloatArray(observation_space.n) {
+      val frameId = (it % base) / rgbDim
+      var i = it - frameId * rgbDim
+      i = i / k + i % k
+      frames[frameId].rawGet(i)
+    }
+    return NDArray(observation_space.shape, FloatArrayBuf(raw), NDFloat)
+//    return concatenate(frames, axis = 2)
   }
 }
 

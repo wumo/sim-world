@@ -8,8 +8,10 @@ import wumo.sim.tensorflow.ops.training.AdamOptimizer
 import wumo.sim.tensorflow.ops.variables.ReuseOrCreateNew
 import wumo.sim.tensorflow.ops.variables.Variable
 import wumo.sim.tensorflow.tf
+import wumo.sim.util.TimeMeter
 import wumo.sim.util.ndarray.*
 import wumo.sim.util.ndarray.implementation.LongArrayBuf
+import wumo.sim.util.ndarray.types.NDInt
 
 fun <O : Any, A : Any> learn(
     model_file_path: String,
@@ -85,11 +87,13 @@ fun <O : Any, A : Any> learn(
     var saved_mean_reward = Float.NEGATIVE_INFINITY
     var obs = env.reset()
     var reset = true
-    
+    val meter = TimeMeter()
     for (t in 0..total_timesteps) {
       //Take action and update exploration to the newest value
       var update_eps: Float
       var update_param_noise_threshold: Float
+//      meter.start("total")
+//      meter.start("act")
       val act_result = if (!param_noise) {
         update_eps = exploration.value(t)
         act(newaxis(NDArray.toNDArray(obs)), update_eps = update_eps)
@@ -104,12 +108,14 @@ fun <O : Any, A : Any> learn(
         act as ActWithParamNoise
         act(newaxis(NDArray.toNDArray(obs)), reset, update_param_noise_threshold, update_param_noise_scale = true, update_eps = update_eps)
       }
-      val action = act_result[0].get(0) as A
-//      println(action)
+//      meter.end("act")
+      val action = act_result[0][0] as A
       val env_action = action
       reset = false
+//      meter.start("step")
       val (new_obs, rew, done, _) = env.step(env_action)
-      println(t)
+//      meter.end("step")
+//      println((end-start)/1e9)
       //Store transition in the replay buffer.
       replay_buffer.add(obs, action, rew, new_obs, done)
       obs = new_obs
@@ -134,9 +140,7 @@ fun <O : Any, A : Any> learn(
         } else {
           val (obses_t, actions, rewards, obses_tp1, dones) = replay_buffer.sample(batch_size)
           actions as NDArray<Long>
-          val buf = actions.raw as LongArrayBuf
-          val _buf = IntArray(buf.raw.size) { buf.raw[it].toInt() }
-          val _actions = NDArray(actions.shape, _buf)
+          val _actions = actions.cast(NDInt)
           val weights = ones_like(rewards)
           train(obses_t, _actions, rewards, obses_tp1, dones, weights)
         }
@@ -162,6 +166,12 @@ fun <O : Any, A : Any> learn(
           saveVariable(act_vars.map { it.name }.zip(result))
         }
       }
+//      meter.end("total")
+
+//      if (t % 100 == 0) {
+//        println("$meter")
+//        meter.reset()
+//      }
     }
     println("Saving model to $model_file_path")
     val result = eval(act_vars)

@@ -26,7 +26,7 @@ class train_cartpole {
           exploration_final_eps = 0.02f,
           print_freq = 10,
           hiddens = listOf(64),
-          dueling = true,
+          dueling = false,
           layer_norm = false)
     
   }
@@ -45,7 +45,7 @@ class train_cartpole {
           while (!_done) {
             env.render()
             val action = act(newaxis(NDArray.toNDArray(_obs)),
-                             stochastic = false)[0].get() as Long
+                             stochastic = false)[0][0] as Long
             val (obs, rew, done) = env.step(action.toInt())
             _done = done
             _obs = obs

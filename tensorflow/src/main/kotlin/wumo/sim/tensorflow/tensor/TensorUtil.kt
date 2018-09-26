@@ -10,7 +10,7 @@ import wumo.sim.util.ndarray.Buf
 import wumo.sim.util.ndarray.NDArray
 import wumo.sim.util.ndarray.types.NDType
 
-class BytePointerBuf<T : Any>(
+class PointerBuf<T : Any>(
     val bytePointer: BytePointer,
     val dataType: DataType<T>) : Buf<T>() {
   
@@ -24,7 +24,7 @@ class BytePointerBuf<T : Any>(
   override fun copy(): Buf<T> {
     val dst = BytePointer(bytePointer.limit())
     memcpy(dst, bytePointer, bytePointer.limit())
-    return BytePointerBuf(dst, dataType)
+    return PointerBuf(dst, dataType)
   }
   
   override fun slice(start: Int, end: Int): Buf<T> {
@@ -117,7 +117,7 @@ fun <T : Any> makeNDArray(tensor: tensorflow.TensorProto): NDArray<T> {
   val tensor_content = tensor.tensor_content()
   if (tensor_content != null)
     return NDArray(shape,
-                   dtype.castBuf(BytePointerBuf(tensor_content, dtype)),
+                   dtype.castBuf(PointerBuf(tensor_content, dtype)),
                    dtype.kotlinType.NDType())
   return when (tensor_dtype) {
     FLOAT16, BFLOAT16 ->

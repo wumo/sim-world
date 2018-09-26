@@ -106,34 +106,9 @@ protected constructor(_c_tensor: TF_Tensor) : Buf<T>() {
     }
     
     internal fun create(shape: Shape, data: Pointer, dtype: DataType<*>): TF_Tensor {
-      val byteSize = dtype.byteSize * data.limit()
       val bytePointer = data as? BytePointer
           ?: BytePointer(data).capacity(data.sizeof() * data.limit())
       return newTensor(dtype.cValue, shape.asLongArray()!!, bytePointer)
-    }
-    
-    private val pointer_switch = SwitchValue1<Int, Buf<*>, Pointer>().apply {
-      case(COMPLEX64.cValue, FLOAT.cValue) { raw ->
-        FloatPointer(*FloatArray(raw.size) { floatIsSupported.cast(raw[it]!!) })
-      }
-      case(DOUBLE.cValue) { raw ->
-        DoublePointer(*DoubleArray(raw.size) { doubleIsSupported.cast(raw[it]!!) })
-      }
-      case(BOOL.cValue, QUINT8.cValue, UINT8.cValue, QINT8.cValue, INT8.cValue) { raw ->
-        BytePointer(*ByteArray(raw.size) { byteIsSupported.cast(raw[it]!!) })
-      }
-      case(BFLOAT16.cValue, INT16.cValue) { raw ->
-        ShortPointer(*ShortArray(raw.size) { shortIsSupported.cast(raw[it]!!) })
-      }
-      case(QINT32.cValue, INT32.cValue) { raw ->
-        IntPointer(*IntArray(raw.size) { intIsSupported.cast(raw[it]!!) })
-      }
-      case(INT64.cValue) { raw ->
-        LongPointer(*LongArray(raw.size) { longIsSupported.cast(raw[it]!!) })
-      }
-      case(STRING.cValue) { raw ->
-        TFStringArray.encode(Array(raw.size) { raw[it]!!.toString() })
-      }
     }
   }
   

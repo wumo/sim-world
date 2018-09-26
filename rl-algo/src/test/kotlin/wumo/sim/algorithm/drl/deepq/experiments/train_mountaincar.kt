@@ -28,7 +28,7 @@ class train_mountaincar {
           print_freq = 10,
           param_noise = true,
           hiddens = listOf(64),
-          dueling = true,
+          dueling = false,
           layer_norm = true)
   }
   
@@ -46,7 +46,7 @@ class train_mountaincar {
           while (!_done) {
             env.render()
             val action = act(newaxis(NDArray.toNDArray(_obs)),
-                             stochastic = false)[0].get() as Long
+                             stochastic = false)[0][0] as Long
             val (obs, rew, done) = env.step(action.toInt())
             _done = done
             _obs = obs

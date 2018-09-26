@@ -75,6 +75,9 @@ fun <R : Number, T : Number> R.cast(dataType: Class<T>): T =
 open class NDArray<T : Any>(val shape: Shape, val raw: Buf<T>, val dtype: NDType<T> = raw[0].NDType()) : Iterable<T> {
   
   companion object {
+    inline fun <reified T : Any> zeros(shape: Shape, dtype: NDType<T>): NDArray<T> =
+        NDArray(shape, dtype.zero())
+    
     fun zeros(shape: Int): NDArray<Float> {
       return NDArray(Shape(shape), 0f)
     }

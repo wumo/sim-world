@@ -120,7 +120,7 @@ class Session(val c_graph: TF_Graph) {
   fun eval(fetch: Iterable<OutputConvertible>): MutableList<NDArray<Any>> {
     val fetches = fetch.map { it.toOutput() }
     val status = newStatus()
-    val (inputs, input_values, ninputs) = accumulateFeedDict()
+    val (inputs, input_values, ninputs,tmp_tensors) = accumulateFeedDict()
     val (target_opers, ntargets) = accumulateRuns()
     val noutputs = fetches.size
     val outputs = TF_Output(noutputs.toLong())
@@ -132,6 +132,7 @@ class Session(val c_graph: TF_Graph) {
                   outputs, output_values, noutputs,
                   target_opers, ntargets,
                   null, status)
+    tmp_tensors
     status.check()
     clear()
     return MutableList(noutputs) {
@@ -139,18 +140,21 @@ class Session(val c_graph: TF_Graph) {
     }
   }
   
-  private fun accumulateFeedDict(): t3<TF_Output, PointerPointer<TF_Tensor>, Int> {
+  private fun accumulateFeedDict(): t4<TF_Output, PointerPointer<TF_Tensor>, Int, MutableList<Tensor<*>>> {
     val ninputs = feed_dict.size.toLong()
     val inputs = TF_Output(ninputs)
     val input_values = PointerPointer<TF_Tensor>(ninputs)
+    val tmp_tensors = mutableListOf<Tensor<*>>()
     for ((i, pair) in feed_dict.withIndex()) {
       val (input, input_value) = pair
       inputs.position(i.toLong()).oper(input.op.c_op).index(input.valueIndex)
-      input_values.position(i.toLong()).put(Tensor.fromNDArray(input_value, input.dataType).c_tensor)
+      val tensor = Tensor.fromNDArray(input_value, input.dataType)
+      tmp_tensors += tensor
+      input_values.position(i.toLong()).put(tensor.c_tensor)
     }
     inputs.position(0L)
     input_values.position(0L)
-    return t3(inputs, input_values, ninputs.toInt())
+    return t4(inputs, input_values, ninputs.toInt(), tmp_tensors)
   }
   
   private fun accumulateRuns(): t2<PointerPointer<TF_Operation>, Int> {
