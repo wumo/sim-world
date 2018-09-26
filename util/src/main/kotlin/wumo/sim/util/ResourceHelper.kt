@@ -1,10 +1,7 @@
 package wumo.sim.util
 
-import java.io.File
-import java.io.File.separatorChar
+import java.nio.file.*
 import java.nio.file.Files.copy
-import java.nio.file.Paths
-import java.nio.file.StandardCopyOption
 
 fun unpackFileToTemp(resource: String, override: Boolean = false): String {
   val path = Paths.get(System.getProperty("java.io.tmpdir"), resource)
@@ -17,18 +14,21 @@ fun unpackFileToTemp(resource: String, override: Boolean = false): String {
   return file.path
 }
 
-fun unpackDirToTemp(resourceDir: String, override: Boolean = false): String {
-  val loader = Thread.currentThread().contextClassLoader
-  val dir = File(loader.getResource(resourceDir).path)
-  dir.listFiles().forEach {
-    unpackFileToTemp(Paths.get(resourceDir, it.name).toString(),
-                     override)
+fun unpackDirToTemp(resourceDir: String, override: Boolean = false)
+    : Pair<String, List<String>> {
+  val uri = Thread.currentThread().contextClassLoader
+      .getResource(resourceDir).toURI()
+  val myPath = if (uri.scheme == "jar") {
+    val fs = FileSystems.newFileSystem(uri, emptyMap<String,Any>())
+    fs.getPath(resourceDir)
+  } else {
+    Paths.get(uri)
   }
-  return Paths.get(System.getProperty("java.io.tmpdir"), resourceDir).toString()
-}
-
-fun listResources(resourceDir: String): Array<File> {
-  val loader = Thread.currentThread().contextClassLoader
-  val dir = File(loader.getResource(resourceDir).path)
-  return dir.listFiles()
+  val files = mutableListOf<String>()
+  Files.list(myPath).forEach {
+    unpackFileToTemp(Paths.get(resourceDir, it.fileName.toString()).toString(), override)
+    files += it.fileName.toString()
+  }
+  return Pair(Paths.get(System.getProperty("java.io.tmpdir"), resourceDir).toString(),
+              files)
 }

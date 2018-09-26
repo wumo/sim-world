@@ -33,10 +33,15 @@ class AtariEnv(val game: String = "pong",
   
   companion object {
     val atari_roms_path = "atari_roms"
-    val game_dir: String = unpackDirToTemp(atari_roms_path)
-    val games: Set<String> = listResources(atari_roms_path)
-        .map { it.nameWithoutExtension }
-        .toSet()
+    val game_dir: String
+    val games: Set<String>
+    
+    init {
+      val (dir, files) = unpackDirToTemp(atari_roms_path)
+      game_dir = dir
+      games = files.map { it.substringBefore('.') }
+          .toSet()
+    }
     
     enum class ObsType {
       ram, image
