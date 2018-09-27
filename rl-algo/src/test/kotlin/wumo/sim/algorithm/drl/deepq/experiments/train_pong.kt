@@ -29,7 +29,7 @@ class train_pong {
           exploration_fraction = 0.1f,
           exploration_final_eps = 0.01f,
           train_freq = 4,
-          learning_starts = 1000,
+          learning_starts = 2_0000,
           gamma = 0.99f,
           print_freq = 10,
           hiddens = listOf(256),
