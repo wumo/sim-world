@@ -328,7 +328,7 @@ object gradient_ops {
   /** If the op was marked as compiled, this function compiles the calculation in `gradientFunction` (using XLA) and
    * returns the result of `gradientFunction`. Otherwise, it simply returns the result of `gradientFunction`.
    *
-   * @param  nameScope        Name scope to use for the gradient ops.
+   * @param  nameScope        Name native to use for the gradient ops.
    * @param  op               Op whose gradients are being computed.
    * @param  gradientFunction Function that computes the gradients for `op`.
    * @return Created gradients op.
@@ -401,7 +401,7 @@ object gradient_ops {
                 "Tensor '$y' with data type '${y.dataType}' must be numeric in order to obtain a default gradient.")
           }
         }
-        // Create a gradients tensor in the name scope of the gradients. This is required in order for tensor arrays
+        // Create a gradients tensor in the name native of the gradients. This is required in order for tensor arrays
         // to identify which gradient call a gradient value is coming from.
         when (grad_y) {
           is Output -> tf.identity(grad_y, name = "grad_ys_$index")

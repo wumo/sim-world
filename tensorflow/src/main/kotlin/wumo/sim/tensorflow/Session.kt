@@ -12,6 +12,7 @@ import wumo.sim.tensorflow.ops.Op
 import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.ops.OutputConvertible
 import wumo.sim.tensorflow.tensor.Tensor
+import wumo.sim.tensorflow.util.native
 import wumo.sim.util.ndarray.NDArray
 import wumo.sim.util.t2
 import wumo.sim.util.t3
@@ -118,9 +119,10 @@ class Session(val c_graph: TF_Graph) {
   }
   
   fun eval(fetch: Iterable<OutputConvertible>): MutableList<NDArray<Any>> {
+//    native {
     val fetches = fetch.map { it.toOutput() }
-    val status = newStatus()
-    val (inputs, input_values, ninputs,tmp_tensors) = accumulateFeedDict()
+    val status = TF_NewStatus()
+    val (inputs, input_values, ninputs, tmp_tensors) = accumulateFeedDict()
     val (target_opers, ntargets) = accumulateRuns()
     val noutputs = fetches.size
     val outputs = TF_Output(noutputs.toLong())
@@ -132,12 +134,21 @@ class Session(val c_graph: TF_Graph) {
                   outputs, output_values, noutputs,
                   target_opers, ntargets,
                   null, status)
-    tmp_tensors
     status.check()
+    inputs.deallocate()
+    input_values.deallocate()
+    outputs.deallocate()
+    tmp_tensors.forEach { TF_DeleteTensor(it.c_tensor) }
+    target_opers.deallocate()
+    TF_DeleteStatus(status)
     clear()
     return MutableList(noutputs) {
-      Tensor.toNDArray<Any>(output_values.get(TF_Tensor::class.java, it.toLong()))
+      val tensor=output_values.get(TF_Tensor::class.java, it.toLong())
+      Tensor.toNDArray<Any>(tensor).apply { TF_DeleteTensor(tensor) }
+    }.apply {
+      output_values.deallocate()
     }
+//    }
   }
   
   private fun accumulateFeedDict(): t4<TF_Output, PointerPointer<TF_Tensor>, Int, MutableList<Tensor<*>>> {

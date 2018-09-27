@@ -118,8 +118,9 @@ object const_ops {
     
     fun <T : Any> const(value: NDArray<T>, name: String = "Const"): Output {
       val dtype = value.dtype.toDataType()
+      val tensor = Tensor.fromNDArray(value)
       return buildOpTensor("Const", name = name) {
-        attr("value", Tensor.fromNDArray(value))
+        attr("value", tensor)
         attr("dtype", dtype)
       }
     }

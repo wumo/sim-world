@@ -106,7 +106,7 @@ class Variable(
   companion object {
     /** Gets an existing variable with the specified name or creates a new one.
      *
-     * This function prefixes the name with the current variable scope and performs variable reuse checks.
+     * This function prefixes the name with the current variable native and performs variable reuse checks.
      *
      * TODO: Add example.
      *

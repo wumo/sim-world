@@ -9,12 +9,14 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
     <artifactId>world</artifactId>
-
+    <properties>
+        <ale.version>0.6.0</ale.version>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>org.bytedeco.javacpp-presets</groupId>
             <artifactId>ale-platform</artifactId>
-            <version>0.6.0-1.4.2</version>
+            <version>${ale.version}-${javacpp.version}</version>
         </dependency>
         <dependency>
             <groupId>wumo.sim</groupId>

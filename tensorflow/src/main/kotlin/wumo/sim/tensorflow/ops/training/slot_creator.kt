@@ -78,8 +78,8 @@ object slot_creator {
       colocateWithPrimary: Boolean = true
   ): Variable {
     // Scope the slot name in the namespace of the primary variable. Set "primary.op.name + '/' + name" as the default
-    // name, so that the scope name of the slot variable user can be shared when reuse is 'true'. Meanwhile, when reuse
-    // is 'false' and the same name has been previously used, the scope name will be made unique by appending an integer
+    // name, so that the native name of the slot variable user can be shared when reuse is 'true'. Meanwhile, when reuse
+    // is 'false' and the same name has been previously used, the native name will be made unique by appending an integer
     // to it.
     val inferredDataType = dataType ?: (initializer.dataType ?: FLOAT)
     val inferredShape = when {
@@ -119,8 +119,8 @@ object slot_creator {
       colocateWithPrimary: Boolean = true
   ): Variable {
     // Scope the slot name in the namespace of the primary value. Set "primary.op.name + '/' + name" as the default
-    // name, so that the scope name of the slot variable user can be shared when reuse is 'true'. Meanwhile, when reuse
-    // is 'false' and the same name has been previously used, the scope name will be made unique by appending an integer
+    // name, so that the native name of the slot variable user can be shared when reuse is 'true'. Meanwhile, when reuse
+    // is 'false' and the same name has been previously used, the native name will be made unique by appending an integer
     // to it.
     val inferredDataType = if (dataType == null) initializer.dataType ?: FLOAT else dataType
     val inferredShape = when {

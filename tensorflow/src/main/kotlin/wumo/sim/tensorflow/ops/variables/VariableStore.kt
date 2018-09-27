@@ -70,7 +70,7 @@ class VariableStore {
       // Here we handle the case of returning an existing variable.
       if (reuse == CreateNewOnly)
         throw IllegalArgumentException(
-            "Variable '$name' already exists, but variable scope re-use was set to 'CreateNewOnly'.")
+            "Variable '$name' already exists, but variable native re-use was set to 'CreateNewOnly'.")
       val foundVariable = variables[name]!!
       if (shape != null && !shape.isCompatibleWith(foundVariable.shape))
         throw ShapeMismatchException(
@@ -85,7 +85,7 @@ class VariableStore {
       // Here we handle the case of creating a new variable.
       if (reuse == ReuseExistingOnly)
         throw IllegalArgumentException(
-            "Variable '$name' does not exist, but variable scope re-use was set to 'ReuseExistingOnly'.")
+            "Variable '$name' does not exist, but variable native re-use was set to 'ReuseExistingOnly'.")
       if (shape != null && !shape.isFullyDefined)
         throw IllegalArgumentException(
             "The shape of a new variable ('$name') must be fully defined, but instead it was set to '$shape'.")

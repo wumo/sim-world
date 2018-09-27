@@ -49,17 +49,17 @@ object ops {
    */
   internal fun checkName(name: String) = VALID_OP_NAME_REGEX.matches(name)
   
-  /** Checks whether the provided string is a valid name scope for creating ops.
+  /** Checks whether the provided string is a valid name native for creating ops.
    *
    * @param  nameScope String to check.
    * @return Boolean value indicating whether the check was successful.
    */
   internal fun checkNameScope(nameScope: String) = VALID_NAME_SCOPE_REGEX.matches(nameScope)
   
-  /** Converts the provided name scope to a valid op name, by removing a trailing `"/"` if there exists one.
+  /** Converts the provided name native to a valid op name, by removing a trailing `"/"` if there exists one.
    *
-   * @param  nameScope Name scope to convert.
-   * @return Name obtained from the provided name scope.
+   * @param  nameScope Name native to convert.
+   * @return Name obtained from the provided name native.
    */
   internal fun convertNameScopeToName(nameScope: String) =
       if (nameScope.endsWith('/'))
@@ -219,26 +219,26 @@ object ops {
   private fun mergeGraph(graph: Graph?, context: GraphConstructionScope) =
       graph ?: context.graph
   
-  /** Merges a name scope to the provided op creation context name scope and returns the name scope to use when
+  /** Merges a name native to the provided op creation context name native and returns the name native to use when
    * specifying the updated op creation context. The merging rules are specified in the documentation of the
    * [[createWith]] function.
    *
-   * @param  nameScope    Name scope to merge.
-   * @param  oldNameScope Old (i.e., current) name scope.
+   * @param  nameScope    Name native to merge.
+   * @param  oldNameScope Old (i.e., current) name native.
    * @param  uniqueNameFn Function that can be used to generate a unique name based on a provided name.
-   * @return Name scope to use for the new op creation context.
-   * @throws IllegalNameException If the provided name scope does not pass the regular expression validity checks.
+   * @return Name native to use for the new op creation context.
+   * @throws IllegalNameException If the provided name native does not pass the regular expression validity checks.
    */
   private fun mergeNameScope(nameScope: String?, oldNameScope: String, uniqueNameFn: (String) -> String): String {
     return if (nameScope == null)
       oldNameScope
     else {
-      // Check whether the provided name scope is valid.
-      // If the root name scope is being set, then stricter checks are performed on it (i.e., op naming checks). This
-      // makes sure the name scope does not start with any illegal characters (e.g., '_', '-', '\', and '/').
+      // Check whether the provided name native is valid.
+      // If the root name native is being set, then stricter checks are performed on it (i.e., op naming checks). This
+      // makes sure the name native does not start with any illegal characters (e.g., '_', '-', '\', and '/').
       if ((oldNameScope == "" && nameScope != "" && !checkName(nameScope))
           || (oldNameScope != "" && !checkNameScope(nameScope)))
-        throw IllegalNameException("Illegal name scope '$nameScope'.")
+        throw IllegalNameException("Illegal name native '$nameScope'.")
       when {
         nameScope == "" -> ""
         nameScope.endsWith('/') -> convertNameScopeToName(nameScope)
@@ -356,7 +356,7 @@ object ops {
     
     /** Returns the graph of the current op creation context. */
     val currentGraph get() = graphConstructionScope.value.graph
-    /** Returns the name scope of the current op creation context. */
+    /** Returns the name native of the current op creation context. */
     val currentNameScope
       get() = graphConstructionScope.value.nameScope.let {
         if (it.isEmpty()) "" else "$it/"
@@ -384,7 +384,7 @@ object ops {
      * context is a mechanism for satisfying these desiderata. In particular, entering an `initialization` context has
      * two effects:
      *
-     * (1) All control dependencies are cleared the moment the scope is entered; this is equivalent to entering the
+     * (1) All control dependencies are cleared the moment the native is entered; this is equivalent to entering the
      * context defined by `tf.createWith(controlDependencies = Set.empty)`, which has the side-effect of exiting
      * control-flow scopes like `tf.cond(...)` and `tf.whileLoop(...)`.
      *
@@ -421,7 +421,7 @@ object ops {
      *
      * During graph creation, a context is maintained that includes:
      *   - The current graph in which new ops are placed.
-     *   - The current name scope used for naming these new ops.
+     *   - The current name native used for naming these new ops.
      *   - A device function, used to decide in which device (e.g., CPU) the new ops should be placed and executed.
      *   - A set of colocation ops for the newly constructed ops. This means that the newly created ops will be placed on
      * the same device as these colocation ops.
@@ -457,43 +457,43 @@ object ops {
      *
      * == Name Scope ==
      *
-     * When `createWith(...)` is used with a name scope, the provided name scope is appended to the context name scope,
+     * When `createWith(...)` is used with a name native, the provided name native is appended to the context name native,
      * generating a new op creation context. This new context is used for all ops created within the code block provided
      * in the `createWith(...)` function. The `nameScope` argument will be interpreted as follows:
      *
-     *   - A string not ending with `"/"` will create a new name scope, in which `nameScope` is appended to the prefix of
+     *   - A string not ending with `"/"` will create a new name native, in which `nameScope` is appended to the prefix of
      *     all operations created in the provided code block. If `nameScope` has been used before, it will be made unique
      *     by calling `uniqueName(graph = context.graph, name = nameScope)`.
-     *   - A string ending with `"/"` will be treated as an "absolute" name scope, which makes it possible to re-enter
+     *   - A string ending with `"/"` will be treated as an "absolute" name native, which makes it possible to re-enter
      *     existing scopes. Such absolute name scopes can be obtained by using the `currentNameScope` function, from
      *     within the appropriate context.
-     *   - A value of `""` will reset the current name scope to the top-level (i.e., empty) name scope.
+     *   - A value of `""` will reset the current name native to the top-level (i.e., empty) name native.
      *
      * This function checks the provided `nameScope` for validity by checking whether it matches: (i) the regular
-     * expression `[A-Za-z0-9.][A-Za-z0-9_.\\-/]*` if the current context name scope is empty (i.e., at the root), or
+     * expression `[A-Za-z0-9.][A-Za-z0-9_.\\-/]*` if the current context name native is empty (i.e., at the root), or
      * (ii) the regular expression `[A-Za-z0-9_.\\-/]*`, otherwise.
      *
      * For example:
      * ```
-     *   // No name scope used
+     *   // No name native used
      *   val c = constant(1.0, name = "C")
      *   assert(c.op.name == "C")
      *   val c1 = constant(2.0, name = "C_1")
      *   assert(c_1.op.name == "C_1")
      *
-     *   // Create a name scope called "Nested"
+     *   // Create a name native called "Nested"
      *   createWith(nameScope = "Nested") {
      *     val nameScope = currentNameScope
      *     val nestedC = constant(3.0, name = "C")
      *     assert(nestedC.op.name == "Nested/C")
      *
-     *     // Create a nested name scope called "Inner"
+     *     // Create a nested name native called "Inner"
      *     createWith(nameScope = "Inner") {
      *       val nestedInnerC = constant(4.0, name = "C")
      *       assert(nestedInnerC.op.name == "Nested/Inner/C")
      *     }
      *
-     *     // Create a nested name scope called "Inner_1"
+     *     // Create a nested name native called "Inner_1"
      *     createWith(nameScope = "Inner_1") {
      *       val nestedInner1C = constant(5.0, name = "C")
      *       assert(nestedInner1C.op.name == "Nested/Inner_1/C")
@@ -502,7 +502,7 @@ object ops {
      *         val nestedC1 = constant(6.0, name = "C_1")
      *         assert(nestedC1.op.name == "Nested/C_1")
      *
-     *         // Reset the name scope using ""
+     *         // Reset the name native using ""
      *         createWith(nameScope = "") {
      *           val c2 = constant(7.0, name = "C_2")
      *           assert(c2.op.name == "C_2")
@@ -522,7 +522,7 @@ object ops {
      * code block will be ignored. For information about the valid syntax of device name strings, see the documentation
      * in [`DeviceNameUtils`](https://www.tensorflow.org/code/tensorflow/core/util/device_name_utils.h).
      *
-     * Note that the device scope may be overridden by op wrappers or other library code. For example, a variable
+     * Note that the device native may be overridden by op wrappers or other library code. For example, a variable
      * assignment op must be colocated with the corresponding variable. Incompatible device scopes will be ignored.
      *
      * For example:
@@ -671,11 +671,11 @@ object ops {
      *
      * == Combining Arguments ==
      *
-     * Multiple arguments can be provided to change several aspects of the current op creation scope.
+     * Multiple arguments can be provided to change several aspects of the current op creation native.
      *
      * For example:
      * ```
-     *   // Changing graph, name scope, and device to use for new ops.
+     *   // Changing graph, name native, and device to use for new ops.
      *   createWith(graph = g, nameScope = "Nested", device = "/GPU:0") {
      *     val c = constant(11.0, name = "C")
      *     assert(c.graph == g)
@@ -685,7 +685,7 @@ object ops {
      * ```
      *
      * @param  graph               Graph to use as default for new ops.
-     * @param  nameScope           Name scope to use.
+     * @param  nameScope           Name native to use.
      * @param  device              Device to use.
      * @param  deviceFunction      Device function to use.
      * @param  colocationOps       Colocation ops to use.
@@ -703,7 +703,7 @@ object ops {
                  attributes: Map<String, tensorflow.AttrValue>? = null,
                  container: String? = null,
                  block: () -> R): R {
-      // TODO: Move this to a separate scope class.
+      // TODO: Move this to a separate native class.
       // TODO: !!! The order of the updates matters here so let's make sure everything is fine.
       var updatedContext = graphConstructionScope.value
       val newGraph = mergeGraph(graph, updatedContext)
@@ -796,17 +796,6 @@ object ops {
     
     val version get() = TF_Version().string
     
-    fun <R> condContext(pred: Output, pivot: Output, branch: Int, block: (CondContext) -> R): R {
-//    val tmp = currentControlFlowContext
-//    currentControlFlowContext = CondContext(predicate, pivot, branch)
-//    try {
-//      return block(currentControlFlowContext as CondContext)
-//    } finally {
-//      currentControlFlowContext = tmp
-//    }
-      TODO()
-    }
-    
     /** Executes the provided block of code placing all created ops in the specified device. A `deviceFunction` argument
      * can be additionally used (aside from the device string representation provided through the `device` argument),
      * that is a function taking an [[OpSpecification]] as input and returning a string representation of the device
@@ -816,7 +805,7 @@ object ops {
      * of device name strings, see the documentation in
      * [`DeviceNameUtils`](https://www.tensorflow.org/code/tensorflow/core/util/device_name_utils.h).
      *
-     * Note that the device scope may be overridden by op wrappers or other library code. For example, a variable
+     * Note that the device native may be overridden by op wrappers or other library code. For example, a variable
      * assignment op must be colocated with the corresponding variable. Incompatible device scopes will be ignored.
      *
      * For example:

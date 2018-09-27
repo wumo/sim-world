@@ -7,7 +7,6 @@ import org.bytedeco.javacpp.Pointer.memcpy
 import org.bytedeco.javacpp.ShortPointer
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Tensor.allocateTensor
-import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Tensor.newTensor
 import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.tensorflow.core.check
 import wumo.sim.tensorflow.types.*
@@ -22,6 +21,14 @@ abstract class Tensor<T : Any>
 protected constructor(_c_tensor: TF_Tensor) : Buf<T>() {
   
   companion object {
+    fun newTensor(dtype: Int, dims: LongArray, data: Pointer): TF_Tensor {
+      return TF_NewTensor(dtype, dims, dims.size, data, data.limit(),
+                          object : Deallocator_Pointer_long_Pointer() {
+                            override fun call(p0: Pointer?, p1: Long, p2: Pointer?) {
+                            }
+                          }, null)
+    }
+    
     fun <T : Any> toNDArray(c_tensor: TF_Tensor): NDArray<T> =
         invoke<T>(c_tensor).toNDArray()
     
@@ -68,7 +75,7 @@ protected constructor(_c_tensor: TF_Tensor) : Buf<T>() {
     
     operator fun invoke(shape: Shape, array: Array<String>): StringTensor {
       val data = TFStringArray.encode(array)
-      val t = newTensor(STRING.cValue, shape.asLongArray(), data)
+      val t = newTensor(STRING.cValue, shape.asLongArray()!!, data)
       return StringTensor(t, array)
     }
     
@@ -108,8 +115,10 @@ protected constructor(_c_tensor: TF_Tensor) : Buf<T>() {
     internal fun create(shape: Shape, data: Pointer, dtype: DataType<*>): TF_Tensor {
       val bytePointer = data as? BytePointer
           ?: BytePointer(data).capacity(data.sizeof() * data.limit())
-      return newTensor(dtype.cValue, shape.asLongArray()!!, bytePointer)
+      val dims = shape.asLongArray()!!
+      return newTensor(dtype.cValue, dims, bytePointer)
     }
+    
   }
   
   open val c_tensor: TF_Tensor = _c_tensor

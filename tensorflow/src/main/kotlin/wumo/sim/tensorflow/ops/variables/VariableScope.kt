@@ -13,9 +13,9 @@ import wumo.sim.tensorflow.types.FLOAT16
 import wumo.sim.util.Shape
 import wumo.sim.util.emptyMutableSet
 
-/** Variable scope that carries default settings to provide to [getVariable].
+/** Variable native that carries default settings to provide to [getVariable].
  *
- * A variable scope allows to create new variables and to share already created ones while providing checks to not
+ * A variable native allows to create new variables and to share already created ones while providing checks to not
  * create or share by accident.
  *
  * Many of the arguments we need for [getVariable] in a variable store are most easily handled with a context.
@@ -23,12 +23,12 @@ import wumo.sim.util.emptyMutableSet
  *
  * @param  reuse            [Reuse] value indicating whether to re-use an existing variable with the same name,
  *                          create a new variable, or do either.
- * @param  name             Name of the variable scope, used as a prefix in `getVariable`.
+ * @param  name             Name of the variable native, used as a prefix in `getVariable`.
  * @param  initializer      Default initializer passed to `getVariable`.
  * @param  regularizer      Default regularizer passed to `getVariable`.
  * @param  partitioner      Default partitioner passed to `getVariable`.
  * @param  cachingDevice    Default caching device passed to `getVariable`.
- * @param  nameScope        Default name scope passed to `getVariable`.
+ * @param  nameScope        Default name native passed to `getVariable`.
  * @param  dataType         Default data type passed to `getVariable`.
  * @param  underlyingGetter Default underlying variable getter passed to `getVariable`.
  *
@@ -87,7 +87,7 @@ class VariableScope(
       cachingDevice: DeviceFunction? = null
   ): Variable {
     val fullName = if (this.name != "") "${this.name}/$name" else name
-    // Variable names only depend on the variable scope and not the name scope,
+    // Variable names only depend on the variable native and not the name native,
     // so we reset it below for the time of variable creation.
     return tf.nameScope("") {
       store.getVariable(fullName, shape, dataType, initializer,
@@ -96,28 +96,28 @@ class VariableScope(
   }
   
   companion object {
-    /** Returns the current variable scope. */
+    /** Returns the current variable native. */
     val current: VariableScope
       get() = VariableScopeStore.current.scope
     
-    /** Sets the variable scope to use for op creation context, for all code in `block`.
+    /** Sets the variable native to use for op creation context, for all code in `block`.
      *
-     * @param  name             Variable scope name, that may also change the name scope of the op creation context,
+     * @param  name             Variable native name, that may also change the name native of the op creation context,
      *                          depending on the value of [isPure].
      * @param  reuse            [Reuse] value indicating whether to re-use an existing variable with the same name, or
      * do either. Note that this argument cannot be set to [CreateNewOnly] in this function.If set to [[ReuseOrCreateNew]],
-     * then the parent variable scope `reuse` value is used (i.e., propagated).
-     * @param  dataType         Default data type for variables within the scope.
-     * @param  initializer      Default initializer for variables within the scope.
-     * @param  regularizer      Default regularizer for variables within the scope.
-     * @param  partitioner      Default partitioner for variables within the scope.
-     * @param  cachingDevice    Default caching device for variables within the scope.
-     * @param  underlyingGetter Default variable getter for variables within the scope.
+     * then the parent variable native `reuse` value is used (i.e., propagated).
+     * @param  dataType         Default data type for variables within the native.
+     * @param  initializer      Default initializer for variables within the native.
+     * @param  regularizer      Default regularizer for variables within the native.
+     * @param  partitioner      Default partitioner for variables within the native.
+     * @param  cachingDevice    Default caching device for variables within the native.
+     * @param  underlyingGetter Default variable getter for variables within the native.
      * @param  isDefaultName    Boolean value indicating whether `name` is a default name or not. If `true`, then `name`
      *                          will be made unique before being used. `isDefaultName` cannot be set to `true` when
      *                          `reuse` is set to [[ReuseExistingOnly]].
-     * @param  isPure           Boolean value indicating whether to use a "pure" variable scope. That is, a variable
-     *                          scope that does not affect the name scope of the current op creation context.
+     * @param  isPure           Boolean value indicating whether to use a "pure" variable native. That is, a variable
+     *                          native that does not affect the name native of the current op creation context.
      * @param  block            Code block to run using the provided options.
      * @return Return value of the code block.
      */
@@ -257,7 +257,7 @@ class VariableScope(
 //  private val var_scope_count = HashMap<String, Int>()
 //  /**这一层存储的所有变量*/
 //  val variables = LinkedHashMap<String, Variable>()
-//  /**这一层下的sub variable scope, */
+//  /**这一层下的sub variable native, */
 //  val variable_subscopes = LinkedHashMap<String, VariableScope>()
 //
 //  fun all_variables(): List<Variable> {

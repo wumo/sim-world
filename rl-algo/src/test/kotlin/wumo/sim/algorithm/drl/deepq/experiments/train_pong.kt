@@ -1,5 +1,6 @@
 package wumo.sim.algorithm.drl.deepq.experiments
 
+import org.bytedeco.javacpp.Pointer
 import org.junit.Test
 import wumo.sim.algorithm.drl.common.*
 import wumo.sim.algorithm.drl.deepq.learn
@@ -13,6 +14,8 @@ import wumo.sim.util.t3
 class train_pong {
   @Test
   fun train() {
+//    System.setProperty("org.bytedeco.javacpp.logger.debug", "true")
+    Pointer.maxPhysicalBytes()
     val _env = make_atari("PongNoFrameskip-v4")
     val env = wrap_atari_dqn(_env)
     learn("PongNoFrameskip-v4.model",
@@ -26,7 +29,7 @@ class train_pong {
           exploration_fraction = 0.1f,
           exploration_final_eps = 0.01f,
           train_freq = 4,
-          learning_starts = 2_0000,
+          learning_starts = 1000,
           gamma = 0.99f,
           print_freq = 10,
           hiddens = listOf(256),

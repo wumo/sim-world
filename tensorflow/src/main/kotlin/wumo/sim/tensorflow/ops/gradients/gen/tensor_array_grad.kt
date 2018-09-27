@@ -53,7 +53,7 @@ fun register_tensor_array_grad() {
     val gradPos = nameTokens.withIndex().lastOrNull { (_, x) ->
       x.startsWith("gradients")
     } ?: throw InvalidArgumentException(
-        "Expected op/tensor name to start with 'Gradient' (excluding scope), but got instead: $opOrTensorName.")
+        "Expected op/tensor name to start with 'Gradient' (excluding native), but got instead: $opOrTensorName.")
     return nameTokens.take(gradPos.index + 1).joinToString("/")
   }
   register("TensorArrayRead", "TensorArrayReadV2", "TensorArrayReadV3") { op, grad ->

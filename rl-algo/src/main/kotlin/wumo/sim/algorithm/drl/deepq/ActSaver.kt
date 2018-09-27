@@ -94,6 +94,7 @@ fun saveVariable(act_vars: List<Pair<String, NDArray<Any>>>) {
       sink.encode(value.shape.asLongArray()!!)
       sink.writeLong(size)
       sink.write(buffer)
+      c_tensor.deallocate()
     }
   }
 }

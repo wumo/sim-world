@@ -1,5 +1,6 @@
 package wumo.sim.algorithm.drl.deepq
 
+import org.bytedeco.javacpp.Pointer
 import wumo.sim.algorithm.drl.common.LinearSchedule
 import wumo.sim.algorithm.drl.common.Schedule
 import wumo.sim.core.Env
@@ -12,6 +13,10 @@ import wumo.sim.util.TimeMeter
 import wumo.sim.util.ndarray.*
 import wumo.sim.util.ndarray.implementation.LongArrayBuf
 import wumo.sim.util.ndarray.types.NDInt
+import java.text.NumberFormat
+
+val formatter = NumberFormat.getInstance()
+val runtime = Runtime.getRuntime()
 
 fun <O : Any, A : Any> learn(
     model_file_path: String,
@@ -167,11 +172,19 @@ fun <O : Any, A : Any> learn(
         }
       }
 //      meter.end("total")
-
-//      if (t % 100 == 0) {
+      
+      if (t % 300 == 0) {
+        println("${replay_buffer.size}:" +
+                    "phy=" + formatter.format(Pointer.physicalBytes()) + ", " +
+                    "max=" + formatter.format(Pointer.maxPhysicalBytes()) + "," +
+                    "heap=" + formatter.format(runtime.totalMemory()) + "," +
+                    "used=" + formatter.format(runtime.totalMemory() - runtime.freeMemory()) + "," +
+                    "native=" + formatter.format(Pointer.physicalBytes() - runtime.totalMemory())
+        )
 //        println("$meter")
 //        meter.reset()
-//      }
+      }
+      
     }
     println("Saving model to $model_file_path")
     val result = eval(act_vars)

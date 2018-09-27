@@ -9,6 +9,9 @@ open class ReplayBuffer<O, A>(val buffer_size: Int) {
   private val storage = ArrayList<t5<O, A, Float, O, Boolean>>(buffer_size)
   private var next_idx = 0
   
+  val size: Int
+    get() = storage.size
+  
   fun add(obs: O, action: A, rew: Float, new_obs: O, done: Boolean) {
     val data = t5(obs, action, rew, new_obs, done)
     if (next_idx >= storage.size)

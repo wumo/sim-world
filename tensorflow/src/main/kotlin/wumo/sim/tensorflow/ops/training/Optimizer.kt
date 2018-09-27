@@ -197,14 +197,14 @@ abstract class Optimizer {
   }
   
   /** Creates all necessary tensors before applying the gradients. This function is called from within an op creation
-   * context that uses as its name scope the name that users have chosen for the application of gradients. */
+   * context that uses as its name native the name that users have chosen for the application of gradients. */
   open fun prepare(iteration: Variable?) {}
   
   /** Creates an op that finishes the gradients application. This function is called from within an op creation context
-   * that uses as its name scope the name that users have chosen for the application of gradients.
+   * that uses as its name native the name that users have chosen for the application of gradients.
    *
    * @param  updateOps Set of ops needed to apply the gradients and update the variable values.
-   * @param  nameScope Name scope to use for all the ops created by this function.
+   * @param  nameScope Name native to use for all the ops created by this function.
    * @return Created op output.
    */
   open fun finish(updateOps: Set<Op>, nameScope: String): Op =

@@ -22,6 +22,7 @@ import wumo.sim.tensorflow.ops.variables.VariableScopeStore
 import wumo.sim.tensorflow.ops.variables.VariableStore
 import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.util.isNotNull
+import wumo.sim.tensorflow.util.native
 import wumo.sim.util.DynamicVariable
 import java.util.*
 
@@ -67,9 +68,9 @@ open class Graph {
   operator fun HashMap<Long, Op>.get(op: tensorflow.TF_Operation) =
       getOrPut(op.address()) { Op(this@Graph, op) }
   
-  /** Variable store object of this graph, used to store created variables and keep track of variable scope usages. */
+  /** Variable store object of this graph, used to store created variables and keep track of variable native usages. */
   internal val variableStore = VariableStore()
-  /** Variable scope store object of this graph. */
+  /** Variable native store object of this graph. */
   internal val variableScopeStore = DynamicVariable(VariableScopeStore())
   internal val variableCreatorStack = DynamicVariable(listOf<VariableGetter>())
   /** Set that contains the current names in use in this graph. */
@@ -166,9 +167,9 @@ open class Graph {
    * @param key: The key for the collection. For example, the `GraphKeys` class
   contains many standard names for collections.
    * @param scope: (Optional.) A string. If supplied, the resulting list is filtered
-  to include only items whose `name` attribute matches `scope` using
+  to include only items whose `name` attribute matches `native` using
   [Regex.containsMatchIn]. Items without a `name` attribute are never returned if a
-  scope is supplied. The choice of `re.match` means that a `scope` without
+  native is supplied. The choice of `re.match` means that a `native` without
   special tokens filters by prefix.
    
    * @return:
@@ -325,13 +326,15 @@ open class Graph {
    * Returns the [OpDef] proto for [opType].
    */
   fun getOpDef(opType: String): OpDef {
-    val buf = newBuffer()
-    val status = newStatus()
-    TF_GraphGetOpDef(c_graph, opType, buf, status)
-    status.check()
-    val data = buf.data()
-    data.limit<Pointer>(buf.length())
-    return OpDef.parseFrom(data.asByteBuffer())
+    native {
+      val buf = newBuffer()
+      val status = newStatus()
+      TF_GraphGetOpDef(c_graph, opType, buf, status)
+      status.check()
+      val data = buf.data()
+      data.limit<Pointer>(buf.length())
+      return OpDef.parseFrom(data.asByteBuffer())
+    }
   }
   
   fun num_node_ids() = c_graph.graph().num_node_ids()
@@ -372,17 +375,19 @@ open class Graph {
   fun toGraphDef() = GraphDef.parseFrom(toGraphDefBytes())
   
   fun toGraphDefBytes(): ByteArray {
-    val buf = newBuffer()
-    val status = newStatus()
-    TF_GraphToGraphDef(c_graph, buf, status)
-    status.check()
-    val len = buf.length()
-    val bytes = ByteArray(len.toInt())
-    val d = buf.data()
-    d.capacity<Pointer>(len)
-    val data = d.asByteBuffer()
-    data.get(bytes)
-    return bytes
+    native {
+      val buf = newBuffer()
+      val status = newStatus()
+      TF_GraphToGraphDef(c_graph, buf, status)
+      status.check()
+      val len = buf.length()
+      val bytes = ByteArray(len.toInt())
+      val d = buf.data()
+      d.capacity<Pointer>(len)
+      val data = d.asByteBuffer()
+      data.get(bytes)
+      return bytes
+    }
   }
   
   fun debugString(): String {
@@ -390,18 +395,21 @@ open class Graph {
   }
   
   fun import(act_graph_def: ByteArray, prefix: String = "") {
-    assertNotFrozen()
-    val buf = TF_NewBufferFromString(BytePointer(*act_graph_def), act_graph_def.size.toLong())
-    val status = newStatus()
-    val opt = TF_NewImportGraphDefOptions()
-    if (prefix.isNotBlank())
-      TF_ImportGraphDefOptionsSetPrefix(opt, prefix)
-    TF_GraphImportGraphDef(c_graph, buf, opt, status)
-    status.check()
-    TF_DeleteImportGraphDefOptions(opt)
-    TF_DeleteBuffer(buf)
-    
-    ops().forEach { namesInUse[it.name] = 1 }
+    native {
+      assertNotFrozen()
+      val buf = TF_NewBufferFromString(BytePointer(*act_graph_def), act_graph_def.size.toLong())
+      val status = newStatus()
+      val opt = TF_NewImportGraphDefOptions()
+      if (prefix.isNotBlank())
+        TF_ImportGraphDefOptionsSetPrefix(opt, prefix)
+      TF_GraphImportGraphDef(c_graph, buf, opt, status)
+      status.check()
+      TF_DeleteImportGraphDefOptions(opt)
+      TF_DeleteBuffer(buf)
+      opt.setNull()
+      buf.setNull()
+      ops().forEach { namesInUse[it.name] = 1 }
+    }
   }
   
   /** Prevents the feeding of values to the provided op output, while running in a session.

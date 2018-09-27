@@ -10,18 +10,21 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>rl-algo</artifactId>
-
+    <properties>
+        <opencv.version>3.4.3</opencv.version>
+        <opencv.platform>linux-x86_64</opencv.platform>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>org.bytedeco.javacpp-presets</groupId>
             <artifactId>opencv-platform</artifactId>
-            <version>3.4.2-1.4.2</version>
+            <version>${opencv.version}-${javacpp.version}</version>
         </dependency>
         <dependency>
             <groupId>org.bytedeco.javacpp-presets</groupId>
             <artifactId>opencv</artifactId>
-            <version>3.4.2-1.4.2</version>
-            <classifier>linux-x86_64-gpu</classifier>
+            <version>${opencv.version}-${javacpp.version}</version>
+            <classifier>${opencv.platform}-gpu</classifier>
         </dependency>
         <dependency>
             <groupId>wumo.sim</groupId>
@@ -61,31 +64,31 @@
                 <artifactId>maven-compiler-plugin</artifactId>
             </plugin>
             <!--<plugin>-->
-                <!--<artifactId>maven-assembly-plugin</artifactId>-->
-                <!--<version>${maven.assembly.plugin.version}</version>-->
-                <!--<configuration>-->
-                    <!--<descriptorRefs>-->
-                        <!--<descriptorRef>jar-with-dependencies</descriptorRef>-->
-                    <!--</descriptorRefs>-->
-                    <!--<archive>-->
-                        <!--<manifest>-->
-                            <!--<mainClass>wumo.sim.algorithm.drl.MainKt</mainClass>-->
-                        <!--</manifest>-->
-                    <!--</archive>-->
-                    <!--<finalName>${project.name}</finalName>-->
-                    <!--<appendAssemblyId>false</appendAssemblyId>-->
-                <!--</configuration>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<id>make-assembly</id>-->
-                        <!--&lt;!&ndash; this is used for inheritance merges &ndash;&gt;-->
-                        <!--<phase>package</phase>-->
-                        <!--&lt;!&ndash; bind to the packaging phase &ndash;&gt;-->
-                        <!--<goals>-->
-                            <!--<goal>single</goal>-->
-                        <!--</goals>-->
-                    <!--</execution>-->
-                <!--</executions>-->
+            <!--<artifactId>maven-assembly-plugin</artifactId>-->
+            <!--<version>${maven.assembly.plugin.version}</version>-->
+            <!--<configuration>-->
+            <!--<descriptorRefs>-->
+            <!--<descriptorRef>jar-with-dependencies</descriptorRef>-->
+            <!--</descriptorRefs>-->
+            <!--<archive>-->
+            <!--<manifest>-->
+            <!--<mainClass>wumo.sim.algorithm.drl.MainKt</mainClass>-->
+            <!--</manifest>-->
+            <!--</archive>-->
+            <!--<finalName>${project.name}</finalName>-->
+            <!--<appendAssemblyId>false</appendAssemblyId>-->
+            <!--</configuration>-->
+            <!--<executions>-->
+            <!--<execution>-->
+            <!--<id>make-assembly</id>-->
+            <!--&lt;!&ndash; this is used for inheritance merges &ndash;&gt;-->
+            <!--<phase>package</phase>-->
+            <!--&lt;!&ndash; bind to the packaging phase &ndash;&gt;-->
+            <!--<goals>-->
+            <!--<goal>single</goal>-->
+            <!--</goals>-->
+            <!--</execution>-->
+            <!--</executions>-->
             <!--</plugin>-->
 
         </plugins>

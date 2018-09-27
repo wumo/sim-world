@@ -1,9 +1,11 @@
 package wumo.sim.envs.atari
 
+import org.bytedeco.javacpp.Pointer
 import org.junit.Assert.*
 import org.junit.Test
 import wumo.sim.envs.atari.AtariEnv.Companion.ObsType.image
 import wumo.sim.envs.envs
+import java.text.NumberFormat
 
 class AtariEnvTest {
   
@@ -11,13 +13,13 @@ class AtariEnvTest {
   fun make() {
     val a = envs.Atari("SpaceInvaders-ram-v4")
   }
-  
+  val formatter=NumberFormat.getInstance()
   @Test
   fun test() {
     
     val env = envs.Atari("PongNoFrameskip-v4")
     
-    val episode = 10
+    val episode = 10000
     var i=0
     repeat(episode) {
       env.reset()
@@ -25,14 +27,13 @@ class AtariEnvTest {
       var reward = 0.0
       
       while (!done) {
-        env.render()
+//        env.render()
         val a = env.action_space.sample()
         val (ob, _reward, _done, _) = env.step(a)
-        println(i++)
         reward += _reward
         done = _done
       }
-      println(reward)
+      println(formatter.format(Pointer.physicalBytes()))
     }
     env.close()
   }

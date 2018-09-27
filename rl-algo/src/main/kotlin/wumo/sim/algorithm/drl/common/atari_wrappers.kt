@@ -11,6 +11,7 @@ import wumo.sim.envs.atari.AtariEnvType
 import wumo.sim.envs.atari.AtariObsType
 import wumo.sim.envs.envs
 import wumo.sim.spaces.Box
+import wumo.sim.tensorflow.util.native
 import wumo.sim.util.Shape
 import wumo.sim.util.ndarray.*
 import wumo.sim.util.ndarray.implementation.ByteArrayBuf
@@ -20,8 +21,6 @@ import wumo.sim.util.t4
 import java.util.*
 import kotlin.math.sign
 import kotlin.random.Random
-import kotlin.system.measureNanoTime
-import kotlin.system.measureTimeMillis
 
 fun make_atari(env_id: String): AtariEnvType {
   require("NoFrameskip" in env_id)
@@ -189,12 +188,14 @@ class WarpFrame(env: AtariEnvType) :
       Box(0.toByte(), 255.toByte(), Shape(height, width, 1))
   
   override fun observation(frame: AtariObsType): AtariObsType {
-    val src = frame.toMat()
-    val dst = Mat()
-    cvtColor(src, dst, COLOR_RGB2GRAY)
-    val dst2 = Mat()
-    resize(dst, dst2, Size(width, height), 0.0, 0.0, INTER_AREA)
-    return dst2.toNDArray()
+    native {
+      val src = frame.toMat()
+      val dst = Mat()
+      cvtColor(src, dst, COLOR_RGB2GRAY)
+      val dst2 = Mat()
+      resize(dst, dst2, Size(width, height), 0.0, 0.0, INTER_AREA)
+      return dst2.toNDArray()
+    }
   }
 }
 

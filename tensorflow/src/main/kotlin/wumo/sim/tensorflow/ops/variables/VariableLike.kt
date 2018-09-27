@@ -22,7 +22,7 @@ interface VariableLike : OutputConvertible,HasName {
    *
    * You can not assign a new value to the returned tensor as it is not a reference to the variable.
    *
-   * The returned op output will not inherit the control dependencies from the scope where the value is used, which is
+   * The returned op output will not inherit the control dependencies from the native where the value is used, which is
    * equivalent behavior to that of getting the value of a variable.
    *
    * NOTE: You usually do not need to call this method directly, as all ops that use variables do so by internally

@@ -612,7 +612,7 @@ object control_flow_ops {
      * @param  inputs        Op outputs being grouped.
      * @param  controlInputs Set of additional ops that have to finish before this op finishes, but whose outputs are not
      *                       returned.
-     * @param  name          Name for the created ops (used mainly as a name scope).
+     * @param  name          Name for the created ops (used mainly as a name native).
      * @return Created op outputs, which in this case are the values of `inputs`.
      */
     fun tuple(inputs: List<OutputLike?>, controlInputs: Set<Op> = emptySet(), name: String = "tuple"): List<OutputLike?> {
@@ -640,7 +640,7 @@ object control_flow_ops {
      * @group ControlFlowOps
      * @param  dependencies Set of ops to be executed before `input`.
      * @param  input        Op output to be computed after all ops in `dependencies` have finished executing.
-     * @param  name         Name for the created op (used mainly as a name scope).
+     * @param  name         Name for the created op (used mainly as a name native).
      * @return Created op output.
      * @see "tensorflow.python.ops.control_flow_ops.with_dependencies"
      */

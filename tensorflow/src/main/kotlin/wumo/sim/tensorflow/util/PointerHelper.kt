@@ -2,13 +2,16 @@ package wumo.sim.tensorflow.util
 
 import org.bytedeco.javacpp.IntPointer
 import org.bytedeco.javacpp.Pointer
+import org.bytedeco.javacpp.PointerScope
 
 inline val Pointer.isNotNull
   get() = !isNull
 
-fun IntPointer.toArray(): IntArray {
-  val size = limit()
-  return IntArray(size.toInt()) {
-    get(it.toLong())
+inline fun <R> native(block: () -> R): R {
+  val ptrScope = PointerScope()
+  try {
+    return block()
+  } finally {
+    ptrScope.close()
   }
 }
