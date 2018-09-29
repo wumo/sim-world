@@ -9,8 +9,10 @@ import wumo.sim.graphics.ShapeType.Line_Strip
 import wumo.sim.graphics.Viewer
 import wumo.sim.spaces.Box
 import wumo.sim.spaces.Discrete
-import wumo.sim.util.*
+import wumo.sim.util.f
 import wumo.sim.util.ndarray.NDArray
+import wumo.sim.util.rangeTo
+import wumo.sim.util.t4
 import wumo.sim.utils.np_random
 import kotlin.math.cos
 import kotlin.math.sin

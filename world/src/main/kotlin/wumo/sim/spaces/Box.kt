@@ -1,9 +1,12 @@
 package wumo.sim.spaces
 
 import wumo.sim.core.Space
-import wumo.sim.util.*
+import wumo.sim.util.Rand
+import wumo.sim.util.Shape
 import wumo.sim.util.ndarray.NDArray
 import wumo.sim.util.ndarray.types.NDFloat
+import wumo.sim.util.ndarray.types.NDType
+import wumo.sim.util.nextFloat
 
 class Box<T> constructor(
     val low: NDArray<T>,
@@ -24,7 +27,7 @@ class Box<T> constructor(
                                  high[it].toFloat() +
                                      if (dtype == NDFloat) 0f else 1f)
         dtype.cast(e)
-      }, dtype)
+      })
   
   override fun contains(x: NDArray<T>): Boolean {
     if (x.size != low.size) return false
@@ -35,11 +38,10 @@ class Box<T> constructor(
   }
   
   companion object {
-    inline operator fun <reified T>
-        invoke(low: T, high: T, shape: Shape): Box<T>
+    operator fun <T> invoke(low: T, high: T, shape: Shape, dtype: NDType<T>): Box<T>
         where T : Number, T : Comparable<T> {
-      val low = NDArray(shape, low)
-      val high = NDArray(shape, high)
+      val low = NDArray(shape, dtype) { low }
+      val high = NDArray(shape, dtype) { high }
       return Box(low, high)
     }
   }

@@ -117,8 +117,4 @@ private constructor(val desc: Array<String>, val nrow: Int, val ncol: Int,
   
   override fun close() {
   }
-  
-  override fun seed(seed: Long?): List<Long> {
-    TODO("not implemented")
-  }
 }

@@ -8,7 +8,6 @@ import wumo.sim.tensorflow.core.Graph.Graph.Keys
 import wumo.sim.tensorflow.ops.Op
 import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.ops.basic.*
-import wumo.sim.tensorflow.ops.gen.gen_state_ops
 import wumo.sim.tensorflow.ops.training.Optimizer
 import wumo.sim.tensorflow.ops.variables.*
 import wumo.sim.tensorflow.tf

@@ -32,14 +32,10 @@ class Const_opsKtTest : BaseTest() {
   fun const2() {
     val c = tf.const(Shape(2, 2, 2), 6f)
     val d = tf.const(Shape(2, 2), f(1f, 2f, 3f, 4f), name = "d")
-    val e = tf.const(Shape(2, 2), a("hello", "tensorflow", "and", "you"), name = "e")
-    val f = tf.const(a("hello", "tensorflow", "and", "you"), name = "f")
     printGraph()
     tf.session {
       c.eval()
       d.eval()
-      e.eval()
-      f.eval()
     }
   }
   

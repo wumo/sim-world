@@ -1,9 +1,7 @@
 package wumo.sim.envs.atari
 
 import org.bytedeco.javacpp.Pointer
-import org.junit.Assert.*
 import org.junit.Test
-import wumo.sim.envs.atari.AtariEnv.Companion.ObsType.image
 import wumo.sim.envs.envs
 import java.text.NumberFormat
 

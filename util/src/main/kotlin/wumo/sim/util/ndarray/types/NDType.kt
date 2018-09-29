@@ -1,10 +1,9 @@
 package wumo.sim.util.ndarray.types
 
+import org.bytedeco.javacpp.BytePointer
 import wumo.sim.util.NONE
 import wumo.sim.util.SwitchOnClass
-import wumo.sim.util.SwitchType
-import wumo.sim.util.ndarray.Buf
-import wumo.sim.util.ndarray.implementation.*
+import wumo.sim.util.ndarray.BytePointerBuf
 
 sealed class NDType<KotlinType : Any> {
   val name: String = javaClass.simpleName
@@ -14,9 +13,14 @@ sealed class NDType<KotlinType : Any> {
   abstract fun zero(): KotlinType
   abstract fun one(): KotlinType
   
-  abstract fun <R> cast(value: R): KotlinType
+  abstract fun <R : Any> cast(value: R): KotlinType
   
-  abstract fun makeBuf(size: Int, init: (Int) -> KotlinType): Buf<KotlinType>
+  open fun makeBuf(size: Int, init: (Int) -> KotlinType): BytePointerBuf<KotlinType> =
+      BytePointerBuf(size, this, init)
+  
+  abstract fun put(buf: BytePointer, offset: Long, data: KotlinType)
+  
+  abstract fun get(buf: BytePointer, offset: Long): KotlinType
   
   override fun equals(other: Any?): Boolean = (other is NDType<*>) && (kotlinType == other.kotlinType)
   override fun hashCode(): Int = kotlinType.hashCode()
@@ -45,14 +49,18 @@ object NDBool : NDType<Boolean>() {
   
   override fun one() = true
   
-  override fun <R> cast(value: R): Boolean =
+  override fun <R : Any> cast(value: R): Boolean =
       when (value) {
         is Boolean -> value
         else -> NONE()
       }
   
-  override fun makeBuf(size: Int, init: (Int) -> Boolean): Buf<Boolean> =
-      BooleanArrayBuf(BooleanArray(size, init))
+  override fun put(buf: BytePointer, offset: Long, data: Boolean) {
+    buf.putBool(offset, data)
+  }
+  
+  override fun get(buf: BytePointer, offset: Long): Boolean =
+      buf.getBool(offset)
 }
 
 object NDByte : NDType<Byte>() {
@@ -63,19 +71,19 @@ object NDByte : NDType<Byte>() {
   
   override fun one(): Byte = 1
   
-  override fun <R> cast(value: R): Byte = when (value) {
-    is Boolean -> if (value) 1 else 0
-    is Float -> value.toByte()
-    is Double -> value.toByte()
-    is Byte -> value.toByte()
-    is Short -> value.toByte()
-    is Int -> value.toByte()
-    is Long -> value.toByte()
-    else -> NONE()
+  override fun <R : Any> cast(value: R): Byte =
+      when (value) {
+        is Number -> value.toByte()
+        is Boolean -> if (value) 1 else 0
+        else -> NONE()
+      }
+  
+  override fun put(buf: BytePointer, offset: Long, data: Byte) {
+    buf.put(offset, data)
   }
   
-  override fun makeBuf(size: Int, init: (Int) -> Byte): Buf<Byte> =
-      ByteArrayBuf(ByteArray(size, init))
+  override fun get(buf: BytePointer, offset: Long): Byte =
+      buf.get(offset)
 }
 
 object NDShort : NDType<Short>() {
@@ -86,19 +94,18 @@ object NDShort : NDType<Short>() {
   
   override fun one(): Short = 1
   
-  override fun <R> cast(value: R): Short = when (value) {
+  override fun <R : Any> cast(value: R): Short = when (value) {
+    is Number -> value.toShort()
     is Boolean -> if (value) 1 else 0
-    is Float -> value.toShort()
-    is Double -> value.toShort()
-    is Byte -> value.toShort()
-    is Short -> value.toShort()
-    is Int -> value.toShort()
-    is Long -> value.toShort()
     else -> NONE()
   }
   
-  override fun makeBuf(size: Int, init: (Int) -> Short): Buf<Short> =
-      ShortArrayBuf(ShortArray(size, init))
+  override fun put(buf: BytePointer, offset: Long, data: Short) {
+    buf.putShort(offset, data)
+  }
+  
+  override fun get(buf: BytePointer, offset: Long): Short =
+      buf.getShort(offset)
 }
 
 object NDInt : NDType<Int>() {
@@ -109,19 +116,18 @@ object NDInt : NDType<Int>() {
   
   override fun one(): Int = 1
   
-  override fun <R> cast(value: R): Int = when (value) {
+  override fun <R : Any> cast(value: R): Int = when (value) {
+    is Number -> value.toInt()
     is Boolean -> if (value) 1 else 0
-    is Float -> value.toInt()
-    is Double -> value.toInt()
-    is Byte -> value.toInt()
-    is Short -> value.toInt()
-    is Int -> value.toInt()
-    is Long -> value.toInt()
     else -> NONE()
   }
   
-  override fun makeBuf(size: Int, init: (Int) -> Int): Buf<Int> =
-      IntArrayBuf(IntArray(size, init))
+  override fun put(buf: BytePointer, offset: Long, data: Int) {
+    buf.putInt(offset, data)
+  }
+  
+  override fun get(buf: BytePointer, offset: Long): Int =
+      buf.getInt(offset)
 }
 
 object NDLong : NDType<Long>() {
@@ -132,19 +138,18 @@ object NDLong : NDType<Long>() {
   
   override fun one(): Long = 1
   
-  override fun <R> cast(value: R): Long = when (value) {
-    is Boolean -> if (value) 1L else 0L
-    is Float -> value.toLong()
-    is Double -> value.toLong()
-    is Byte -> value.toLong()
-    is Short -> value.toLong()
-    is Int -> value.toLong()
-    is Long -> value.toLong()
+  override fun <R : Any> cast(value: R): Long = when (value) {
+    is Number -> value.toLong()
+    is Boolean -> if (value) 1 else 0
     else -> NONE()
   }
   
-  override fun makeBuf(size: Int, init: (Int) -> Long): Buf<Long> =
-      LongArrayBuf(LongArray(size, init))
+  override fun put(buf: BytePointer, offset: Long, data: Long) {
+    buf.putLong(offset, data)
+  }
+  
+  override fun get(buf: BytePointer, offset: Long): Long =
+      buf.getLong(offset)
 }
 
 object NDFloat : NDType<Float>() {
@@ -155,19 +160,18 @@ object NDFloat : NDType<Float>() {
   
   override fun one(): Float = 1f
   
-  override fun <R> cast(value: R): Float = when (value) {
-    is Boolean -> if (value) 1.0f else 0.0f
-    is Float -> value.toFloat()
-    is Double -> value.toFloat()
-    is Byte -> value.toFloat()
-    is Short -> value.toFloat()
-    is Int -> value.toFloat()
-    is Long -> value.toFloat()
+  override fun <R : Any> cast(value: R): Float = when (value) {
+    is Number -> value.toFloat()
+    is Boolean -> if (value) 1f else 0f
     else -> NONE()
   }
   
-  override fun makeBuf(size: Int, init: (Int) -> Float): Buf<Float> =
-      FloatArrayBuf(FloatArray(size, init))
+  override fun put(buf: BytePointer, offset: Long, data: Float) {
+    buf.putFloat(offset, data)
+  }
+  
+  override fun get(buf: BytePointer, offset: Long): Float =
+      buf.getFloat(offset)
 }
 
 object NDDouble : NDType<Double>() {
@@ -178,19 +182,18 @@ object NDDouble : NDType<Double>() {
   
   override fun one(): Double = 1.0
   
-  override fun <R> cast(value: R): Double = when (value) {
+  override fun <R : Any> cast(value: R): Double = when (value) {
+    is Number -> value.toDouble()
     is Boolean -> if (value) 1.0 else 0.0
-    is Float -> value.toDouble()
-    is Double -> value.toDouble()
-    is Byte -> value.toDouble()
-    is Short -> value.toDouble()
-    is Int -> value.toDouble()
-    is Long -> value.toDouble()
     else -> NONE()
   }
   
-  override fun makeBuf(size: Int, init: (Int) -> Double): Buf<Double> =
-      DoubleArrayBuf(DoubleArray(size, init))
+  override fun put(buf: BytePointer, offset: Long, data: Double) {
+    buf.putDouble(offset, data)
+  }
+  
+  override fun get(buf: BytePointer, offset: Long): Double =
+      buf.getDouble(offset)
 }
 
 object NDString : NDType<String>() {
@@ -201,8 +204,16 @@ object NDString : NDType<String>() {
   
   override fun one(): String = NONE()
   
-  override fun <R> cast(value: R): String = value.toString()
+  override fun <R : Any> cast(value: R): String = value.toString()
   
-  override fun makeBuf(size: Int, init: (Int) -> String): Buf<String> =
-      ArrayBuf(Array(size, init))
+  override fun makeBuf(size: Int, init: (Int) -> String): BytePointerBuf<String> =
+      TODO()
+  
+  override fun put(buf: BytePointer, offset: Long, data: String) {
+    TODO("not implemented")
+  }
+  
+  override fun get(buf: BytePointer, offset: Long): String {
+    TODO("not implemented")
+  }
 }

@@ -1,12 +1,9 @@
 package wumo.sim.utils
 
 import wumo.sim.util.errorIf
-import wumo.sim.util.ndarray.abs
 import java.nio.ByteBuffer
 import java.security.MessageDigest
 import java.security.SecureRandom
-import java.util.concurrent.ThreadLocalRandom
-import kotlin.math.abs
 import kotlin.random.Random
 
 fun np_random(seed: Long? = null): Pair<Random, Long> {

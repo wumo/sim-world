@@ -1,6 +1,5 @@
 package wumo.sim.tensorflow.util
 
-import org.bytedeco.javacpp.IntPointer
 import org.bytedeco.javacpp.Pointer
 import org.bytedeco.javacpp.PointerScope
 

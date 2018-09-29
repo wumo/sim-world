@@ -2,23 +2,24 @@
 
 package wumo.sim.tensorflow.tensor
 
-import org.bytedeco.javacpp.*
+import org.bytedeco.javacpp.BytePointer
+import org.bytedeco.javacpp.LongPointer
+import org.bytedeco.javacpp.Pointer
 import org.bytedeco.javacpp.Pointer.memcpy
-import org.bytedeco.javacpp.ShortPointer
+import org.bytedeco.javacpp.SizeTPointer
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Tensor.allocateTensor
 import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.tensorflow.core.check
 import wumo.sim.tensorflow.types.*
-import wumo.sim.util.*
+import wumo.sim.util.NONE
 import wumo.sim.util.Shape
-import wumo.sim.util.ndarray.Buf
 import wumo.sim.util.ndarray.NDArray
-import wumo.sim.util.ndarray.implementation.ArrayBuf
-import wumo.sim.util.ndarray.types.NDType
+import wumo.sim.util.ndarray.BytePointerBuf
+import wumo.sim.util.scalarDimension
 
 abstract class Tensor<T : Any>
-protected constructor(_c_tensor: TF_Tensor) : Buf<T>() {
+protected constructor(_c_tensor: TF_Tensor, val dtype: DataType<T>) : Buf<T>(dtype.ndtype) {
   
   companion object {
     fun newTensor(dtype: Int, dims: LongArray, data: Pointer): TF_Tensor {
@@ -29,49 +30,40 @@ protected constructor(_c_tensor: TF_Tensor) : Buf<T>() {
                           }, null)
     }
     
-    fun <T : Any> toNDArray(c_tensor: TF_Tensor): NDArray<T> =
-        invoke<T>(c_tensor).toNDArray()
+    fun <T : Any> toNDArray(c_tensor: TF_Tensor): NDArray<T> {
+      val dtype = TF_TensorType(c_tensor).toDataType<T>()
+      val tensor = FixedSizeTensor(c_tensor, dtype)
+      return tensor.toNDArray()
+    }
     
-    operator fun invoke(value: Float) = invoke(scalarDimension, f(value))
-    operator fun invoke(value: Double) = invoke(scalarDimension, d(value))
-    operator fun invoke(value: Boolean) = invoke(scalarDimension, B(value))
-    operator fun invoke(value: Byte) = invoke(scalarDimension, b(value))
-    operator fun invoke(value: Short) = invoke(scalarDimension, s(value))
-    operator fun invoke(value: Int) = invoke(scalarDimension, i(value))
-    operator fun invoke(value: Long) = invoke(scalarDimension, l(value))
-    operator fun invoke(value: String) = invoke(scalarDimension, a(value))
+    operator fun <T : Any> invoke(_c_tensor: TF_Tensor, dtype: DataType<T>): Tensor<T> =
+        FixedSizeTensor(_c_tensor, dtype)
     
-    operator fun invoke(value: FloatArray) = invoke(Shape(value.size), value)
-    operator fun invoke(value: DoubleArray) = invoke(Shape(value.size), value)
-    operator fun invoke(value: BooleanArray) = invoke(Shape(value.size), value)
-    operator fun invoke(value: ByteArray) = invoke(Shape(value.size), value)
-    operator fun invoke(value: ShortArray) = invoke(Shape(value.size), value)
-    operator fun invoke(value: IntArray) = invoke(Shape(value.size), value)
-    operator fun invoke(value: LongArray) = invoke(Shape(value.size), value)
-    operator fun invoke(value: Array<String>) = invoke(Shape(value.size), value)
+    operator fun invoke(value: Float) = invoke(scalarDimension, FLOAT) { value }
+    operator fun invoke(value: Double) = invoke(scalarDimension, DOUBLE) { value }
+    operator fun invoke(value: Boolean) = invoke(scalarDimension, BOOL) { value }
+    operator fun invoke(value: Byte) = invoke(scalarDimension, INT8) { value }
+    operator fun invoke(value: Short) = invoke(scalarDimension, INT16) { value }
+    operator fun invoke(value: Int) = invoke(scalarDimension, INT32) { value }
+    operator fun invoke(value: Long) = invoke(scalarDimension, INT64) { value }
+    operator fun invoke(value: String) = invoke(scalarDimension, STRING) { value }
     
-    operator fun invoke(shape: Shape, value: FloatArray): Tensor<Float> =
-        FixedSizeTensor(create(shape, FloatPointer(*value), FLOAT))
+    operator fun invoke(value: FloatArray) = invoke(Shape(value.size), FLOAT) { value[it] }
+    operator fun invoke(value: DoubleArray) = invoke(Shape(value.size), DOUBLE) { value[it] }
+    operator fun invoke(value: BooleanArray) = invoke(Shape(value.size), BOOL) { value[it] }
+    operator fun invoke(value: ByteArray) = invoke(Shape(value.size), INT8) { value[it] }
+    operator fun invoke(value: ShortArray) = invoke(Shape(value.size), INT16) { value[it] }
+    operator fun invoke(value: IntArray) = invoke(Shape(value.size), INT32) { value[it] }
+    operator fun invoke(value: LongArray) = invoke(Shape(value.size), INT64) { value[it] }
+    operator fun invoke(value: Array<String>) = invoke(Shape(value.size), STRING) { value[it] }
     
-    operator fun invoke(shape: Shape, value: DoubleArray): Tensor<Double> =
-        FixedSizeTensor(create(shape, DoublePointer(*value), DOUBLE))
-    
-    operator fun invoke(shape: Shape, value: BooleanArray): Tensor<Boolean> =
-        FixedSizeTensor(create(shape, BytePointer(*ByteArray(value.size) {
-          if (value[it]) 1 else 0
-        }), BOOL))
-    
-    operator fun invoke(shape: Shape, value: ByteArray): Tensor<Byte> =
-        FixedSizeTensor(create(shape, BytePointer(*value), INT8))
-    
-    operator fun invoke(shape: Shape, value: ShortArray): Tensor<Short> =
-        FixedSizeTensor(create(shape, ShortPointer(*value), INT16))
-    
-    operator fun invoke(shape: Shape, value: IntArray): Tensor<Int> =
-        FixedSizeTensor(create(shape, IntPointer(*value), INT32))
-    
-    operator fun invoke(shape: Shape, value: LongArray): Tensor<Long> =
-        FixedSizeTensor(create(shape, LongPointer(*value), INT64))
+    operator fun invoke(shape: Shape, value: FloatArray) = invoke(shape, FLOAT) { value[it] }
+    operator fun invoke(shape: Shape, value: DoubleArray) = invoke(shape, DOUBLE) { value[it] }
+    operator fun invoke(shape: Shape, value: BooleanArray) = invoke(shape, BOOL) { value[it] }
+    operator fun invoke(shape: Shape, value: ByteArray) = invoke(shape, INT8) { value[it] }
+    operator fun invoke(shape: Shape, value: ShortArray) = invoke(shape, INT16) { value[it] }
+    operator fun invoke(shape: Shape, value: IntArray) = invoke(shape, INT32) { value[it] }
+    operator fun invoke(shape: Shape, value: LongArray) = invoke(shape, INT64) { value[it] }
     
     operator fun invoke(shape: Shape, array: Array<String>): StringTensor {
       val data = TFStringArray.encode(array)
@@ -79,53 +71,47 @@ protected constructor(_c_tensor: TF_Tensor) : Buf<T>() {
       return StringTensor(t, array)
     }
     
-    fun <T : Any> fromNDArray(ndarray: NDArray<T>,
-                              dtype: DataType<*> = ndarray.dtype.toDataType()): Tensor<T> {
-      val data = when (dtype) {
-        is types.STRING -> TFStringArray.encode((dtype.castBuf(ndarray.raw) as ArrayBuf<String>).raw)
-        else -> {
-          dtype as DataType<T>
-          val byteSize = dtype.byteSize
-          val ptr = BytePointer((ndarray.numElements * byteSize).toLong())
-          for ((i, v) in ndarray.flatten()) {
-            dtype.put(ptr, i * byteSize, v)
-          }
-          ptr
-        }
+    inline operator fun <T : Any> invoke(shape: Shape, dtype: DataType<T>, init: (Int) -> T): Tensor<T> {
+      val size = shape.numElements()
+      val byteSize = dtype.byteSize
+      val data = BytePointer((size * byteSize).toLong())
+      for (i in 0 until size)
+        dtype.put(data, i * byteSize, init(i))
+      return FixedSizeTensor(newTensor(dtype.cValue, shape.asLongArray()!!, data), dtype)
+    }
+    
+    fun <T : Any> fromNDArray(ndarray: NDArray<T>): Tensor<T> {
+      val src = when (val buf = ndarray.buf) {
+        is BytePointerBuf<T> -> BytePointer(buf.ptr)
+        else -> NONE()
       }
-      
-      val c_tensor = create(ndarray.shape, data, dtype)
-      return createTensor(dtype, c_tensor)
+      val dtype = ndarray.dtype.toDataType()
+      return FixedSizeTensor(newTensor(dtype.cValue, ndarray.shape.asLongArray()!!, src), dtype)
     }
     
-    operator fun <T : Any> invoke(c_tensor: TF_Tensor): Tensor<T> {
-      val dtype = TF_TensorType(c_tensor).toDataType()
-      return createTensor(dtype, c_tensor)
-    }
-    
-    private fun <T : Any> createTensor(dtype: DataType<*>,
-                                       c_tensor: TF_Tensor): Tensor<T> {
-      val result = when (dtype.baseDataType) {
-        is types.STRING -> StringTensor(c_tensor)
-        else -> FixedSizeTensor<T>(c_tensor)
+    fun <T : Any, R : Any> fromNDArray(ndarray: NDArray<T>, dtype: DataType<R>): Tensor<R> {
+      val srcDtype = ndarray.dtype.toDataType()
+      val src = when (val buf = ndarray.buf) {
+        is BytePointerBuf<T> -> BytePointer(buf.ptr)
+        else -> NONE()
       }
-      return result as Tensor<T>
+      val dst = if (srcDtype == dtype) src
+      else {
+        val byteSize = dtype.byteSize
+        val data = BytePointer((ndarray.size * byteSize).toLong())
+        val ndtype = dtype.ndtype
+        for (i in 0 until ndarray.size)
+          dtype.put(data, i * byteSize, ndtype.cast(srcDtype.get(src, i)))
+        data
+      }
+      return FixedSizeTensor(newTensor(dtype.cValue, ndarray.shape.asLongArray()!!, dst), dtype)
     }
-    
-    internal fun create(shape: Shape, data: Pointer, dtype: DataType<*>): TF_Tensor {
-      val bytePointer = data as? BytePointer
-          ?: BytePointer(data).capacity(data.sizeof() * data.limit())
-      val dims = shape.asLongArray()!!
-      return newTensor(dtype.cValue, dims, bytePointer)
-    }
-    
   }
   
   open val c_tensor: TF_Tensor = _c_tensor
   protected val stride: LongArray
   protected val dims: LongArray
   protected val numElements: Long
-  val dtype: DataType<T> = DataType.fromCValue(TF_TensorType(_c_tensor))
   val numDims = TF_NumDims(_c_tensor)
   
   init {
@@ -161,32 +147,44 @@ protected constructor(_c_tensor: TF_Tensor) : Buf<T>() {
     return t
   }
   
-  fun toNDArray(): NDArray<T> = NDArray(Shape(dims),
-                                        dtype.castBuf(this),
-                                        dtype.kotlinType.NDType())
+  open fun toNDArray(): NDArray<T> = TODO()
   
   override val size: Int
     get() = numElements.toInt()
 }
 
-class FixedSizeTensor<T : Any>(c_tensor: TF_Tensor) : Tensor<T>(c_tensor) {
+class FixedSizeTensor<T : Any>(c_tensor: TF_Tensor, dtype: DataType<T>) : Tensor<T>(c_tensor, dtype) {
+  
   val byteBuffer = createBuffer()
   
-  override fun get(offset: Int): T =
-      dtype.get(byteBuffer, offset * dtype.byteSize) as T
+  override fun toNDArray(): NDArray<T> = NDArray(Shape(dims), BytePointerBuf(byteBuffer, ndtype))
   
-  override fun set(offset: Int, data: T) {
-    dtype.put(byteBuffer, offset * dtype.byteSize, data)
+  override fun get(idx: Int): T =
+      dtype.get(byteBuffer, idx * dtype.byteSize)
+  
+  override fun set(idx: Int, data: T) {
+    dtype.put(byteBuffer, idx * dtype.byteSize, data)
   }
   
-  override fun copy(): Buf<T> = FixedSizeTensor(copy_tensor())
+  override fun copy(): Buf<T> = FixedSizeTensor(copy_tensor(), dtype)
   
   override fun slice(start: Int, end: Int): Buf<T> {
     TODO()
   }
+  
+  override fun asBytePointer(): BytePointer {
+    TODO("not implemented")
+  }
 }
 
-class StringTensor(private var _c_tensor: TF_Tensor, val array: Array<String>? = null) : Tensor<String>(_c_tensor) {
+class StringTensor(private var _c_tensor: TF_Tensor,
+                   val array: Array<String>? = null)
+  : Tensor<String>(_c_tensor, STRING) {
+  
+  override fun asBytePointer(): BytePointer {
+    TODO("not implemented")
+  }
+  
   override fun slice(start: Int, end: Int): Buf<String> {
     TODO("not implemented")
   }
@@ -203,10 +201,10 @@ class StringTensor(private var _c_tensor: TF_Tensor, val array: Array<String>? =
         _c_tensor
       }
   
-  override fun get(offset: Int) = buf[offset]
+  override fun get(idx: Int) = buf[idx]
   
-  override fun set(offset: Int, data: String) {
-    buf[offset] = data
+  override fun set(idx: Int, data: String) {
+    buf[idx] = data
     modified = true
   }
   

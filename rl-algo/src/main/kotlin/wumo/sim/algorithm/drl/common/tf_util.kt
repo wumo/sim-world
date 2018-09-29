@@ -5,7 +5,6 @@ import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.ops.basic.minus
 import wumo.sim.tensorflow.ops.basic.times
 import wumo.sim.tensorflow.tf
-import wumo.sim.util.a
 import wumo.sim.util.ndarray.NDArray
 
 interface Function {

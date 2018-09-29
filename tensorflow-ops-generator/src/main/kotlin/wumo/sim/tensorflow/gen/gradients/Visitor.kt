@@ -404,7 +404,7 @@ class Visitor(val name: String) : Python3BaseVisitor<String>() {
               val trailer = trailers[j]
               trailer.NAME()?.let {
                 when (it.text) {
-                  "dtype" -> +".dataType"
+                  "ndtype" -> +".dataType"
                   else -> +".${it.text}"
                 }
               } ?: +visit(trailer)
@@ -416,7 +416,7 @@ class Visitor(val name: String) : Python3BaseVisitor<String>() {
               val i = text.lastIndexOf('.')
               text.substring(i + 1).toUpperCase()
             } else {
-              text.replace(".dtype", ".dataType")
+              text.replace(".ndtype", ".dataType")
             }
             +text
           }

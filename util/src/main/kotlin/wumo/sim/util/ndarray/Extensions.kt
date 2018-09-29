@@ -44,5 +44,5 @@ fun <T : Any> concatenate(array: List<NDArray<T>>, axis: Int = 0): NDArray<T> {
       idx[axis] = k
       idx.advance(finalShape)
     }
-  }, first.dtype)
+  })
 }

@@ -6,7 +6,6 @@ import org.bytedeco.javacpp.tensorflow.TF_Version
 import wumo.sim.tensorflow.Session
 import wumo.sim.tensorflow.core.*
 import wumo.sim.tensorflow.ops.basic.*
-import wumo.sim.tensorflow.ops.control_flow_ops.CondContext
 import wumo.sim.tensorflow.ops.control_flow_ops.ControlFlowContext
 import wumo.sim.tensorflow.ops.control_flow_ops.control_flow_ops
 import wumo.sim.tensorflow.ops.gradients.gradient_ops

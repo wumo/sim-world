@@ -3,8 +3,6 @@ package wumo.sim.tensorflow.ops.basic
 import wumo.sim.tensorflow.contrib.layers.CNNDataFormat
 import wumo.sim.tensorflow.contrib.layers.CNNDataFormat.*
 import wumo.sim.tensorflow.contrib.layers.ConvPadding
-import wumo.sim.tensorflow.contrib.layers.ConvPadding.SAME
-import wumo.sim.tensorflow.contrib.layers.ConvPadding.VALID
 import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.ops.gen.gen_nn_ops
 import wumo.sim.tensorflow.tensor.constantValue

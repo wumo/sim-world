@@ -3,10 +3,9 @@ package wumo.sim.tensorflow.types
 import org.bytedeco.javacpp.BytePointer
 import wumo.sim.tensorflow.tf
 import wumo.sim.util.NONE
-import wumo.sim.util.ndarray.Buf
-import java.nio.ByteBuffer
+import wumo.sim.util.ndarray.types.NDType
 
-fun Int.toDataType(): DataType<*> =
+fun <T : Any> Int.toDataType(): DataType<T> =
     DataType.fromCValue(this)
 
 interface DataType<KotlinType : Any> {
@@ -16,7 +15,8 @@ interface DataType<KotlinType : Any> {
   val byteSize: Int
   val priority: Int
   val protoType: org.tensorflow.framework.DataType
-  val kotlinType: Class<KotlinType>
+  val ndtype: NDType<KotlinType>
+  
   //endregion Data Type Properties
   
   //region Data Type Set Helper Methods
@@ -78,10 +78,6 @@ interface DataType<KotlinType : Any> {
   val max: KotlinType get() = NONE()
   
   //endregion Data Type Set Helper Methods
-  
-  fun <R> cast(value: R): KotlinType = TODO()
-  
-  fun <R : Any> castBuf(value: Buf<R>): Buf<KotlinType> = TODO()
   
   fun put(buffer: BytePointer, idx: Int, element: KotlinType): Unit = TODO()
   

@@ -1,9 +1,8 @@
 package wumo.sim.envs.atari
 
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Pixmap
-import org.bytedeco.javacpp.IntPointer
-import org.bytedeco.javacpp.ale.ALEInterface
+import org.bytedeco.javacpp.BytePointer
+import wumo.atari.ale
 import wumo.sim.core.Env
 import wumo.sim.core.Space
 import wumo.sim.envs.atari.AtariEnv.Companion.ObsType.image
@@ -15,10 +14,11 @@ import wumo.sim.spaces.Box
 import wumo.sim.spaces.Discrete
 import wumo.sim.util.*
 import wumo.sim.util.ndarray.NDArray
+import wumo.sim.util.ndarray.BytePointerBuf
+import wumo.sim.util.ndarray.types.NDByte
 import wumo.sim.utils.hash_seed
 import wumo.sim.utils.np_random
 import java.nio.file.Paths
-import kotlin.experimental.and
 import kotlin.math.abs
 import kotlin.random.Random
 
@@ -50,7 +50,7 @@ class AtariEnv(val game: String = "pong",
   
   override lateinit var rand: Random
   val game_path = Paths.get(game_dir, "$game.bin").toString()
-  val ale = ALEInterface()
+  val handle = ale.ALE_new()!!
   val action_set: IntArray
   val screen_width: Int
   val screen_height: Int
@@ -59,24 +59,21 @@ class AtariEnv(val game: String = "pong",
   
   init {
     require(game in games)
-    ale.setFloat("repeat_action_probability", repeat_action_probability)
+    ale.setFloat(handle, "repeat_action_probability", repeat_action_probability)
 //    ale.setBool("display_screen", true)
 //    ale.setBool("sound", false)
     seed()
-    
-    val _action_set = ale.minimalActionSet
-    action_set = IntArray(_action_set.limit().toInt()) {
-      _action_set[it.toLong()]
-    }
+    val actionSize = ale.getMinimalActionSize(handle)
+    action_set = IntArray(actionSize)
+    ale.getMinimalActionSet(handle, action_set)
     action_space = Discrete(action_set.size)
     
-    val screen = ale.screen
-    screen_width = screen.width().toInt()
-    screen_height = screen.height().toInt()
+    screen_width = ale.getScreenWidth(handle)
+    screen_height = ale.getScreenHeight(handle)
     
     observation_space = when (obs_type) {
-      ram -> Box(0.toByte(), 255.toByte(), Shape(128))
-      image -> Box(0.toByte(), 255.toByte(), Shape(screen_height, screen_width, 3))
+      ram -> Box(0.toByte(), 255.toByte(), Shape(128), NDByte)
+      image -> Box(0.toByte(), 255.toByte(), Shape(screen_height, screen_width, 3), NDByte)
     }
   }
   
@@ -84,8 +81,8 @@ class AtariEnv(val game: String = "pong",
     val (rand, seed1) = np_random(seed)
     this.rand = rand
     val seed2 = hash_seed(seed1 + 1) % (1 shl 31)
-    ale.setInt("random_seed", abs(seed2).toInt())
-    ale.loadROM(game_path)
+    ale.setInt(handle, "random_seed", abs(seed2).toInt())
+    ale.loadROM(handle, game_path)
     return listOf(seed1, seed2)
   }
   
@@ -95,12 +92,14 @@ class AtariEnv(val game: String = "pong",
     val num_steps = if (frameskip._1 == frameskip._2) frameskip._1
     else rand.nextInt(frameskip._1, frameskip._2)
     repeat(num_steps) {
-      reward += ale.act(action)
+      reward += ale.act(handle, action)
     }
     val ob = get_obs()
     
-    return t4(ob, reward, ale.game_over(), mapOf("ale.lives" to ale.lives()))
+    return t4(ob, reward, ale.game_over(handle), mapOf("ale.lives" to ale.lives(handle)))
   }
+  
+  fun lives(): Int = ale.lives(handle)
   
   private fun get_obs(): AtariObsType =
       when (obs_type) {
@@ -109,22 +108,21 @@ class AtariEnv(val game: String = "pong",
       }
   
   private fun getRam(): AtariObsType {
-    val _ram = ale.ram
-    val ram = _ram.array()
-    val array = ByteArray(_ram.size().toInt())
-    ram.get(array)
-    return NDArray(array)
+    val ram_size = ale.getRAMSize(handle)
+    val array = BytePointer(ram_size.toLong())
+    ale.getRAM(handle, array)
+    return NDArray(Shape(ram_size), BytePointerBuf(array, NDByte))
   }
   
   private fun getImage(): AtariObsType {
     val shape = Shape(screen_height, screen_width, 3)
-    val array = ByteArray(shape.numElements())
-    ale.getScreenRGB(array)
-    return NDArray(shape, array)
+    val array = BytePointer(shape.numElements().toLong())
+    ale.getScreenRGB2(handle, array)
+    return NDArray(shape, BytePointerBuf(array, NDByte))
   }
   
   override fun reset(): AtariObsType {
-    ale.reset_game()
+    ale.reset_game(handle)
     return get_obs()
   }
   
@@ -167,4 +165,5 @@ class AtariEnv(val game: String = "pong",
     if (::viewer.isInitialized)
       viewer.close()
   }
+  
 }

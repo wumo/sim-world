@@ -12,7 +12,7 @@ import wumo.sim.tensorflow.ops.Op
 import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.ops.OutputConvertible
 import wumo.sim.tensorflow.tensor.Tensor
-import wumo.sim.tensorflow.util.native
+import wumo.sim.tensorflow.types.DataType
 import wumo.sim.util.ndarray.NDArray
 import wumo.sim.util.t2
 import wumo.sim.util.t3
@@ -28,7 +28,7 @@ class Session(val c_graph: TF_Graph) {
     status.check()
   }
   
-  val feed_dict = mutableListOf<Pair<Output, NDArray<*>>>()
+  val feed_dict = mutableListOf<Pair<Output, NDArray<out Any>>>()
   val run_list = mutableListOf<Op>()
   
   fun <T : Any> eval(t: OutputConvertible): NDArray<T> {
@@ -62,7 +62,7 @@ class Session(val c_graph: TF_Graph) {
               r5 as NDArray<T5>)
   }
   
-  fun Op.run(vararg feeds: Pair<Output, NDArray<*>>) {
+  fun Op.run(vararg feeds: Pair<Output, NDArray<out Any>>) {
     feed_dict += feeds
     run_list += this
     eval(listOf())
@@ -101,11 +101,11 @@ class Session(val c_graph: TF_Graph) {
         else -> throw Exception()
       }
     }
-    feed_dict.forEach { k, v -> this.feed_dict += k to v }
+    feed_dict.forEach { k, v -> this.feed_dict += k to v as NDArray<Any> }
     return eval(fetch)
   }
   
-  fun feed(vararg feeds: Pair<Output, NDArray<*>>) {
+  fun feed(vararg feeds: Pair<Output, NDArray<out Any>>) {
     feed_dict += feeds
   }
   
@@ -143,8 +143,8 @@ class Session(val c_graph: TF_Graph) {
     TF_DeleteStatus(status)
     clear()
     return MutableList(noutputs) {
-      val tensor=output_values.get(TF_Tensor::class.java, it.toLong())
-      Tensor.toNDArray<Any>(tensor).apply { TF_DeleteTensor(tensor) }
+      val tensor = output_values.get(TF_Tensor::class.java, it.toLong())
+      Tensor.toNDArray<Any>(tensor)
     }.apply {
       output_values.deallocate()
     }
@@ -159,7 +159,7 @@ class Session(val c_graph: TF_Graph) {
     for ((i, pair) in feed_dict.withIndex()) {
       val (input, input_value) = pair
       inputs.position(i.toLong()).oper(input.op.c_op).index(input.valueIndex)
-      val tensor = Tensor.fromNDArray(input_value, input.dataType)
+      val tensor = Tensor.fromNDArray(input_value, input.dataType as DataType<Any>)
       tmp_tensors += tensor
       input_values.position(i.toLong()).put(tensor.c_tensor)
     }

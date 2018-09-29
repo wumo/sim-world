@@ -26,8 +26,8 @@ operator fun <T : Any> NDArray<T>.plus(b: Number): NDArray<T> {
 }
 
 operator fun NDArray<Float>.divAssign(b: Float) {
-  for (i in 0 until raw.size)
-    raw[i] /= b
+  for (i in 0 until buf.size)
+    buf[i] /= b
 }
 
 fun <T : Any> abs(a: NDArray<T>): NDArray<T> {
@@ -43,8 +43,10 @@ val ones_like_switch = SwitchType2<Shape, NDArray<*>>().apply {
   case<Long> { NDArray(_2, 1L) }
 }
 
-inline fun <reified T : Number> ones_like(a: NDArray<T>): NDArray<T> =
-    NDArray(a.shape, a.dtype.one())
+inline fun <reified T : Number> ones_like(a: NDArray<T>): NDArray<T> {
+  val dtype = a.dtype
+  return NDArray(a.shape, dtype) { dtype.one() }
+}
 
 fun <T : Any> newaxis(a: NDArray<T>) = toNDArray(arrayOf(a))
 

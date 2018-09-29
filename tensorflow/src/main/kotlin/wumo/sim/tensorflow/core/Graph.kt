@@ -375,19 +375,19 @@ open class Graph {
   fun toGraphDef() = GraphDef.parseFrom(toGraphDefBytes())
   
   fun toGraphDefBytes(): ByteArray {
-    native {
-      val buf = newBuffer()
-      val status = newStatus()
-      TF_GraphToGraphDef(c_graph, buf, status)
-      status.check()
-      val len = buf.length()
-      val bytes = ByteArray(len.toInt())
-      val d = buf.data()
-      d.capacity<Pointer>(len)
-      val data = d.asByteBuffer()
-      data.get(bytes)
-      return bytes
-    }
+    val buf = TF_NewBuffer()
+    val status = TF_NewStatus()
+    TF_GraphToGraphDef(c_graph, buf, status)
+    status.check()
+    val len = buf.length()
+    val bytes = ByteArray(len.toInt())
+    val d = buf.data()
+    d.capacity<Pointer>(len)
+    val data = d.asByteBuffer()
+    data.get(bytes)
+    TF_DeleteBuffer(buf)
+    TF_DeleteStatus(status)
+    return bytes
   }
   
   fun debugString(): String {

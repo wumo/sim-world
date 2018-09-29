@@ -1,9 +1,9 @@
 package wumo.sim.tensorflow.layers.convolutional
 
-import wumo.sim.tensorflow.contrib.layers
+import wumo.sim.tensorflow.contrib.layers.CNNDataFormat.NCHW
+import wumo.sim.tensorflow.contrib.layers.CNNDataFormat.NHWC
 import wumo.sim.tensorflow.contrib.layers.ConvPadding
 import wumo.sim.tensorflow.contrib.layers.ConvPadding.VALID
-import wumo.sim.tensorflow.contrib.layers.CNNDataFormat.*
 import wumo.sim.tensorflow.core.TensorFunction
 import wumo.sim.tensorflow.layers.Layer
 import wumo.sim.tensorflow.layers.utils.DataFormat

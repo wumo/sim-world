@@ -1,11 +1,14 @@
 package wumo.sim.algorithm.drl.common
 
 import org.bytedeco.javacpp.BytePointer
-import org.bytedeco.javacpp.ale.PLAYER_A_FIRE
-import org.bytedeco.javacpp.ale.PLAYER_A_NOOP
 import org.bytedeco.javacpp.opencv_core.*
 import org.bytedeco.javacpp.opencv_imgproc.*
-import wumo.sim.core.*
+import wumo.atari.ale.PLAYER_A_FIRE
+import wumo.atari.ale.PLAYER_A_NOOP
+import wumo.sim.core.Env
+import wumo.sim.core.ObservationWrapper
+import wumo.sim.core.RewardWrapper
+import wumo.sim.core.Wrapper
 import wumo.sim.envs.atari.AtariEnv
 import wumo.sim.envs.atari.AtariEnvType
 import wumo.sim.envs.atari.AtariObsType
@@ -13,9 +16,10 @@ import wumo.sim.envs.envs
 import wumo.sim.spaces.Box
 import wumo.sim.tensorflow.util.native
 import wumo.sim.util.Shape
-import wumo.sim.util.ndarray.*
-import wumo.sim.util.ndarray.implementation.ByteArrayBuf
-import wumo.sim.util.ndarray.implementation.FloatArrayBuf
+import wumo.sim.util.ndarray.NDArray
+import wumo.sim.util.ndarray.cast
+import wumo.sim.util.ndarray.divAssign
+import wumo.sim.util.ndarray.types.NDByte
 import wumo.sim.util.ndarray.types.NDFloat
 import wumo.sim.util.t4
 import java.util.*
@@ -104,7 +108,7 @@ class MaxAndSkipEnv(env: AtariEnvType, val skip: Int = 4)
     val c = ByteArray(a.size) {
       maxOf(a.rawGet(it), b.rawGet(it))
     }
-    val max_frame = NDArray(a.shape, ByteArrayBuf(c), a.dtype)
+    val max_frame = NDArray(a.shape, c)
 //    val max_frame = obs_buffer.max(axis = 0)
     return t4(max_frame, total_reward, done, info)
   }
@@ -120,7 +124,7 @@ class EpisodicLifeEnv(env: AtariEnvType)
     val result = env.step(a)
     var done = result._3
     was_real_done = done
-    val lives = env.unwrapped.ale.lives()
+    val lives = env.unwrapped.lives()
     if (lives < this.lives && lives > 0)
       done = true
     this.lives = lives
@@ -133,7 +137,7 @@ class EpisodicLifeEnv(env: AtariEnvType)
       env.reset()
     else
       env.step(0)._1
-    lives = env.unwrapped.ale.lives()
+    lives = env.unwrapped.lives()
     return obs
   }
 }
@@ -162,7 +166,7 @@ class FireResetEnv(env: AtariEnvType)
 fun AtariObsType.toMat(): Mat {
   val channels = shape[2]
   return Mat(shape[0], shape[1], CV_8UC(channels),
-             BytePointer(*(raw as ByteArrayBuf).raw))
+             BytePointer(buf.asBytePointer()))
 }
 
 fun Mat.toNDArray(): AtariObsType {
@@ -185,7 +189,7 @@ class WarpFrame(env: AtariEnvType) :
   val height = 84
   
   override val observation_space =
-      Box(0.toByte(), 255.toByte(), Shape(height, width, 1))
+      Box(0.toByte(), 255.toByte(), Shape(height, width, 1), NDByte)
   
   override fun observation(frame: AtariObsType): AtariObsType {
     native {
@@ -232,7 +236,7 @@ class ScaledFloatFrame<WrappedEnv>(
     env: Env<NDArray<Float>, Float, Int, Int, WrappedEnv>)
   : ObservationWrapper<NDArray<Float>, Float, Int, Int, WrappedEnv>(env) {
   
-  override val observation_space = Box(0f, 1f, env.observation_space.shape)
+  override val observation_space = Box(0f, 1f, env.observation_space.shape, NDFloat)
   
   override fun observation(frame: NDArray<Float>): NDArray<Float> {
     frame /= 255f
@@ -271,7 +275,7 @@ class FrameStack<WrappedEnv>(
   val frames = FixedSizeDeque<NDArray<Float>>(k)
   override val observation_space = run {
     val (height, width, rgb) = env.observation_space.shape
-    Box(0f, 255f, Shape(height, width, rgb * k))
+    Box(0f, 255f, Shape(height, width, rgb * k), NDFloat)
   }
   val rgbDim = env.observation_space.shape[2]
   val base = observation_space.shape[2]
@@ -294,13 +298,38 @@ class FrameStack<WrappedEnv>(
   private fun get_ob(): NDArray<Float> {
     require(frames.size == k)
     val frames = frames.toList()
+//    val concatBuf = object : Buf<Float>() {
+//      override fun get(offset: Int): Float {
+//        val frameId = (offset % base) / rgbDim
+//        var i = offset - frameId * rgbDim
+//        i = i / k + i % k
+//        return frames[frameId].rawGet(i)
+//      }
+//
+//      override fun set(offset: Int, data: Float) {
+//        TODO("not implemented")
+//      }
+//
+//      override fun copy(): Buf<Float> {
+//        TODO("not implemented")
+//      }
+//
+//      override fun slice(start: Int, end: Int): Buf<Float> {
+//        TODO("not implemented")
+//      }
+//
+//      override val size: Int = observation_space.n
+//    }
+    
     val raw = FloatArray(observation_space.n) {
       val frameId = (it % base) / rgbDim
       var i = it - frameId * rgbDim
       i = i / k + i % k
       frames[frameId].rawGet(i)
     }
-    return NDArray(observation_space.shape, FloatArrayBuf(raw), NDFloat)
+//    val buf=FloatArray(observation_space.n)
+    return NDArray(observation_space.shape, raw)
+//    return NDArray(observation_space.shape, concatBuf, NDFloat)
 //    return concatenate(frames, axis = 2)
   }
 }

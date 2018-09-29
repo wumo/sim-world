@@ -2,11 +2,8 @@ package wumo.sim.tensorflow.types
 
 import org.bytedeco.javacpp.BytePointer
 import org.tensorflow.framework.DataType.*
-import wumo.sim.tensorflow.tensor.TFStringArray
 import wumo.sim.util.NONE
-import wumo.sim.util.ndarray.Buf
-import wumo.sim.util.ndarray.implementation.*
-import java.nio.ByteBuffer
+import wumo.sim.util.ndarray.types.*
 
 object STRING : types.STRING()
 object BOOL : types.BOOL()
@@ -95,11 +92,8 @@ object types {
     override fun one() = NONE()
     
     override val protoType = DT_STRING
-    override val kotlinType = String::class.java
+    override val ndtype: NDType<String> = NDString
     
-    override fun <R> cast(value: R): String = value.toString()
-    override fun <R : Any> castBuf(value: Buf<R>): Buf<String> =
-        ArrayBuf(Array(value.size) { value[it].toString() })
   }
   
   open class BOOL : DataTypeComparator<Boolean>(), ReducibleDataType<Boolean> {
@@ -110,12 +104,7 @@ object types {
     override fun one() = true
     
     override val protoType = DT_BOOL
-    override val kotlinType = Boolean::class.java
-    
-    override fun <R> cast(value: R): Boolean = booleanIsSupported.cast(value)
-    
-    override fun <R : Any> castBuf(value: Buf<R>): Buf<Boolean> =
-        BooleanArrayBuf(BooleanArray(value.size) { cast(value[it]) })
+    override val ndtype: NDType<Boolean> = NDBool
     
     override fun put(buffer: BytePointer, idx: Int, element: Boolean) {
       buffer.putBool(idx.toLong(), element)
@@ -134,7 +123,7 @@ object types {
     override fun one() = 1.0f
     
     override val protoType = DT_HALF
-    override val kotlinType = Float::class.java
+    override val ndtype: NDType<Float> = NDFloat
   }
   
   open class FLOAT32 : DataTypeComparator<Float>(), Float32OrFloat64<Float>, BFloat16OrFloat16OrFloat32<Float> {
@@ -145,12 +134,7 @@ object types {
     override fun one() = 1.0f
     
     override val protoType = DT_FLOAT
-    override val kotlinType = Float::class.java
-    
-    override fun <R> cast(value: R): Float = floatIsSupported.cast(value)
-    
-    override fun <R : Any> castBuf(value: Buf<R>): Buf<Float> =
-        FloatArrayBuf(FloatArray(value.size) { cast(value[it]) })
+    override val ndtype: NDType<Float> = NDFloat
     
     override fun put(buffer: BytePointer, idx: Int, element: Float) {
       buffer.putFloat(idx.toLong(), element)
@@ -170,12 +154,7 @@ object types {
     override fun one() = 1.0
     
     override val protoType = DT_DOUBLE
-    override val kotlinType = Double::class.java
-    
-    override fun <R> cast(value: R): Double = doubleIsSupported.cast(value)
-    
-    override fun <R : Any> castBuf(value: Buf<R>): Buf<Double> =
-        DoubleArrayBuf(DoubleArray(value.size) { cast(value[it]) })
+    override val ndtype: NDType<Double> = NDDouble
     
     override fun put(buffer: BytePointer, idx: Int, element: Double) {
       buffer.putDouble(idx.toLong(), element)
@@ -195,7 +174,7 @@ object types {
     override fun one() = 1.0f
     
     override val protoType = DT_BFLOAT16
-    override val kotlinType = Float::class.java
+    override val ndtype: NDType<Float> = NDFloat
   }
   
   open class COMPLEX64 : DataTypeComparator<Double>(), ComplexDataType<Double> {
@@ -207,7 +186,7 @@ object types {
     override fun one() = NONE()
     
     override val protoType = DT_COMPLEX64
-    override val kotlinType = Double::class.java
+    override val ndtype: NDType<Double> = NDDouble
   }
   
   open class COMPLEX128 : DataTypeComparator<Double>(), ComplexDataType<Double> {
@@ -219,7 +198,7 @@ object types {
     override fun one() = NONE()
     
     override val protoType = DT_COMPLEX128
-    override val kotlinType = Double::class.java
+    override val ndtype: NDType<Double> = NDDouble
   }
   
   open class INT8 : DataTypeComparator<Byte>(), IntOrUInt<Byte> {
@@ -231,11 +210,7 @@ object types {
     override fun one(): Byte = 1
     
     override val protoType = DT_INT8
-    override val kotlinType = Byte::class.java
-    
-    override fun <R> cast(value: R): Byte = byteIsSupported.cast(value)
-    override fun <R:Any> castBuf(value: Buf<R>): Buf<Byte> =
-        ByteArrayBuf(ByteArray(value.size) { cast(value[it]) })
+    override val ndtype: NDType<Byte> = NDByte
     
     override fun put(buffer: BytePointer, idx: Int, element: Byte) {
       buffer.put(idx.toLong(), element)
@@ -255,12 +230,7 @@ object types {
     override fun one(): Short = 1
     
     override val protoType = DT_INT16
-    override val kotlinType = Short::class.java
-    
-    override fun <R> cast(value: R): Short = shortIsSupported.cast(value)
-    
-    override fun <R : Any> castBuf(value: Buf<R>): Buf<Short> =
-        ShortArrayBuf(ShortArray(value.size) { cast(value[it]) })
+    override val ndtype: NDType<Short> = NDShort
     
     override fun put(buffer: BytePointer, idx: Int, element: Short) {
       buffer.putShort(idx.toLong(), element)
@@ -280,12 +250,7 @@ object types {
     override fun one() = 1
     
     override val protoType = DT_INT32
-    override val kotlinType = Int::class.java
-    
-    override fun <R> cast(value: R): Int = intIsSupported.cast(value)
-    
-    override fun <R : Any> castBuf(value: Buf<R>): Buf<Int> =
-        IntArrayBuf(IntArray(value.size) { cast(value[it]) })
+    override val ndtype: NDType<Int> = NDInt
     
     override fun put(buffer: BytePointer, idx: Int, element: Int) {
       buffer.putInt(idx.toLong(), element)
@@ -305,11 +270,7 @@ object types {
     override fun one() = 1L
     
     override val protoType = DT_INT64
-    override val kotlinType = Long::class.java
-    
-    override fun <R> cast(value: R): Long = longIsSupported.cast(value)
-    override fun <R : Any> castBuf(value: Buf<R>): Buf<Long> =
-        LongArrayBuf(LongArray(value.size) { cast(value[it]) })
+    override val ndtype: NDType<Long> = NDLong
     
     override fun put(buffer: BytePointer, idx: Int, element: Long) {
       buffer.putLong(idx.toLong(), element)
@@ -329,10 +290,7 @@ object types {
     override fun one(): Byte = 1
     
     override val protoType = DT_UINT8
-    override val kotlinType = Byte::class.java
-    
-    override fun <R> cast(value: R): Byte = uByteIsSupported.cast(value)
-    override fun <R : Any> castBuf(value: Buf<R>): Buf<Byte> = wumo.sim.tensorflow.types.INT8.castBuf(value)
+    override val ndtype: NDType<Byte> = NDByte
     
     override fun put(buffer: BytePointer, idx: Int, element: Byte) {
       buffer.put(idx.toLong(), element)
@@ -352,10 +310,7 @@ object types {
     override fun one(): Short = 1
     
     override val protoType = DT_UINT16
-    override val kotlinType = Short::class.java
-    
-    override fun <R> cast(value: R): Short = uShortIsSupported.cast(value)
-    override fun <R : Any> castBuf(value: Buf<R>): Buf<Short> = wumo.sim.tensorflow.types.INT16.castBuf(value)
+    override val ndtype: NDType<Short> = NDShort
     
     override fun put(buffer: BytePointer, idx: Int, element: Short) {
       buffer.putShort(idx.toLong(), element)
@@ -375,7 +330,7 @@ object types {
     override fun one(): Long = 1
     
     override val protoType = DT_UINT32
-    override val kotlinType = Long::class.java
+    override val ndtype: NDType<Long> = NDLong
     override fun toString() = name
     
     override fun put(buffer: BytePointer, idx: Int, element: Long) {
@@ -396,7 +351,7 @@ object types {
     override fun one() = NONE()
     
     override val protoType = DT_UINT64
-    override val kotlinType = Long::class.java
+    override val ndtype: NDType<Long> = NDLong
     
   }
   
@@ -409,7 +364,7 @@ object types {
     override fun one(): Byte = 1
     
     override val protoType = DT_QINT8
-    override val kotlinType = Byte::class.java
+    override val ndtype: NDType<Byte> = NDByte
     override fun toString() = name
     
     override fun put(buffer: BytePointer, idx: Int, element: Byte) {
@@ -430,7 +385,7 @@ object types {
     override fun one(): Short = 1
     
     override val protoType = DT_QINT16
-    override val kotlinType = Short::class.java
+    override val ndtype: NDType<Short> = NDShort
     
     override fun put(buffer: BytePointer, idx: Int, element: Short) {
       buffer.putShort(idx.toLong(), element)
@@ -450,7 +405,7 @@ object types {
     override fun one(): Int = 1
     
     override val protoType = DT_QINT32
-    override val kotlinType = Int::class.java
+    override val ndtype: NDType<Int> = NDInt
     
     override fun put(buffer: BytePointer, idx: Int, element: Int) {
       buffer.putInt(idx.toLong(), element)
@@ -470,7 +425,7 @@ object types {
     override fun one(): Byte = 1
     
     override val protoType = DT_QUINT8
-    override val kotlinType = Byte::class.java
+    override val ndtype: NDType<Byte> = NDByte
     
     override fun put(buffer: BytePointer, idx: Int, element: Byte) {
       buffer.put(idx.toLong(), element)
@@ -490,7 +445,7 @@ object types {
     override fun one(): Short = 1
     
     override val protoType = DT_QUINT16
-    override val kotlinType = Short::class.java
+    override val ndtype: NDType<Short> = NDShort
     
     override fun put(buffer: BytePointer, idx: Int, element: Short) {
       buffer.putShort(idx.toLong(), element)
@@ -510,7 +465,7 @@ object types {
     override fun one() = NONE()
     
     override val protoType = DT_RESOURCE
-    override val kotlinType = Long::class.java
+    override val ndtype: NDType<Long> = NDLong
     
     override fun put(buffer: BytePointer, idx: Int, element: Long) {
       buffer.putLong(idx.toLong(), element)
@@ -530,7 +485,7 @@ object types {
     override fun one() = NONE()
     
     override val protoType = DT_VARIANT
-    override val kotlinType = Long::class.java
+    override val ndtype: NDType<Long> = NDLong
     override fun toString() = name
     
     override fun put(buffer: BytePointer, idx: Int, element: Long) {

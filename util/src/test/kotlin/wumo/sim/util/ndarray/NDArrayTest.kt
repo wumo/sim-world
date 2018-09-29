@@ -1,7 +1,7 @@
 package wumo.sim.util.ndarray
 
-import org.junit.Assert
-import org.junit.Assert.*
+import org.junit.Assert.assertArrayEquals
+import org.junit.Assert.assertEquals
 import org.junit.Test
 import wumo.sim.util.Shape
 import wumo.sim.util.l
@@ -32,8 +32,6 @@ class NDArrayTest {
     assertEquals(3, c.size)
     assertEquals(NDLong, c.dtype)
     
-    val e = NDArray.toNDArray(arrayOf("h", "e", "l", "l", "o"))
-    println(e)
     println(c)
     val f = NDArray.toNDArray(arrayOf(1L, 2L, 3L))
     println(f)
@@ -98,9 +96,9 @@ class NDArrayTest {
   
   @Test
   fun setTest() {
-    val a = NDArray(Shape(2, 3)) { it }
+    val a = NDArray(Shape(2, 3), NDInt) { it }
     assertEquals(Shape(2, 3), a.shape)
-    val b = NDArray(Shape(2, 3)) { it + 6 }
+    val b = NDArray(Shape(2, 3), NDInt) { it + 6 }
     val c = NDArray(Shape(2, 2, 3), 0)
     c[0] = a
     c[1] = b
@@ -114,30 +112,11 @@ class NDArrayTest {
   }
   
   @Test
-  fun initTest() {
-    val idx = arrayOf(
-        intArrayOf(0, 0),
-        intArrayOf(0, 1),
-        intArrayOf(0, 2),
-        intArrayOf(1, 0),
-        intArrayOf(1, 1),
-        intArrayOf(1, 2)
-    )
-    var i = 0
-    val a = NDArray.from(Shape(2, 3)) {
-      Arrays.toString(it).apply {
-        assertArrayEquals(idx[i], it)
-        i++
-      }
-    }
-    println(a)
-  }
-  
-  @Test
   fun reduce() {
-    val a = NDArray(Shape(2, 3)) { it }
+    val a = NDArray(Shape(2, 3), NDInt) { it }
     val b = a.reduce(0) { acc, i -> acc + i }
     println(a)
+    println(b)
     assertEquals(3, b[0])
     assertEquals(5, b[1])
     assertEquals(7, b[2])
@@ -145,7 +124,7 @@ class NDArrayTest {
   
   @Test
   fun max() {
-    val a = NDArray(Shape(2, 3)) { it }
+    val a = NDArray(Shape(2, 3), NDInt) { it }
     val b = a.max(0)
     println(a)
     println(b)
@@ -156,7 +135,7 @@ class NDArrayTest {
   
   @Test
   fun min() {
-    val a = NDArray(Shape(2, 3)) { it }
+    val a = NDArray(Shape(2, 3), NDInt) { it }
     val b = a.min(0)
     println(a)
     println(b)

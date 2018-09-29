@@ -21,7 +21,7 @@ class TensorTest {
   fun `get set`() {
     tf
     val _t = Tensor(Shape(2, 2), f(1f, 2f, 3f, 4f))
-    val t = NDArray(Shape(2, 2), _t, NDFloat)
+    val t = NDArray(Shape(2, 2), _t)
     println(t)
     t[0, 0] = 3f
     println(t)
@@ -29,7 +29,7 @@ class TensorTest {
     t_c[0, 0] = 6f
     println(t)
     println(t_c)
-    val t2 = Tensor<Float>(_t.c_tensor)
+    val t2 = Tensor(_t.c_tensor, FLOAT)
     println(t2)
     val t3 = Tensor(1)
     println(t3)

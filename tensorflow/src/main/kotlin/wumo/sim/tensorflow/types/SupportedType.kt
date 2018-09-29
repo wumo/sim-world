@@ -2,7 +2,6 @@ package wumo.sim.tensorflow.types
 
 import wumo.sim.tensorflow.core.InvalidDataTypeException
 import wumo.sim.util.SwitchValue
-import wumo.sim.util.SwitchValue1
 import wumo.sim.util.ndarray.types.*
 
 val switchKotlinType = SwitchValue<NDType<*>, DataType<*>>().apply {

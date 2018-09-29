@@ -8,7 +8,6 @@ import wumo.sim.graphics.ShapeType.Lines
 import wumo.sim.graphics.Viewer
 import wumo.sim.spaces.Box
 import wumo.sim.spaces.Discrete
-import wumo.sim.util.Rand
 import wumo.sim.util.f
 import wumo.sim.util.ndarray.NDArray
 import wumo.sim.util.ndarray.unaryMinus

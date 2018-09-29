@@ -5,7 +5,7 @@ import okio.BufferedSource
 import wumo.sim.util.Shape
 import wumo.sim.util.SwitchType3
 import wumo.sim.util.SwitchValue2
-import wumo.sim.util.ndarray.implementation.*
+import wumo.sim.util.ndarray.types.*
 
 fun BufferedSink.encode(v: Float) = writeInt(v.toBits())
 fun BufferedSource.decodeFloat() = Float.fromBits(readInt())
@@ -75,15 +75,15 @@ private val saveSwtich = SwitchType3<BufferedSink, NDArray<*>, Unit>().apply {
   case<Long> { _2.writeInt(6);_3.forEach { _2.encode(it as Long) } }
   case<String> { _2.writeInt(7); _3.forEach { _2.encode(it as String) } }
 }
-private val loadSwtich = SwitchValue2<Int, BufferedSource, Int, Buf<*>>().apply {
-  case(0) { FloatArrayBuf(FloatArray(_2) { _1.decodeFloat() }) }
-  case(1) { DoubleArrayBuf(DoubleArray(_2) { _1.decodeDouble() }) }
-  case(2) { BooleanArrayBuf(BooleanArray(_2) { _1.decodeBoolean() }) }
-  case(3) { ByteArrayBuf(ByteArray(_2) { _1.decodeByte() }) }
-  case(4) { ShortArrayBuf(ShortArray(_2) { _1.decodeShort() }) }
-  case(5) { IntArrayBuf(IntArray(_2) { _1.decodeInt() }) }
-  case(6) { LongArrayBuf(LongArray(_2) { _1.decodeLong() }) }
-  case(7) { ArrayBuf(Array(_2) { _1.decodeString() }) }
+private val loadSwtich = SwitchValue2<Int, BufferedSource, Int, BytePointerBuf<*>>().apply {
+  case(0) { BytePointerBuf(_2, NDFloat) { _1.decodeFloat() } }
+  case(1) { BytePointerBuf(_2, NDDouble) { _1.decodeDouble() } }
+  case(2) { BytePointerBuf(_2, NDBool) { _1.decodeBoolean() } }
+  case(3) { BytePointerBuf(_2, NDByte) { _1.decodeByte() } }
+  case(4) { BytePointerBuf(_2, NDShort) { _1.decodeShort() } }
+  case(5) { BytePointerBuf(_2, NDInt) { _1.decodeInt() } }
+  case(6) { BytePointerBuf(_2, NDLong) { _1.decodeLong() } }
+  case(7) { BytePointerBuf(_2, NDString) { _1.decodeString() } }
 }
 
 fun BufferedSource.decodeNDArray(): NDArray<*> {
@@ -91,7 +91,7 @@ fun BufferedSource.decodeNDArray(): NDArray<*> {
   val size = shape.numElements()
   val type = readInt()
   val buf = loadSwtich(type, this, size)
-  return NDArray(shape, buf as Buf<Any>)
+  return NDArray(shape, buf as BytePointerBuf<Any>)
 }
 
 fun BufferedSink.encode(obj: NDArray<*>) {

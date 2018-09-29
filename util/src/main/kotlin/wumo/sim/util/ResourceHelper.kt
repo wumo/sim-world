@@ -1,7 +1,10 @@
 package wumo.sim.util
 
-import java.nio.file.*
+import java.nio.file.FileSystems
+import java.nio.file.Files
 import java.nio.file.Files.copy
+import java.nio.file.Paths
+import java.nio.file.StandardCopyOption
 
 fun unpackFileToTemp(resource: String, override: Boolean = false): String {
   val path = Paths.get(System.getProperty("java.io.tmpdir"), resource)

@@ -2,10 +2,11 @@ package wumo.sim.algorithm.drl.deepq.experiments
 
 import org.bytedeco.javacpp.Pointer
 import org.junit.Test
-import wumo.sim.algorithm.drl.common.*
+import wumo.sim.algorithm.drl.common.convOnly
+import wumo.sim.algorithm.drl.common.make_atari
+import wumo.sim.algorithm.drl.common.wrap_atari_dqn
 import wumo.sim.algorithm.drl.deepq.learn
 import wumo.sim.algorithm.drl.deepq.loadModel
-import wumo.sim.envs.envs
 import wumo.sim.tensorflow.tf
 import wumo.sim.util.ndarray.NDArray
 import wumo.sim.util.ndarray.newaxis
@@ -25,11 +26,11 @@ class train_pong {
                                             t3(64, 3, 1))),
           learning_rate = 1e-4f,
           total_timesteps = 1000_0000,
-          buffer_size = 2_0000,
+          buffer_size = 1000,
           exploration_fraction = 0.1f,
           exploration_final_eps = 0.01f,
           train_freq = 4,
-          learning_starts = 2_0000,
+          learning_starts = 1000,
           gamma = 0.99f,
           print_freq = 10,
           hiddens = listOf(256),

@@ -4,7 +4,6 @@ import org.junit.Test
 import wumo.sim.envs.classic_control.CartPole
 import wumo.sim.envs.classic_control.MountainCar
 import wumo.sim.util.Rand
-import wumo.sim.util.d
 import wumo.sim.util.f
 import wumo.sim.util.ndarray.NDArray
 import wumo.sim.world.examples.algorithm.*

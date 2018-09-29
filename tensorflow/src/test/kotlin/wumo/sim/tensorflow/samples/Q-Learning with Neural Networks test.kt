@@ -10,6 +10,7 @@ import wumo.sim.util.Rand
 import wumo.sim.util.Shape
 import wumo.sim.util.f
 import wumo.sim.util.ndarray.NDArray
+import wumo.sim.util.ndarray.types.NDFloat
 
 class `Q-Learning with Neural Networks test` : BaseTest() {
   @Test
@@ -39,18 +40,19 @@ class `Q-Learning with Neural Networks test` : BaseTest() {
         var j = 0
         while (j < 99) {
           j++
-          feed(inputs to NDArray(Shape(1, 16), f(16) { if (it == s) 1f else 0f }))
+          feed(inputs to NDArray(Shape(1, 16), NDFloat) { if (it == s) 1f else 0f })
           val (a, allQ) = eval<Int, Float>(predict, Qout)
           if (Rand().nextDouble() < e)
             a[0] = env.action_space.sample()
           val (s1, r, d) = env.step(a[0])
-          feed(inputs to NDArray(Shape(1, 16), f(16) { if (it == s1) 1f else 0f }))
+          feed(inputs to NDArray(Shape(1, 16), NDFloat) { if (it == s1) 1f else 0f })
           val Q1 = eval<Float>(Qout)
           val maxQ1 = Q1.max()!!
           val targetQ = allQ
+          
           targetQ[0, a[0]] = (r + y * maxQ1).toFloat()
           
-          feed(inputs to NDArray(Shape(1, 16), f(16) { if (it == s) 1f else 0f }),
+          feed(inputs to NDArray(Shape(1, 16), NDFloat) { if (it == s) 1f else 0f },
                nextQ to targetQ)
           train.run()
           rAll += r

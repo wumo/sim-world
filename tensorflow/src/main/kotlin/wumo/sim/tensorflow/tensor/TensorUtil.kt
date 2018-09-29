@@ -1,38 +1,11 @@
 package wumo.sim.tensorflow.tensor
 
-import org.bytedeco.javacpp.BytePointer
-import org.bytedeco.javacpp.Pointer.memcpy
 import org.bytedeco.javacpp.tensorflow
 import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.types.*
 import wumo.sim.util.Shape
-import wumo.sim.util.ndarray.Buf
 import wumo.sim.util.ndarray.NDArray
-import wumo.sim.util.ndarray.types.NDType
-
-class PointerBuf<T : Any>(
-    val bytePointer: BytePointer,
-    val dataType: DataType<T>) : Buf<T>() {
-  
-  override fun get(offset: Int): T =
-      dataType.get(bytePointer, offset * dataType.byteSize)
-  
-  override fun set(offset: Int, data: T) {
-    dataType.put(bytePointer, offset * dataType.byteSize, data)
-  }
-  
-  override fun copy(): Buf<T> {
-    val dst = BytePointer(bytePointer.limit())
-    memcpy(dst, bytePointer, bytePointer.limit())
-    return PointerBuf(dst, dataType)
-  }
-  
-  override fun slice(start: Int, end: Int): Buf<T> {
-    TODO("not implemented")
-  }
-  
-  override val size: Int = bytePointer.limit().toInt() / dataType.byteSize
-}
+import wumo.sim.util.ndarray.BytePointerBuf
 
 /**
  * Returns the constant value of the given tensor, if efficiently calculable.
@@ -116,9 +89,7 @@ fun <T : Any> makeNDArray(tensor: tensorflow.TensorProto): NDArray<T> {
   val dtype = tensor_dtype
   val tensor_content = tensor.tensor_content()
   if (tensor_content != null)
-    return NDArray(shape,
-                   dtype.castBuf(PointerBuf(tensor_content, dtype)),
-                   dtype.kotlinType.NDType())
+    return NDArray(shape, BytePointerBuf(tensor_content, dtype.ndtype))
   return when (tensor_dtype) {
     FLOAT16, BFLOAT16 ->
       TODO()

@@ -11,7 +11,6 @@ import wumo.sim.tensorflow.ops.variables.Variable
 import wumo.sim.tensorflow.tf
 import wumo.sim.util.TimeMeter
 import wumo.sim.util.ndarray.*
-import wumo.sim.util.ndarray.implementation.LongArrayBuf
 import wumo.sim.util.ndarray.types.NDInt
 import java.text.NumberFormat
 
@@ -97,8 +96,8 @@ fun <O : Any, A : Any> learn(
       //Take action and update exploration to the newest value
       var update_eps: Float
       var update_param_noise_threshold: Float
-//      meter.start("total")
-//      meter.start("act")
+      meter.start("total")
+      meter.start("act")
       val act_result = if (!param_noise) {
         update_eps = exploration.value(t)
         act(newaxis(NDArray.toNDArray(obs)), update_eps = update_eps)
@@ -113,13 +112,13 @@ fun <O : Any, A : Any> learn(
         act as ActWithParamNoise
         act(newaxis(NDArray.toNDArray(obs)), reset, update_param_noise_threshold, update_param_noise_scale = true, update_eps = update_eps)
       }
-//      meter.end("act")
+      meter.end("act")
       val action = act_result[0][0] as A
       val env_action = action
       reset = false
-//      meter.start("step")
+      meter.start("step")
       val (new_obs, rew, done, _) = env.step(env_action)
-//      meter.end("step")
+      meter.end("step")
 //      println((end-start)/1e9)
       //Store transition in the replay buffer.
       replay_buffer.add(obs, action, rew, new_obs, done)
@@ -171,7 +170,7 @@ fun <O : Any, A : Any> learn(
           saveVariable(act_vars.map { it.name }.zip(result))
         }
       }
-//      meter.end("total")
+      meter.end("total")
       
       if (t % 300 == 0) {
         println("${replay_buffer.size}:" +
@@ -181,8 +180,8 @@ fun <O : Any, A : Any> learn(
                     "used=" + formatter.format(runtime.totalMemory() - runtime.freeMemory()) + "," +
                     "native=" + formatter.format(Pointer.physicalBytes() - runtime.totalMemory())
         )
-//        println("$meter")
-//        meter.reset()
+        println("$meter")
+        meter.reset()
       }
       
     }

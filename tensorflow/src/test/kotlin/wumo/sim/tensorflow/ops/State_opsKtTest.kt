@@ -20,14 +20,12 @@ class State_opsKtTest : BaseTest() {
   fun variable() {
     val a = tf.variable(Shape(4, 4, 2), 1, name = "a")
     val b = tf.variable(f(1f, 2f, 3f, 4f), name = "b")
-    val c = tf.variable(Shape(2, 2), a("1", "2", "a", "b"), name = "c")
     val init = tf.globalVariablesInitializer()
     printGraph()
     tf.session {
       init.run()
       a.eval()
       b.eval()
-      c.eval()
     }
   }
   

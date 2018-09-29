@@ -1,6 +1,5 @@
 package wumo.sim.tensorflow.layers.utils
 
-import wumo.sim.tensorflow.contrib.layers
 import wumo.sim.tensorflow.contrib.layers.CNNDataFormat
 import wumo.sim.tensorflow.contrib.layers.CNNDataFormat.*
 import wumo.sim.tensorflow.layers.utils.DataFormat.channels_first

@@ -1,6 +1,5 @@
 package wumo.sim.algorithm.drl.common
 
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Pixmap
 import org.junit.Test
 import wumo.sim.graphics.Config

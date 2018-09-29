@@ -1,10 +1,7 @@
 package wumo.sim.opencv
 
 import org.bytedeco.javacpp.BytePointer
-import org.bytedeco.javacpp.opencv_core
 import org.bytedeco.javacpp.opencv_core.*
-import org.bytedeco.javacpp.opencv_highgui
-import org.bytedeco.javacpp.opencv_highgui.*
 import org.bytedeco.javacpp.opencv_imgcodecs.imread
 import org.bytedeco.javacpp.opencv_imgcodecs.imwrite
 import org.bytedeco.javacpp.opencv_imgproc.*
@@ -13,7 +10,6 @@ import org.junit.Test
 import wumo.sim.algorithm.drl.common.toMat
 import wumo.sim.algorithm.drl.common.toNDArray
 import wumo.sim.util.Shape
-import wumo.sim.util.i
 import wumo.sim.util.ndarray.NDArray
 
 class TestOpenCV {

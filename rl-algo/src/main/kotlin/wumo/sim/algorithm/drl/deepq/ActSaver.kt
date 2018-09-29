@@ -3,19 +3,18 @@ package wumo.sim.algorithm.drl.deepq
 import okio.BufferedSink
 import okio.BufferedSource
 import org.bytedeco.javacpp.BytePointer
-import org.bytedeco.javacpp.Pointer
-import org.bytedeco.javacpp.Pointer.*
-import org.bytedeco.javacpp.helper.tensorflow
-import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Tensor.*
+import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Tensor.allocateTensor
+import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Tensor.memcpy
 import org.bytedeco.javacpp.tensorflow.TF_TensorByteSize
 import org.bytedeco.javacpp.tensorflow.TF_TensorData
 import wumo.sim.algorithm.drl.common.FunctionTensor
 import wumo.sim.algorithm.drl.common.functionFromName
-import wumo.sim.tensorflow.*
 import wumo.sim.tensorflow.core.Graph
-import wumo.sim.tensorflow.ops.*
+import wumo.sim.tensorflow.ops.Op
+import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.ops.variables.Variable
 import wumo.sim.tensorflow.tensor.Tensor
+import wumo.sim.tensorflow.tf
 import wumo.sim.tensorflow.types.toDataType
 import wumo.sim.util.ndarray.*
 import wumo.sim.util.sink
@@ -106,7 +105,7 @@ fun loadVariable(): List<Pair<String, Output>> {
     val totalSize = source.decodeInt()
     for (i in 0 until totalSize) {
       val name = source.decodeString()
-      val dtype = source.readInt().toDataType()
+      val dtype = source.readInt().toDataType<Any>()
       val dims = source.decodeLongArray()
       val size = source.readLong()
       val buf = ByteBuffer.allocate(size.toInt())

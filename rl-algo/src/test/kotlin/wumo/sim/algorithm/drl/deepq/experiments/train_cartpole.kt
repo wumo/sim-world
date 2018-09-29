@@ -4,13 +4,10 @@ import org.junit.Test
 import wumo.sim.algorithm.drl.common.identity
 import wumo.sim.algorithm.drl.deepq.learn
 import wumo.sim.algorithm.drl.deepq.loadModel
-import wumo.sim.envs.classic_control.CartPole
-import wumo.sim.envs.classic_control.MountainCar
 import wumo.sim.envs.envs
 import wumo.sim.tensorflow.tf
 import wumo.sim.util.ndarray.NDArray
 import wumo.sim.util.ndarray.newaxis
-import wumo.sim.wrappers.TimeLimit
 
 class train_cartpole {
   @Test
