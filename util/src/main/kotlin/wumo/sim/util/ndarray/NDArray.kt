@@ -220,7 +220,7 @@ open class NDArray<T : Any>(val shape: Shape, val buf: BytePointerBuf<T>) : Iter
   /**number of elements*/
   val size: Int
   val numDims = shape.rank
-  val dtype = buf.dtype
+  val dtype = buf.ndType
   
   init {
     stride = IntArray(numDims)

@@ -165,8 +165,7 @@ class FireResetEnv(env: AtariEnvType)
 
 fun AtariObsType.toMat(): Mat {
   val channels = shape[2]
-  return Mat(shape[0], shape[1], CV_8UC(channels),
-             BytePointer(buf.asBytePointer()))
+  return Mat(shape[0], shape[1], CV_8UC(channels), buf.ptr)
 }
 
 fun Mat.toNDArray(): AtariObsType {

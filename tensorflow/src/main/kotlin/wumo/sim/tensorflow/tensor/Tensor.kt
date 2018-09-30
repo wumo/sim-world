@@ -18,8 +18,9 @@ import wumo.sim.util.ndarray.NDArray
 import wumo.sim.util.ndarray.BytePointerBuf
 import wumo.sim.util.scalarDimension
 
-abstract class Tensor<T : Any>
-protected constructor(_c_tensor: TF_Tensor, val dtype: DataType<T>) : Buf<T>(dtype.ndtype) {
+open class Tensor<T : Any>(_c_tensor: TF_Tensor,
+                           val dtype: DataType<T>)
+  : BytePointerBuf<T>(_c_tensor.dataPtr(), dtype.ndtype) {
   
   companion object {
     fun newTensor(dtype: Int, dims: LongArray, data: Pointer): TF_Tensor {
@@ -30,14 +31,22 @@ protected constructor(_c_tensor: TF_Tensor, val dtype: DataType<T>) : Buf<T>(dty
                           }, null)
     }
     
+    fun TF_Tensor.dataPtr(): BytePointer {
+      val data = TF_TensorData(this)
+      val size = TF_TensorByteSize(this)
+      val ptr = BytePointer(data)
+      ptr.capacity(size)
+      return ptr
+    }
+    
     fun <T : Any> toNDArray(c_tensor: TF_Tensor): NDArray<T> {
       val dtype = TF_TensorType(c_tensor).toDataType<T>()
-      val tensor = FixedSizeTensor(c_tensor, dtype)
+      val tensor = Tensor(c_tensor, dtype)
       return tensor.toNDArray()
     }
     
     operator fun <T : Any> invoke(_c_tensor: TF_Tensor, dtype: DataType<T>): Tensor<T> =
-        FixedSizeTensor(_c_tensor, dtype)
+        Tensor(_c_tensor, dtype)
     
     operator fun invoke(value: Float) = invoke(scalarDimension, FLOAT) { value }
     operator fun invoke(value: Double) = invoke(scalarDimension, DOUBLE) { value }
@@ -77,7 +86,7 @@ protected constructor(_c_tensor: TF_Tensor, val dtype: DataType<T>) : Buf<T>(dty
       val data = BytePointer((size * byteSize).toLong())
       for (i in 0 until size)
         dtype.put(data, i * byteSize, init(i))
-      return FixedSizeTensor(newTensor(dtype.cValue, shape.asLongArray()!!, data), dtype)
+      return Tensor(newTensor(dtype.cValue, shape.asLongArray()!!, data), dtype)
     }
     
     fun <T : Any> fromNDArray(ndarray: NDArray<T>): Tensor<T> {
@@ -86,7 +95,7 @@ protected constructor(_c_tensor: TF_Tensor, val dtype: DataType<T>) : Buf<T>(dty
         else -> NONE()
       }
       val dtype = ndarray.dtype.toDataType()
-      return FixedSizeTensor(newTensor(dtype.cValue, ndarray.shape.asLongArray()!!, src), dtype)
+      return Tensor(newTensor(dtype.cValue, ndarray.shape.asLongArray()!!, src), dtype)
     }
     
     fun <T : Any, R : Any> fromNDArray(ndarray: NDArray<T>, dtype: DataType<R>): Tensor<R> {
@@ -104,7 +113,7 @@ protected constructor(_c_tensor: TF_Tensor, val dtype: DataType<T>) : Buf<T>(dty
           dtype.put(data, i * byteSize, ndtype.cast(srcDtype.get(src, i)))
         data
       }
-      return FixedSizeTensor(newTensor(dtype.cValue, ndarray.shape.asLongArray()!!, dst), dtype)
+      return Tensor(newTensor(dtype.cValue, ndarray.shape.asLongArray()!!, dst), dtype)
     }
   }
   
@@ -136,7 +145,22 @@ protected constructor(_c_tensor: TF_Tensor, val dtype: DataType<T>) : Buf<T>(dty
     return ptr
   }
   
-  protected fun idx(idx: Int): Long = (dtype.byteSize * idx).toLong()
+  val byteBuffer = createBuffer()
+  
+  fun toNDArray(): NDArray<T> = NDArray(Shape(dims), BytePointerBuf(byteBuffer, ndType))
+  
+  override fun get(idx: Int): T =
+      dtype.get(byteBuffer, idx * dtype.byteSize)
+  
+  override fun set(idx: Int, data: T) {
+    dtype.put(byteBuffer, idx * dtype.byteSize, data)
+  }
+  
+  override fun copy(): BytePointerBuf<T> = Tensor(copy_tensor(), dtype)
+  
+  override fun slice(start: Int, end: Int): BytePointerBuf<T> {
+    TODO()
+  }
   
   protected fun copy_tensor(): TF_Tensor {
     val src = TF_TensorData(c_tensor)
@@ -147,45 +171,15 @@ protected constructor(_c_tensor: TF_Tensor, val dtype: DataType<T>) : Buf<T>(dty
     return t
   }
   
-  open fun toNDArray(): NDArray<T> = TODO()
-  
   override val size: Int
     get() = numElements.toInt()
-}
-
-class FixedSizeTensor<T : Any>(c_tensor: TF_Tensor, dtype: DataType<T>) : Tensor<T>(c_tensor, dtype) {
-  
-  val byteBuffer = createBuffer()
-  
-  override fun toNDArray(): NDArray<T> = NDArray(Shape(dims), BytePointerBuf(byteBuffer, ndtype))
-  
-  override fun get(idx: Int): T =
-      dtype.get(byteBuffer, idx * dtype.byteSize)
-  
-  override fun set(idx: Int, data: T) {
-    dtype.put(byteBuffer, idx * dtype.byteSize, data)
-  }
-  
-  override fun copy(): Buf<T> = FixedSizeTensor(copy_tensor(), dtype)
-  
-  override fun slice(start: Int, end: Int): Buf<T> {
-    TODO()
-  }
-  
-  override fun asBytePointer(): BytePointer {
-    TODO("not implemented")
-  }
 }
 
 class StringTensor(private var _c_tensor: TF_Tensor,
                    val array: Array<String>? = null)
   : Tensor<String>(_c_tensor, STRING) {
   
-  override fun asBytePointer(): BytePointer {
-    TODO("not implemented")
-  }
-  
-  override fun slice(start: Int, end: Int): Buf<String> {
+  override fun slice(start: Int, end: Int): BytePointerBuf<String> {
     TODO("not implemented")
   }
   
