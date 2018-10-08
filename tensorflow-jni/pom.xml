@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>sim</artifactId>
+        <groupId>wumo.sim</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>tensorflow-jni</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.tensorflow</groupId>
+            <artifactId>proto</artifactId>
+            <version>${tensorflow.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bytedeco.javacpp-presets</groupId>
+            <artifactId>tensorflow-platform</artifactId>
+            <version>${javacpp-resets-tensorflow.version}</version>
+        </dependency>
+        <!--<dependency>-->
+        <!--<groupId>org.bytedeco.javacpp-presets</groupId>-->
+        <!--<artifactId>tensorflow</artifactId>-->
+        <!--<version>${javacpp-resets-tensorflow.version}</version>-->
+        <!--<classifier>${platform}</classifier>-->
+        <!--</dependency>-->
+        <dependency>
+            <groupId>org.bytedeco.javacpp-presets</groupId>
+            <artifactId>tensorflow</artifactId>
+            <version>${javacpp-resets-tensorflow.version}</version>
+            <classifier>linux-x86_64-gpu</classifier>
+        </dependency>
+        <!--<dependency>-->
+        <!--<groupId>org.bytedeco.javacpp-presets</groupId>-->
+        <!--<artifactId>tensorflow</artifactId>-->
+        <!--<version>${javacpp-resets-tensorflow.version}</version>-->
+        <!--<classifier>${platform}-gpu</classifier>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+        <!--<groupId>org.bytedeco.javacpp-presets</groupId>-->
+        <!--<artifactId>tensorflow</artifactId>-->
+        <!--<version>${javacpp-resets-tensorflow.version}</version>-->
+        <!--<classifier>windows-x86_64-gpu</classifier>-->
+        <!--</dependency>-->
+        <dependency>
+            <groupId>org.bytedeco.javacpp-presets</groupId>
+            <artifactId>cuda</artifactId>
+            <version>${javacpp-resets-cuda.version}</version>
+            <classifier>linux-x86_64-redist</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <sourceDirectory>src/main/kotlin</sourceDirectory>
+        <testSourceDirectory>src/test/kotlin</testSourceDirectory>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

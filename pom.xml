@@ -17,6 +17,9 @@
         <module>tensorflow-ops-generator</module>
         <module>python-interpreter</module>
         <module>rl-algo</module>
+        <module>tensorflow-jni</module>
+        <module>atari-py</module>
+        <module>buf</module>
     </modules>
 
     <developers>
@@ -70,7 +73,7 @@
 
     <properties>
         <javacpp.version>1.4.3-SNAPSHOT</javacpp.version>
-        <tensorflow.version>1.11.0</tensorflow.version>
+        <tensorflow.version>1.10.0</tensorflow.version>
         <javacpp-resets-tensorflow.version>${tensorflow.version}-${javacpp.version}</javacpp-resets-tensorflow.version>
         <javacpp-resets-cuda.version>9.2-7.2-${javacpp.version}</javacpp-resets-cuda.version>
         <platform.class>${platform}</platform.class>
@@ -83,8 +86,34 @@
         <maven.assembly.plugin.version>3.0.0</maven.assembly.plugin.version>
         <maven.compiler.plugin.version>3.7.0</maven.compiler.plugin.version>
         <maven.source.plugin.version>3.0.1</maven.source.plugin.version>
-        <kotlin.version>1.3.0-rc-116</kotlin.version>
+        <kotlin.version>1.3.0-rc-146</kotlin.version>
         <kotlin.coroutines>0.24.0</kotlin.coroutines>
+
+        <platform.android-arm>android-arm</platform.android-arm>
+        <platform.android-arm64>android-arm64</platform.android-arm64>
+        <platform.android-x86>android-x86</platform.android-x86>
+        <platform.android-x86_64>android-x86_64</platform.android-x86_64>
+        <platform.ios-arm>ios-arm</platform.ios-arm>
+        <platform.ios-arm64>ios-arm64</platform.ios-arm64>
+        <platform.ios-x86>ios-x86</platform.ios-x86>
+        <platform.ios-x86_64>ios-x86_64</platform.ios-x86_64>
+        <platform.linux-armhf>linux-armhf</platform.linux-armhf>
+        <platform.linux-arm64>linux-arm64</platform.linux-arm64>
+        <platform.linux-ppc64le>linux-ppc64le</platform.linux-ppc64le>
+        <platform.linux-x86>linux-x86</platform.linux-x86>
+        <platform.linux-x86_64>linux-x86_64</platform.linux-x86_64>
+        <platform.macosx-x86_64>macosx-x86_64</platform.macosx-x86_64>
+        <platform.windows-x86>windows-x86</platform.windows-x86>
+        <platform.windows-x86_64>windows-x86_64</platform.windows-x86_64>
+
+        <javacpp.cppbuild.skip>true</javacpp.cppbuild.skip>
+        <javacpp.parser.skip>false</javacpp.parser.skip>
+        <javacpp.compiler.skip>false</javacpp.compiler.skip>
+        <javacpp.moduleId>${project.artifactId}</javacpp.moduleId>
+        <javacpp.platform>${platform.linux-x86_64}</javacpp.platform>
+        <javacpp.platform.root></javacpp.platform.root>
+        <javacpp.platform.compiler></javacpp.platform.compiler>
+        <javacpp.platform.extension></javacpp.platform.extension>
     </properties>
 
     <distributionManagement>
@@ -188,6 +217,65 @@
                         <target>${maven.compiler.target}</target>
                         <encoding>${project.build.sourceEncoding}</encoding>
                     </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.bytedeco</groupId>
+                    <artifactId>javacpp</artifactId>
+                    <version>${javacpp.version}</version>
+                    <configuration>
+                        <properties>${javacpp.platform}</properties>
+                        <propertyKeysAndValues>
+                            <property>
+                                <name>platform.root</name>
+                                <value>${javacpp.platform.root}</value>
+                            </property>
+                            <property>
+                                <name>platform.compiler</name>
+                                <value>${javacpp.platform.compiler}</value>
+                            </property>
+                            <property>
+                                <name>platform.extension</name>
+                                <value>${javacpp.platform.extension}</value>
+                            </property>
+                        </propertyKeysAndValues>
+                        <classPath>${project.build.outputDirectory}</classPath>
+                        <includePaths>
+                            <includePath>${basedir}/cppbuild/${javacpp.platform}${javacpp.platform.extension}/include/
+                            </includePath>
+                            <includePath>${basedir}/target/classes/</includePath>
+                        </includePaths>
+                        <linkPaths>
+                            <linkPath>${basedir}/cppbuild/${javacpp.platform}${javacpp.platform.extension}/lib/</linkPath>
+                        </linkPaths>
+                        <deleteJniFiles>false</deleteJniFiles>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>javacpp.parser</id>
+                            <phase>generate-sources</phase>
+                            <goals>
+                                <goal>build</goal>
+                            </goals>
+                            <configuration>
+                                <skip>${javacpp.parser.skip}</skip>
+                                <outputDirectory>${project.build.sourceDirectory}</outputDirectory>
+                                <classOrPackageName>wumo.sim.presets.*</classOrPackageName>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>javacpp.compiler</id>
+                            <phase>process-classes</phase>
+                            <goals>
+                                <goal>build</goal>
+                            </goals>
+                            <configuration>
+                                <skip>${javacpp.compiler.skip}</skip>
+                                <classOrPackageName>wumo.sim.*</classOrPackageName>
+                                <copyLibs>true</copyLibs>
+                                <copyResources>true</copyResources>
+                            </configuration>
+                        </execution>
+                    </executions>
                 </plugin>
             </plugins>
         </pluginManagement>

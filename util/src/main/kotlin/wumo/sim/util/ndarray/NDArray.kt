@@ -3,7 +3,7 @@
 package wumo.sim.util.ndarray
 
 import org.bytedeco.javacpp.Pointer.memcpy
-import wumo.buf.buf
+import wumo.sim.buf
 import wumo.sim.util.*
 import wumo.sim.util.ndarray.types.*
 

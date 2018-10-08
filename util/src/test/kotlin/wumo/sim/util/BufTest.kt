@@ -2,7 +2,7 @@ package wumo.sim.util
 
 import org.bytedeco.javacpp.BytePointer
 import org.junit.Test
-import wumo.buf.buf
+import wumo.sim.buf
 
 class BufTest {
   @Test

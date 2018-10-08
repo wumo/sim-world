@@ -2,7 +2,7 @@ package wumo.sim.envs.atari
 
 import com.badlogic.gdx.graphics.Pixmap
 import org.bytedeco.javacpp.BytePointer
-import wumo.atari.ale
+import wumo.sim.ale
 import wumo.sim.core.Env
 import wumo.sim.core.Space
 import wumo.sim.envs.atari.AtariEnv.Companion.ObsType.image

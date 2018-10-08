@@ -36,7 +36,6 @@
             <artifactId>proto</artifactId>
             <version>${tensorflow.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.bytedeco.javacpp-presets</groupId>
             <artifactId>tensorflow-platform</artifactId>
@@ -66,12 +65,12 @@
         <!--<version>${javacpp-resets-tensorflow.version}</version>-->
         <!--<classifier>windows-x86_64-gpu</classifier>-->
         <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.bytedeco.javacpp-presets</groupId>-->
-            <!--<artifactId>cuda</artifactId>-->
-            <!--<version>${javacpp-resets-cuda.version}</version>-->
-            <!--<classifier>linux-x86_64-redist</classifier>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.bytedeco.javacpp-presets</groupId>
+            <artifactId>cuda</artifactId>
+            <version>${javacpp-resets-cuda.version}</version>
+            <classifier>linux-x86_64-redist</classifier>
+        </dependency>
 
         <dependency>
             <groupId>wumo.sim</groupId>
