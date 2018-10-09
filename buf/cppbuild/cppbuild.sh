@@ -50,17 +50,17 @@ echo "Detected platform \"$PLATFORM\""
 
 mkdir -p $PLATFORM
 cd $PLATFORM
-mkdir -p include lib
-cd ..
+mkdir -p include lib cache
+cd cache
 
 case $PLATFORM in
     linux-x86)
-        CC="gcc -m32" CXX="g++ -m32" $CMAKE -DCMAKE_INSTALL_PREFIX=$PLATFORM
+        CC="gcc -m32" CXX="g++ -m32" $CMAKE ../.. -DCMAKE_INSTALL_PREFIX=..
         make -j $MAKEJ
         make install
         ;;
     linux-x86_64)
-        CC="gcc -m64" CXX="g++ -m64" $CMAKE -DCMAKE_INSTALL_PREFIX=$PLATFORM
+        CC="gcc -m64" CXX="g++ -m64" $CMAKE ../.. -DCMAKE_INSTALL_PREFIX=..
         make -j $MAKEJ
         make install
         ;;
@@ -70,12 +70,12 @@ case $PLATFORM in
         make install
         ;;
     windows-x86)
-        CC="gcc -m32" CXX="g++ -m32" $CMAKE -G "MSYS Makefiles" -DCMAKE_INSTALL_PREFIX=$PLATFORM -DCMAKE_SHARED_LINKER_FLAGS="-static-libgcc -static-libstdc++ -Wl,-Bstatic,--whole-archive -lwinpthread"
+        CC="gcc -m32" CXX="g++ -m32" $CMAKE ../.. -G "MSYS Makefiles" -DCMAKE_INSTALL_PREFIX=.. -DCMAKE_SHARED_LINKER_FLAGS="-static-libgcc -static-libstdc++ -Wl,-Bstatic,--whole-archive -lwinpthread"
         make -j $MAKEJ
         make install
         ;;
     windows-x86_64)
-        CC="gcc -m64" CXX="g++ -m64" $CMAKE -G "MSYS Makefiles" -DCMAKE_INSTALL_PREFIX=$PLATFORM -DCMAKE_SHARED_LINKER_FLAGS="-static-libgcc -static-libstdc++ -Wl,-Bstatic,--whole-archive -lwinpthread"
+        CC="gcc -m64" CXX="g++ -m64" $CMAKE ../.. -G "MSYS Makefiles" -DCMAKE_INSTALL_PREFIX=.. -DCMAKE_SHARED_LINKER_FLAGS="-static-libgcc -static-libstdc++ -Wl,-Bstatic,--whole-archive -lwinpthread"
         make -j $MAKEJ
         make install
         ;;
