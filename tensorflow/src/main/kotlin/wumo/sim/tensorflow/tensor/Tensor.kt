@@ -90,7 +90,7 @@ open class Tensor<T : Any>(_c_tensor: TF_Tensor,
     }
     
     fun <T : Any> fromNDArray(ndarray: NDArray<T>): Tensor<T> {
-      val src = when (val buf = ndarray.buf) {
+      val src = when (val buf = ndarray.raw) {
         is BytePointerBuf<T> -> BytePointer(buf.ptr)
         else -> NONE()
       }
@@ -100,7 +100,7 @@ open class Tensor<T : Any>(_c_tensor: TF_Tensor,
     
     fun <T : Any, R : Any> fromNDArray(ndarray: NDArray<T>, dtype: DataType<R>): Tensor<R> {
       val srcDtype = ndarray.dtype.toDataType()
-      val src = when (val buf = ndarray.buf) {
+      val src = when (val buf = ndarray.raw) {
         is BytePointerBuf<T> -> BytePointer(buf.ptr)
         else -> NONE()
       }

@@ -55,9 +55,10 @@ class TestAtariWrappers {
       env.reset()
       var done = false
       var reward = 0.0
-      
+      var i = 0
       while (!done) {
         val a = env.action_space.sample()
+        println(i++)
         val (ob, _reward, _done, _) = env.step(a)
         render(ob)
 //        println(i++)

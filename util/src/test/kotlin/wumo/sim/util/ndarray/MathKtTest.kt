@@ -16,4 +16,12 @@ class MathKtTest {
     println("a=\n$a")
     println("b=\n$b")
   }
+  
+  @Test
+  fun divAssign() {
+    val a = NDArray(Shape(2, 2), 1f)
+    println(a)
+    a /= 2f
+    println(a)
+  }
 }

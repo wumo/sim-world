@@ -18,12 +18,14 @@ class optimize_atari {
     var total_time = 0L
     val n = 10000
     for (i in 0 until n) {
-      val start = System.nanoTime()
-      val (obs, reward, done, _) = env.step(3)
-      val end = System.nanoTime()
-      total_time += end - start
-      if (done)
-        env.reset()
+      native {
+        val start = System.nanoTime()
+        val (obs, reward, done, _) = env.step(3)
+        val end = System.nanoTime()
+        total_time += end - start
+        if (done)
+          env.reset()
+      }
     }
     val s = total_time / 1e9
     println("total:$s avg:${s / n}")
@@ -55,12 +57,12 @@ class optimize_atari {
     var total_time = 0L
     val n = 10000
     for (i in 0 until n) {
-        val start = System.nanoTime()
-        val (obs, reward, done, _) = env.step(3)
-        val end = System.nanoTime()
-        total_time += end - start
-        if (done)
-          env.reset()
+      val start = System.nanoTime()
+      val (obs, reward, done, _) = env.step(3)
+      val end = System.nanoTime()
+      total_time += end - start
+      if (done)
+        env.reset()
     }
     val s = total_time / 1e9
     println("total:$s avg:${s / n}")

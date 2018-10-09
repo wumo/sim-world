@@ -9,8 +9,20 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>util</artifactId>
-
+    <properties>
+        <mkl.version>2019.0</mkl.version>
+    </properties>
     <dependencies>
+        <dependency>
+            <groupId>org.bytedeco.javacpp-presets</groupId>
+            <artifactId>mkl-dnn-platform</artifactId>
+            <version>0.16-1.4.3-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlinx</groupId>
+            <artifactId>kotlinx-coroutines-core</artifactId>
+            <version>0.30.2-eap13</version>
+        </dependency>
         <dependency>
             <groupId>wumo.sim</groupId>
             <artifactId>buf</artifactId>
@@ -57,7 +69,7 @@
             <scope>compile</scope>
         </dependency>
     </dependencies>
-
+    
     <build>
         <plugins>
             <plugin>

@@ -1,8 +1,8 @@
 package wumo.sim.util.ndarray.types
 
-import org.bytedeco.javacpp.BytePointer
-import wumo.sim.util.NONE
-import wumo.sim.util.SwitchOnClass
+import org.bytedeco.javacpp.*
+import wumo.sim.buf
+import wumo.sim.util.*
 import wumo.sim.util.ndarray.BytePointerBuf
 
 sealed class NDType<KotlinType : Any> {
@@ -14,6 +14,8 @@ sealed class NDType<KotlinType : Any> {
   abstract fun one(): KotlinType
   
   abstract fun <R : Any> cast(value: R): KotlinType
+  
+  abstract fun <R : Any> cast(src: BytePointerBuf<R>): BytePointerBuf<KotlinType>
   
   open fun makeBuf(size: Int, init: (Int) -> KotlinType): BytePointerBuf<KotlinType> =
       BytePointerBuf(size, this, init)
@@ -55,6 +57,12 @@ object NDBool : NDType<Boolean>() {
         else -> NONE()
       }
   
+  override fun <R : Any> cast(src: BytePointerBuf<R>): BytePointerBuf<Boolean> =
+      when (src.ndType) {
+        NDBool -> src
+        else -> NONE()
+      } as BytePointerBuf<Boolean>
+  
   override fun put(buf: BytePointer, offset: Long, data: Boolean) {
     buf.putBool(offset, data)
   }
@@ -71,12 +79,29 @@ object NDByte : NDType<Byte>() {
   
   override fun one(): Byte = 1
   
-  override fun <R : Any> cast(value: R): Byte =
-      when (value) {
-        is Number -> value.toByte()
-        is Boolean -> if (value) 1 else 0
-        else -> NONE()
-      }
+  override fun <R : Any> cast(value: R): Byte {
+    when (value) {
+      is Number -> value.toByte()
+      is Boolean -> if (value) 1 else 0
+      else -> NONE()
+    }
+    TODO()
+  }
+  
+  override fun <R : Any> cast(src: BytePointerBuf<R>): BytePointerBuf<Byte> {
+    val size = src.size.toLong()
+    val dst = BytePointer(size)
+    when (src.ndType) {
+      NDByte -> buf.castchar2char(src.ptr, dst, size)
+      NDShort -> buf.castshort2char(src.ptr.toShortPointer(), dst, size)
+      NDInt -> buf.castint2char(src.ptr.toIntPointer(), dst, size)
+      NDLong -> buf.castlonglong2char(src.ptr.toLongPointer(), dst, size)
+      NDFloat -> buf.castfloat2char(src.ptr.toFloatPointer(), dst, size)
+      NDDouble -> buf.castdouble2char(src.ptr.toDoublePointer(), dst, size)
+      else -> NONE()
+    }
+    return BytePointerBuf(dst, NDByte)
+  }
   
   override fun put(buf: BytePointer, offset: Long, data: Byte) {
     buf.put(offset, data)
@@ -98,6 +123,22 @@ object NDShort : NDType<Short>() {
     is Number -> value.toShort()
     is Boolean -> if (value) 1 else 0
     else -> NONE()
+  }
+  
+  override fun <R : Any> cast(src: BytePointerBuf<R>): BytePointerBuf<Short> {
+    val size = src.size.toLong()
+    val _dst = BytePointer(size * NDFloat.byteSize)
+    val dst = _dst.toShortPointer()
+    when (src.ndType) {
+      NDByte -> buf.castchar2short(src.ptr, dst, size)
+      NDShort -> buf.castshort2short(src.ptr.toShortPointer(), dst, size)
+      NDInt -> buf.castint2short(src.ptr.toIntPointer(), dst, size)
+      NDLong -> buf.castlonglong2short(src.ptr.toLongPointer(), dst, size)
+      NDFloat -> buf.castfloat2short(src.ptr.toFloatPointer(), dst, size)
+      NDDouble -> buf.castdouble2short(src.ptr.toDoublePointer(), dst, size)
+      else -> NONE()
+    }
+    return BytePointerBuf(dst.toBytePointer(), NDShort)
   }
   
   override fun put(buf: BytePointer, offset: Long, data: Short) {
@@ -122,6 +163,22 @@ object NDInt : NDType<Int>() {
     else -> NONE()
   }
   
+  override fun <R : Any> cast(src: BytePointerBuf<R>): BytePointerBuf<Int> {
+    val size = src.size.toLong()
+    val _dst = BytePointer(size * NDFloat.byteSize)
+    val dst = _dst.toIntPointer()
+    when (src.ndType) {
+      NDByte -> buf.castchar2int(src.ptr, dst, size)
+      NDShort -> buf.castshort2int(src.ptr.toShortPointer(), dst, size)
+      NDInt -> buf.castint2int(src.ptr.toIntPointer(), dst, size)
+      NDLong -> buf.castlonglong2int(src.ptr.toLongPointer(), dst, size)
+      NDFloat -> buf.castfloat2int(src.ptr.toFloatPointer(), dst, size)
+      NDDouble -> buf.castdouble2int(src.ptr.toDoublePointer(), dst, size)
+      else -> NONE()
+    }
+    return BytePointerBuf(dst.toBytePointer(), NDInt)
+  }
+  
   override fun put(buf: BytePointer, offset: Long, data: Int) {
     buf.putInt(offset, data)
   }
@@ -142,6 +199,22 @@ object NDLong : NDType<Long>() {
     is Number -> value.toLong()
     is Boolean -> if (value) 1 else 0
     else -> NONE()
+  }
+  
+  override fun <R : Any> cast(src: BytePointerBuf<R>): BytePointerBuf<Long> {
+    val size = src.size.toLong()
+    val _dst = BytePointer(size * NDFloat.byteSize)
+    val dst = _dst.toLongPointer()
+    when (src.ndType) {
+      NDByte -> buf.castchar2longlong(src.ptr, dst, size)
+      NDShort -> buf.castshort2longlong(src.ptr.toShortPointer(), dst, size)
+      NDInt -> buf.castint2longlong(src.ptr.toIntPointer(), dst, size)
+      NDLong -> buf.castlonglong2longlong(src.ptr.toLongPointer(), dst, size)
+      NDFloat -> buf.castfloat2longlong(src.ptr.toFloatPointer(), dst, size)
+      NDDouble -> buf.castdouble2longlong(src.ptr.toDoublePointer(), dst, size)
+      else -> NONE()
+    }
+    return BytePointerBuf(dst.toBytePointer(), NDLong)
   }
   
   override fun put(buf: BytePointer, offset: Long, data: Long) {
@@ -166,6 +239,23 @@ object NDFloat : NDType<Float>() {
     else -> NONE()
   }
   
+  override fun <R : Any> cast(src: BytePointerBuf<R>): BytePointerBuf<Float> {
+    val size = src.size.toLong()
+    val _dst = BytePointer(size * byteSize)
+    val dst = _dst.toFloatPointer()
+    when (src.ndType) {
+      NDByte -> buf.castchar2float(src.ptr, dst, size)
+      NDShort -> buf.castshort2float(src.ptr.toShortPointer(), dst, size)
+      NDInt -> buf.castint2float(src.ptr.toIntPointer(), dst, size)
+      NDLong -> buf.castlonglong2float(src.ptr.toLongPointer(), dst, size)
+      NDFloat -> buf.castfloat2float(src.ptr.toFloatPointer(), dst, size)
+      NDDouble -> buf.castdouble2float(src.ptr.toDoublePointer(), dst, size)
+      else -> NONE()
+    }
+    
+    return BytePointerBuf(_dst, NDFloat)
+  }
+  
   override fun put(buf: BytePointer, offset: Long, data: Float) {
     buf.putFloat(offset, data)
   }
@@ -188,6 +278,22 @@ object NDDouble : NDType<Double>() {
     else -> NONE()
   }
   
+  override fun <R : Any> cast(src: BytePointerBuf<R>): BytePointerBuf<Double> {
+    val size = src.size.toLong()
+    val _dst = BytePointer(size * NDFloat.byteSize)
+    val dst = _dst.toDoublePointer()
+    when (src.ndType) {
+      NDByte -> buf.castchar2double(src.ptr, dst, size)
+      NDShort -> buf.castshort2double(src.ptr.toShortPointer(), dst, size)
+      NDInt -> buf.castint2double(src.ptr.toIntPointer(), dst, size)
+      NDLong -> buf.castlonglong2double(src.ptr.toLongPointer(), dst, size)
+      NDFloat -> buf.castfloat2double(src.ptr.toFloatPointer(), dst, size)
+      NDDouble -> buf.castdouble2double(src.ptr.toDoublePointer(), dst, size)
+      else -> NONE()
+    }
+    return BytePointerBuf(dst.toBytePointer(), NDDouble)
+  }
+  
   override fun put(buf: BytePointer, offset: Long, data: Double) {
     buf.putDouble(offset, data)
   }
@@ -205,6 +311,10 @@ object NDString : NDType<String>() {
   override fun one(): String = NONE()
   
   override fun <R : Any> cast(value: R): String = value.toString()
+  
+  override fun <R : Any> cast(src: BytePointerBuf<R>): BytePointerBuf<String> {
+    TODO("not implemented")
+  }
   
   override fun makeBuf(size: Int, init: (Int) -> String): BytePointerBuf<String> =
       TODO()

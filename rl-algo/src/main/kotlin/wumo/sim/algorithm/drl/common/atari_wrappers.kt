@@ -1,9 +1,11 @@
 package wumo.sim.algorithm.drl.common
 
+import org.bytedeco.javacpp.BytePointer
 import org.bytedeco.javacpp.opencv_core.*
 import org.bytedeco.javacpp.opencv_imgproc.*
 import wumo.sim.ale.PLAYER_A_FIRE
 import wumo.sim.ale.PLAYER_A_NOOP
+import wumo.sim.buf
 import wumo.sim.core.Env
 import wumo.sim.core.ObservationWrapper
 import wumo.sim.core.RewardWrapper
@@ -14,10 +16,7 @@ import wumo.sim.envs.atari.AtariObsType
 import wumo.sim.envs.envs
 import wumo.sim.spaces.Box
 import wumo.sim.util.*
-import wumo.sim.util.ndarray.BytePointerBuf
-import wumo.sim.util.ndarray.NDArray
-import wumo.sim.util.ndarray.cast
-import wumo.sim.util.ndarray.divAssign
+import wumo.sim.util.ndarray.*
 import wumo.sim.util.ndarray.types.NDByte
 import wumo.sim.util.ndarray.types.NDFloat
 import java.util.*
@@ -113,9 +112,10 @@ class MaxAndSkipEnv(env: AtariEnvType, val skip: Int = 4)
       }
       val a = obs_buffer[0]
       val b = obs_buffer[1]
-      val max_frame = NDArray(a.shape, NDByte) {
-        maxOf(a.rawGet(it), b.rawGet(it))
-      }
+      val size = a.shape.numElements().toLong()
+      val c = BytePointer(size)
+      buf.maxOf(a.raw.ptr, b.raw.ptr, c, size)
+      val max_frame = NDArray(a.shape, BytePointerBuf(c, NDByte))
       max_frame.ref()
       return t4(max_frame, total_reward, done, info)
     }
@@ -175,14 +175,16 @@ class FireResetEnv(env: AtariEnvType)
 
 fun AtariObsType.toMat(): Mat {
   val channels = shape[2]
-  return Mat(shape[0], shape[1], CV_8UC(channels), buf.ptr)
+  return Mat(shape[0], shape[1], CV_8UC(channels), raw.ptr)
 }
 
 fun Mat.toNDArray(): AtariObsType {
   require(depth() == CV_8U) { "Only supported CV_8U" }
   val channels = channels()
   val data = data()
-  return NDArray(Shape(rows(), cols(), channels),
+  val shape = Shape(rows(), cols(), channels)
+  data.capacity(shape.numElements().toLong())
+  return NDArray(shape,
                  BytePointerBuf(data, NDByte))
 }
 
@@ -196,20 +198,16 @@ class WarpFrame(env: AtariEnvType) :
       Box(0.toByte(), 255.toByte(), Shape(height, width, 1), NDByte)
   
   override fun observation(frame: AtariObsType): AtariObsType {
-//    native {
-//      val src = frame.toMat()
-//      val dst = Mat()
-//      cvtColor(src, dst, COLOR_RGB2GRAY)
-//      val dst2 = Mat()
-//      resize(dst, dst2, Size(width, height), 0.0, 0.0, INTER_AREA)
-//      frame.unref()
-//      dst2.ref()
-//      return dst2.toNDArray()
-//    }
     native {
+      val src = frame.toMat()
+      val dst = Mat()
+      cvtColor(src, dst, COLOR_RGB2GRAY)
+      val dst2 = Mat()
+      resize(dst, dst2, Size(width, height), 0.0, 0.0, INTER_AREA)
       frame.unref()
+      dst2.ref()
+      return dst2.toNDArray()
     }
-    return NDArray(observation_space.shape, 0.toByte())
   }
 }
 
@@ -319,35 +317,14 @@ class FrameStack<WrappedEnv>(
   private fun get_ob(): NDArray<Float> {
     require(frames.size == k)
     val frames = frames.toList()
-//    val concatBuf = object : Buf<Float>() {
-//      override fun get(offset: Int): Float {
-//        val frameId = (offset % base) / rgbDim
-//        var i = offset - frameId * rgbDim
-//        i = i / k + i % k
-//        return frames[frameId].rawGet(i)
-//      }
-//
-//      override fun set(offset: Int, data: Float) {
-//        TODO("not implemented")
-//      }
-//
-//      override fun copy(): Buf<Float> {
-//        TODO("not implemented")
-//      }
-//
-//      override fun slice(start: Int, end: Int): Buf<Float> {
-//        TODO("not implemented")
-//      }
-//
-//      override val size: Int = observation_space.n
+    return concatenate(frames, axis = 2)
+//    return concat(frames, axis = 2)
+//    return NDArray(observation_space.shape, NDFloat) {
+//      val frameId = (it % base) / rgbDim
+//      var i = it - frameId * rgbDim
+//      i = i / k + i % k
+//      frames[frameId].rawGet(i)
 //    }
-    
-    return NDArray(observation_space.shape, NDFloat) {
-      val frameId = (it % base) / rgbDim
-      var i = it - frameId * rgbDim
-      i = i / k + i % k
-      frames[frameId].rawGet(i)
-    }
 //    return NDArray(observation_space.shape, concatBuf, NDFloat)
 //    return concatenate(frames, axis = 2)
   }

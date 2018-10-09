@@ -15,13 +15,6 @@
         <opencv.platform>linux-x86_64</opencv.platform>
     </properties>
     <dependencies>
-        <!-- https://mvnrepository.com/artifact/org.nd4j/nd4j-api -->
-        <dependency>
-            <groupId>org.nd4j</groupId>
-            <artifactId>nd4j-api</artifactId>
-            <version>1.0.0-beta2</version>
-        </dependency>
-
         <dependency>
             <groupId>org.bytedeco.javacpp-presets</groupId>
             <artifactId>opencv-platform</artifactId>

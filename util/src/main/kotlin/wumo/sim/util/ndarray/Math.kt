@@ -1,20 +1,18 @@
 package wumo.sim.util.ndarray
 
+import org.bytedeco.javacpp.mklml.cblas_sscal
 import wumo.sim.util.*
 import wumo.sim.util.ndarray.NDArray.Companion.toNDArray
 import wumo.sim.util.ndarray.types.NDType
 
 operator fun NDArray<Float>.unaryMinus(): NDArray<Float> {
   val c = copy()
-  for (i in 0 until c.size)
-    c[i] = -c[i]
+  cblas_sscal(size, -1f, c.native.toFloatPointer(), 1)
   return c
 }
 
 operator fun NDArray<Float>.timesAssign(scale: Float) {
-  flatten().forEach { (i, v) ->
-    rawSet(i, v * scale)
-  }
+  cblas_sscal(size, scale, native.toFloatPointer(), 1)
 }
 
 operator fun <T : Any> NDArray<T>.plus(b: NDArray<T>): NDArray<T> {
@@ -26,8 +24,7 @@ operator fun <T : Any> NDArray<T>.plus(b: Number): NDArray<T> {
 }
 
 operator fun NDArray<Float>.divAssign(b: Float) {
-  for (i in 0 until buf.size)
-    buf[i] /= b
+  cblas_sscal(size, 1 / b, native.toFloatPointer(), 1)
 }
 
 fun <T : Any> abs(a: NDArray<T>): NDArray<T> {
@@ -115,5 +112,5 @@ fun <T> NDArray<T>.min(axis: Int = 0): NDArray<T>
 
 fun <R : Number, T : Number> NDArray<T>.cast(dst: NDType<R>): NDArray<R> =
     if (dtype == dst) this as NDArray<R>
-    else
-      NDArray(shape, dst.makeBuf(shape.numElements()) { dst.cast(rawGet(it)) })
+    else NDArray(shape, dst.cast(raw))
+//    else NDArray(shape, dst.makeBuf(shape.numElements()) { dst.cast(rawGet(it)) })

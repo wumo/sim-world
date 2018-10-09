@@ -2,10 +2,7 @@
 
 package wumo.sim.util.ndarray
 
-import org.bytedeco.javacpp.BytePointer
-import org.bytedeco.javacpp.Pointer
 import org.bytedeco.javacpp.Pointer.memcpy
-import org.bytedeco.javacpp.PointerScope
 import wumo.sim.buf
 import wumo.sim.util.*
 import wumo.sim.util.ndarray.types.*
@@ -34,7 +31,7 @@ val castSwitch = SwitchOnClass1<Number, Any>().apply {
 fun <R : Number, T : Number> R.cast(dataType: Class<T>): T =
     castSwitch(dataType, this as Number) as T
 
-open class NDArray<T : Any>(val shape: Shape, val buf: BytePointerBuf<T>) : Iterable<T> {
+open class NDArray<T : Any>(val shape: Shape, val raw: BytePointerBuf<T>) : Iterable<T> {
   
   companion object {
     init {
@@ -50,7 +47,7 @@ open class NDArray<T : Any>(val shape: Shape, val buf: BytePointerBuf<T>) : Iter
     }
     
     private val toBufSwitch = SwitchType<Pair<BytePointerBuf<*>, Shape>>().apply {
-      case<NDArray<*>> { it.buf to it.shape }
+      case<NDArray<*>> { it.raw to it.shape }
       case<Float> { v -> BytePointerBuf(1, NDFloat) { v } to scalarDimension }
       case<Double> { v -> BytePointerBuf(1, NDDouble) { v } to scalarDimension }
       case<Boolean> { v -> BytePointerBuf(1, NDBool) { v } to scalarDimension }
@@ -137,7 +134,7 @@ open class NDArray<T : Any>(val shape: Shape, val buf: BytePointerBuf<T>) : Iter
       val ptr = buf.ptr
       var i = 0L
       for (ndarray in c) {
-        val src = ndarray.buf.ptr
+        val src = ndarray.raw.ptr
         ptr.position(i)
         memcpy(ptr, src, src.capacity())
         i += src.capacity()
@@ -218,12 +215,12 @@ open class NDArray<T : Any>(val shape: Shape, val buf: BytePointerBuf<T>) : Iter
     }
   }
   
-  private val stride: IntArray
+  val stride: IntArray
   private val dims: IntArray
   /**number of elements*/
   val size: Int
   val numDims = shape.rank
-  val dtype = buf.ndType
+  val dtype = raw.ndType
   
   init {
     stride = IntArray(numDims)
@@ -233,7 +230,7 @@ open class NDArray<T : Any>(val shape: Shape, val buf: BytePointerBuf<T>) : Iter
       for (a in stride.lastIndex - 1 downTo 0)
         stride[a] = dims[a + 1] * stride[a + 1]
     }
-    size = buf.size
+    size = raw.size
   }
   
   val numElements = size
@@ -243,7 +240,7 @@ open class NDArray<T : Any>(val shape: Shape, val buf: BytePointerBuf<T>) : Iter
   val scalar: T
     get() {
       require(isScalar)
-      return buf[0]
+      return raw[0]
     }
   
   private fun idxToOffset(vararg idx: Int): Int {
@@ -264,35 +261,35 @@ open class NDArray<T : Any>(val shape: Shape, val buf: BytePointerBuf<T>) : Iter
     return op(idxToOffset(*idx))
   }
   
-  operator fun get(vararg idx: Int) = get_set(*idx) { buf[it] }
+  operator fun get(vararg idx: Int) = get_set(*idx) { raw[it] }
   
   operator fun set(vararg idx: Int, data: T) = get_set(*idx) {
-    buf[it] = data
+    raw[it] = data
   }
   
   operator fun set(vararg idx: Int, data: NDArray<T>) {
     val offset = idxToOffset(*idx)
     for ((i, v) in data.flatten())
-      buf[offset + i] = v
+      raw[offset + i] = v
   }
   
   operator fun invoke(vararg idx: Int): NDArray<T> {
     val offset = idxToOffset(*idx)
     val size = stride[idx.size - 1]
-    return NDArray(shape.slice(idx.size), buf.slice(offset, offset + size))
+    return NDArray(shape.slice(idx.size), raw.slice(offset, offset + size))
   }
   
   fun rawSet(idx: Int, data: T) {
-    buf[idx] = data
+    raw[idx] = data
   }
   
-  fun rawGet(idx: Int): T = buf[idx]
+  fun rawGet(idx: Int): T = raw[idx]
   
   override fun iterator() = object : Iterator<T> {
     var a = 0
     override fun hasNext() = a < size
     
-    override fun next() = buf[a++]
+    override fun next() = raw[a++]
   }
   
   fun flatten() = object : Iterator<t2<Int, T>> {
@@ -301,7 +298,7 @@ open class NDArray<T : Any>(val shape: Shape, val buf: BytePointerBuf<T>) : Iter
     override fun hasNext() = a < size
     
     override fun next(): t2<Int, T> {
-      val value = buf[a]
+      val value = raw[a]
       if (this::element.isInitialized) {
         element._1 = a
         element._2 = value
@@ -325,7 +322,7 @@ open class NDArray<T : Any>(val shape: Shape, val buf: BytePointerBuf<T>) : Iter
           break
         idx[_idx] = 0
       }
-      val value = buf[a++]
+      val value = raw[a++]
       if (this::element.isInitialized)
         element._2 = value
       else
@@ -359,7 +356,7 @@ open class NDArray<T : Any>(val shape: Shape, val buf: BytePointerBuf<T>) : Iter
   private fun printVector(offset: Int, size: Int, sb: StringBuilder) {
     sb.append('[')
     for (j in 0 until size) {
-      sb.append(buf[offset + j])
+      sb.append(raw[offset + j])
       if (j != size - 1)
         sb.append(',')
     }
@@ -386,20 +383,20 @@ open class NDArray<T : Any>(val shape: Shape, val buf: BytePointerBuf<T>) : Iter
     return sb.toString()
   }
   
-  fun copy() = NDArray(shape, buf.copy())
+  fun copy() = NDArray(shape, raw.copy())
   fun setFrom(other: NDArray<T>) {
-    memcpy(buf.ptr, other.buf.ptr, buf.ptr.capacity())
+    memcpy(raw.ptr, other.raw.ptr, raw.ptr.capacity())
   }
   
   fun reshape(newShape: Shape): NDArray<T> =
-      NDArray(newShape, buf.copy())
+      NDArray(newShape, raw.copy())
   
-  operator fun component1() = buf[0]
-  operator fun component2() = buf[1]
-  operator fun component3() = buf[2]
-  operator fun component4() = buf[3]
-  operator fun component5() = buf[4]
-  operator fun component6() = buf[5]
+  operator fun component1() = raw[0]
+  operator fun component2() = raw[1]
+  operator fun component3() = raw[2]
+  operator fun component4() = raw[3]
+  operator fun component5() = raw[4]
+  operator fun component6() = raw[5]
   
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
@@ -408,13 +405,13 @@ open class NDArray<T : Any>(val shape: Shape, val buf: BytePointerBuf<T>) : Iter
     other as NDArray<*>
     
     if (shape != other.shape) return false
-    if (buf != other.buf) return false
+    if (raw != other.raw) return false
     return true
   }
   
   override fun hashCode(): Int {
     var result = shape.hashCode()
-    result = 31 * result + buf.hashCode()
+    result = 31 * result + raw.hashCode()
     return result
   }
 }
