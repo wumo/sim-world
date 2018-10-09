@@ -2,7 +2,10 @@
 
 package wumo.sim.util.ndarray
 
+import org.bytedeco.javacpp.BytePointer
+import org.bytedeco.javacpp.Pointer
 import org.bytedeco.javacpp.Pointer.memcpy
+import org.bytedeco.javacpp.PointerScope
 import wumo.sim.buf
 import wumo.sim.util.*
 import wumo.sim.util.ndarray.types.*

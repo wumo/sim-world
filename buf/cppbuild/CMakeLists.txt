@@ -1,0 +1,13 @@
+cmake_minimum_required(VERSION 3.0)
+project(buf)
+
+set(CMAKE_CXX_STANDARD 14)
+
+set(SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
+SET(LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib" CACHE STRING "Library directory name")
+SET(INCLUDE_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE STRING "Headers directory name")
+
+INSTALL(FILES ${SOURCE_DIR}/library.h DESTINATION ${INCLUDE_INSTALL_DIR}/${PROJECT_NAME})
+
+add_library(buf SHARED ${SOURCE_DIR}/library.cpp ${SOURCE_DIR}/library.h)
+install(TARGETS buf DESTINATION ${LIB_INSTALL_DIR})

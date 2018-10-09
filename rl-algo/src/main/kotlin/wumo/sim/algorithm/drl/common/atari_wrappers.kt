@@ -13,14 +13,13 @@ import wumo.sim.envs.atari.AtariEnvType
 import wumo.sim.envs.atari.AtariObsType
 import wumo.sim.envs.envs
 import wumo.sim.spaces.Box
-import wumo.sim.tensorflow.util.native
-import wumo.sim.util.Shape
+import wumo.sim.util.*
+import wumo.sim.util.ndarray.BytePointerBuf
 import wumo.sim.util.ndarray.NDArray
 import wumo.sim.util.ndarray.cast
 import wumo.sim.util.ndarray.divAssign
 import wumo.sim.util.ndarray.types.NDByte
 import wumo.sim.util.ndarray.types.NDFloat
-import wumo.sim.util.t4
 import java.util.*
 import kotlin.math.sign
 import kotlin.random.Random
@@ -69,17 +68,20 @@ class NoopResetEnv(env: AtariEnvType,
   }
   
   override fun reset(): AtariObsType {
-    super.reset()
-    val noops = override_num_noops ?: rand.nextInt(1, noop_max + 1)
-    require(noops > 0)
-    lateinit var obs: AtariObsType
-    repeat(noops) {
-      val (_obs, _, done) = env.step(noop_action)
-      obs = _obs
-      if (done)
-        obs = env.reset()
+    native {
+      super.reset()
+      val noops = override_num_noops ?: rand.nextInt(1, noop_max + 1)
+      require(noops > 0)
+      lateinit var obs: AtariObsType
+      repeat(noops) {
+        val (_obs, _, done) = env.step(noop_action)
+        obs = _obs
+        if (done)
+          obs = env.reset()
+      }
+      obs.ref()
+      return obs
     }
-    return obs
   }
 }
 
@@ -90,26 +92,33 @@ class MaxAndSkipEnv(env: AtariEnvType, val skip: Int = 4)
                                  NDArray(env.observation_space.shape, 0.toByte()))
   
   override fun step(a: Int): t4<AtariObsType, Float, Boolean, Map<String, Any>> {
-    var total_reward = 0f
-    var done = false
-    lateinit var info: Map<String, Any>
-    for (i in 0 until skip) {
-      val (obs, reward, _done, _info) = env.step(a)
-      done = _done
-      info = _info
-      if (i == skip - 2) obs_buffer[0] = obs
-      if (i == skip - 1) obs_buffer[1] = obs
-      total_reward += reward
-      if (done) break
+    native {
+      var total_reward = 0f
+      var done = false
+      lateinit var info: Map<String, Any>
+      for (i in 0 until skip) {
+        val (obs, reward, _done, _info) = env.step(a)
+        done = _done
+        info = _info
+        if (i == skip - 2) {
+          obs_buffer[0].unref()
+          obs_buffer[0] = obs.ref()
+        }
+        if (i == skip - 1) {
+          obs_buffer[1].unref()
+          obs_buffer[1] = obs.ref()
+        }
+        total_reward += reward
+        if (done) break
+      }
+      val a = obs_buffer[0]
+      val b = obs_buffer[1]
+      val max_frame = NDArray(a.shape, NDByte) {
+        maxOf(a.rawGet(it), b.rawGet(it))
+      }
+      max_frame.ref()
+      return t4(max_frame, total_reward, done, info)
     }
-    val a = obs_buffer[0]
-    val b = obs_buffer[1]
-    val c = ByteArray(a.size) {
-      maxOf(a.rawGet(it), b.rawGet(it))
-    }
-    val max_frame = NDArray(a.shape, c)
-//    val max_frame = obs_buffer.max(axis = 0)
-    return t4(max_frame, total_reward, done, info)
   }
 }
 
@@ -150,15 +159,17 @@ class FireResetEnv(env: AtariEnvType)
   }
   
   override fun reset(): NDArray<Byte> {
-    env.reset()
-    val (_, _, done, _) = env.step(1)
-    if (done)
+    native {
       env.reset()
-    val (obs, _, _done, _) = env.step(2)
-    if (_done)
-      env.reset()
-    
-    return obs
+      val (_, _, done, _) = env.step(1)
+      if (done)
+        env.reset()
+      val (obs, _, _done, _) = env.step(2)
+      if (_done)
+        env.reset()
+      obs.ref()
+      return obs
+    }
   }
 }
 
@@ -171,13 +182,8 @@ fun Mat.toNDArray(): AtariObsType {
   require(depth() == CV_8U) { "Only supported CV_8U" }
   val channels = channels()
   val data = data()
-  data.limit((rows() * cols() * channels).toLong())
-//  return NDArray(Shape(rows(), cols(), channels),
-//                 BytePointerBuf(data))
   return NDArray(Shape(rows(), cols(), channels),
-                 ByteArray(rows() * cols() * channels) {
-                   data[it.toLong()]
-                 })
+                 BytePointerBuf(data, NDByte))
 }
 
 class WarpFrame(env: AtariEnvType) :
@@ -190,14 +196,20 @@ class WarpFrame(env: AtariEnvType) :
       Box(0.toByte(), 255.toByte(), Shape(height, width, 1), NDByte)
   
   override fun observation(frame: AtariObsType): AtariObsType {
+//    native {
+//      val src = frame.toMat()
+//      val dst = Mat()
+//      cvtColor(src, dst, COLOR_RGB2GRAY)
+//      val dst2 = Mat()
+//      resize(dst, dst2, Size(width, height), 0.0, 0.0, INTER_AREA)
+//      frame.unref()
+//      dst2.ref()
+//      return dst2.toNDArray()
+//    }
     native {
-      val src = frame.toMat()
-      val dst = Mat()
-      cvtColor(src, dst, COLOR_RGB2GRAY)
-      val dst2 = Mat()
-      resize(dst, dst2, Size(width, height), 0.0, 0.0, INTER_AREA)
-      return dst2.toNDArray()
+      frame.unref()
     }
+    return NDArray(observation_space.shape, 0.toByte())
   }
 }
 
@@ -212,15 +224,20 @@ class FloatFrame<WrappedEnv>(val env: AtariEnvType)
   }
   
   override fun step(a: Int): t4<NDArray<Float>, Float, Boolean, Map<String, Any>> {
-    val (_obs, reward, done, info) = env.step(a)
-    
-    val obs = _obs.cast(NDFloat)
-    return t4(obs, reward, done, info)
+    native {
+      val (_obs, reward, done, info) = env.step(a)
+      
+      val obs = _obs.cast(NDFloat)
+      obs.ref()
+      return t4(obs, reward, done, info)
+    }
   }
   
   override fun reset(): NDArray<Float> {
-    val obs = env.reset()
-    return obs.cast(NDFloat)
+    native {
+      val obs = env.reset()
+      return obs.cast(NDFloat).ref()
+    }
   }
   
   override fun render() = env.render()
@@ -252,16 +269,18 @@ class ClipRewardEnv<WrappedEnv>(
   }
 }
 
-class FixedSizeDeque<E>(val capacity: Int) : ArrayDeque<E>(capacity + 1) {
+class FixedSizeDeque<E>(val capacity: Int,
+                        inline val deallocator: (E) -> Unit) : ArrayDeque<E>(capacity + 1) {
+  
   override fun addFirst(e: E) {
     if (size == capacity)
-      removeLast()
+      deallocator(removeLast())
     super.addFirst(e)
   }
   
   override fun addLast(e: E) {
     if (size == capacity)
-      removeFirst()
+      deallocator(removeFirst())
     super.addLast(e)
   }
 }
@@ -270,7 +289,7 @@ class FrameStack<WrappedEnv>(
     env: Env<NDArray<Float>, Float, Int, Int, WrappedEnv>, val k: Int)
   : Wrapper<NDArray<Float>, Float, Int, Int, WrappedEnv>(env) {
   
-  val frames = FixedSizeDeque<NDArray<Float>>(k)
+  val frames = FixedSizeDeque<NDArray<Float>>(k) { it.unref() }
   override val observation_space = run {
     val (height, width, rgb) = env.observation_space.shape
     Box(0f, 255f, Shape(height, width, rgb * k), NDFloat)
@@ -279,18 +298,22 @@ class FrameStack<WrappedEnv>(
   val base = observation_space.shape[2]
   
   override fun reset(): NDArray<Float> {
-    val ob = env.reset()
-    repeat(k) {
-      frames += ob
+    native {
+      val ob = env.reset()
+      repeat(k) {
+        frames += ob.copy().ref()
+      }
+      return get_ob().ref()
     }
-    return get_ob()
   }
   
   override fun step(a: Int): t4<NDArray<Float>, Float, Boolean, Map<String, Any>> {
-    val result = env.step(a)
-    frames += result._1
-    result._1 = get_ob()
-    return result
+    native {
+      val result = env.step(a)
+      frames += result._1.ref()
+      result._1 = get_ob().ref()
+      return result
+    }
   }
   
   private fun get_ob(): NDArray<Float> {
@@ -319,14 +342,12 @@ class FrameStack<WrappedEnv>(
 //      override val size: Int = observation_space.n
 //    }
     
-    val raw = FloatArray(observation_space.n) {
+    return NDArray(observation_space.shape, NDFloat) {
       val frameId = (it % base) / rgbDim
       var i = it - frameId * rgbDim
       i = i / k + i % k
       frames[frameId].rawGet(i)
     }
-//    val buf=FloatArray(observation_space.n)
-    return NDArray(observation_space.shape, raw)
 //    return NDArray(observation_space.shape, concatBuf, NDFloat)
 //    return concatenate(frames, axis = 2)
   }

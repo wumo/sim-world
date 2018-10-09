@@ -21,8 +21,8 @@ import wumo.sim.tensorflow.ops.variables.Variable.VariableGetter
 import wumo.sim.tensorflow.ops.variables.VariableScopeStore
 import wumo.sim.tensorflow.ops.variables.VariableStore
 import wumo.sim.tensorflow.tf
-import wumo.sim.tensorflow.util.isNotNull
-import wumo.sim.tensorflow.util.native
+import wumo.sim.util.isNotNull
+import wumo.sim.util.native
 import wumo.sim.util.DynamicVariable
 import java.util.*
 
