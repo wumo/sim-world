@@ -1,5 +1,7 @@
 #include <algorithm>
+#include <cstring>
 #include "buf.h"
+#include <eigen3/Eigen/Core>
 
 #define MAX_Of(x, y) ((x) >= (y)) ? (x) : (y)
 #define CAST(A, B) template void cast< A , B >(A *a, B *b, size_t size);
@@ -8,18 +10,44 @@ void buf_init() {
 }
 
 void maxOf(char *buf_a, char *buf_b, char *output, size_t size) {
+//  auto a = Eigen::Map<Eigen::Array<char, 1, Eigen::Dynamic>>(buf_a, size);
+//  auto b = Eigen::Map<Eigen::Array<char, 1, Eigen::Dynamic>>(buf_b, size);
+//  auto c = a.cwiseMax(b);
+//  Eigen::Map<Eigen::Array<char, 1, Eigen::Dynamic>>(output, size) = c;
   for (size_t i = 0; i < size; ++i)
     output[i] = MAX_Of(buf_a[i], buf_b[i]);
 }
 
-void concat(const int axis, unsigned char **array, int **shape, size_t size, size_t byteSize,
-            unsigned char *output, int *result_shape) {
+void concat(const int axis, unsigned char **array, int size,
+            int **shape, int shape_size, int byteSize,
+            unsigned char *output) {
   int *preInclude = new int[size]();
   for (int i = 0; i < size; ++i) {
     int dim = shape[i][axis];
     preInclude[i] += dim + ((i > 0) ? preInclude[i - 1] : 0);
   }
   
+  int dimStride = 1;
+  for (int i = shape_size - 1; i > axis; --i)
+    dimStride *= shape[0][i];
+  int numRange = 1;
+  for (int i = 0; i < axis; ++i)
+    numRange *= shape[0][i];
+  int globalStride = dimStride * preInclude[size - 1] * byteSize;
+  for (int i = 0; i < size; ++i) {
+    unsigned char *nd = array[i];
+    int dim = shape[i][axis];
+    int offsetDst = (preInclude[i] - dim) * dimStride * byteSize;
+    int localStride = dim * dimStride * byteSize;
+    int offsetSrc = 0;
+    for (int k = 0; k < numRange; ++k) {
+      unsigned char *start = nd + offsetSrc;
+      memcpy(output + offsetDst, start, localStride);
+//      std::copy(start, start + localStride, output + offsetDst);
+      offsetDst += globalStride;
+      offsetSrc += localStride;
+    }
+  }
   delete[] preInclude;
 }
 

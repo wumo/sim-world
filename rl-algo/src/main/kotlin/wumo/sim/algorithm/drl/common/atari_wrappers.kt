@@ -317,8 +317,8 @@ class FrameStack<WrappedEnv>(
   private fun get_ob(): NDArray<Float> {
     require(frames.size == k)
     val frames = frames.toList()
-    return concatenate(frames, axis = 2)
-//    return concat(frames, axis = 2)
+//    return concatenate(frames, axis = 2)
+    return concat(frames, axis = 2)
 //    return NDArray(observation_space.shape, NDFloat) {
 //      val frameId = (it % base) / rgbDim
 //      var i = it - frameId * rgbDim

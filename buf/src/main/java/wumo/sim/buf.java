@@ -23,14 +23,14 @@ public static native void maxOf(@Cast("char*") BytePointer buf_a, @Cast("char*")
 public static native void maxOf(@Cast("char*") ByteBuffer buf_a, @Cast("char*") ByteBuffer buf_b, @Cast("char*") ByteBuffer output, @Cast("size_t") long size);
 public static native void maxOf(@Cast("char*") byte[] buf_a, @Cast("char*") byte[] buf_b, @Cast("char*") byte[] output, @Cast("size_t") long size);
 
-public static native void concat(int axis, @Cast("unsigned char**") PointerPointer array, @Cast("int**") PointerPointer shape, @Cast("size_t") long size,
-            @Cast("size_t") long byteSize, @Cast("unsigned char*") BytePointer output, IntPointer result_shape);
-public static native void concat(int axis, @Cast("unsigned char**") @ByPtrPtr BytePointer array, @ByPtrPtr IntPointer shape, @Cast("size_t") long size,
-            @Cast("size_t") long byteSize, @Cast("unsigned char*") BytePointer output, IntPointer result_shape);
-public static native void concat(int axis, @Cast("unsigned char**") @ByPtrPtr ByteBuffer array, @ByPtrPtr IntBuffer shape, @Cast("size_t") long size,
-            @Cast("size_t") long byteSize, @Cast("unsigned char*") ByteBuffer output, IntBuffer result_shape);
-public static native void concat(int axis, @Cast("unsigned char**") @ByPtrPtr byte[] array, @ByPtrPtr int[] shape, @Cast("size_t") long size,
-            @Cast("size_t") long byteSize, @Cast("unsigned char*") byte[] output, int[] result_shape);
+public static native void concat(int axis, @Cast("unsigned char**") PointerPointer array, int size, @Cast("int**") PointerPointer shape, int shape_size,
+            int byteSize, @Cast("unsigned char*") BytePointer output);
+public static native void concat(int axis, @Cast("unsigned char**") @ByPtrPtr BytePointer array, int size, @ByPtrPtr IntPointer shape, int shape_size,
+            int byteSize, @Cast("unsigned char*") BytePointer output);
+public static native void concat(int axis, @Cast("unsigned char**") @ByPtrPtr ByteBuffer array, int size, @ByPtrPtr IntBuffer shape, int shape_size,
+            int byteSize, @Cast("unsigned char*") ByteBuffer output);
+public static native void concat(int axis, @Cast("unsigned char**") @ByPtrPtr byte[] array, int size, @ByPtrPtr int[] shape, int shape_size,
+            int byteSize, @Cast("unsigned char*") byte[] output);
 
 public static native void divf(FloatPointer buf, @Cast("size_t") long size, float s);
 public static native void divf(FloatBuffer buf, @Cast("size_t") long size, float s);

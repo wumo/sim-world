@@ -3,6 +3,8 @@ project(buf)
 
 set(CMAKE_CXX_STANDARD 14)
 
+find_package (Eigen3 3.3 REQUIRED NO_MODULE)
+
 set(SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 SET(LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib" CACHE STRING "Library directory name")
 SET(INCLUDE_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE STRING "Headers directory name")

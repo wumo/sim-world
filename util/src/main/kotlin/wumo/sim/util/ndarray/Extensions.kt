@@ -1,35 +1,30 @@
 package wumo.sim.util.ndarray
 
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.bytedeco.javacpp.BytePointer
-import org.bytedeco.javacpp.FloatPointer
 import org.bytedeco.javacpp.IntPointer
 import org.bytedeco.javacpp.Pointer.memcpy
 import org.bytedeco.javacpp.PointerPointer
 import wumo.sim.buf
 import wumo.sim.util.native
-import wumo.sim.util.ndarray.types.NDFloat
-import wumo.sim.util.toBytePointer
 
 fun <T : Any> concat(array: List<NDArray<T>>, axis: Int = 0): NDArray<T> {
-  val size = array.size.toLong()
-  val dtype = array[0].dtype
-  val byteSize = dtype.byteSize.toLong()
-  val dataPtr = PointerPointer<BytePointer>(size)
-  val shapePtr = PointerPointer<IntPointer>(size)
+  val size = array.size
+  val first = array[0]
+  val dtype = first.dtype
+  val byteSize = dtype.byteSize
+  val dataPtr = PointerPointer<BytePointer>(size.toLong())
+  val shapePtr = PointerPointer<IntPointer>(size.toLong())
   var sumAlongDim = 0
   val resultShape = array[0].shape.copy()
   for (i in 0 until size) {
-    val nd = array[i.toInt()]
-    shapePtr.put(i, IntPointer(*nd.shape.asIntArray()!!))
-    dataPtr.put(i, nd.native)
+    val nd = array[i]
+    shapePtr.put(i.toLong(), IntPointer(*nd.shape.asIntArray()!!))
+    dataPtr.put(i.toLong(), nd.native)
     sumAlongDim += nd.shape[axis]
   }
   resultShape[axis] = sumAlongDim
-  val resultPtr = BytePointer(resultShape.numElements() * byteSize)
-  buf.concat(axis, dataPtr, shapePtr, size, byteSize,
-             resultPtr, IntPointer(*resultShape.asIntArray()!!))
+  val resultPtr = BytePointer(resultShape.numElements() * byteSize.toLong())
+  buf.concat(axis, dataPtr, size, shapePtr, first.shape.rank, byteSize, resultPtr)
   return NDArray(resultShape, BytePointerBuf(resultPtr, dtype))
 }
 
