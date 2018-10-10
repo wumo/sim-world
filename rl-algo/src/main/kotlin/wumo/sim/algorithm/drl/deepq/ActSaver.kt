@@ -5,8 +5,7 @@ import okio.BufferedSource
 import org.bytedeco.javacpp.BytePointer
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Tensor.allocateTensor
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Tensor.memcpy
-import org.bytedeco.javacpp.tensorflow.TF_TensorByteSize
-import org.bytedeco.javacpp.tensorflow.TF_TensorData
+import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.algorithm.drl.common.FunctionTensor
 import wumo.sim.algorithm.drl.common.functionFromName
 import wumo.sim.tensorflow.core.Graph
@@ -93,7 +92,7 @@ fun saveVariable(act_vars: List<Pair<String, NDArray<Any>>>) {
       sink.encode(value.shape.asLongArray()!!)
       sink.writeLong(size)
       sink.write(buffer)
-      c_tensor.deallocate()
+      TF_DeleteTensor(c_tensor)
     }
   }
 }
@@ -125,7 +124,8 @@ fun saveModel(model_file_path: String,
               build_act: () -> t2<ActFunction, Set<Variable>>,
               act_vars: List<Pair<String, NDArray<Any>>>) {
   File(model_file_path).sink { sink ->
-    tf.unsafeDefaultGraph(Graph()) {
+    val graph = Graph()
+    tf.unsafeDefaultGraph(graph) {
       val (act, act_v) = build_act()
       val act_v_str = act_v.mapTo(mutableSetOf()) { it.name }
       val init_ops = mutableListOf<Op>()
@@ -137,6 +137,7 @@ fun saveModel(model_file_path: String,
       sink.encode(bytes)
       sink.encode(act)
     }
+    graph.close()
   }
 }
 
@@ -145,7 +146,8 @@ fun loadModel(model_file_path: String): t3<Graph, Op, ActFunction> {
     val def = source.decodeByteArray()
     val act = source.decodeActFunction()
     val graph = Graph()
-    graph.import(def)
+    val def_ptr = BytePointer(*def)
+    graph.import(def_ptr)
     val init = graph.findOp("init")!!
     return t3(graph, init, act)
   }

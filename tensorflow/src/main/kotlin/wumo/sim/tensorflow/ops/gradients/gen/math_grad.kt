@@ -43,7 +43,7 @@ fun register_math_grad() {
     if (rank == 0)
       return listOf(grad, null)
     val axes = constantValue<Any>(op.inputs[1])
-    if (axes != null && axes.equals(toNDArray((0 until rank).toList()))) {
+    if (axes != null && axes.equals(toNDArray<Any>((0 until rank).toList()))) {
       // In this case the reduction was over all dimensions.
       val newShape = IntArray(rank) { 1 }
       

@@ -3,9 +3,6 @@
 package wumo.sim.tensorflow
 
 import org.bytedeco.javacpp.PointerPointer
-import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Session.newSession
-import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_SessionOptions.newSessionOptions
-import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
 import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.tensorflow.core.check
 import wumo.sim.tensorflow.ops.Op
@@ -13,19 +10,19 @@ import wumo.sim.tensorflow.ops.Output
 import wumo.sim.tensorflow.ops.OutputConvertible
 import wumo.sim.tensorflow.tensor.Tensor
 import wumo.sim.tensorflow.types.DataType
+import wumo.sim.util.*
 import wumo.sim.util.ndarray.NDArray
-import wumo.sim.util.t2
-import wumo.sim.util.t3
-import wumo.sim.util.t4
-import wumo.sim.util.t5
 
 class Session(val c_graph: TF_Graph) {
   private val c_session: TF_Session
   
   init {
-    val status = newStatus()
-    c_session = newSession(c_graph, newSessionOptions(), newStatus())
+    val status = TF_NewStatus()
+    val options = TF_NewSessionOptions()
+    c_session = TF_NewSession(c_graph, options, status)
     status.check()
+    TF_DeleteStatus(status)
+    TF_DeleteSessionOptions(options)
   }
   
   val feed_dict = mutableListOf<Pair<Output, NDArray<out Any>>>()
@@ -119,53 +116,52 @@ class Session(val c_graph: TF_Graph) {
   }
   
   fun eval(fetch: Iterable<OutputConvertible>): MutableList<NDArray<Any>> {
-//    native {
-    val fetches = fetch.map { it.toOutput() }
-    val status = TF_NewStatus()
-    val (inputs, input_values, ninputs, tmp_tensors) = accumulateFeedDict()
-    val (target_opers, ntargets) = accumulateRuns()
-    val noutputs = fetches.size
-    val outputs = TF_Output(noutputs.toLong())
-    val output_values = PointerPointer<TF_Tensor>(noutputs.toLong())
-    for ((i, f) in fetches.withIndex())
-      outputs.position(i.toLong()).oper(f.op.c_op).index(f.valueIndex)
-    outputs.position(0L)
-    TF_SessionRun(c_session, null, inputs, input_values, ninputs,
-                  outputs, output_values, noutputs,
-                  target_opers, ntargets,
-                  null, status)
-    status.check()
-    inputs.deallocate()
-    input_values.deallocate()
-    outputs.deallocate()
-    tmp_tensors.forEach { TF_DeleteTensor(it.c_tensor) }
-    target_opers.deallocate()
-    TF_DeleteStatus(status)
-    clear()
-    return MutableList(noutputs) {
-      val tensor = output_values.get(TF_Tensor::class.java, it.toLong())
-      Tensor.toNDArray<Any>(tensor)
-    }.apply {
-      output_values.deallocate()
+    native {
+      val fetches = fetch.map { it.toOutput() }
+      val status = TF_NewStatus()
+      val (inputs, input_values, ninputs) = accumulateFeedDict()
+      val (target_opers, ntargets) = accumulateRuns()
+      val noutputs = fetches.size
+      val outputs = TF_Output(noutputs.toLong())
+      val output_values = PointerPointer<TF_Tensor>(noutputs.toLong())
+      for ((i, f) in fetches.withIndex())
+        outputs.position(i.toLong()).oper(f.op.c_op).index(f.valueIndex)
+      outputs.position(0L)
+      TF_SessionRun(c_session, null, inputs, input_values, ninputs,
+                    outputs, output_values, noutputs,
+                    target_opers, ntargets,
+                    null, status)
+      status.check()
+      TF_DeleteStatus(status)
+      clear()
+      return MutableList(noutputs) {
+        val tensor = output_values.get(TF_Tensor::class.java, it.toLong())
+        Tensor.toNDArray<Any>(tensor).apply {
+          ref()
+          TF_DeleteTensor(tensor)
+        }
+      }.apply {
+        for (i in 0 until ninputs) {
+          val t = input_values.get(TF_Tensor::class.java, i.toLong())
+          TF_DeleteTensor(t)
+        }
+      }
     }
-//    }
   }
   
-  private fun accumulateFeedDict(): t4<TF_Output, PointerPointer<TF_Tensor>, Int, MutableList<Tensor<*>>> {
+  private fun accumulateFeedDict(): t3<TF_Output, PointerPointer<TF_Tensor>, Int> {
     val ninputs = feed_dict.size.toLong()
     val inputs = TF_Output(ninputs)
     val input_values = PointerPointer<TF_Tensor>(ninputs)
-    val tmp_tensors = mutableListOf<Tensor<*>>()
     for ((i, pair) in feed_dict.withIndex()) {
       val (input, input_value) = pair
       inputs.position(i.toLong()).oper(input.op.c_op).index(input.valueIndex)
       val tensor = Tensor.fromNDArray(input_value, input.dataType as DataType<Any>)
-      tmp_tensors += tensor
       input_values.position(i.toLong()).put(tensor.c_tensor)
     }
     inputs.position(0L)
     input_values.position(0L)
-    return t4(inputs, input_values, ninputs.toInt(), tmp_tensors)
+    return t3(inputs, input_values, ninputs.toInt())
   }
   
   private fun accumulateRuns(): t2<PointerPointer<TF_Operation>, Int> {

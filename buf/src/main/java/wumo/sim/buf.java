@@ -32,9 +32,9 @@ public static native void concat(int axis, @Cast("unsigned char**") @ByPtrPtr By
 public static native void concat(int axis, @Cast("unsigned char**") @ByPtrPtr byte[] array, int size, @ByPtrPtr int[] shape, int shape_size,
             int byteSize, @Cast("unsigned char*") byte[] output);
 
-public static native void divf(FloatPointer buf, @Cast("size_t") long size, float s);
-public static native void divf(FloatBuffer buf, @Cast("size_t") long size, float s);
-public static native void divf(float[] buf, @Cast("size_t") long size, float s);
+public static native void mulf(FloatPointer buf, @Cast("size_t") long size, float s);
+public static native void mulf(FloatBuffer buf, @Cast("size_t") long size, float s);
+public static native void mulf(float[] buf, @Cast("size_t") long size, float s);
 
 public static native @Name("cast<unsigned char,unsigned char>") void castunsignedchar2unsignedchar(@Cast("unsigned char*") BytePointer a, @Cast("unsigned char*") BytePointer b, @Cast("size_t") long size);
 public static native @Name("cast<unsigned char,unsigned char>") void castunsignedchar2unsignedchar(@Cast("unsigned char*") ByteBuffer a, @Cast("unsigned char*") ByteBuffer b, @Cast("size_t") long size);

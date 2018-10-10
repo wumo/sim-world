@@ -13,61 +13,61 @@ import java.util.*
 class NDArrayTest {
   @Test
   fun toNDArray() {
-    val a = NDArray.toNDArray(1)
+    val a = NDArray.toNDArray<Int>(1)
     assertEquals(1, a.size)
     assertEquals(NDInt, a.dtype)
     assertEquals(1, a.get())
     
-    val d = NDArray.toNDArray(Integer(1))
+    val d = NDArray.toNDArray<Int>(Integer(1))
     assertEquals(1, d.size)
     assertEquals(NDInt, d.dtype)
     assertEquals(1, d.get())
     
-    val b = NDArray.toNDArray(2f)
+    val b = NDArray.toNDArray<Float>(2f)
     assertEquals(1, b.size)
     assertEquals(NDFloat, b.dtype)
     assertEquals(2f, b.get())
     
-    val c = NDArray.toNDArray(l(1L, 2L, 3L))
+    val c = NDArray.toNDArray<Long>(l(1L, 2L, 3L))
     assertEquals(3, c.size)
     assertEquals(NDLong, c.dtype)
     
     println(c)
-    val f = NDArray.toNDArray(arrayOf(1L, 2L, 3L))
+    val f = NDArray.toNDArray<Long>(arrayOf(1L, 2L, 3L))
     println(f)
-    val g = NDArray.toNDArray(f)
+    val g = NDArray.toNDArray<Long>(f)
     assertEquals(f, g)
-    val h = NDArray.toNDArray(listOf(1L, 2L, 3L))
+    val h = NDArray.toNDArray<Long>(listOf(1L, 2L, 3L))
     println(h)
-    val i = NDArray.toNDArray(arrayOf(NDArray(Shape(2, 2), floatArrayOf(1f, 2f, 3f, 4f)),
-                                      NDArray(Shape(2, 2), floatArrayOf(5f, 6f, 7f, 8f)),
-                                      NDArray(Shape(2, 2), floatArrayOf(9f, 10f, 11f, 12f))))
+    val i = NDArray.toNDArray<Any>(arrayOf(NDArray(Shape(2, 2), floatArrayOf(1f, 2f, 3f, 4f)),
+                                           NDArray(Shape(2, 2), floatArrayOf(5f, 6f, 7f, 8f)),
+                                           NDArray(Shape(2, 2), floatArrayOf(9f, 10f, 11f, 12f))))
     println(i)
-    val j = NDArray.toNDArray(listOf(NDArray(Shape(2, 2), floatArrayOf(1f, 2f, 3f, 4f)),
-                                     NDArray(Shape(2, 2), floatArrayOf(5f, 6f, 7f, 8f)),
-                                     NDArray(Shape(2, 2), floatArrayOf(9f, 10f, 11f, 12f))))
+    val j = NDArray.toNDArray<Any>(listOf(NDArray(Shape(2, 2), floatArrayOf(1f, 2f, 3f, 4f)),
+                                          NDArray(Shape(2, 2), floatArrayOf(5f, 6f, 7f, 8f)),
+                                          NDArray(Shape(2, 2), floatArrayOf(9f, 10f, 11f, 12f))))
     println(j)
     
-    val k = NDArray.toNDArray(arrayOf(arrayOf(NDArray(Shape(2, 2), floatArrayOf(1f, 2f, 3f, 4f)),
-                                              NDArray(Shape(2, 2), floatArrayOf(5f, 6f, 7f, 8f)),
-                                              NDArray(Shape(2, 2), floatArrayOf(9f, 10f, 11f, 12f))),
-                                      arrayOf(NDArray(Shape(2, 2), floatArrayOf(1f, 2f, 3f, 4f)),
-                                              NDArray(Shape(2, 2), floatArrayOf(5f, 6f, 7f, 8f)),
-                                              NDArray(Shape(2, 2), floatArrayOf(9f, 10f, 11f, 12f))),
-                                      arrayOf(NDArray(Shape(2, 2), floatArrayOf(1f, 2f, 3f, 4f)),
-                                              NDArray(Shape(2, 2), floatArrayOf(5f, 6f, 7f, 8f)),
-                                              NDArray(Shape(2, 2), floatArrayOf(9f, 10f, 11f, 12f)))))
+    val k = NDArray.toNDArray<Any>(arrayOf(arrayOf(NDArray(Shape(2, 2), floatArrayOf(1f, 2f, 3f, 4f)),
+                                                   NDArray(Shape(2, 2), floatArrayOf(5f, 6f, 7f, 8f)),
+                                                   NDArray(Shape(2, 2), floatArrayOf(9f, 10f, 11f, 12f))),
+                                           arrayOf(NDArray(Shape(2, 2), floatArrayOf(1f, 2f, 3f, 4f)),
+                                                   NDArray(Shape(2, 2), floatArrayOf(5f, 6f, 7f, 8f)),
+                                                   NDArray(Shape(2, 2), floatArrayOf(9f, 10f, 11f, 12f))),
+                                           arrayOf(NDArray(Shape(2, 2), floatArrayOf(1f, 2f, 3f, 4f)),
+                                                   NDArray(Shape(2, 2), floatArrayOf(5f, 6f, 7f, 8f)),
+                                                   NDArray(Shape(2, 2), floatArrayOf(9f, 10f, 11f, 12f)))))
     println(k)
     
-    val L = NDArray.toNDArray(listOf(arrayOf(NDArray(Shape(2, 2), floatArrayOf(1f, 2f, 3f, 4f)),
-                                             NDArray(Shape(2, 2), floatArrayOf(5f, 6f, 7f, 8f)),
-                                             NDArray(Shape(2, 2), floatArrayOf(9f, 10f, 11f, 12f))),
-                                     arrayOf(NDArray(Shape(2, 2), floatArrayOf(1f, 2f, 3f, 4f)),
-                                             NDArray(Shape(2, 2), floatArrayOf(5f, 6f, 7f, 8f)),
-                                             NDArray(Shape(2, 2), floatArrayOf(9f, 10f, 11f, 12f))),
-                                     arrayOf(NDArray(Shape(2, 2), floatArrayOf(1f, 2f, 3f, 4f)),
-                                             NDArray(Shape(2, 2), floatArrayOf(5f, 6f, 7f, 8f)),
-                                             NDArray(Shape(2, 2), floatArrayOf(9f, 10f, 11f, 12f)))))
+    val L = NDArray.toNDArray<Any>(listOf(arrayOf(NDArray(Shape(2, 2), floatArrayOf(1f, 2f, 3f, 4f)),
+                                                  NDArray(Shape(2, 2), floatArrayOf(5f, 6f, 7f, 8f)),
+                                                  NDArray(Shape(2, 2), floatArrayOf(9f, 10f, 11f, 12f))),
+                                          arrayOf(NDArray(Shape(2, 2), floatArrayOf(1f, 2f, 3f, 4f)),
+                                                  NDArray(Shape(2, 2), floatArrayOf(5f, 6f, 7f, 8f)),
+                                                  NDArray(Shape(2, 2), floatArrayOf(9f, 10f, 11f, 12f))),
+                                          arrayOf(NDArray(Shape(2, 2), floatArrayOf(1f, 2f, 3f, 4f)),
+                                                  NDArray(Shape(2, 2), floatArrayOf(5f, 6f, 7f, 8f)),
+                                                  NDArray(Shape(2, 2), floatArrayOf(9f, 10f, 11f, 12f)))))
     println(L)
   }
   

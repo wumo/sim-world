@@ -3,6 +3,7 @@ package wumo.sim.spaces
 import wumo.sim.core.Space
 import wumo.sim.util.Rand
 import wumo.sim.util.Shape
+import wumo.sim.util.ndarray.BytePointerBuf
 import wumo.sim.util.ndarray.NDArray
 import wumo.sim.util.ndarray.types.NDFloat
 import wumo.sim.util.ndarray.types.NDType
@@ -22,7 +23,7 @@ class Box<T> constructor(
   
   override fun sample(): NDArray<T> = NDArray(
       shape,
-      dtype.makeBuf(shape.numElements()) {
+      BytePointerBuf(shape.numElements(), dtype) {
         val e = Rand().nextFloat(low[it].toFloat(),
                                  high[it].toFloat() +
                                      if (dtype == NDFloat) 0f else 1f)

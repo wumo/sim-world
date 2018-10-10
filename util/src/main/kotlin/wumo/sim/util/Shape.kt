@@ -12,11 +12,11 @@ val scalarDimension = Shape(IntArray(0))
 //  else Shape(*dims, a)
 //}
 //
-//infix fun Int.x(shape: Shape) = run {
-//  val dims = shape.asIntArray()
-//  if (dims == null) Shape()
-//  else Shape(this, *dims)
-//}
+operator fun Int.plus(shape: Shape) = run {
+  val dims = shape.asIntArray()
+  if (dims == null) Shape()
+  else Shape(this, *dims)
+}
 //
 //infix fun Shape.x(shape: Shape) = run {
 //  val dims1 = asIntArray()

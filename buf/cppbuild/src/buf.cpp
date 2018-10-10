@@ -53,9 +53,9 @@ void concat(const int axis, unsigned char **array, int size,
   delete[] preInclude;
 }
 
-void divf(float *buf, size_t size, float s) {
+void mulf(float *buf, size_t size, float s) {
   for (int i = 0; i < size; ++i)
-    buf[i] /= s;
+    buf[i] *= s;
 }
 
 template<class A, class B>

@@ -1,18 +1,20 @@
 package wumo.sim.util.ndarray
 
-import org.bytedeco.javacpp.mklml.cblas_sscal
+import wumo.sim.buf
 import wumo.sim.util.*
 import wumo.sim.util.ndarray.NDArray.Companion.toNDArray
 import wumo.sim.util.ndarray.types.NDType
 
 operator fun NDArray<Float>.unaryMinus(): NDArray<Float> {
   val c = copy()
-  cblas_sscal(size, -1f, c.native.toFloatPointer(), 1)
+  buf.mulf(native.toFloatPointer(), size.toLong(), -1f)
+//  cblas_sscal(size, -1f, c.native.toFloatPointer(), 1)
   return c
 }
 
 operator fun NDArray<Float>.timesAssign(scale: Float) {
-  cblas_sscal(size, scale, native.toFloatPointer(), 1)
+  buf.mulf(native.toFloatPointer(), size.toLong(), scale)
+//  cblas_sscal(size, scale, native.toFloatPointer(), 1)
 }
 
 operator fun <T : Any> NDArray<T>.plus(b: NDArray<T>): NDArray<T> {
@@ -24,7 +26,8 @@ operator fun <T : Any> NDArray<T>.plus(b: Number): NDArray<T> {
 }
 
 operator fun NDArray<Float>.divAssign(b: Float) {
-  cblas_sscal(size, 1 / b, native.toFloatPointer(), 1)
+  buf.mulf(native.toFloatPointer(), size.toLong(), 1 / b)
+//  cblas_sscal(size, 1 / b, native.toFloatPointer(), 1)
 }
 
 fun <T : Any> abs(a: NDArray<T>): NDArray<T> {
@@ -45,7 +48,8 @@ inline fun <reified T : Number> ones_like(a: NDArray<T>): NDArray<T> {
   return NDArray(a.shape, dtype) { dtype.one() }
 }
 
-fun <T : Any> newaxis(a: NDArray<T>) = toNDArray(arrayOf(a))
+//fun <T : Any> newaxis(a: NDArray<T>) = toNDArray(arrayOf(a))
+fun <T : Any> newaxis(a: NDArray<T>) = a.reshape(1 + a.shape)
 
 fun randomNormal(mean: Float = 0f, scale: Float = 1f, shape: Shape): NDArray<Float> =
     NDArray(shape, FloatArray(shape.numElements()) {

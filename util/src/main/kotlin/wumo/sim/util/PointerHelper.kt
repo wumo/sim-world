@@ -1,6 +1,7 @@
 package wumo.sim.util
 
 import org.bytedeco.javacpp.*
+import org.bytedeco.javacpp.Pointer.memcpy
 import wumo.sim.util.ndarray.NDArray
 import wumo.sim.util.ndarray.types.*
 
@@ -35,6 +36,13 @@ inline fun <R> native(block: () -> R): R {
   } finally {
     ptrScope.close()
   }
+}
+
+fun BytePointer.copy(): BytePointer {
+  val src = this
+  val dst = BytePointer(src.capacity())
+  memcpy(dst, src.position(0L), src.capacity())
+  return dst
 }
 
 inline fun ShortPointer.toBytePointer(): BytePointer =

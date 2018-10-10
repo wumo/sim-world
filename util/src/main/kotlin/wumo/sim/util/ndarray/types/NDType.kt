@@ -17,9 +17,6 @@ sealed class NDType<KotlinType : Any> {
   
   abstract fun <R : Any> cast(src: BytePointerBuf<R>): BytePointerBuf<KotlinType>
   
-  open fun makeBuf(size: Int, init: (Int) -> KotlinType): BytePointerBuf<KotlinType> =
-      BytePointerBuf(size, this, init)
-  
   abstract fun put(buf: BytePointer, offset: Long, data: KotlinType)
   
   abstract fun get(buf: BytePointer, offset: Long): KotlinType
@@ -315,9 +312,6 @@ object NDString : NDType<String>() {
   override fun <R : Any> cast(src: BytePointerBuf<R>): BytePointerBuf<String> {
     TODO("not implemented")
   }
-  
-  override fun makeBuf(size: Int, init: (Int) -> String): BytePointerBuf<String> =
-      TODO()
   
   override fun put(buf: BytePointer, offset: Long, data: String) {
     TODO("not implemented")

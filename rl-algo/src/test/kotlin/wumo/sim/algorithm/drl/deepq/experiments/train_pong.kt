@@ -16,7 +16,6 @@ class train_pong {
   @Test
   fun train() {
 //    System.setProperty("org.bytedeco.javacpp.logger.debug", "true")
-    Pointer.maxPhysicalBytes()
     val _env = make_atari("PongNoFrameskip-v4")
     val env = wrap_atari_dqn(_env)
     learn("PongNoFrameskip-v4.model",
@@ -25,7 +24,7 @@ class train_pong {
                                             t3(64, 4, 2),
                                             t3(64, 3, 1))),
           learning_rate = 1e-4f,
-          total_timesteps = 1000_0000,
+          total_timesteps = 1_0000,
           buffer_size = 1000,
           exploration_fraction = 0.1f,
           exploration_final_eps = 0.01f,
@@ -40,7 +39,8 @@ class train_pong {
   
   @Test
   fun enjoy() {
-    val env = make_atari("PongNoFrameskip-v4")
+    val _env = make_atari("PongNoFrameskip-v4")
+    val env = wrap_atari_dqn(_env)
     val (graph, init, act) = loadModel("PongNoFrameskip-v4.model")
     tf.unsafeDefaultGraph(graph) {
       tf.session {
@@ -51,8 +51,8 @@ class train_pong {
           var episode_rew = 0f
           while (!_done) {
             env.render()
-            val action = act(newaxis(NDArray.toNDArray(_obs)),
-                             stochastic = false)[0].get() as Long
+            val action = act(newaxis(_obs),
+                             stochastic = false)[0][0] as Long
             val (obs, rew, done) = env.step(action.toInt())
             _done = done
             _obs = obs
@@ -62,5 +62,6 @@ class train_pong {
         }
       }
     }
+    graph.close()
   }
 }

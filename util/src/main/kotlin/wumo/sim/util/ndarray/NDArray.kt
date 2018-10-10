@@ -7,7 +7,7 @@ import wumo.sim.buf
 import wumo.sim.util.*
 import wumo.sim.util.ndarray.types.*
 
-fun <T : Any> Any.toNDArray(shape: Shape? = null): NDArray<T> = NDArray.toNDArray(this, shape) as NDArray<T>
+fun <T : Any> Any.toNDArray(shape: Shape? = null): NDArray<T> = NDArray.toNDArray(this, shape)
 
 fun IntArray.advance(shape: Shape) {
   var i = lastIndex
@@ -76,7 +76,7 @@ open class NDArray<T : Any>(val shape: Shape, val raw: BytePointerBuf<T>) : Iter
         expand(it.asIterable(), it.size)
       }
       caseIs<Array<*>> {
-        val wrap = it.map { toNDArray(it!!) }
+        val wrap = it.map { toNDArray<Any>(it!!) }
         expand(wrap, wrap.size)
       }
       caseIs<Collection<*>> {
@@ -120,7 +120,7 @@ open class NDArray<T : Any>(val shape: Shape, val raw: BytePointerBuf<T>) : Iter
         expand(_2 as Collection<NDArray<*>>, _2.size)
       }
       caseElse {
-        val wrap = _2.map { toNDArray(it!!) }
+        val wrap = _2.map { toNDArray<Any>(it!!) }
         expand(wrap, wrap.size)
       }
     }
@@ -154,9 +154,9 @@ open class NDArray<T : Any>(val shape: Shape, val raw: BytePointerBuf<T>) : Iter
 //      case<String> { BytePointerBuf(_2, NDString) }
     }
     
-    fun toNDArray(value: Any, shape: Shape? = null): NDArray<*> {
+    fun <E : Any> toNDArray(value: Any, shape: Shape? = null): NDArray<E> {
       val (buf, inferredShape) = toBufSwitch(value)
-      return NDArray(shape ?: inferredShape, buf)
+      return NDArray(shape ?: inferredShape, buf) as NDArray<E>
     }
     
     operator fun invoke(value: Float) = invoke(scalarDimension, NDFloat) { value }
@@ -269,8 +269,9 @@ open class NDArray<T : Any>(val shape: Shape, val raw: BytePointerBuf<T>) : Iter
   
   operator fun set(vararg idx: Int, data: NDArray<T>) {
     val offset = idxToOffset(*idx)
-    for ((i, v) in data.flatten())
-      raw[offset + i] = v
+    raw[offset] = data.raw
+//    for ((i, v) in data.flatten())
+//      raw[offset + i] = v
   }
   
   operator fun invoke(vararg idx: Int): NDArray<T> {
@@ -389,7 +390,7 @@ open class NDArray<T : Any>(val shape: Shape, val raw: BytePointerBuf<T>) : Iter
   }
   
   fun reshape(newShape: Shape): NDArray<T> =
-      NDArray(newShape, raw.copy())
+      NDArray(newShape, raw)
   
   operator fun component1() = raw[0]
   operator fun component2() = raw[1]

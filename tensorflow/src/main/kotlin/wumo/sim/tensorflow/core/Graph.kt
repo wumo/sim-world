@@ -5,9 +5,6 @@ package wumo.sim.tensorflow.core
 import org.bytedeco.javacpp.BytePointer
 import org.bytedeco.javacpp.Pointer
 import org.bytedeco.javacpp.SizeTPointer
-import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Buffer.newBuffer
-import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Graph.newGraph
-import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
 import org.bytedeco.javacpp.tensorflow
 import org.bytedeco.javacpp.tensorflow.*
 import org.tensorflow.framework.GraphDef
@@ -24,6 +21,7 @@ import wumo.sim.tensorflow.tf
 import wumo.sim.util.isNotNull
 import wumo.sim.util.native
 import wumo.sim.util.DynamicVariable
+import wumo.sim.util.s
 import java.util.*
 
 /**
@@ -34,9 +32,12 @@ import java.util.*
  * [Output] objects, which represent
  * the units of data that flow between operations.
  */
-open class Graph {
+open class Graph : AutoCloseable {
   
-  val c_graph = newGraph()!!
+  val c_graph = TF_NewGraph()!!
+  override fun close() {
+    TF_DeleteGraph(c_graph)
+  }
   
   val nextIdCounter: Int = 0
   
@@ -64,8 +65,8 @@ open class Graph {
    * from the native library. */
   internal val opsCache = hashMapOf<Long, Op>()
   
-  internal fun cache(op: tensorflow.TF_Operation) = opsCache[op]
-  operator fun HashMap<Long, Op>.get(op: tensorflow.TF_Operation) =
+  internal fun cache(op: tensorflow.TF_Operation) = opsCache.cacheGet(op)
+  fun HashMap<Long, Op>.cacheGet(op: tensorflow.TF_Operation) =
       getOrPut(op.address()) { Op(this@Graph, op) }
   
   /** Variable store object of this graph, used to store created variables and keep track of variable native usages. */
@@ -327,13 +328,16 @@ open class Graph {
    */
   fun getOpDef(opType: String): OpDef {
     native {
-      val buf = newBuffer()
-      val status = newStatus()
+      val buf = TF_NewBuffer()
+      val status = TF_NewStatus()
       TF_GraphGetOpDef(c_graph, opType, buf, status)
       status.check()
       val data = buf.data()
       data.limit<Pointer>(buf.length())
-      return OpDef.parseFrom(data.asByteBuffer())
+      return OpDef.parseFrom(data.asByteBuffer()).apply {
+        TF_DeleteStatus(status)
+        TF_DeleteBuffer(buf)
+      }
     }
   }
   
@@ -345,7 +349,7 @@ open class Graph {
   fun findOp(name: String): Op? {
     val op = TF_GraphOperationByName(c_graph, name)
     return if (op.isNull) null
-    else opsCache[op]
+    else opsCache.cacheGet(op)
   }
   
   fun ops(): List<Op> {
@@ -353,7 +357,7 @@ open class Graph {
     val ops = arrayListOf<Op>()
     do {
       val op = TF_GraphNextOperation(c_graph, pos) ?: break
-      ops += opsCache[op]
+      ops += opsCache.cacheGet(op)
     } while (op.isNotNull)
     return ops
   }
@@ -375,39 +379,41 @@ open class Graph {
   fun toGraphDef() = GraphDef.parseFrom(toGraphDefBytes())
   
   fun toGraphDefBytes(): ByteArray {
-    val buf = TF_NewBuffer()
-    val status = TF_NewStatus()
-    TF_GraphToGraphDef(c_graph, buf, status)
-    status.check()
-    val len = buf.length()
-    val bytes = ByteArray(len.toInt())
-    val d = buf.data()
-    d.capacity<Pointer>(len)
-    val data = d.asByteBuffer()
-    data.get(bytes)
-    TF_DeleteBuffer(buf)
-    TF_DeleteStatus(status)
-    return bytes
+    native {
+      val a = BytePointer(1L)
+      val buf = TF_NewBuffer()
+      val status = TF_NewStatus()
+      TF_GraphToGraphDef(c_graph, buf, status)
+      status.check()
+      val len = buf.length()
+      val bytes = ByteArray(len.toInt())
+      val d = buf.data()
+      d.capacity<Pointer>(len)
+      val data = d.asByteBuffer()
+      data.get(bytes)
+      TF_DeleteBuffer(buf)
+      TF_DeleteStatus(status)
+      return bytes
+    }
   }
   
   fun debugString(): String {
     return toGraphDef().toString()
   }
   
-  fun import(act_graph_def: ByteArray, prefix: String = "") {
+  fun import(act_graph_def: BytePointer, prefix: String = "") {
     native {
       assertNotFrozen()
-      val buf = TF_NewBufferFromString(BytePointer(*act_graph_def), act_graph_def.size.toLong())
-      val status = newStatus()
+      val buf = TF_NewBufferFromString(act_graph_def, act_graph_def.limit())
+      val status = TF_NewStatus()
       val opt = TF_NewImportGraphDefOptions()
       if (prefix.isNotBlank())
         TF_ImportGraphDefOptionsSetPrefix(opt, prefix)
       TF_GraphImportGraphDef(c_graph, buf, opt, status)
       status.check()
       TF_DeleteImportGraphDefOptions(opt)
+      TF_DeleteStatus(status)
       TF_DeleteBuffer(buf)
-      opt.setNull()
-      buf.setNull()
       ops().forEach { namesInUse[it.name] = 1 }
     }
   }

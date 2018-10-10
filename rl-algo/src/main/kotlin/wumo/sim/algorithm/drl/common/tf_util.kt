@@ -21,7 +21,7 @@ class FunctionTensor(val inputs: List<Any>,
     val feed_dict = mutableMapOf<Output, NDArray<*>>()
     for (i in 0 until inputs.size) {
       val input = inputs[i]
-      val value = NDArray.toNDArray(args[i])
+      val value = NDArray.toNDArray<Any>(args[i])
       feed_dict += when (input) {
         is TfInput -> input.make_feed_dict(value)
         is Output -> input to value
@@ -44,7 +44,7 @@ class FunctionString(val inputs: List<String>,
     val feed_dict = mutableMapOf<String, NDArray<*>>()
     for (i in 0 until inputs.size) {
       val input = inputs[i]
-      val value = NDArray.toNDArray(args[i])
+      val value = NDArray.toNDArray<Any>(args[i])
       feed_dict += input to value
     }
     for ((input, value) in givens)
@@ -66,7 +66,7 @@ fun function(inputs: List<Any> = emptyList(),
              givens: List<Pair<Output, Any>> = emptyList()): Function {
   val _givens = List(givens.size) {
     val p = givens[it]
-    p.first to NDArray.toNDArray(p.second)
+    p.first to NDArray.toNDArray<Any>(p.second)
   }
   return FunctionTensor(inputs, listOf(outputs), updates, _givens)
 }
@@ -77,7 +77,7 @@ fun function(inputs: List<Any> = emptyList(),
              givens: List<Pair<Output, Any>> = emptyList()): Function {
   val _givens = List(givens.size) {
     val p = givens[it]
-    p.first to NDArray.toNDArray(p.second)
+    p.first to NDArray.toNDArray<Any>(p.second)
   }
   return FunctionTensor(inputs, outputs, updates, _givens)
 }
