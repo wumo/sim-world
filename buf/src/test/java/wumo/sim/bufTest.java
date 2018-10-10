@@ -16,7 +16,7 @@ public class bufTest {
   
   @Test
   public void maxOf() {
-    long size = 1000;
+    long size = 100;
     BytePointer a = new BytePointer(size);
     for (long i = 0; i < size; i++) {
       a.put(i, (byte) (i % 128));
@@ -27,9 +27,6 @@ public class bufTest {
     }
     BytePointer c = new BytePointer(size);
     buf.maxOf(a, b, c, size);
-    for (long i = 0; i < size; i++) {
-      System.out.println(a.get(i) + "," + b.get(i) + "->" + c.get(i));
-    }
   }
   
   @Test

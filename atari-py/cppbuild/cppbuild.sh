@@ -61,7 +61,7 @@ case $PLATFORM in
         ;;
     linux-x86_64)
         CC="gcc -m64" CXX="g++ -m64" $CMAKE ../.. -DCMAKE_INSTALL_PREFIX=..
-        make -j $MAKEJ
+        make -n -j $MAKEJ
         make install
         ;;
     macosx-*)

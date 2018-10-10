@@ -2,6 +2,7 @@ package wumo.sim.algorithm.drl.common
 
 import org.bytedeco.javacpp.BytePointer
 import org.bytedeco.javacpp.opencv_core.*
+import org.bytedeco.javacpp.opencv_core.Mat.AUTO_STEP
 import org.bytedeco.javacpp.opencv_imgproc.*
 import wumo.sim.ale.PLAYER_A_FIRE
 import wumo.sim.ale.PLAYER_A_NOOP
@@ -175,7 +176,7 @@ class FireResetEnv(env: AtariEnvType)
 
 fun AtariObsType.toMat(): Mat {
   val channels = shape[2]
-  return Mat(shape[0], shape[1], CV_8UC(channels), raw.ptr)
+  return Mat(shape[0], shape[1], CV_8UC(channels), raw.ptr, AUTO_STEP.toLong())
 }
 
 fun Mat.toNDArray(): AtariObsType {

@@ -1,7 +1,9 @@
 #include <algorithm>
+#include <iostream>
 #include <cstring>
 #include "buf.h"
 #include <eigen3/Eigen/Core>
+#include <omp.h>
 
 #define MAX_Of(x, y) ((x) >= (y)) ? (x) : (y)
 #define CAST(A, B) template void cast< A , B >(A *a, B *b, size_t size);

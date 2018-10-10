@@ -244,7 +244,7 @@ object NDFloat : NDType<Float>() {
     val _dst = BytePointer(size * byteSize)
     val dst = _dst.toFloatPointer()
     when (src.ndType) {
-      NDByte -> buf.castchar2float(src.ptr, dst, size)
+      NDByte -> buf.castunsignedchar2float(src.ptr, dst, size)
       NDShort -> buf.castshort2float(src.ptr.toShortPointer(), dst, size)
       NDInt -> buf.castint2float(src.ptr.toIntPointer(), dst, size)
       NDLong -> buf.castlonglong2float(src.ptr.toLongPointer(), dst, size)
