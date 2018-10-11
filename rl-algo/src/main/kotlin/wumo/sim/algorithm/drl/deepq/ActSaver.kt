@@ -6,7 +6,7 @@ import org.bytedeco.javacpp.BytePointer
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Tensor.allocateTensor
 import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Tensor.memcpy
 import org.bytedeco.javacpp.tensorflow.*
-import wumo.sim.algorithm.drl.common.FunctionTensor
+import wumo.sim.algorithm.drl.common.TFFunctionTensor
 import wumo.sim.algorithm.drl.common.functionFromName
 import wumo.sim.tensorflow.core.Graph
 import wumo.sim.tensorflow.ops.Op
@@ -25,7 +25,7 @@ import java.nio.ByteBuffer
 
 fun BufferedSink.encode(act: ActFunction, prefix: String = "") {
   val prefix = if (prefix.isBlank()) "" else "$prefix/"
-  with(act.act as FunctionTensor) {
+  with(act.act as TFFunctionTensor) {
     writeInt(inputs.size)
     for (input in inputs) {
       val name = prefix + when (input) {

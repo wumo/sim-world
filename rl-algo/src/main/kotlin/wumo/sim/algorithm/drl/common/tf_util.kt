@@ -7,14 +7,14 @@ import wumo.sim.tensorflow.ops.basic.times
 import wumo.sim.tensorflow.tf
 import wumo.sim.util.ndarray.NDArray
 
-interface Function {
+interface TFFunction {
   operator fun invoke(vararg args: Any): List<NDArray<*>>
 }
 
-class FunctionTensor(val inputs: List<Any>,
-                     val outputs: List<Output>,
-                     val updates: List<Any>,
-                     val givens: List<Pair<Output, NDArray<*>>>) : Function {
+class TFFunctionTensor(val inputs: List<Any>,
+                       val outputs: List<Output>,
+                       val updates: List<Any>,
+                       val givens: List<Pair<Output, NDArray<*>>>) : TFFunction {
   
   override operator fun invoke(vararg args: Any): List<NDArray<*>> {
     assert(args.size <= inputs.size) { "Too many arguments provided" }
@@ -34,10 +34,10 @@ class FunctionTensor(val inputs: List<Any>,
   }
 }
 
-class FunctionString(val inputs: List<String>,
-                     val outputs: List<String>,
-                     val updates: List<String>,
-                     val givens: List<Pair<String, NDArray<*>>>) : Function {
+class TFFunctionString(val inputs: List<String>,
+                       val outputs: List<String>,
+                       val updates: List<String>,
+                       val givens: List<Pair<String, NDArray<*>>>) : TFFunction {
   
   override operator fun invoke(vararg args: Any): List<NDArray<*>> {
     assert(args.size <= inputs.size) { "Too many arguments provided" }
@@ -56,30 +56,30 @@ class FunctionString(val inputs: List<String>,
 fun functionFromName(inputs: List<String> = emptyList(),
                      outputs: List<String> = emptyList(),
                      updates: List<String> = emptyList(),
-                     givens: List<Pair<String, NDArray<*>>> = emptyList()): Function {
-  return FunctionString(inputs, outputs, updates, givens)
+                     givens: List<Pair<String, NDArray<*>>> = emptyList()): TFFunction {
+  return TFFunctionString(inputs, outputs, updates, givens)
 }
 
-fun function(inputs: List<Any> = emptyList(),
-             outputs: Output,
-             updates: List<Any> = emptyList(),
-             givens: List<Pair<Output, Any>> = emptyList()): Function {
+fun tf_function(inputs: List<Any> = emptyList(),
+                outputs: Output,
+                updates: List<Any> = emptyList(),
+                givens: List<Pair<Output, Any>> = emptyList()): TFFunction {
   val _givens = List(givens.size) {
     val p = givens[it]
     p.first to NDArray.toNDArray<Any>(p.second)
   }
-  return FunctionTensor(inputs, listOf(outputs), updates, _givens)
+  return TFFunctionTensor(inputs, listOf(outputs), updates, _givens)
 }
 
-fun function(inputs: List<Any> = emptyList(),
-             outputs: List<Output> = emptyList(),
-             updates: List<Any> = emptyList(),
-             givens: List<Pair<Output, Any>> = emptyList()): Function {
+fun tf_function(inputs: List<Any> = emptyList(),
+                outputs: List<Output> = emptyList(),
+                updates: List<Any> = emptyList(),
+                givens: List<Pair<Output, Any>> = emptyList()): TFFunction {
   val _givens = List(givens.size) {
     val p = givens[it]
     p.first to NDArray.toNDArray<Any>(p.second)
   }
-  return FunctionTensor(inputs, outputs, updates, _givens)
+  return TFFunctionTensor(inputs, outputs, updates, _givens)
 }
 
 fun huber_loss(x: Output, delta: Float = 1f): Output {

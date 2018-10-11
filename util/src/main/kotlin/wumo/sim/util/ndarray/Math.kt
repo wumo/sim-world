@@ -17,12 +17,9 @@ operator fun NDArray<Float>.timesAssign(scale: Float) {
 //  cblas_sscal(size, scale, native.toFloatPointer(), 1)
 }
 
-operator fun <T : Any> NDArray<T>.plus(b: NDArray<T>): NDArray<T> {
-  TODO()
-}
-
-operator fun <T : Any> NDArray<T>.plus(b: Number): NDArray<T> {
-  TODO()
+operator fun NDArray<Float>.plus(b: Float): NDArray<Float> {
+  buf.addf(native.toFloatPointer(), size.toLong(), b)
+  return this
 }
 
 operator fun NDArray<Float>.divAssign(b: Float) {
@@ -31,7 +28,8 @@ operator fun NDArray<Float>.divAssign(b: Float) {
 }
 
 fun <T : Any> abs(a: NDArray<T>): NDArray<T> {
-  TODO()
+  buf.absf(a.native.toFloatPointer(), a.size.toLong())
+  return a
 }
 
 val ones_like_switch = SwitchType2<Shape, NDArray<*>>().apply {

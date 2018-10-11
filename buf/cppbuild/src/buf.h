@@ -13,6 +13,10 @@ void concat(int axis, unsigned char **array, int size, int **shape, int shape_si
 
 void mulf(float *buf, size_t size, float s);
 
+void absf(float *buf, size_t size);
+
+void addf(float *buf, size_t size, float a);
+
 template<class A, class B>
 void cast(A *a, B *b, size_t size);
 

@@ -17,7 +17,6 @@
         <module>tensorflow-ops-generator</module>
         <module>python-interpreter</module>
         <module>rl-algo</module>
-        <module>tensorflow-jni</module>
         <module>atari-py</module>
         <module>buf</module>
     </modules>
@@ -72,8 +71,9 @@
     </profiles>
     
     <properties>
+        <mkl-dnn.version>0.16</mkl-dnn.version>
         <javacpp.version>1.4.3-SNAPSHOT</javacpp.version>
-        <tensorflow.version>1.10.0</tensorflow.version>
+        <tensorflow.version>1.11.0</tensorflow.version>
         <javacpp-resets-tensorflow.version>${tensorflow.version}-${javacpp.version}</javacpp-resets-tensorflow.version>
         <javacpp-resets-cuda.version>9.2-7.2-${javacpp.version}</javacpp-resets-cuda.version>
         <platform.class>${platform}</platform.class>

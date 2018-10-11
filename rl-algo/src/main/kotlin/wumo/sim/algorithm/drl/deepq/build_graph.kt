@@ -1,8 +1,8 @@
 package wumo.sim.algorithm.drl.deepq
 
-import wumo.sim.algorithm.drl.common.Function
+import wumo.sim.algorithm.drl.common.TFFunction
 import wumo.sim.algorithm.drl.common.Q_func
-import wumo.sim.algorithm.drl.common.function
+import wumo.sim.algorithm.drl.common.tf_function
 import wumo.sim.algorithm.drl.common.huber_loss
 import wumo.sim.tensorflow.core.Graph.Graph.Keys
 import wumo.sim.tensorflow.ops.Op
@@ -31,7 +31,7 @@ fun build_train(
     reuse: Reuse = ReuseOrCreateNew,
     paramNoise: Boolean = false,
     paramNoiseFilterFunc: (Variable) -> Boolean = ::defaultParamNoiseFilter)
-    : t4<ActFunction, Function, Function, Map<String, Any>> {
+    : t4<ActFunction, TFFunction, TFFunction, Map<String, Any>> {
   val (act_f, act_vars) = if (paramNoise)
     buildActWithParamNoise(makeObsPh, qFunc, numActions,
                            scope, reuse, paramNoiseFilterFunc)
@@ -102,7 +102,7 @@ fun build_train(
       _update_target_expr += v_target.assign(v.toOutput()).op
     val update_target_expr = tf.group(_update_target_expr)
     
-    val train = function(
+    val train = tf_function(
         inputs = listOf(
             obs_t_input,
             act_t_ph,
@@ -112,8 +112,8 @@ fun build_train(
             importance_weights_ph),
         outputs = td_error,
         updates = listOf(optimize_expr))
-    val update_target = function(updates = listOf(update_target_expr))
-    val q_values = function(listOf(obs_t_input), q_t)
+    val update_target = tf_function(updates = listOf(update_target_expr))
+    val q_values = tf_function(listOf(obs_t_input), q_t)
     t4(act_f, train, update_target, mapOf("q_values" to q_values, "act_vars" to act_vars))
   }
 }
@@ -145,14 +145,14 @@ fun buildAct(makeObsPh: (String) -> TfInput,
                                    { deterministic_actions }, name = "output_actions")
       val update_eps_expr = eps.assign(tf.cond(tf.greaterEqual({ update_eps_ph }, { tf.const(0f, it) }),
                                                { update_eps_ph }, { eps.toOutput() }))
-      val _act = function(inputs = listOf(observations_ph, stochastic_ph, update_eps_ph),
-                          outputs = output_actions,
-                          givens = listOf(update_eps_ph to -1.0f, stochastic_ph to true),
-                          updates = listOf(update_eps_expr))
+      val _act = tf_function(inputs = listOf(observations_ph, stochastic_ph, update_eps_ph),
+                             outputs = output_actions,
+                             givens = listOf(update_eps_ph to -1.0f, stochastic_ph to true),
+                             updates = listOf(update_eps_expr))
       t2(ActFunction(_act), tf.currentGraph.trainableVariables)
     }
 
-open class ActFunction(val act: Function) {
+open class ActFunction(val act: TFFunction) {
   operator fun invoke(ob: NDArray<*>, stochastic: Boolean = true, update_eps: Float = -1f) =
       act(ob, stochastic, update_eps)
 }
@@ -252,15 +252,15 @@ fun buildActWithParamNoise(
                                                                { tf.const(0f, it) }),
                                                { update_eps_ph },
                                                { eps.toOutput() }))
-      val _act = function(inputs = listOf(observations_ph, stochastic_ph, update_eps_ph,
-                                          reset_ph, update_param_noise_threshold_ph,
-                                          update_param_noise_scale_ph),
-                          outputs = output_actions,
-                          givens = listOf(update_eps_ph to -1.0f, stochastic_ph to true,
+      val _act = tf_function(inputs = listOf(observations_ph, stochastic_ph, update_eps_ph,
+                                             reset_ph, update_param_noise_threshold_ph,
+                                             update_param_noise_scale_ph),
+                             outputs = output_actions,
+                             givens = listOf(update_eps_ph to -1.0f, stochastic_ph to true,
                                           reset_ph to false,
                                           update_param_noise_threshold_ph to false,
                                           update_param_noise_scale_ph to false),
-                          updates = listOf(update_eps_expr,
+                             updates = listOf(update_eps_expr,
                                            tf.cond(reset_ph,
                                                    { perturb_vars("q_func", "perturbed_q_func") },
                                                    { tf.group(emptyMutableSet()) }),
@@ -271,7 +271,7 @@ fun buildActWithParamNoise(
       t2(ActWithParamNoise(_act), tf.currentGraph.trainableVariables)
     }
 
-class ActWithParamNoise(act: Function) : ActFunction(act) {
+class ActWithParamNoise(act: TFFunction) : ActFunction(act) {
   operator fun invoke(ob: NDArray<*>,
                       reset: Boolean = false,
                       update_param_noise_threshold: Float,

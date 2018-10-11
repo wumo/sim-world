@@ -47,7 +47,7 @@ class TestAtariWrappers {
   @Test
   fun testWrapDeepmind() {
     val _env = make_atari("BreakoutNoFrameskip-v4")
-    val env = wrap_atari_dqn(_env)
+    val env = wrap_deepmind(_env, frame_stack = true)
     
     val episode = 10
     var i = 0

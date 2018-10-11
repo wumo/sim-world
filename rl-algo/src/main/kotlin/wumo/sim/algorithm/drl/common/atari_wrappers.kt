@@ -32,8 +32,16 @@ fun make_atari(env_id: String): AtariEnvType {
   return env
 }
 
-fun wrap_atari_dqn(env: AtariEnvType) =
-    wrap_deepmind(env, frame_stack = true, scale = true)
+fun wrap_atari_dqn(env: AtariEnvType) = run {
+  var _env = env
+  _env = EpisodicLifeEnv(_env)
+  if (PLAYER_A_FIRE in _env.unwrapped.action_set)
+    _env = FireResetEnv(_env)
+  _env = WarpFrame(_env)
+  _env = ClipRewardEnv(_env)
+  _env = FrameStack(_env, 4)
+  env
+}
 
 fun wrap_deepmind(env: AtariEnvType,
                   episode_life: Boolean = true,
@@ -259,9 +267,9 @@ class ScaledFloatFrame<WrappedEnv>(
   
 }
 
-class ClipRewardEnv<WrappedEnv>(
-    env: Env<NDArray<Float>, Float, Int, Int, WrappedEnv>)
-  : RewardWrapper<NDArray<Float>, Float, Int, Int, WrappedEnv>(env) {
+class ClipRewardEnv<OE : Any, WrappedEnv>(
+    env: Env<NDArray<OE>, OE, Int, Int, WrappedEnv>)
+  : RewardWrapper<NDArray<OE>, OE, Int, Int, WrappedEnv>(env) {
   
   override fun reward(frame: Float): Float {
     return frame.sign
@@ -269,7 +277,8 @@ class ClipRewardEnv<WrappedEnv>(
 }
 
 class FixedSizeDeque<E>(val capacity: Int,
-                        inline val deallocator: (E) -> Unit) : ArrayDeque<E>(capacity + 1) {
+                        inline val deallocator: (E) -> Unit)
+  : ArrayDeque<E>(capacity + 1) {
   
   override fun addFirst(e: E) {
     if (size == capacity)
@@ -284,19 +293,19 @@ class FixedSizeDeque<E>(val capacity: Int,
   }
 }
 
-class FrameStack<WrappedEnv>(
-    env: Env<NDArray<Float>, Float, Int, Int, WrappedEnv>, val k: Int)
-  : Wrapper<NDArray<Float>, Float, Int, Int, WrappedEnv>(env) {
+class FrameStack<OE, WrappedEnv>(
+    env: Env<NDArray<OE>, OE, Int, Int, WrappedEnv>, val k: Int)
+  : Wrapper<NDArray<OE>, OE, Int, Int, WrappedEnv>(env)
+    where OE : Number, OE : Comparable<OE> {
   
-  val frames = FixedSizeDeque<NDArray<Float>>(k) { it.unref() }
+  val frames = FixedSizeDeque<NDArray<OE>>(k) { it.unref() }
   override val observation_space = run {
     val (height, width, rgb) = env.observation_space.shape
-    Box(0f, 255f, Shape(height, width, rgb * k), NDFloat)
+    Box(0, 255, Shape(height, width, rgb * k),
+        env.observation_space.dtype)
   }
-  val rgbDim = env.observation_space.shape[2]
-  val base = observation_space.shape[2]
   
-  override fun reset(): NDArray<Float> {
+  override fun reset(): NDArray<OE> {
     native {
       val ob = env.reset()
       repeat(k) {
@@ -306,7 +315,7 @@ class FrameStack<WrappedEnv>(
     }
   }
   
-  override fun step(a: Int): t4<NDArray<Float>, Float, Boolean, Map<String, Any>> {
+  override fun step(a: Int): t4<NDArray<OE>, Float, Boolean, Map<String, Any>> {
     native {
       val result = env.step(a)
       frames += result._1.ref()
@@ -315,19 +324,10 @@ class FrameStack<WrappedEnv>(
     }
   }
   
-  private fun get_ob(): NDArray<Float> {
+  private fun get_ob(): NDArray<OE> {
     require(frames.size == k)
     val frames = frames.toList()
-//    return concatenate(frames, axis = 2)
     return concat(frames, axis = 2)
-//    return NDArray(observation_space.shape, NDFloat) {
-//      val frameId = (it % base) / rgbDim
-//      var i = it - frameId * rgbDim
-//      i = i / k + i % k
-//      frames[frameId].rawGet(i)
-//    }
-//    return NDArray(observation_space.shape, concatBuf, NDFloat)
-//    return concatenate(frames, axis = 2)
   }
 }
 

@@ -8,13 +8,13 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-
+    
     <artifactId>tensorflow</artifactId>
-
+    
     <properties>
         <atomicfu.version>0.10.3</atomicfu.version>
     </properties>
-
+    
     <dependencies>
         <!-- https://mvnrepository.com/artifact/com.squareup.okio/okio -->
         <dependency>
@@ -36,16 +36,32 @@
             <artifactId>proto</artifactId>
             <version>${tensorflow.version}</version>
         </dependency>
+        <!--<dependency>-->
+        <!--<groupId>org.bytedeco.javacpp-presets</groupId>-->
+        <!--<artifactId>tensorflow-platform</artifactId>-->
+        <!--<version>${javacpp-resets-tensorflow.version}</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>org.bytedeco.javacpp-presets</groupId>
-            <artifactId>tensorflow-platform</artifactId>
+            <artifactId>tensorflow</artifactId>
             <version>${javacpp-resets-tensorflow.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bytedeco.javacpp-presets</groupId>
+            <artifactId>mkl-dnn-platform</artifactId>
+            <version>${mkl-dnn.version}-${javacpp.version}</version>
         </dependency>
         <!--<dependency>-->
         <!--<groupId>org.bytedeco.javacpp-presets</groupId>-->
         <!--<artifactId>tensorflow</artifactId>-->
         <!--<version>${javacpp-resets-tensorflow.version}</version>-->
         <!--<classifier>${platform}</classifier>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.bytedeco.javacpp-presets</groupId>-->
+            <!--<artifactId>tensorflow</artifactId>-->
+            <!--<version>${javacpp-resets-tensorflow.version}</version>-->
+            <!--<classifier>linux-x86_64</classifier>-->
         <!--</dependency>-->
         <dependency>
             <groupId>org.bytedeco.javacpp-presets</groupId>
@@ -65,13 +81,13 @@
         <!--<version>${javacpp-resets-tensorflow.version}</version>-->
         <!--<classifier>windows-x86_64-gpu</classifier>-->
         <!--</dependency>-->
-        <dependency>
-            <groupId>org.bytedeco.javacpp-presets</groupId>
-            <artifactId>cuda</artifactId>
-            <version>${javacpp-resets-cuda.version}</version>
-            <classifier>linux-x86_64-redist</classifier>
-        </dependency>
-
+        <!--<dependency>-->
+        <!--<groupId>org.bytedeco.javacpp-presets</groupId>-->
+        <!--<artifactId>cuda</artifactId>-->
+        <!--<version>${javacpp-resets-cuda.version}</version>-->
+        <!--<classifier>linux-x86_64-redist</classifier>-->
+        <!--</dependency>-->
+        
         <dependency>
             <groupId>wumo.sim</groupId>
             <artifactId>world</artifactId>
@@ -87,7 +103,7 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
+    
     <build>
         <sourceDirectory>src/main/kotlin</sourceDirectory>
         <testSourceDirectory>src/test/kotlin</testSourceDirectory>

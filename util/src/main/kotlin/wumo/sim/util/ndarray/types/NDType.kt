@@ -76,14 +76,12 @@ object NDByte : NDType<Byte>() {
   
   override fun one(): Byte = 1
   
-  override fun <R : Any> cast(value: R): Byte {
-    when (value) {
-      is Number -> value.toByte()
-      is Boolean -> if (value) 1 else 0
-      else -> NONE()
-    }
-    TODO()
-  }
+  override fun <R : Any> cast(value: R): Byte =
+      when (value) {
+        is Number -> value.toByte()
+        is Boolean -> if (value) 1 else 0
+        else -> NONE()
+      }
   
   override fun <R : Any> cast(src: BytePointerBuf<R>): BytePointerBuf<Byte> {
     val size = src.size.toLong()

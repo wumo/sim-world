@@ -716,7 +716,7 @@ object array_ops {
           if (shape.numElements() < 1000)
             tf.const(shape, dtype, zero, tf.currentNameScope)
           else {
-            var shape_t = tf.const(shape.asLongArray()!!)
+            var shape_t = tf.const(shape.asIntArray()!!)
             if (shape_t.shape.rank == -1)
               shape_t = gen_array_ops.reshape(shape_t, tf.const(-1), name)
             gen_array_ops.fill(shape_t, tf.const(dtype, zero), tf.currentNameScope)

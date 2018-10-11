@@ -128,8 +128,11 @@ class Op(val graph: Graph, val c_op: TF_Operation) : HasName {
     return if (class_attr != null) {
       val colocationOps = mutableSetOf<Op>()
       for (class_name in class_attr)
-        if (class_name.startsWith(COLOCATION_OPS_ATTRIBUTE_PREFIX))
-          colocationOps += graph.findOp(class_name.substring(COLOCATION_OPS_ATTRIBUTE_PREFIX.length))!!
+        if (class_name.startsWith(COLOCATION_OPS_ATTRIBUTE_PREFIX)) {
+          val opName = class_name.substring(COLOCATION_OPS_ATTRIBUTE_PREFIX.length)
+          if (opName != name)
+            colocationOps += graph.findOp(opName)!!
+        }
       colocationOps
     } else
       emptySet()

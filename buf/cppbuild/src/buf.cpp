@@ -58,6 +58,21 @@ void mulf(float *buf, size_t size, float s) {
     buf[i] *= s;
 }
 
+template<typename T>
+inline const T abs(T const &x) {
+  return (x < 0) ? -x : x;
+}
+
+void absf(float *buf, size_t size) {
+  for (int i = 0; i < size; ++i)
+    buf[i] = abs(buf[i]);
+}
+
+void addf(float *buf, size_t size, float a) {
+  for (int i = 0; i < size; ++i)
+    buf[i] += a;
+}
+
 template<class A, class B>
 void cast(A *a, B *b, size_t size) {
   std::copy(a, a + size, b);

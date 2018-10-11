@@ -1,23 +1,64 @@
 package wumo.sim.algorithm.drl.deepq
 
+import org.bytedeco.javacpp.BytePointer
 import org.bytedeco.javacpp.Pointer
 import wumo.sim.algorithm.drl.common.LinearSchedule
 import wumo.sim.algorithm.drl.common.Schedule
+import wumo.sim.algorithm.drl.common.TFFunction
+import wumo.sim.algorithm.drl.common.tf_function
 import wumo.sim.core.Env
 import wumo.sim.tensorflow.core.TensorFunction
-import wumo.sim.tensorflow.ops.training.AdamOptimizer
-import wumo.sim.tensorflow.ops.variables.ReuseOrCreateNew
+import wumo.sim.tensorflow.ops.Op
 import wumo.sim.tensorflow.ops.variables.Variable
 import wumo.sim.tensorflow.tf
-import wumo.sim.util.TimeMeter
-import wumo.sim.util.native
+import wumo.sim.util.*
 import wumo.sim.util.ndarray.*
-import wumo.sim.util.ndarray.types.NDInt
-import wumo.sim.util.ref
+import java.io.File
 import java.text.NumberFormat
 
 val formatter = NumberFormat.getInstance()
 val runtime = Runtime.getRuntime()
+
+fun predefined(): t5<Op, ActFunction, TFFunction, TFFunction, Map<String, Any>> {
+  File("g2-python.pb").source { source ->
+    val def = source.readByteArray()
+    val g = tf.currentGraph
+    g.import(BytePointer(*def))
+    val init = g.findOp("init")!!
+    val observations_ph = g.getTensor("deepq/observation:0")
+    val stochastic_ph = g.getTensor("deepq/stochastic:0")
+    val update_eps_ph = g.getTensor("deepq/update_eps:0")
+    val output_actions = g.getTensor("deepq/cond/Merge:0")
+    val update_eps_expr = g.getTensor("deepq/Assign:0")
+    val _act = tf_function(inputs = listOf(observations_ph, stochastic_ph, update_eps_ph),
+                           outputs = output_actions,
+                           givens = listOf(update_eps_ph to -1.0f, stochastic_ph to true),
+                           updates = listOf(update_eps_expr))
+    
+    val obs_t_input = g.getTensor("deepq_1/obs_t:0")
+    val act_t_ph = g.getTensor("deepq_1/action:0")
+    val rew_t_ph = g.getTensor("deepq_1/reward:0")
+    val obs_tp1_input = g.getTensor("deepq_1/obs_tp1:0")
+    val done_mask_ph = g.getTensor("deepq_1/done:0")
+    val importance_weights_ph = g.getTensor("deepq_1/weight:0")
+    val td_error = g.getTensor("deepq_1/sub_1:0")
+    val optimize_expr = g.findOp("deepq_1/Adam")!!
+    val update_target_expr = g.findOp("deepq_1/group_deps")!!
+    val train = tf_function(
+        inputs = listOf(
+            obs_t_input,
+            act_t_ph,
+            rew_t_ph,
+            obs_tp1_input,
+            done_mask_ph,
+            importance_weights_ph),
+        outputs = td_error,
+        updates = listOf(optimize_expr))
+    val update_target = tf_function(updates = listOf(update_target_expr))
+    return t5(init, ActFunction(_act), train, update_target, emptyMap())
+//    val ops = g.ops()
+  }
+}
 
 fun <O : Any, OE : Any, A : Any, AE : Any> learn(
     model_file_path: String,
@@ -54,16 +95,18 @@ fun <O : Any, OE : Any, A : Any, AE : Any> learn(
   fun makeObservationPlaceholder(name: String) =
       ObservationInput(observation_space = env.observation_space, name = name)
   
-  val (act, train, update_target, debug) = build_train(
-      makeObsPh = ::makeObservationPlaceholder,
-      qFunc = q_func,
-      numActions = env.action_space.n,
-      optimizer = AdamOptimizer(learningRate = { learning_rate }),
-      gamma = gamma,
-      gradNormClipping = 10,
-      paramNoise = param_noise)
-  
-  val act_vars = debug["act_vars"] as Set<Variable>
+  val (init, act, train, update_target, debug) = predefined()
+
+//  val (act, train, update_target, debug) = build_train(
+//      makeObsPh = ::makeObservationPlaceholder,
+//      qFunc = q_func,
+//      numActions = env.action_space.n,
+//      optimizer = AdamOptimizer(learningRate = { learning_rate }),
+//      gamma = gamma,
+//      gradNormClipping = 10,
+//      paramNoise = param_noise)
+  dump("g2.pbtxt", tf.currentGraph.debugString())
+//  val act_vars = debug["act_vars"] as Set<Variable>
   
   //Create the replay buffer
   val replay_buffer: ReplayBuffer<O, OE, A, AE>
@@ -88,7 +131,7 @@ fun <O : Any, OE : Any, A : Any, AE : Any> learn(
   
   //Initialize the parameters and copy them to the target network.
   tf.session {
-    val init = tf.globalVariablesInitializer()
+    //    val init = tf.globalVariablesInitializer()
     init.run()
     update_target()
     
@@ -145,7 +188,7 @@ fun <O : Any, OE : Any, A : Any, AE : Any> learn(
             val (obses_t, actions, rewards, obses_tp1, dones, weights, batch_idxes) =
                 replay_buffer.sample(batch_size, beta = beta_schedule.value(t))
             val (td_errors) = train(obses_t, actions, rewards, obses_tp1, dones, weights)
-            
+            td_errors as NDArray<Float>
             val new_priorities = abs(td_errors) + prioritized_replay_eps
             replay_buffer.update_priorities(batch_idxes, new_priorities)
           } else {
@@ -173,13 +216,13 @@ fun <O : Any, OE : Any, A : Any, AE : Any> learn(
             if (print_freq > 0)
               System.err.println("Saving model due to mean reward increase: $saved_mean_reward -> $mean_100ep_reward")
             saved_mean_reward = mean_100ep_reward
-            val result = eval(act_vars)
-            saveVariable(act_vars.map { it.name }.zip(result))
+//            val result = eval(act_vars)
+//            saveVariable(act_vars.map { it.name }.zip(result))
           }
         }
         meter.end("total")
       }
-      if (t % 300 == 0) {
+      if (false && t % 300 == 0) {
         println("$t: ${replay_buffer.size}:" +
                     "phy=" + formatter.format(Pointer.physicalBytes()) + ", " +
                     "max=" + formatter.format(Pointer.maxPhysicalBytes()) + "," +
@@ -192,15 +235,15 @@ fun <O : Any, OE : Any, A : Any, AE : Any> learn(
       }
       
     }
-    println("Saving model to $model_file_path")
-    val result = eval(act_vars)
-    saveModel(model_file_path, {
-      buildAct(makeObsPh = ::makeObservationPlaceholder,
-               qFunc = q_func,
-               numActions = env.action_space.n,
-               scope = "deepq",
-               reuse = ReuseOrCreateNew)
-    }, act_vars.map { it.name }.zip(result))
+//    println("Saving model to $model_file_path")
+//    val result = eval(act_vars)
+//    saveModel(model_file_path, {
+//      buildAct(makeObsPh = ::makeObservationPlaceholder,
+//               qFunc = q_func,
+//               numActions = env.action_space.n,
+//               scope = "deepq",
+//               reuse = ReuseOrCreateNew)
+//    }, act_vars.map { it.name }.zip(result))
   }
 }
 

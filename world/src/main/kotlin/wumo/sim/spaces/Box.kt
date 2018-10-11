@@ -39,10 +39,10 @@ class Box<T> constructor(
   }
   
   companion object {
-    operator fun <T> invoke(low: T, high: T, shape: Shape, dtype: NDType<T>): Box<T>
+    operator fun <T> invoke(low: Any, high: Any, shape: Shape, dtype: NDType<T>): Box<T>
         where T : Number, T : Comparable<T> {
-      val low = NDArray(shape, dtype) { low }
-      val high = NDArray(shape, dtype) { high }
+      val low = NDArray(shape, dtype) { dtype.cast(low) }
+      val high = NDArray(shape, dtype) { dtype.cast(high) }
       return Box(low, high)
     }
   }
