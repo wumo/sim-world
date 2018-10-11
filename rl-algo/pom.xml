@@ -13,20 +13,19 @@
   
   <properties>
     <opencv.version>3.4.3</opencv.version>
-    <opencv.platform>linux-x86_64</opencv.platform>
   </properties>
   
   <dependencies>
     <dependency>
       <groupId>org.bytedeco.javacpp-presets</groupId>
-      <artifactId>opencv-platform</artifactId>
+      <artifactId>opencv</artifactId>
       <version>${opencv.version}-${javacpp.version}</version>
     </dependency>
     <dependency>
       <groupId>org.bytedeco.javacpp-presets</groupId>
       <artifactId>opencv</artifactId>
       <version>${opencv.version}-${javacpp.version}</version>
-      <classifier>${opencv.platform}-gpu</classifier>
+      <classifier>${platform}-gpu</classifier>
     </dependency>
     <dependency>
       <groupId>wumo.sim</groupId>

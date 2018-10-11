@@ -17,8 +17,7 @@
     <module>tensorflow-ops-generator</module>
     <module>python-interpreter</module>
     <module>rl-algo</module>
-    <module>atari-py</module>
-    <module>buf</module>
+    <module>javacpp</module>
   </modules>
   
   <developers>
@@ -57,31 +56,18 @@
     </pluginRepository>
   </pluginRepositories>
   
-  <profiles>
-    <profile>
-      <id>linux-x86_64</id>
-      <properties>
-        <platform>linux-x86_64</platform>
-      </properties>
-    </profile>
-    <profile>
-      <id>windows-x86_64</id>
-      <properties>
-        <platform>windows-x86_64</platform>
-      </properties>
-    </profile>
-  </profiles>
-  
   <properties>
     <mkl-dnn.version>0.16</mkl-dnn.version>
     <javacpp.version>1.4.3-SNAPSHOT</javacpp.version>
     <tensorflow.version>1.11.0</tensorflow.version>
+    <cuda.cudnn.version>10.0-7.3</cuda.cudnn.version>
     <javacpp-resets-tensorflow.version>${tensorflow.version}-${javacpp.version}</javacpp-resets-tensorflow.version>
-    <javacpp-resets-cuda.version>9.2-7.2-${javacpp.version}</javacpp-resets-cuda.version>
-    <platform.class>${platform}</platform.class>
+    <javacpp-resets-cuda.version>${cuda.cudnn.version}-${javacpp.version}</javacpp-resets-cuda.version>
+    
     <junit.version>4.12</junit.version>
     <slf4jVersion>1.7.25</slf4jVersion>
     <logbackVersion>1.2.3</logbackVersion>
+    
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
@@ -89,34 +75,131 @@
     <maven.compiler.plugin.version>3.7.0</maven.compiler.plugin.version>
     <maven.source.plugin.version>3.0.1</maven.source.plugin.version>
     <kotlin.version>1.3.0-rc-146</kotlin.version>
-    <kotlin.coroutines>0.24.0</kotlin.coroutines>
-    
-    <platform.android-arm>android-arm</platform.android-arm>
-    <platform.android-arm64>android-arm64</platform.android-arm64>
-    <platform.android-x86>android-x86</platform.android-x86>
-    <platform.android-x86_64>android-x86_64</platform.android-x86_64>
-    <platform.ios-arm>ios-arm</platform.ios-arm>
-    <platform.ios-arm64>ios-arm64</platform.ios-arm64>
-    <platform.ios-x86>ios-x86</platform.ios-x86>
-    <platform.ios-x86_64>ios-x86_64</platform.ios-x86_64>
-    <platform.linux-armhf>linux-armhf</platform.linux-armhf>
-    <platform.linux-arm64>linux-arm64</platform.linux-arm64>
-    <platform.linux-ppc64le>linux-ppc64le</platform.linux-ppc64le>
-    <platform.linux-x86>linux-x86</platform.linux-x86>
-    <platform.linux-x86_64>linux-x86_64</platform.linux-x86_64>
-    <platform.macosx-x86_64>macosx-x86_64</platform.macosx-x86_64>
-    <platform.windows-x86>windows-x86</platform.windows-x86>
-    <platform.windows-x86_64>windows-x86_64</platform.windows-x86_64>
+    <kotlin.coroutines>0.30.2-eap13</kotlin.coroutines>
     
     <javacpp.cppbuild.skip>true</javacpp.cppbuild.skip>
     <javacpp.parser.skip>false</javacpp.parser.skip>
     <javacpp.compiler.skip>false</javacpp.compiler.skip>
     <javacpp.moduleId>${project.artifactId}</javacpp.moduleId>
-    <javacpp.platform>${platform.linux-x86_64}</javacpp.platform>
     <javacpp.platform.root></javacpp.platform.root>
     <javacpp.platform.compiler></javacpp.platform.compiler>
     <javacpp.platform.extension></javacpp.platform.extension>
   </properties>
+  
+  <profiles>
+    <profile>
+      <id>platform-default</id>
+      <activation>
+        <property>
+          <name>!platform</name>
+        </property>
+      </activation>
+      <properties>
+        <platform>${os.name}-${os.arch}</platform>
+      </properties>
+    </profile>
+    
+    <!-- Profiles to set the default javacpp.platform property: If someone knows a better way to do this, please do let me know! -->
+    <profile>
+      <id>linux</id>
+      <activation>
+        <os>
+          <name>linux</name>
+        </os>
+      </activation>
+      <properties>
+        <os.name>linux</os.name>
+      </properties>
+    </profile>
+    <profile>
+      <id>macosx</id>
+      <activation>
+        <os>
+          <name>mac os x</name>
+        </os>
+      </activation>
+      <properties>
+        <os.name>macosx</os.name>
+      </properties>
+    </profile>
+    <profile>
+      <id>windows</id>
+      <activation>
+        <os>
+          <family>windows</family>
+        </os>
+      </activation>
+      <properties>
+        <os.name>windows</os.name>
+      </properties>
+    </profile>
+    <profile>
+      <id>i386</id>
+      <activation>
+        <os>
+          <arch>i386</arch>
+        </os>
+      </activation>
+      <properties>
+        <os.arch>x86</os.arch>
+      </properties>
+    </profile>
+    <profile>
+      <id>i486</id>
+      <activation>
+        <os>
+          <arch>i486</arch>
+        </os>
+      </activation>
+      <properties>
+        <os.arch>x86</os.arch>
+      </properties>
+    </profile>
+    <profile>
+      <id>i586</id>
+      <activation>
+        <os>
+          <arch>i586</arch>
+        </os>
+      </activation>
+      <properties>
+        <os.arch>x86</os.arch>
+      </properties>
+    </profile>
+    <profile>
+      <id>i686</id>
+      <activation>
+        <os>
+          <arch>i686</arch>
+        </os>
+      </activation>
+      <properties>
+        <os.arch>x86</os.arch>
+      </properties>
+    </profile>
+    <profile>
+      <id>amd64</id>
+      <activation>
+        <os>
+          <arch>amd64</arch>
+        </os>
+      </activation>
+      <properties>
+        <os.arch>x86_64</os.arch>
+      </properties>
+    </profile>
+    <profile>
+      <id>x86-64</id>
+      <activation>
+        <os>
+          <arch>x86-64</arch>
+        </os>
+      </activation>
+      <properties>
+        <os.arch>x86_64</os.arch>
+      </properties>
+    </profile>
+  </profiles>
   
   <distributionManagement>
     <snapshotRepository>
@@ -128,7 +211,6 @@
       <url>http://maven.marslab.org/repository/maven-releases/</url>
     </repository>
   </distributionManagement>
-  
   
   <dependencyManagement>
     <dependencies>
@@ -223,66 +305,6 @@
           </configuration>
         </plugin>
         
-        <plugin>
-          <groupId>org.bytedeco</groupId>
-          <artifactId>javacpp</artifactId>
-          <version>${javacpp.version}</version>
-          <configuration>
-            <properties>${javacpp.platform}</properties>
-            <propertyKeysAndValues>
-              <property>
-                <name>platform.root</name>
-                <value>${javacpp.platform.root}</value>
-              </property>
-              <property>
-                <name>platform.compiler</name>
-                <value>${javacpp.platform.compiler}</value>
-              </property>
-              <property>
-                <name>platform.extension</name>
-                <value>${javacpp.platform.extension}</value>
-              </property>
-            </propertyKeysAndValues>
-            <classPath>${project.build.outputDirectory}</classPath>
-            <includePaths>
-              <includePath>${basedir}/cppbuild/${javacpp.platform}${javacpp.platform.extension}/include/
-              </includePath>
-              <includePath>${basedir}/target/classes/</includePath>
-            </includePaths>
-            <linkPaths>
-              <linkPath>${basedir}/cppbuild/${javacpp.platform}${javacpp.platform.extension}/lib/
-              </linkPath>
-            </linkPaths>
-            <deleteJniFiles>false</deleteJniFiles>
-          </configuration>
-          <executions>
-            <execution>
-              <id>javacpp.parser</id>
-              <phase>generate-sources</phase>
-              <goals>
-                <goal>build</goal>
-              </goals>
-              <configuration>
-                <skip>${javacpp.parser.skip}</skip>
-                <outputDirectory>${project.build.sourceDirectory}</outputDirectory>
-                <classOrPackageName>wumo.sim.presets.*</classOrPackageName>
-              </configuration>
-            </execution>
-            <execution>
-              <id>javacpp.compiler</id>
-              <phase>process-classes</phase>
-              <goals>
-                <goal>build</goal>
-              </goals>
-              <configuration>
-                <skip>${javacpp.compiler.skip}</skip>
-                <classOrPackageName>wumo.sim.*</classOrPackageName>
-                <copyLibs>true</copyLibs>
-                <copyResources>true</copyResources>
-              </configuration>
-            </execution>
-          </executions>
-        </plugin>
       </plugins>
     </pluginManagement>
   </build>
