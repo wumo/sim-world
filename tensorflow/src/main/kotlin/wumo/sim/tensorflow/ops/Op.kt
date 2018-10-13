@@ -2,6 +2,9 @@ package wumo.sim.tensorflow.ops
 
 import org.bytedeco.javacpp.Pointer
 import org.bytedeco.javacpp.PointerPointer
+import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Buffer.newBuffer
+import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Buffer.newBufferFromString
+import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
 import org.bytedeco.javacpp.tensorflow.*
 import org.tensorflow.framework.NodeDef
 import wumo.sim.tensorflow.core.Graph
@@ -38,10 +41,9 @@ class Op(val graph: Graph, val c_op: TF_Operation) : HasName {
    * @param update_dtype If `False`, the type for this input is not updated.
    */
   internal fun updateInput(index: Int, tensor: Output, update_dtype: Boolean = true) {
-    val status = TF_NewStatus()
+    val status = newStatus()
     UpdateEdge(graph.c_graph, tensor.asTF_Output(), asTF_Input(index), status)
     inputs = _loadInputs()
-    TF_DeleteStatus(status)
   }
   
   internal fun asTF_Input(input_idx: Int) = run {
@@ -139,11 +141,10 @@ class Op(val graph: Graph, val c_op: TF_Operation) : HasName {
   }
   
   fun set_attr(key: String, value: AttrValue) {
-    val status = TF_NewStatus()
+    val status = newStatus()
     val _buf = value.SerializeAsString()
-    val buf = TF_NewBufferFromString(_buf, _buf.limit())
+    val buf = newBufferFromString(_buf)
     SetAttr(graph.c_graph, c_op, key, buf, status)
-    TF_DeleteStatus(status)
   }
   
   val output_types: List<DataType<*>> by lazy {
@@ -238,16 +239,13 @@ class Op(val graph: Graph, val c_op: TF_Operation) : HasName {
   }
   
   fun nodeDef(): NodeDef {
-    val buf = TF_NewBuffer()
-    val status = TF_NewStatus()
+    val buf = newBuffer()
+    val status = newStatus()
     TF_OperationToNodeDef(c_op, buf, status)
     status.check()
     val data = buf.data()
     data.limit<Pointer>(buf.length())
-    return NodeDef.parseFrom(data.asByteBuffer()).apply {
-      TF_DeleteStatus(status)
-      TF_DeleteBuffer(buf)
-    }
+    return NodeDef.parseFrom(data.asByteBuffer())
   }
   
   fun toNodeDef() =

@@ -1,5 +1,6 @@
 package wumo.sim.tensorflow.ops
 
+import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
 import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.tensorflow.core.Graph
 import wumo.sim.tensorflow.core.check
@@ -163,14 +164,13 @@ class Output(override val op: Op, val valueIndex: Int) : OutputLike() {
     get() {
       val c_graph = op.graph.c_graph
       val output = asTF_Output()
-      val status = TF_NewStatus()
+      val status = newStatus()
       val numDims = TF_GraphGetTensorNumDims(c_graph, output, status)
       if (numDims < 0) return Shape()
       status.check()
       val dims = LongArray(numDims)
       TF_GraphGetTensorShape(c_graph, output, dims, numDims, status)
       status.check()
-      TF_DeleteStatus(status)
       return Shape(dims)
     }
   
@@ -214,10 +214,9 @@ class Output(override val op: Op, val valueIndex: Int) : OutputLike() {
   fun setShape(shape: Shape) {
     assert(this.shape.isCompatibleWith(shape))
     val dims = shape.asLongArray()
-    val status = TF_NewStatus()
+    val status = newStatus()
     TF_GraphSetTensorShape(op.graph.c_graph, asTF_Output(), dims, dims!!.size, status)
     status.check()
-    TF_DeleteStatus(status)
   }
   
   //  val tf: TF by lazy { TODO("op!!.graph.tf") }

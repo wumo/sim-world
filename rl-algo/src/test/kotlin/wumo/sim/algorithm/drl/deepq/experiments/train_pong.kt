@@ -64,6 +64,5 @@ class train_pong {
         }
       }
     }
-    graph.close()
   }
 }

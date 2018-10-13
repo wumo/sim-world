@@ -7,6 +7,9 @@ import org.bytedeco.javacpp.LongPointer
 import org.bytedeco.javacpp.Pointer
 import org.bytedeco.javacpp.Pointer.memcpy
 import org.bytedeco.javacpp.SizeTPointer
+import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
+import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Tensor.allocateTensor
+import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Tensor.newTensor
 import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.tensorflow.core.check
 import wumo.sim.tensorflow.types.*
@@ -22,23 +25,6 @@ open class Tensor<T : Any>(_c_tensor: TF_Tensor,
   : BytePointerBuf<T>(_c_tensor.dataPtr(), dtype.ndtype) {
   
   companion object {
-    internal var dummyDeallocator = object : Deallocator_Pointer_long_Pointer() {
-      override fun call(p0: Pointer?, p1: Long, p2: Pointer?) {
-      }
-    }
-    
-    fun NewTensor(dtype: Int, dims: LongArray, data: Pointer): TF_Tensor {
-      return TF_NewTensor(dtype, dims, dims.size, data, data.limit(), object : Deallocator_Pointer_long_Pointer() {
-        override fun call(p0: Pointer, p1: Long, p2: Pointer?) {
-        
-        }
-      }, null)
-    }
-    
-    fun AllocateTensor(dtype: Int, dims: LongArray, length: Long): TF_Tensor {
-      return TF_AllocateTensor(dtype, dims, dims.size, length)
-    }
-    
     fun TF_Tensor.dataPtr(): BytePointer {
       val data = TF_TensorData(this)
       val size = TF_TensorByteSize(this)
@@ -84,7 +70,7 @@ open class Tensor<T : Any>(_c_tensor: TF_Tensor,
     
     operator fun invoke(shape: Shape, array: Array<String>): StringTensor {
       val data = TFStringArray.encode(array)
-      val t = NewTensor(STRING.cValue, shape.asLongArray()!!, data)
+      val t = newTensor(STRING.cValue, shape.asLongArray()!!, data)
       return StringTensor(t, array)
     }
     
@@ -94,13 +80,13 @@ open class Tensor<T : Any>(_c_tensor: TF_Tensor,
       val data = BytePointer((size * byteSize).toLong())
       for (i in 0 until size)
         dtype.put(data, i * byteSize, init(i))
-      return Tensor(NewTensor(dtype.cValue, shape.asLongArray()!!, data), dtype)
+      return Tensor(newTensor(dtype.cValue, shape.asLongArray()!!, data), dtype)
     }
     
     fun <T : Any> fromNDArray(ndarray: NDArray<T>): Tensor<T> {
       val src = ndarray.native
       val dtype = ndarray.dtype.toDataType()
-      return Tensor(NewTensor(dtype.cValue, ndarray.shape.asLongArray()!!, src), dtype)
+      return Tensor(newTensor(dtype.cValue, ndarray.shape.asLongArray()!!, src), dtype)
     }
     
     fun <T : Any, R : Any> fromNDArray(ndarray: NDArray<T>, dtype: DataType<R>): Tensor<R> {
@@ -112,7 +98,7 @@ open class Tensor<T : Any>(_c_tensor: TF_Tensor,
         val data = dtype.ndtype.cast(ndarray.raw)
         data.ptr
       }
-      return Tensor(NewTensor(dtype.cValue, ndarray.shape.asLongArray()!!, dst), dtype)
+      return Tensor(newTensor(dtype.cValue, ndarray.shape.asLongArray()!!, dst), dtype)
     }
   }
   
@@ -136,7 +122,7 @@ open class Tensor<T : Any>(_c_tensor: TF_Tensor,
   }
   
   fun toNDArray(): NDArray<T> = NDArray(Shape(dims), BytePointerBuf(ptr.copy(), ndType))
-  
+
 //  fun asNDArray(): NDArray<T> = NDArray(Shape(dims), this)
   
   override fun copy(): BytePointerBuf<T> = Tensor(copy_tensor(), dtype)
@@ -148,7 +134,7 @@ open class Tensor<T : Any>(_c_tensor: TF_Tensor,
   protected fun copy_tensor(): TF_Tensor {
     val src = TF_TensorData(c_tensor)
     val size = TF_TensorByteSize(c_tensor)
-    val t = AllocateTensor(dtype.cValue, dims, size)
+    val t = allocateTensor(dtype.cValue, dims, size)
     val data = TF_TensorData(t)
     memcpy(data, src, size)
     return t
@@ -205,7 +191,7 @@ object TFStringArray {
     val data_start = sizeofUInt64 * array.size
     var dst = data_start
     var dst_len = size - data_start
-    val status = TF_NewStatus()
+    val status = newStatus()
     var offsets = 0L
     for (s in array) {
       offsetBuf.position(offsets).put(dst - data_start)
@@ -215,7 +201,6 @@ object TFStringArray {
       dst += consumed
       dst_len -= consumed
     }
-    TF_DeleteStatus(status)
     if (dst != size)
       throw IllegalArgumentException("invalid string tensor encoding (decoded $dst " +
                                          "bytes, but the tensor is encoded in $size bytes")
@@ -230,7 +215,7 @@ object TFStringArray {
       throw IllegalArgumentException("Malformed TF_STRING tensor; too short to hold number of elements")
     val data_start = sizeofUInt64 * numElements
     val limit = src_size
-    val status = TF_NewStatus()
+    val status = newStatus()
     return Array(numElements.toInt()) {
       val offset = offsetBuf.get(it.toLong())
       if (offset >= limit - data_start)
@@ -241,8 +226,6 @@ object TFStringArray {
       TF_StringDecode(input.position(srcp), limit - srcp, p, len, status)
       status.check()
       p.limit(len.get()).string
-    }.apply {
-      TF_DeleteStatus(status)
     }
   }
 }

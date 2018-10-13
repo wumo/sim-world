@@ -3,6 +3,8 @@
 package wumo.sim.tensorflow
 
 import org.bytedeco.javacpp.PointerPointer
+import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_SessionOptions.newSessionOptions
+import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
 import org.bytedeco.javacpp.tensorflow.*
 import wumo.sim.tensorflow.core.check
 import wumo.sim.tensorflow.ops.Op
@@ -17,12 +19,10 @@ class Session(val c_graph: TF_Graph) {
   private val c_session: TF_Session
   
   init {
-    val status = TF_NewStatus()
-    val options = TF_NewSessionOptions()
+    val status = newStatus()
+    val options = newSessionOptions()
     c_session = TF_NewSession(c_graph, options, status)
     status.check()
-    TF_DeleteStatus(status)
-    TF_DeleteSessionOptions(options)
   }
   
   val feed_dict = mutableListOf<Pair<Output, NDArray<out Any>>>()
@@ -118,7 +118,7 @@ class Session(val c_graph: TF_Graph) {
   fun eval(fetch: Iterable<OutputConvertible>): MutableList<NDArray<Any>> {
     native {
       val fetches = fetch.map { it.toOutput() }
-      val status = TF_NewStatus()
+      val status = newStatus()
       val (inputs, input_values, ninputs) = accumulateFeedDict()
       val (target_opers, ntargets) = accumulateRuns()
       val noutputs = fetches.size
@@ -132,19 +132,10 @@ class Session(val c_graph: TF_Graph) {
                     target_opers, ntargets,
                     null, status)
       status.check()
-      TF_DeleteStatus(status)
       clear()
       return MutableList(noutputs) {
         val tensor = output_values.get(TF_Tensor::class.java, it.toLong())
-        Tensor.toNDArray<Any>(tensor).apply {
-          ref()
-          TF_DeleteTensor(tensor)
-        }
-      }.apply {
-        for (i in 0 until ninputs) {
-          val t = input_values.get(TF_Tensor::class.java, i.toLong())
-          TF_DeleteTensor(t)
-        }
+        Tensor.toNDArray<Any>(tensor).ref()
       }
     }
   }

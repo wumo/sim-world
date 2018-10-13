@@ -5,6 +5,11 @@ package wumo.sim.tensorflow.core
 import org.bytedeco.javacpp.BytePointer
 import org.bytedeco.javacpp.Pointer
 import org.bytedeco.javacpp.SizeTPointer
+import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Buffer.newBuffer
+import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Buffer.newBufferFromString
+import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Graph.newGraph
+import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_ImportGraphDefOptions.newImportGraphDefOptions
+import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
 import org.bytedeco.javacpp.tensorflow
 import org.bytedeco.javacpp.tensorflow.*
 import org.tensorflow.framework.GraphDef
@@ -32,12 +37,9 @@ import java.util.*
  * [Output] objects, which represent
  * the units of data that flow between operations.
  */
-open class Graph : AutoCloseable {
+open class Graph {
   
-  val c_graph = TF_NewGraph()!!
-  override fun close() {
-    TF_DeleteGraph(c_graph)
-  }
+  val c_graph = newGraph()!!
   
   val nextIdCounter: Int = 0
   
@@ -328,16 +330,13 @@ open class Graph : AutoCloseable {
    */
   fun getOpDef(opType: String): OpDef {
     native {
-      val buf = TF_NewBuffer()
-      val status = TF_NewStatus()
+      val buf = newBuffer()
+      val status = newStatus()
       TF_GraphGetOpDef(c_graph, opType, buf, status)
       status.check()
       val data = buf.data()
       data.limit<Pointer>(buf.length())
-      return OpDef.parseFrom(data.asByteBuffer()).apply {
-        TF_DeleteStatus(status)
-        TF_DeleteBuffer(buf)
-      }
+      return OpDef.parseFrom(data.asByteBuffer())
     }
   }
   
@@ -381,8 +380,8 @@ open class Graph : AutoCloseable {
   fun toGraphDefBytes(): ByteArray {
     native {
       val a = BytePointer(1L)
-      val buf = TF_NewBuffer()
-      val status = TF_NewStatus()
+      val buf = newBuffer()
+      val status = newStatus()
       TF_GraphToGraphDef(c_graph, buf, status)
       status.check()
       val len = buf.length()
@@ -391,8 +390,6 @@ open class Graph : AutoCloseable {
       d.capacity<Pointer>(len)
       val data = d.asByteBuffer()
       data.get(bytes)
-      TF_DeleteBuffer(buf)
-      TF_DeleteStatus(status)
       return bytes
     }
   }
@@ -404,16 +401,13 @@ open class Graph : AutoCloseable {
   fun import(act_graph_def: BytePointer, prefix: String = "") {
     native {
       assertNotFrozen()
-      val buf = TF_NewBufferFromString(act_graph_def, act_graph_def.limit())
-      val status = TF_NewStatus()
-      val opt = TF_NewImportGraphDefOptions()
+      val buf = newBufferFromString(act_graph_def)
+      val status = newStatus()
+      val opt = newImportGraphDefOptions()
       if (prefix.isNotBlank())
         TF_ImportGraphDefOptionsSetPrefix(opt, prefix)
       TF_GraphImportGraphDef(c_graph, buf, opt, status)
       status.check()
-      TF_DeleteImportGraphDefOptions(opt)
-      TF_DeleteStatus(status)
-      TF_DeleteBuffer(buf)
       ops().forEach { namesInUse[it.name] = 1 }
     }
   }

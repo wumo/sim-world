@@ -92,7 +92,7 @@ fun saveVariable(act_vars: List<Pair<String, NDArray<Any>>>) {
       sink.encode(value.shape.asLongArray()!!)
       sink.writeLong(size)
       sink.write(buffer)
-      TF_DeleteTensor(c_tensor)
+      c_tensor.deallocate()
     }
   }
 }
@@ -137,7 +137,6 @@ fun saveModel(model_file_path: String,
       sink.encode(bytes)
       sink.encode(act)
     }
-    graph.close()
   }
 }
 

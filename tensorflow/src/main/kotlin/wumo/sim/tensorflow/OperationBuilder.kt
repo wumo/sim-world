@@ -1,6 +1,7 @@
 package wumo.sim.tensorflow
 
 import org.bytedeco.javacpp.BytePointer
+import org.bytedeco.javacpp.helper.tensorflow.AbstractTF_Status.newStatus
 import org.bytedeco.javacpp.tensorflow.*
 import org.tensorflow.framework.OpDef
 import wumo.sim.tensorflow.core.check
@@ -126,10 +127,9 @@ class OperationBuilder(val opType: String, val name: String) {
   }
   
   fun finishOp(): TF_Operation {
-    val status = TF_NewStatus()
+    val status = newStatus()
     val nativeOp = TF_FinishOperation(c_op_desc, status)
     status.check()
-    TF_DeleteStatus(status)
     return nativeOp
   }
   
@@ -320,19 +320,17 @@ class OperationBuilder(val opType: String, val name: String) {
   
   fun attr(name: String, value: TF_Tensor) {
     attributes[name] = {
-      val status = TF_NewStatus()
+      val status = newStatus()
       TF_SetAttrTensor(c_op_desc, name, value, status)
       status.check()
-      TF_DeleteStatus(status)
     }
   }
   
   fun <T : Any> attr(name: String, value: Tensor<T>) {
     attributes[name] = {
-      val status = TF_NewStatus()
+      val status = newStatus()
       TF_SetAttrTensor(c_op_desc, name, value.c_tensor, status)
       status.check()
-      TF_DeleteStatus(status)
     }
   }
   
@@ -342,10 +340,9 @@ class OperationBuilder(val opType: String, val name: String) {
   
   fun attr(name: String, value: NDArray<*>) {
     attributes[name] = {
-      val status = TF_NewStatus()
+      val status = newStatus()
       TF_SetAttrTensor(c_op_desc, name, Tensor.fromNDArray(value).c_tensor, status)
       status.check()
-      TF_DeleteStatus(status)
     }
   }
   
@@ -377,31 +374,28 @@ class OperationBuilder(val opType: String, val name: String) {
   
   fun attr(name: String, attrValue: AttrValue) {
     attributes[name] = {
-      val status = TF_NewStatus()
+      val status = newStatus()
       val buf = attrValue.SerializeAsString()
       TF_SetAttrValueProto(c_op_desc, name, buf, buf.limit(), status)
       status.check()
-      TF_DeleteStatus(status)
     }
   }
   
   fun attr(name: String, attrValue: org.tensorflow.framework.AttrValue) {
     attributes[name] = {
-      val status = TF_NewStatus()
+      val status = newStatus()
       val buf = BytePointer(*attrValue.toByteArray())
       TF_SetAttrValueProto(c_op_desc, name, buf, buf.limit(), status)
       status.check()
-      TF_DeleteStatus(status)
     }
   }
   
   fun attr(name: String, tensor_shape_proto: TensorShapeProto) {
     attributes[name] = {
-      val status = TF_NewStatus()
+      val status = newStatus()
       val buf = tensor_shape_proto.SerializeAsString() ?: BytePointer()
       TF_SetAttrTensorShapeProto(c_op_desc, name, buf, buf.limit(), status)
       status.check()
-      TF_DeleteStatus(status)
     }
   }
 }
