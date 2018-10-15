@@ -57,12 +57,12 @@
     <!--<version>${javacpp-resets-tensorflow.version}</version>-->
     <!--<classifier>${platform}</classifier>-->
     <!--</dependency>-->
-    <!--<dependency>-->
-    <!--<groupId>org.bytedeco.javacpp-presets</groupId>-->
-    <!--<artifactId>tensorflow</artifactId>-->
-    <!--<version>${javacpp-resets-tensorflow.version}</version>-->
-    <!--<classifier>linux-x86_64</classifier>-->
-    <!--</dependency>-->
+    <dependency>
+      <groupId>org.bytedeco.javacpp-presets</groupId>
+      <artifactId>tensorflow</artifactId>
+      <version>${javacpp-resets-tensorflow.version}</version>
+      <classifier>linux-x86_64</classifier>
+    </dependency>
     <dependency>
       <groupId>org.bytedeco.javacpp-presets</groupId>
       <artifactId>tensorflow</artifactId>

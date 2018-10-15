@@ -58,7 +58,7 @@
   
   <properties>
     <mkl-dnn.version>0.16</mkl-dnn.version>
-    <javacpp.version>1.4.3-SNAPSHOT</javacpp.version>
+    <javacpp.version>1.4.3</javacpp.version>
     <tensorflow.version>1.11.0</tensorflow.version>
     <cuda.cudnn.version>10.0-7.3</cuda.cudnn.version>
     <javacpp-resets-tensorflow.version>${tensorflow.version}-${javacpp.version}</javacpp-resets-tensorflow.version>

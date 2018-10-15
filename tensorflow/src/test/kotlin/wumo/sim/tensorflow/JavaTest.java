@@ -34,30 +34,39 @@ public class JavaTest {
       public void call(Pointer data, long len, Pointer arg) {
       }
     };
+    BytePointer data = new BytePointer(100L);
     while (true) {
       PointerScope scope = new PointerScope();
-      BytePointer data = new BytePointer(100L);
+      
       long[] dims = new long[]{data.limit()};
+      System.out.println(dummyDeallocator.isNull());
+      System.out.println(dummyDeallocator.address());
       TF_Tensor t = TF_NewTensor(DT_UINT8, dims, dims.length, data, data.limit(), dummyDeallocator, null);
       TF_DeleteTensor(t);
       scope.close();
+      System.out.println(dummyDeallocator.isNull());
+      System.out.println(dummyDeallocator.address());
     }
   }
   
   @Test
   public void testDeallocate3() {
     Object a = tf.INSTANCE;
+    BytePointer data = new BytePointer(100L);
     while (true) {
       PointerScope scope = new PointerScope();
-      BytePointer data = new BytePointer(100L);
+      
       long[] dims = new long[]{data.limit()};
-      TF_Tensor t = TF_NewTensor(DT_UINT8, dims, dims.length, data, data.limit(), new Deallocator_Pointer_long_Pointer() {
+      Deallocator_Pointer_long_Pointer dummyDeallocator = new Deallocator_Pointer_long_Pointer() {
         @Override
         public void call(Pointer data, long len, Pointer arg) {
         }
-      }, null);
+      };
+      TF_Tensor t = TF_NewTensor(DT_UINT8, dims, dims.length, data, data.limit(), dummyDeallocator, null);
       TF_DeleteTensor(t);
       scope.close();
+      System.out.println(dummyDeallocator.isNull());
+      System.out.println(dummyDeallocator.address());
     }
   }
 }
